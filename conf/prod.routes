@@ -1,5 +1,5 @@
 # Add all the application routes to the app.routes file
-->         /ras-frontend              app.Routes
+->         /relief-at-source          app.Routes
 ->         /                          health.Routes
 ->     	   /template                  template.Routes
 
