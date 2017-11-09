@@ -17,31 +17,30 @@
 package connectors
 
 import config.WSHttp
-import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 
 import scala.concurrent.Future
 
-trait FileUploadConnector extends ServicesConfig {
+trait FileUploadFrontendConnector extends ServicesConfig {
 
-  val http: HttpPost
-  lazy val serviceUrl = baseUrl("file-upload")
-  lazy val serviceUrlSuffix = getString("file-upload-url-suffix")
+  val httpPost: HttpPost
+  lazy val serviceUrl = baseUrl("file-upload-frontend")
+  lazy val serviceUrlSuffix = getString("file-upload-frontend-upload")
 
-  def getEnvelope()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def uploadFile(file: String, envelopeId: String, fileId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
-    val requestBody = Json.parse("""{"callbackUrl": "ourCallbackUrl"}""".stripMargin)
+    val fileUploadUri = s"$serviceUrl/$serviceUrlSuffix/$envelopeId/files/$fileId"
 
-    http.POST[JsValue, HttpResponse](
-      s"$serviceUrl/$serviceUrlSuffix", requestBody, Seq()
+    httpPost.POST[String, HttpResponse](
+      fileUploadUri, file, Seq()
     )(implicitly, implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails(hc))
-
   }
+
 
 }
 
-object FileUploadConnector extends FileUploadConnector {
-  override val http = WSHttp
+object FileUploadFrontendConnector extends FileUploadFrontendConnector {
+  override val httpPost = WSHttp
 }

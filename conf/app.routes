@@ -10,6 +10,7 @@ GET         /dashboard                    controllers.DashboardController.get
 GET         /bulk/bulk-upload             controllers.FileUploadController.get
 POST        /bulk/bulk-upload             controllers.FileUploadController.post
 GET         /bulk/bulk-upload/back        controllers.FileUploadController.back
+GET         /bulk/upload-successful       controllers.FileUploadController.uploadSuccessful
 
 GET         /member-name                  controllers.MemberNameController.get
 POST        /member-name                  controllers.MemberNameController.post

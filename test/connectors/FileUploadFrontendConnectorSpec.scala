@@ -21,32 +21,33 @@ import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class FileUploadConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with ServicesConfig {
+class FileUploadFrontendConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with ServicesConfig {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  object TestConnector extends FileUploadConnector {
-    override val http: HttpPost = mock[HttpPost]
+  object TestConnector extends FileUploadFrontendConnector {
+    override val httpPost: HttpPost = mock[HttpPost]
   }
 
-  "File upload connector" when {
+  "File upload frontend connector" when {
 
-    "calling file upload service create envelope endpoint" should {
+    "calling upload frontend service upload endpoint" should {
 
       "return service response to caller" in {
-        val response = HttpResponse(201, None, Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653")), None)
-        when(TestConnector.http.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(response))
-        val result = await(TestConnector.getEnvelope())
+        val response = HttpResponse(200, None, Map(), None)
+        when(TestConnector.httpPost.POST[JsValue, HttpResponse](any(),any(),any())(any(),any(),any(),any())).thenReturn(Future.successful(response))
+        val result = await(TestConnector.uploadFile("","",""))
         result shouldBe response
       }
 
     }
+
   }
 
 }

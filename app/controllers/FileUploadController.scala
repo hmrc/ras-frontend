@@ -21,6 +21,7 @@ import connectors.{FileUploadConnector, UserDetailsConnector}
 import play.Logger
 import play.api.{Configuration, Environment, Play}
 import play.api.mvc.Action
+import services.UploadService
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
@@ -29,7 +30,7 @@ trait FileUploadController extends RasController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
 
-  val fileUploadConnector: FileUploadConnector
+  val fileUploadService: UploadService
 
   def get = Action.async {
     implicit request =>
@@ -45,11 +46,10 @@ trait FileUploadController extends RasController with PageFlowController {
   def post () = Action.async { implicit request =>
     isAuthorised.flatMap{
       case Right(_) =>
-        fileUploadConnector.getEnvelope().map{ envelope =>
-          envelope match {
-            case Some(envelope) =>
-              //extract envelope id here or redirect to link
-              Redirect(routes.FileUploadController.get())
+        fileUploadService.uploadFile().map{ res =>
+          res match {
+            case true =>
+              Redirect(routes.FileUploadController.uploadSuccessful())
             case _ =>
               Redirect(routes.FileUploadController.get())
           }
@@ -66,6 +66,14 @@ trait FileUploadController extends RasController with PageFlowController {
       }
   }
 
+  def uploadSuccessful = Action.async{
+    implicit request =>
+      isAuthorised.flatMap{
+        case Right(_) => Future.successful(Ok(views.html.file_upload_successful()))
+        case Left(res) => res
+    }
+  }
+
 }
 
 object FileUploadController extends FileUploadController {
@@ -73,5 +81,5 @@ object FileUploadController extends FileUploadController {
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  val fileUploadConnector = FileUploadConnector
+  val fileUploadService = UploadService
 }
