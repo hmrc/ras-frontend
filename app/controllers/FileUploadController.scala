@@ -18,6 +18,7 @@ package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.UserDetailsConnector
+import models.UploadResponse
 import play.Logger
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Play}
@@ -40,11 +41,22 @@ trait FileUploadController extends RasController with PageFlowController {
             urlOption match {
               case Some(url) =>
                 Logger.debug("[FileUploadController][get] successfully obtained a form url")
-                Future.successful(Ok(views.html.file_upload(url)))
+                sessionService.fetchRasSession().map {
+                  case Some(session) =>
+                    Logger.debug("[FileUploadController][get] session retrieved")
+                    Ok(views.html.file_upload(url,extractErrorReason(session.uploadResponse)))
+                  case _ =>
+                    Logger.debug("[FileUploadController][get] no session retrieved")
+                    Ok(views.html.file_upload(url,""))
+                }
               case _ =>
                 Logger.debug("[FileUploadController][get] failed to obtain a form url")
                 Future.successful(Redirect(routes.GlobalErrorController.get()))
             }
+          }.recover {
+            case e: Throwable =>
+              Logger.error("[FileUploadController][get] failed to obtain an envelope")
+              Redirect(routes.GlobalErrorController.get)
           }
         case Left(resp) =>
           Logger.debug("[FileUploadController][get] user not authorised")
@@ -74,10 +86,46 @@ trait FileUploadController extends RasController with PageFlowController {
   def uploadError = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
-        Future.successful(Redirect(routes.GlobalErrorController.get()))
+        val errorCode = request.getQueryString("errorCode").getOrElse("")
+        val errorReason = request.getQueryString("reason").getOrElse("")
+        val errorResponse = UploadResponse(errorCode, Some(errorReason))
+        sessionService.cacheUploadResponse(errorResponse).flatMap {
+          case Some(session) => Future.successful(Redirect(routes.FileUploadController.get()))
+          case _ => Future.successful(Redirect(routes.GlobalErrorController.get()))
+        }
       case Left(resp) =>
-        Logger.debug("[FileUploadController][uploadSuccess] user not authorised")
+        Logger.debug("[FileUploadController][uploadError] user not authorised")
         resp
+    }
+  }
+
+  private def extractErrorReason(uploadResponse: Option[UploadResponse]):String ={
+    uploadResponse match {
+      case Some(response) =>
+        response.code match {
+          case "400" if response.reason.getOrElse("").contains(Messages("file.upload.empty.file.reason")) =>
+            Logger.debug("[FileUploadController][extractErrorReason] empty file")
+            Messages("file.empty.error")
+          case "400" =>
+            Logger.debug("[FileUploadController][extractErrorReason] bad request")
+            Messages("upload.failed.error")
+          case "404" =>
+            Logger.debug("[FileUploadController][extractErrorReason] enveloper not found")
+            Messages("upload.failed.error")
+          case "413" =>
+            Logger.debug("[FileUploadController][extractErrorReason] file too large")
+            Messages("file.large.error")
+          case "415" =>
+            Logger.debug("[FileUploadController][extractErrorReason] file type other than the supported type")
+            Messages("upload.failed.error")
+          case "423" =>
+            Logger.debug("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
+            Messages("upload.failed.error")
+          case _ =>
+            Logger.debug("[FileUploadController][extractErrorReason] unknown cause")
+            Messages("upload.failed.error")
+        }
+      case _ => ""
     }
   }
 

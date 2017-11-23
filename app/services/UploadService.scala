@@ -48,9 +48,9 @@ trait UploadService extends ServicesConfig {
               val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
               val successRedirectUrl = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/upload-success"
               val errorRedirectUrl = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/upload-error"
-              val completeFileUploadUlr = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
+              val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
 
-              Some(completeFileUploadUlr)
+              Some(completeFileUploadUrl)
             case _ =>
               Logger.debug("[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header")
               None

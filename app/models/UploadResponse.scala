@@ -18,13 +18,8 @@ package models
 
 import play.api.libs.json.Json
 
+case class UploadResponse(code: String, reason: Option[String])
 
-case class RasSession(name:MemberName,
-                      nino:MemberNino,
-                      dateOfBirth:MemberDateOfBirth,
-                      residencyStatusResult: ResidencyStatusResult,
-                      uploadResponse: Option[UploadResponse])
-
-object RasSession{
-  implicit val format = Json.format[RasSession]
+object UploadResponse{
+  implicit val formats = Json.format[UploadResponse]
 }

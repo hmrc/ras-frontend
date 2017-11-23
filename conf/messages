@@ -146,3 +146,8 @@ file.upload.page.sub-header = The file must contain mandatory information and in
 templates.link = <a href="">download a template and instructions (2 files)</a>
 
 upload = Upload
+
+file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
+file.empty.error=Cannot upload an empty file.
+file.large.error=File size exceeds limit to upload.
+upload.failed.error=There is an unknown problem with the file you are trying to upload.

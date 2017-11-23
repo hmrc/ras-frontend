@@ -64,7 +64,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   val memberDob = MemberDateOfBirth(dob)
   val residencyStatusResult = ResidencyStatusResult("", "", "", "", "", "", "")
   val postData = Json.obj("firstName" -> "Jim", "lastName" -> "McGill", "nino" -> nino, "dateOfBirth" -> dob)
-  val rasSession = RasSession(name, nino, memberDob, residencyStatusResult)
+  val rasSession = RasSession(name, nino, memberDob, residencyStatusResult, None)
 
 
   object TestResultsController extends ResultsController {
@@ -131,7 +131,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")))
+              ""),None))
       ))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
@@ -157,7 +157,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")))
+              ""),None))
       ))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
@@ -174,7 +174,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")))
+              ""),None))
       ))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("match-not-found").text shouldBe Messages("member.details.not.found", "Jim McGill")
@@ -212,7 +212,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")))
+              ""),None))
       ))
       val result = TestResultsController.back.apply(FakeRequest())
       status(result) shouldBe SEE_OTHER

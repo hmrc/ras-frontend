@@ -36,7 +36,7 @@ class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18n
   }
 
   val emptySession = RasSession(MemberName("",""),MemberNino(""),
-    MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""))
+    MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""),None)
 
   "PageFlowController" should {
 

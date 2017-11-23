@@ -59,7 +59,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
   val memberNino = MemberNino("AB123456C")
   val dob = RasDate(Some("12"),Some("12"),Some("2012"))
   val memberDob = MemberDateOfBirth(dob)
-  val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""))
+  val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),None)
   val postData = Json.obj("dateOfBirth" -> dob)
 
   object TestMemberDobController extends MemberDOBController{

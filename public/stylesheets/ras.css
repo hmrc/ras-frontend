@@ -98,3 +98,7 @@
 #more-results-link{
   float:right;
 }
+
+#upload-error{
+  color: #b10e1e;
+}
