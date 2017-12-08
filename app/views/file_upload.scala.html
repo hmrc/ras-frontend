@@ -20,7 +20,11 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@ras_main(title = Messages("file.upload.page.title")) {
+@scriptElem = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/check-file-type.js")'></script>
+}
+
+@ras_main(title = Messages("file.upload.page.title"),scriptElem = Some(scriptElem)) {
 
 
 <div class="grid-layout--no-gutter">
@@ -39,7 +43,8 @@
         id = "upload-form"
         action=@fileUploadUrl
         enctype="multipart/form-data"
-        method="post" >
+        method="post"
+        onsubmit="return Validate(this)">
         <input id="choose-file" name="file" type="file" size="40"/>
         <button type="submit" id="upload-button">Upload</button>
       </form>
@@ -51,4 +56,7 @@
     </div>
   </div>
 </div>
+
+
 }
+
