@@ -14,33 +14,22 @@
 * limitations under the License.
 */
 
-var _validFileExtensions = [".jpg", ".jpeg", ".bmp", ".gif", ".png"];
-function Validate(oForm) {
 
-    alert("yeay");
+function validate(form) {
 
-    var arrInputs = oForm.getElementsByTagName("input");
-    for (var i = 0; i < arrInputs.length; i++) {
-        var oInput = arrInputs[i];
-        if (oInput.type == "file") {
-            var sFileName = oInput.value;
-            if (sFileName.length > 0) {
-                var blnValid = false;
-                for (var j = 0; j < _validFileExtensions.length; j++) {
-                    var sCurExtension = _validFileExtensions[j];
-                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
-                        blnValid = true;
-                        break;
-                    }
-                }
+    var arrInputs = form.getElementsByTagName("input");
+    var input = arrInputs[0];
+    var fileName = input.value;
 
-                if (!blnValid) {
-                    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
-                    return false;
-                }
-            }
-        }
+    alert(fileName);
+
+    if (fileName.length > 0) {
+       if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
+          return true;
+       }else {
+          alert("Sorry, " + fileName + " is invalid");
+          return false;
+       }
     }
 
-    return false;
 }
