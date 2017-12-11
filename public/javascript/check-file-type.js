@@ -21,15 +21,20 @@ function validate(form) {
     var input = arrInputs[0];
     var fileName = input.value;
 
-    alert(fileName);
-
     if (fileName.length > 0) {
        if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
           return true;
        }else {
-          alert("Sorry, " + fileName + " is invalid");
+          $('.validation-summary').show();
+          $('#error').html('Please upload a .csv file');
+          $('#file-upload').addClass("form-field--error");
+          $('#upload-error').addClass("error-notification");
+          $('#upload-error').html('Please upload a .csv file');
           return false;
        }
+    }
+    else{
+      return false;
     }
 
 }

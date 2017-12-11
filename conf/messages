@@ -85,6 +85,7 @@ error.year.invalid.format = Enter a year in full using 4 numbers
 error.dob.invalid.future = Enter a date of birth that is not in the future
 
 generic.errors_heading = There is a problem with the form
+upload.error.heading = There is a problem
 
 scottish.taxpayer = Scotland
 non.scottish.taxpayer = Rest of UK

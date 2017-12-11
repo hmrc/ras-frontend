@@ -99,6 +99,13 @@
   float:right;
 }
 
-#upload-error{
-  color: #b10e1e;
+.error-list{
+  font-weight: bold;
 }
+
+#file-upload{
+  padding-top:0;
+  padding-bottom:0;
+  margin-bottom:0;
+}
+

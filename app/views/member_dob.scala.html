@@ -22,11 +22,11 @@
 
 @ras_main(title = Messages("member.dob.page.title")) {
 
-@views.html.helpers.errorSummary(memberDobForm)
-
 <div class="grid-layout--no-gutter">
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
+
+      @views.html.helpers.errorSummary(memberDobForm)
 
       <div class="back-arrow">
         <a class="link-back" href="@routes.MemberDOBController.back">@Messages("back")</a>
