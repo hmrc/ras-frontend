@@ -36,34 +36,43 @@
         <a class="link-back" href="@routes.FileUploadController.back">@Messages("back")</a>
       </div>
 
-
-      <!---->
-      <div id="errors" class="validation-summary" role="group" tabindex="-1" style="display:none;">
+      @if(error == ""){
+        <div id="no-errors" class="validation-summary" role="group" tabindex="-1" style="display:none;">
+      }else {
+        <div id="errors" class="validation-summary" role="group" tabindex="-1" >
+      }
         <h2 class="heading-medium">@Messages("upload.error.heading")</h2>
 
         <ul class="list error-summary-list">
-          <li><a id="error" class="error-list" href=""></a></li>
+          <li><a id="error" class="error-list" href="#sub-header">@error</a></li>
         </ul>
       </div>
-      <!---->
-
 
       <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
 
-      <div id="file-upload" class="form-group">
-        <p id="sub-header">@Html(Messages("file.upload.page.sub-header",Messages("templates.link")))</p>
-        <p id="upload-error" class="error-list">@error</p>
-        <form
-            id = "upload-form"
-            action=@fileUploadUrl
-            enctype="multipart/form-data"
-            method="post"
-            onsubmit="return validate(this)">
-          <input id="choose-file" name="file" type="file" size="40"/>
-      </div>
+      <!-- div is closed early due to styling -->
+      @if(error==""){
+        <div id="file-upload" class="form-group no-margin">
+      }else{
+        <div id="file-upload-with-error" class="form-group no-margin form-field--error">
+      }
+          <p id="sub-header">@Html(Messages("file.upload.page.sub-header",Messages("templates.link")))</p>
+          @if(error == ""){
+            <p id="upload-type-error" class="error-list" style="display:none;"></p>
+          }else{
+            <p id="upload-error" class="error-list">@error</p>
+          }
+          <form
+              id = "upload-form"
+              action=@fileUploadUrl
+              enctype="multipart/form-data"
+              method="post"
+              onsubmit="return checkFileType(this)">
+            <input id="choose-file" name="file" type="file" size="40"/>
+        </div>
 
-          <button type="submit" id="upload-button">Upload</button>
-        </form>
+            <button type="submit" id="upload-button">@Messages("upload")</button>
+          </form>
 
 
     </div>

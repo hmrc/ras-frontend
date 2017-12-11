@@ -101,9 +101,10 @@
 
 .error-list{
   font-weight: bold;
+  color: #b10e1e;
 }
 
-#file-upload{
+.no-margin{
   padding-top:0;
   padding-bottom:0;
   margin-bottom:0;

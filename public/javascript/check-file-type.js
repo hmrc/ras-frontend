@@ -15,7 +15,7 @@
 */
 
 
-function validate(form) {
+function checkFileType(form) {
 
     var arrInputs = form.getElementsByTagName("input");
     var input = arrInputs[0];
@@ -28,8 +28,8 @@ function validate(form) {
           $('.validation-summary').show();
           $('#error').html('Please upload a .csv file');
           $('#file-upload').addClass("form-field--error");
-          $('#upload-error').addClass("error-notification");
-          $('#upload-error').html('Please upload a .csv file');
+          $('#upload-type-error').addClass("error-notification");
+          $('#upload-type-error').html('Please upload a .csv file');
           return false;
        }
     }
