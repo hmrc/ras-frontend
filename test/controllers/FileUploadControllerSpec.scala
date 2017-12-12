@@ -81,32 +81,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       doc(result).getElementById("upload-form").attr("action").contains("existingEnvelopeId123")
     }
 
-    "use new envelope id to construct a url for the upload form" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, None)
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
-      val result = await(TestFileUploadController.get.apply(fakeRequest))
-      status(result) shouldBe OK
-      doc(result).getElementById("upload-form").attr("action").contains("0b215e97-11d4-4006-91db-c067e74fc653")
-    }
-
     "redirect to global error page" when {
-
-      "an upload url has not been obtained because of empty location header" in {
-        val connectorResponse = HttpResponse(201,None,Map("Location" -> List("localhost:8898/file-upload/envelopes/")),None)
-        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
-        val result = TestFileUploadController.get().apply(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/global-error")
-      }
-
-      "an upload url has not been obtained because of bad request" in {
-        val connectorResponse = HttpResponse(400,None,Map(),None)
-        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
-        val result = TestFileUploadController.get().apply(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/global-error")
-      }
       
       "the upload error endpoint in called by the file upload but caching fails" in {
         when(mockSessionService.cacheUploadResponse(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -263,13 +238,6 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
     }
 
-    "not contain any errors if no session cache is available" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
-      when(mockSessionService.cacheEnvelope(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe ""
-    }
   }
 
 
