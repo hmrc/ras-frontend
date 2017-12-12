@@ -18,7 +18,7 @@
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
+
 
 @ras_main(title = Messages("file.upload.successful.page.title")) {
 
@@ -27,7 +27,14 @@
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
 
-      <h1 id="header" class="heading-xlarge">File uploaded successfully</h1>
+      <div class="row">
+        <h1 id="page-header" class="heading-xlarge">@Messages("upload.success.header")</h1>
+        <p id="page-sub-header">@Messages("upload.success.sub-header")</p>
+      </div>
+
+      <div class="row">
+        <a id="continue" class="button" href="@routes.SessionController.redirect("dashboard",true)">@Messages("continue")</a>
+      </div>
 
     </div>
   </div>

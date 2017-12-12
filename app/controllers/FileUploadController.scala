@@ -22,7 +22,7 @@ import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextI
 import connectors.{FileUploadConnector, UserDetailsConnector}
 import models.{Envelope, UploadResponse}
 import play.Logger
-import play.api.mvc.Action
+import play.api.mvc.{Action, Request}
 import play.api.{Configuration, Environment, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
@@ -41,36 +41,27 @@ trait FileUploadController extends RasController with PageFlowController {
         case Right(_) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
-              createFileUploadUrl(session.envelope)(hc).flatMap {
+              createFileUploadUrl(session.envelope)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.debug("[FileUploadController][get] form url created successfully")
-                  Future.successful(Ok(views.html.file_upload(url,extractErrorReason(session.uploadResponse))))
+                  val error = extractErrorReason(session.uploadResponse)
+                  Future.successful(Ok(views.html.file_upload(url,error)))
                 case _ =>
                   Logger.debug("[FileUploadController][get] failed to obtain a form url using existing envelope")
-                  Future.successful(Redirect(routes.GlobalErrorController.get()))
+                  Future.successful(Redirect(routes.GlobalErrorController.get))
               }.recover {
                 case e: Throwable =>
                   Logger.error("[FileUploadController][get] failed to create an upload url using existing envelope")
                   Redirect(routes.GlobalErrorController.get)
               }
             case _ =>
-              createFileUploadUrl(None)(hc).flatMap {
+              createFileUploadUrl(None)(request, hc).flatMap {
                 case Some(url) =>
-                  sessionService.cacheEnvelope(Envelope(url)).flatMap{
-                    case Some(session) =>
-                      Logger.debug("[FileUploadController][get] stored new envelope id successfully")
-                      Future.successful(Ok(views.html.file_upload(url,extractErrorReason(None))))
-                    case _ =>
-                      Logger.debug("[FileUploadController][get] failed to retrieve cache after storing the envelope")
-                      Future.successful(Redirect(routes.GlobalErrorController.get))
-                  }.recover {
-                    case e: Throwable =>
-                      Logger.error("[FileUploadController][get] failed to cache envelope")
-                      Redirect(routes.GlobalErrorController.get)
-                  }
+                  Logger.debug("[FileUploadController][get] stored new envelope id successfully")
+                  Future.successful(Ok(views.html.file_upload(url,"")))
                 case _ =>
                   Logger.debug("[FileUploadController][get] failed to obtain a form url using new envelope")
-                  Future.successful(Redirect(routes.GlobalErrorController.get()))
+                  Future.successful(Redirect(routes.GlobalErrorController.get))
               }.recover {
                 case e: Throwable =>
                   Logger.error("[FileUploadController][get] failed to create an upload url using new envelope")
@@ -87,7 +78,7 @@ trait FileUploadController extends RasController with PageFlowController {
       }
   }
 
-  def createFileUploadUrl(envelope: Option[Envelope])(implicit hc:HeaderCarrier): Future[Option[String]] = {
+  def createFileUploadUrl(envelope: Option[Envelope])(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
 
     val config = ApplicationConfig
     val rasFrontendBaseUrl = config.baseUrl("ras-frontend")
@@ -104,23 +95,28 @@ trait FileUploadController extends RasController with PageFlowController {
         val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
         Future.successful(Some(completeFileUploadUrl))
       case _ =>
-        fileUploadConnector.createEnvelope().map { response =>
+        fileUploadConnector.createEnvelope().flatMap { response =>
           response.header("Location") match {
             case Some(locationHeader) =>
               locationHeader match {
                 case envelopeIdPattern(id) =>
-                  Logger.debug("[UploadService][createFileUploadUrl] Envelope id obtained")
-                  val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
-                  val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
-
-                  Some(completeFileUploadUrl)
+                  sessionService.cacheEnvelope(Envelope(id)).map {
+                    case Some(session) =>
+                      Logger.debug("[UploadService][createFileUploadUrl] Envelope id obtained and cached")
+                      val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
+                      val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
+                      Some(completeFileUploadUrl)
+                    case _ =>
+                      Logger.debug("[FileUploadController][get] failed to retrieve cache after storing the envelope")
+                      None
+                  }
                 case _ =>
                   Logger.debug("[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header")
-                  None
+                  Future.successful(None)
               }
             case _ =>
               Logger.debug("[UploadService][createFileUploadUrl] Failed to find a location header in the response")
-              None
+              Future.successful(None)
           }
         }
     }
