@@ -57,19 +57,8 @@ trait FileUploadController extends RasController with PageFlowController {
             case _ =>
               createFileUploadUrl(None)(request, hc).flatMap {
                 case Some(url) =>
-                  sessionService.cacheEnvelope(Envelope(url)).flatMap{
-                    case Some(session) =>
-                      Logger.debug("[FileUploadController][get] stored new envelope id successfully")
-                      val error = extractErrorReason(session.uploadResponse)
-                      Future.successful(Ok(views.html.file_upload(url,error)))
-                    case _ =>
-                      Logger.debug("[FileUploadController][get] failed to retrieve cache after storing the envelope")
-                      Future.successful(Redirect(routes.GlobalErrorController.get))
-                  }.recover {
-                    case e: Throwable =>
-                      Logger.error("[FileUploadController][get] failed to cache envelope")
-                      Redirect(routes.GlobalErrorController.get)
-                  }
+                  Logger.debug("[FileUploadController][get] stored new envelope id successfully")
+                  Future.successful(Ok(views.html.file_upload(url,"")))
                 case _ =>
                   Logger.debug("[FileUploadController][get] failed to obtain a form url using new envelope")
                   Future.successful(Redirect(routes.GlobalErrorController.get))
@@ -104,9 +93,6 @@ trait FileUploadController extends RasController with PageFlowController {
       case Some(envelope) =>
         val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/${envelope.id}/files/${UUID.randomUUID().toString}"
         val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
-
-        println(Console.YELLOW + "envelope id of passed in envelope: " +  envelope.id + Console.WHITE)
-
         Future.successful(Some(completeFileUploadUrl))
       case _ =>
         fileUploadConnector.createEnvelope().flatMap { response =>
