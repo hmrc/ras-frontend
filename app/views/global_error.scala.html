@@ -19,14 +19,28 @@
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@ras_main(title = Messages("global.error.page.title")) {
+@ras_main(title = Messages("global.upload.error.page.title")) {
 
 <div class="grid-layout--no-gutter">
  <div class="grid-layout__column">
   <div class="grid-layout__column--3-4">
 
-    <h1 id="header">@Messages("service.unavailable")</h1>
-    <p id="description">@Messages("technical.difficulty")</p>
+   <div class="row">
+    <h1 id="header">@Messages("global.upload.error.header")</h1>
+    <h2 id="sub-header">@Messages("global.upload.error.sub-header")</h2>
+    <ul class="list list-bullet">
+     <li id="timeout-bullet">@Messages("a.system.timeout")</li>
+     <li id="technical-bullet">@Messages("a.technical.timeout")</li>
+    </ul>
+   </div>
+
+   <div class="row">
+    <p id="try-again">@Messages("try.uploading.again")</p>
+   </div>
+
+   <div class="row">
+    <a id="continue" class="button" href="@routes.SessionController.redirect("dashboard",true)">@Messages("continue")</a>
+   </div>
 
   </div>
  </div>

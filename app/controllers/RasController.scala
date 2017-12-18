@@ -61,7 +61,7 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
 
   def userInfoNotFond(idName:String) = {
     Logger.warn(s"${idName} not found");
-    Future.successful(Redirect(routes.GlobalErrorController.get))
+    Future.successful(Redirect(routes.GlobalErrorController.get()))
   }
 
 }

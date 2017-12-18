@@ -1,30 +1,5 @@
-#----------------------------------------------
 
-start.page.title = Relief at Source - GOV.UK
-start.page.header = Check the residency status of a pension scheme member
-introduction.paragraph.1 = Use this service to find the residency status for tax purposes of your scheme member when claiming relief at source on pension contributions.
-introduction.paragraph.2 = This service will allow you to claim the correct rate of relief at source for members not included in your last annual COM100 submission.
-introduction.paragraph.3 = You should only claim relief at source when you have the correct residency status for a pension scheme member. For further information please see the
-legislation = legislation
-
-usage.header = When to use this service
-usage.subheader = You should always check when:
-usage.bullet.1 = a new member joins your pension scheme
-usage.bullet.2 = an existing member has made no contributions in the last tax year
-
-what.you.need.header = What you''ll need
-what.you.need.subheader = For each search, you''ll need the member''s:
-what.you.need.bullet.1 = first name
-what.you.need.bullet.2 = last name
-what.you.need.bullet.3 = National Insurance number
-what.you.need.bullet.4 = date of birth
-what.you.need.post.bullet = You are unable to search for a member if no national insurance number is held. For further information please follow the
-relief.at.source.guidance = relief at source guidance
-
-start.now = Start now
 continue = Continue
-
-#----------------------------------------------
 
 member = member
 
@@ -59,6 +34,13 @@ member.dob.page.header = What is {0}''s date of birth?
 match.found.page.title = Match found - GOV.UK
 match.not.found.page.title = Match not found - GOV.UK
 global.error.page.title = Technical error - GOV.UK
+
+global.upload.error.page.title = Upload error - GOV.UK
+global.upload.error.header = There has been a problem
+global.upload.error.sub-header = This could be caused by:
+a.system.timeout = A system timeout
+a.technical.error = A technical error
+try.uploading.again = Try again and upload your file
 
 first.name = first name
 last.name = last name
@@ -103,6 +85,7 @@ error.year.invalid.format = Enter a year in full using 4 numbers
 error.dob.invalid.future = Enter a date of birth that is not in the future
 
 generic.errors_heading = There is a problem with the form
+upload.error.heading = There is a problem
 
 scottish.taxpayer = Scotland
 non.scottish.taxpayer = Rest of UK
@@ -145,6 +128,8 @@ file.upload.page.header = Upload your file
 file.upload.page.sub-header = The file must contain mandatory information and in a specific format. You can {0} on how to create your file first.
 templates.link = <a href="">download a template and instructions (2 files)</a>
 
+upload.success.header = Upload success
+upload.success.sub-header = Your file will now be processed. This may take up to 24 hours.
 upload = Upload
 
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0

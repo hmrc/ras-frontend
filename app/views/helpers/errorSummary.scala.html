@@ -18,30 +18,30 @@
 
 @if(form.hasGlobalErrors || form.hasErrors) {
 
-<div id="errors" class="validation-summary">
-    <h1 class="heading-s mall" id="errorMessageHeadingText">@Messages("generic.errors_heading")</h1>
+      <div id="errors" class="validation-summary" role="alert" aria-labelledby="error-summary-heading-example-1">
+          <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">@Messages("generic.errors_heading")</h2>
 
-    <ul>
-        @form.errors.map{ error =>
-            @defining(
-                error.args.nonEmpty match {
-                    case true => {
-                        if (error.key.nonEmpty) {
-                            error.key + (error.args.fold("") { _ + "." + _ })
-                        } else {
-                            error.args.head
-                        }
-                    }
-                    case _ => { error.key + "_label"}
-                }
-            ) { anchor =>
-              <li role="tooltip" data-journey="search-page:error:@error.key">
-                  <a href="#@anchor" class="error-list" data-focuses="@error.key"  >
-                      @Messages(error.message)
-                  </a>
-              </li>
-            }
-        }
-    </ul>
-</div>
+          <ul class="error-summary-list">
+              @form.errors.map{ error =>
+                  @defining(
+                      error.args.nonEmpty match {
+                          case true => {
+                              if (error.key.nonEmpty) {
+                                  error.key + (error.args.fold("") { _ + "." + _ })
+                              } else {
+                                  error.args.head
+                              }
+                          }
+                          case _ => { error.key + "_label"}
+                      }
+                  ) { anchor =>
+                    <li role="tooltip" data-journey="search-page:error:@error.key">
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key"  >
+                            @Messages(error.message)
+                        </a>
+                    </li>
+                  }
+              }
+          </ul>
+      </div>
 }

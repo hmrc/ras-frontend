@@ -16,7 +16,7 @@
 
 package connectors
 
-import config.WSHttp
+import config.{ApplicationConfig, WSHttp}
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
@@ -28,10 +28,10 @@ import scala.concurrent.Future
 trait FileUploadConnector extends ServicesConfig {
 
   val http: HttpPost
-  lazy val rasFrontendBaseUrl = baseUrl("ras-frontend")
-  lazy val rasFrontendUrlSuffix = getString("ras-frontend-url-suffix")
+  lazy val rasApiBaseUrl = baseUrl("relief-at-source")
   lazy val fileUploadBaseUrl = baseUrl("file-upload")
   lazy val fileUploadUrlSuffix = getString("file-upload-url-suffix")
+  val rasFileUploadCallbackUrl: String
 
   lazy val maxItems = getInt("file-upload-constraints.maxItems")
   lazy val maxSize = getString("file-upload-constraints.maxSize")
@@ -44,7 +44,7 @@ trait FileUploadConnector extends ServicesConfig {
     val requestBody = Json.parse(
       s"""
         {
-          "callbackUrl": "$rasFrontendBaseUrl/$rasFrontendUrlSuffix/bulk/upload-callback",
+          "callbackUrl": "$rasApiBaseUrl$rasFileUploadCallbackUrl",
           "constraints": 	{
               "maxItems": 1,
               "maxSize": "$maxSize",
@@ -62,9 +62,9 @@ trait FileUploadConnector extends ServicesConfig {
     )(implicitly, implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails(hc))
 
   }
-
 }
 
 object FileUploadConnector extends FileUploadConnector {
   override val http = WSHttp
+  override lazy val rasFileUploadCallbackUrl: String = ApplicationConfig.fileUploadCallBack
 }

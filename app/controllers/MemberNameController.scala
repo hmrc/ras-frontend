@@ -63,7 +63,7 @@ trait MemberNameController extends RasController with PageFlowController {
           Logger.debug("[NameController][post] valid form")
           sessionService.cacheName(memberName) flatMap {
             case Some(session) => Future.successful(Redirect(routes.MemberNinoController.get()))
-            case _ => Future.successful(Redirect(routes.GlobalErrorController.get()))
+            case _ => Future.successful(Redirect(routes.GlobalErrorController.get))
           }
         }
       )

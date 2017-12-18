@@ -22,12 +22,11 @@
 
 @ras_main(title = Messages("member.name.page.title")) {
 
-@views.html.helpers.errorSummary(memberNameForm)
-
 <div class="grid-layout--no-gutter">
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
 
+      @views.html.helpers.errorSummary(memberNameForm)
 
       <div class="back-arrow">
         <a class="link-back" href="@routes.MemberNameController.back">@Messages("back")</a>

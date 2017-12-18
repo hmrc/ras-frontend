@@ -2,9 +2,6 @@
 
 GET         /assets/*file                 @controllers.AssetsController.at(path="/public", file)
 
-GET         /                             controllers.StartPageController.get
-GET         /start                        controllers.StartPageController.get
-
 GET         /dashboard                    controllers.DashboardController.get
 
 GET         /bulk/bulk-upload             controllers.FileUploadController.get
