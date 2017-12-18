@@ -34,6 +34,11 @@ function checkFileType(form) {
        }
     }
     else{
+      $('.validation-summary').show();
+      $('#error').html('Please select a file');
+      $('#file-upload').addClass("form-field--error");
+      $('#upload-error').empty();
+      $('#upload-error').html('Please select a file');
       return false;
     }
 
