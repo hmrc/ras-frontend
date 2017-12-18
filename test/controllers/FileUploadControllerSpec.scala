@@ -122,6 +122,13 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         redirectLocation(result).get should include("/global-error")
       }
 
+      "session retrieval fails" in {
+        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.failed(new RuntimeException))
+        val result = await(TestFileUploadController.get.apply(fakeRequest))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/global-error")
+      }
+
     }
 
     "redirect to dashboard page when back link is clicked" in {
