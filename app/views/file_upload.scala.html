@@ -57,11 +57,9 @@
         <div id="file-upload-with-error" class="form-group no-margin form-field--error">
       }
           <p id="sub-header">@Html(Messages("file.upload.page.sub-header",Messages("templates.link")))</p>
-          @if(error == ""){
-            <p id="upload-type-error" class="error-list" style="display:none;"></p>
-          }else{
-            <p id="upload-error" class="error-list">@error</p>
-          }
+
+          <p id="upload-error" class="error-list">@error</p>
+
           <form
               id = "upload-form"
               action=@fileUploadUrl
