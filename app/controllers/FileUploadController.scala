@@ -112,7 +112,7 @@ trait FileUploadController extends RasController with PageFlowController {
           }
         }.recover {
           case e: Throwable =>
-            Logger.debug("[UploadService][createFileUploadUrl] Failed to create envelope in absence of an envelope")
+            Logger.debug("[UploadService][createFileUploadUrl] Failed to create envelope")
             None
         }
     }
