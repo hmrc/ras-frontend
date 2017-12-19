@@ -28,6 +28,7 @@ trait ApplicationConfig {
   val betaFeedbackUrl: String
   val betaFeedbackUnauthenticatedUrl: String
   val loginCallback:String
+  val fileUploadCallBack: String
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -49,5 +50,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val betaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
   override lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
   override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/lifetime-isa")
-
+  override lazy val fileUploadCallBack: String = configuration.getString("file-upload-ras-callback-url")
+    .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
 }
