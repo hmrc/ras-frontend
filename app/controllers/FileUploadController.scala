@@ -41,7 +41,6 @@ trait FileUploadController extends RasController with PageFlowController {
         case Right(_) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
-              println(Console.YELLOW + "session " + session + Console.WHITE)
               createFileUploadUrl(session.envelope)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.debug("[FileUploadController][get] form url created successfully")
@@ -129,13 +128,8 @@ trait FileUploadController extends RasController with PageFlowController {
   def uploadSuccess = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
-        sessionService.cacheFileInProcess(true).map{
-          case Some(session) =>
-            Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
-            Ok(views.html.file_upload_successful())
-          case _ =>
-            Redirect(routes.GlobalErrorController.get())
-        }
+        Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
+        Future.successful(Ok(views.html.file_upload_successful()))
       case Left(resp) =>
         Logger.debug("[FileUploadController][uploadSuccess] user not authorised")
         resp

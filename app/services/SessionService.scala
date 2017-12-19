@@ -140,22 +140,6 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
-  def cacheFileInProcess(aFileIsInProcess: Boolean)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
-          case None => cleanSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
 }
 
 
