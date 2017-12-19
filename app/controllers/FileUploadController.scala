@@ -97,7 +97,6 @@ trait FileUploadController extends RasController with PageFlowController {
                       Logger.debug("[UploadService][createFileUploadUrl] Envelope id obtained and cached")
                       val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
                       val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
-
                       Some(completeFileUploadUrl)
                     case _ =>
                       Logger.debug("[FileUploadController][get] failed to retrieve cache after storing the envelope")
