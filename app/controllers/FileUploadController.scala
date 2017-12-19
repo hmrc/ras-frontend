@@ -49,10 +49,6 @@ trait FileUploadController extends RasController with PageFlowController {
                 case _ =>
                   Logger.debug("[FileUploadController][get] failed to obtain a form url using existing envelope")
                   Future.successful(Redirect(routes.GlobalErrorController.get))
-              }.recover {
-                case e: Throwable =>
-                  Logger.error("[FileUploadController][get] failed to create an upload url using existing envelope")
-                  Redirect(routes.GlobalErrorController.get)
               }
             case _ =>
               createFileUploadUrl(None)(request, hc).flatMap {
@@ -62,10 +58,6 @@ trait FileUploadController extends RasController with PageFlowController {
                 case _ =>
                   Logger.debug("[FileUploadController][get] failed to obtain a form url using new envelope")
                   Future.successful(Redirect(routes.GlobalErrorController.get))
-              }.recover {
-                case e: Throwable =>
-                  Logger.error("[FileUploadController][get] failed to create an upload url using new envelope")
-                  Redirect(routes.GlobalErrorController.get)
               }
           }.recover {
             case e: Throwable =>
@@ -118,6 +110,9 @@ trait FileUploadController extends RasController with PageFlowController {
               Logger.debug("[UploadService][createFileUploadUrl] Failed to find a location header in the response")
               Future.successful(None)
           }
+        }.recover {
+          case e: Throwable =>
+            None
         }
     }
   }

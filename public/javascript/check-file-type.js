@@ -28,12 +28,17 @@ function checkFileType(form) {
           $('.validation-summary').show();
           $('#error').html('Please upload a .csv file');
           $('#file-upload').addClass("form-field--error");
-          $('#upload-type-error').addClass("error-notification");
-          $('#upload-type-error').html('Please upload a .csv file');
+          $('#upload-error').empty();
+          $('#upload-error').html('Please upload a .csv file');
           return false;
        }
     }
     else{
+      $('.validation-summary').show();
+      $('#error').html('Please select a file');
+      $('#file-upload').addClass("form-field--error");
+      $('#upload-error').empty();
+      $('#upload-error').html('Please select a file');
       return false;
     }
 

@@ -33,6 +33,7 @@ class FileUploadConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoS
 
   object TestConnector extends FileUploadConnector {
     override val http: HttpPost = mock[HttpPost]
+    override val rasFileUploadCallbackUrl: String = "fake-url"
   }
 
   "File upload connector" when {
