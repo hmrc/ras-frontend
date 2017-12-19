@@ -24,7 +24,8 @@ case class RasSession(name:MemberName,
                       dateOfBirth:MemberDateOfBirth,
                       residencyStatusResult: ResidencyStatusResult,
                       uploadResponse: Option[UploadResponse] = None,
-                      envelope: Option[Envelope] = None)
+                      envelope: Option[Envelope] = None,
+                      aFileIsInProcess: Option[Boolean] = None)
 
 object RasSession{
   implicit val format = Json.format[RasSession]
