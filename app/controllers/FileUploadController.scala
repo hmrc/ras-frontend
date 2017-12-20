@@ -78,9 +78,9 @@ trait FileUploadController extends RasController with PageFlowController {
   def createFileUploadUrl(envelope: Option[Envelope])(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
 
     val config = ApplicationConfig
-    val rasFrontendBaseUrl = config.baseUrl("ras-frontend")
+    val rasFrontendBaseUrl = config.getString("ras-frontend.host")
     val rasFrontendUrlSuffix = config.getString("ras-frontend-url-suffix")
-    val fileUploadFrontendBaseUrl = config.baseUrl("file-upload-frontend")
+    val fileUploadFrontendBaseUrl = config.getString("file-upload-frontend.host")
     val fileUploadFrontendSuffix = config.getString("file-upload-frontend-url-suffix")
     val envelopeIdPattern = "envelopes/([\\w\\d-]+)$".r.unanchored
     val successRedirectUrl = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/upload-success"
@@ -117,6 +117,7 @@ trait FileUploadController extends RasController with PageFlowController {
           }
         }.recover {
           case e: Throwable =>
+            Logger.debug("[UploadService][createFileUploadUrl] Failed to create envelope")
             None
         }
     }
