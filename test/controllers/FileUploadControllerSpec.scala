@@ -28,7 +28,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, status, _}
+import play.api.test.Helpers.{contentAsString, _}
 import play.api.{Configuration, Environment}
 import services.SessionService
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -85,7 +85,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       "a url is successfully created using a new envelope where session does not exist" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("0b215e97-11d4-4006-91db-c067e74fc653")))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
+        when(mockFileUploadConnector.createEnvelope(any())(any())).thenReturn(Future.successful(connectorResponse))
         when(mockSessionService.cacheEnvelope(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestFileUploadController.get.apply(fakeRequest))
         status(result) shouldBe OK
@@ -107,7 +107,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       "a url is not successfully created from an existing envelope stored in the session" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, None)
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.failed(new RuntimeException))
+        when(mockFileUploadConnector.createEnvelope(any())(any())).thenReturn(Future.failed(new RuntimeException))
         val result = TestFileUploadController.get().apply(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/global-error")
@@ -115,7 +115,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
 
       "a new url is not successfully created" in {
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
+        when(mockFileUploadConnector.createEnvelope(any())(any())).thenReturn(Future.successful(connectorResponse))
         when(mockSessionService.cacheEnvelope(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         val result = await(TestFileUploadController.get.apply(fakeRequest))
         status(result) shouldBe SEE_OTHER
