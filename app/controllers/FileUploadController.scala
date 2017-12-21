@@ -38,10 +38,10 @@ trait FileUploadController extends RasController with PageFlowController {
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(user) =>
+        case Right(userDetails) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
-              createFileUploadUrl(session.envelope, user)(request, hc).flatMap {
+              createFileUploadUrl(session.envelope, userDetails)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.debug("[FileUploadController][get] form url created successfully")
                   val error = extractErrorReason(session.uploadResponse)
@@ -51,7 +51,7 @@ trait FileUploadController extends RasController with PageFlowController {
                   Future.successful(Redirect(routes.GlobalErrorController.get))
               }
             case _ =>
-              createFileUploadUrl(None, user)(request, hc).flatMap {
+              createFileUploadUrl(None, userDetails)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.debug("[FileUploadController][get] stored new envelope id successfully")
                   Future.successful(Ok(views.html.file_upload(url,"")))
