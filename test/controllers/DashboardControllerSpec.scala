@@ -30,7 +30,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{OK, contentAsString, _}
 import play.api.{Configuration, Environment}
 import services.SessionService
-import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
@@ -49,7 +49,10 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
   val mockSessionService = mock[SessionService]
   val mockConfig = mock[Configuration]
   val mockEnvironment = mock[Environment]
-  val successfulRetrieval: Future[~[Option[String], Option[String]]] = Future.successful(new ~(Some("1234"), Some("/")))
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
+  private val enrolments = new Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
   object TestDashboardController extends DashboardController {
     val authConnector: AuthConnector = mockAuthConnector
@@ -58,8 +61,8 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
     override val config: Configuration = mockConfig
     override val env: Environment = mockEnvironment
 
-    when(mockAuthConnector.authorise[~[Option[String], Option[String]]](any(), any())(any(),any())).
-      thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+
 
     when(mockUserDetailsConnector.getUserDetails(any())(any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
