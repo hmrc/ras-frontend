@@ -39,13 +39,13 @@ trait FileUploadConnector extends ServicesConfig {
   lazy val maxSizePerItem = getString("file-upload-constraints.maxSizePerItem")
   lazy val allowZeroLengthFiles = getBoolean("file-upload-constraints.allowZeroLengthFiles")
 
-  def createEnvelope(userDetails: UserDetails)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def createEnvelope()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
 
     val requestBody = Json.parse(
       s"""
         {
-          "callbackUrl": "$rasApiBaseUrl$rasFileUploadCallbackUrl/${userDetails}",
+          "callbackUrl": "$rasApiBaseUrl$rasFileUploadCallbackUrl/",
           "constraints": 	{
               "maxItems": 1,
               "maxSize": "$maxSize",

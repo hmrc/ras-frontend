@@ -33,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import play.api.{Configuration, Environment}
 import services.SessionService
-import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
@@ -61,6 +61,10 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
   val memberDob = MemberDateOfBirth(dob)
   val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),None)
   val postData = Json.obj("dateOfBirth" -> dob)
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
+  private val enrolments = new Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
   object TestMemberDobController extends MemberDOBController{
     val authConnector: AuthConnector = mockAuthConnector
@@ -79,14 +83,10 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
 
   }
 
-  val successfulRetrieval: Future[~[Option[String], Option[String]]] = Future.successful(new ~(Some("1234"), Some("/")))
-
-
   "MemberDobController get" should {
 
-    when(mockAuthConnector.authorise[~[Option[String], Option[String]]](any(), any())(any(),any())).
-      thenReturn(successfulRetrieval)
-
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+    
     when(mockUserDetailsConnector.getUserDetails(any())(any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
 

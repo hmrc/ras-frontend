@@ -38,10 +38,10 @@ trait FileUploadController extends RasController with PageFlowController {
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userDetails) =>
+        case Right(_) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
-              createFileUploadUrl(session.envelope, userDetails)(request, hc).flatMap {
+              createFileUploadUrl(session.envelope)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.debug("[FileUploadController][get] form url created successfully")
                   val error = extractErrorReason(session.uploadResponse)
@@ -51,7 +51,7 @@ trait FileUploadController extends RasController with PageFlowController {
                   Future.successful(Redirect(routes.GlobalErrorController.get))
               }
             case _ =>
-              createFileUploadUrl(None, userDetails)(request, hc).flatMap {
+              createFileUploadUrl(None)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.debug("[FileUploadController][get] stored new envelope id successfully")
                   Future.successful(Ok(views.html.file_upload(url,"")))
@@ -70,7 +70,7 @@ trait FileUploadController extends RasController with PageFlowController {
       }
   }
 
-  def createFileUploadUrl(envelope: Option[Envelope], userDetails : UserDetails)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
+  def createFileUploadUrl(envelope: Option[Envelope])(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
 
     val config = ApplicationConfig
     val rasFrontendBaseUrl = config.getString("ras-frontend.host")
@@ -87,7 +87,7 @@ trait FileUploadController extends RasController with PageFlowController {
         val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
         Future.successful(Some(completeFileUploadUrl))
       case _ =>
-        fileUploadConnector.createEnvelope(userDetails).flatMap { response =>
+        fileUploadConnector.createEnvelope().flatMap { response =>
           response.header("Location") match {
             case Some(locationHeader) =>
               locationHeader match {

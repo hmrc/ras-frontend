@@ -31,8 +31,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import play.api.{Configuration, Environment}
 import services.SessionService
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core._
+
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
@@ -49,7 +49,11 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
   val mockSessionService = mock[SessionService]
   val mockConfig = mock[Configuration]
   val mockEnvironment = mock[Environment]
-  val successfulRetrieval: Future[~[Option[String], Option[String]]] = Future.successful(new ~(Some("1234"), Some("/")))
+
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
+  private val enrolments = new Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
   val memberName = MemberName("Jackie","Chan")
   val memberNino = MemberNino("AB123456C")
   val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
@@ -66,7 +70,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
     override val env: Environment = mockEnvironment
     override val fileUploadConnector = mockFileUploadConnector
 
-    when(mockAuthConnector.authorise[~[Option[String], Option[String]]](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
     when(mockUserDetailsConnector.getUserDetails(any())(any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
 
@@ -85,7 +89,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       "a url is successfully created using a new envelope where session does not exist" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("0b215e97-11d4-4006-91db-c067e74fc653")))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockFileUploadConnector.createEnvelope(any())(any())).thenReturn(Future.successful(connectorResponse))
+        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
         when(mockSessionService.cacheEnvelope(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestFileUploadController.get.apply(fakeRequest))
         status(result) shouldBe OK
@@ -107,7 +111,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       "a url is not successfully created from an existing envelope stored in the session" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, None)
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-        when(mockFileUploadConnector.createEnvelope(any())(any())).thenReturn(Future.failed(new RuntimeException))
+        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.failed(new RuntimeException))
         val result = TestFileUploadController.get().apply(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/global-error")
@@ -115,7 +119,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
 
       "a new url is not successfully created" in {
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockFileUploadConnector.createEnvelope(any())(any())).thenReturn(Future.successful(connectorResponse))
+        when(mockFileUploadConnector.createEnvelope()(any())).thenReturn(Future.successful(connectorResponse))
         when(mockSessionService.cacheEnvelope(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         val result = await(TestFileUploadController.get.apply(fakeRequest))
         status(result) shouldBe SEE_OTHER

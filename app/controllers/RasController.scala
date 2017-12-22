@@ -38,14 +38,17 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
   val sessionService: SessionService = SessionService
 
   def isAuthorised()(implicit request: Request[AnyContent]) = {
-    authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))).retrieve(internalId and userDetailsUri)
-    {case (id ~ uri) =>
+    authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
+    ).retrieve(authorisedEnrolments) {
+      case (enrolments) =>
       Logger.warn("User authorised");
 
-      val userId = id.getOrElse(Left(userInfoNotFond("userId")))
-      val userUri = uri.getOrElse(throw new RuntimeException("No userDetailsUri for user"))
+      //val userUri = uri.getOrElse(throw new RuntimeException("No userDetailsUri for user"))
 
-      userDetailsConnector.getUserDetails(userUri)(hc) map{Right(_)}
+      //authEnrolments.enrolments.head.identifiers.head.value
+
+      Future(Right(enrolments.enrolments.head.identifiers.head.value))
+//      userDetailsConnector.getUserDetails(userUri)(hc) map{Right(_)}
     } recover {
       case _ : NoActiveSession => Left(notLogged)
       case _ : AuthorisationException => Left(unAuthorise)
