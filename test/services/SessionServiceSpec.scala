@@ -154,6 +154,23 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
     }
 
+    "cache successful upload" when {
+      "no session is available" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
+        val json = Json.toJson[RasSession](rasSession.copy(aFileIsInProcess = Some(true)))
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
+        val result = Await.result(TestSessionService.cacheFileInProcess(true)(FakeRequest(), HeaderCarrier()), 10 seconds)
+        result shouldBe Some(rasSession.copy(aFileIsInProcess = Some(true)))
+      }
+      "a session is available" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
+        val json = Json.toJson[RasSession](rasSession.copy(aFileIsInProcess = Some(true)))
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
+        val result = Await.result(TestSessionService.cacheFileInProcess(true)(FakeRequest(), HeaderCarrier()), 10 seconds)
+        result shouldBe Some(rasSession.copy(aFileIsInProcess = Some(true)))
+      }
+    }
+
     "fetch ras session" when {
       "requested" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))

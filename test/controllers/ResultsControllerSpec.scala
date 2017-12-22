@@ -37,7 +37,7 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import services.SessionService
-import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -55,9 +55,11 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   val mockEnvironment: Environment = Environment(mock[File], mock[ClassLoader], Mode.Test)
   val mockAuthConnector = mock[AuthConnector]
   val mockUserDetailsConnector = mock[UserDetailsConnector]
-  val successfulRetrieval: Future[~[Option[String], Option[String]]] = Future.successful(new ~(Some("1234"), Some("/")))
   val mockSessionService = mock[SessionService]
-
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
+  private val enrolments = new Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
   val name = MemberName("Jim", "McGill")
   val nino = MemberNino(RandomNino.generate)
   val dob = RasDate(Some("1"), Some("1"), Some("1999"))
@@ -82,8 +84,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
   "Results Controller" should {
-    when(mockAuthConnector.authorise[~[Option[String], Option[String]]](any(), any())(any(), any())).
-      thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
 
     when(mockUserDetailsConnector.getUserDetails(any())(any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))

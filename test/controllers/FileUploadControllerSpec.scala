@@ -31,8 +31,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import play.api.{Configuration, Environment}
 import services.SessionService
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core._
+
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
@@ -49,7 +49,11 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
   val mockSessionService = mock[SessionService]
   val mockConfig = mock[Configuration]
   val mockEnvironment = mock[Environment]
-  val successfulRetrieval: Future[~[Option[String], Option[String]]] = Future.successful(new ~(Some("1234"), Some("/")))
+
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
+  private val enrolments = new Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
   val memberName = MemberName("Jackie","Chan")
   val memberNino = MemberNino("AB123456C")
   val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
@@ -66,7 +70,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
     override val env: Environment = mockEnvironment
     override val fileUploadConnector = mockFileUploadConnector
 
-    when(mockAuthConnector.authorise[~[Option[String], Option[String]]](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
     when(mockUserDetailsConnector.getUserDetails(any())(any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
 
@@ -94,6 +98,23 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       }
     }
 
+    "redirect to dashboard" when {
+      "a file is already in process" in {
+        val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")),Some(true))
+        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestFileUploadController.get.apply(fakeRequest))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/dashboard")
+      }
+    }
+
+    "display file upload page when a file is not in processing" in {
+      val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")),Some(false))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val result = await(TestFileUploadController.get.apply(fakeRequest))
+      status(result) shouldBe OK
+      doc(result).getElementById("header").text shouldBe Messages("file.upload.page.header")
+    }
 
     "redirect to global error page" when {
 
@@ -140,9 +161,11 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
     "display file upload successful page" when {
       "file has been uploaded successfully" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+        when(mockSessionService.cacheFileInProcess(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
         status(result) shouldBe OK
+        doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
       }
     }
 
@@ -259,6 +282,13 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
       doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
+    }
+
+    "cache successful upload" in {
+      val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("0b215e97-11d4-4006-91db-c067e74fc653")),Some(true))
+      when(mockSessionService.cacheFileInProcess(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
+      status(result) shouldBe OK
     }
 
   }

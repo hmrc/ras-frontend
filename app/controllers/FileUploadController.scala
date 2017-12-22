@@ -38,20 +38,25 @@ trait FileUploadController extends RasController with PageFlowController {
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userDetails) =>
+        case Right(userId) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
-              createFileUploadUrl(session.envelope, userDetails)(request, hc).flatMap {
-                case Some(url) =>
-                  Logger.debug("[FileUploadController][get] form url created successfully")
-                  val error = extractErrorReason(session.uploadResponse)
-                  Future.successful(Ok(views.html.file_upload(url,error)))
-                case _ =>
-                  Logger.debug("[FileUploadController][get] failed to obtain a form url using existing envelope")
-                  Future.successful(Redirect(routes.GlobalErrorController.get))
+              if(session.aFileIsInProcess.getOrElse(false)){
+                Logger.debug("[FileUploadController][get] a file is still processing")
+                Future.successful(Redirect(routes.DashboardController.get))
+              }else{
+                createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
+                  case Some(url) =>
+                    Logger.debug("[FileUploadController][get] form url created successfully")
+                    val error = extractErrorReason(session.uploadResponse)
+                    Future.successful(Ok(views.html.file_upload(url,error)))
+                  case _ =>
+                    Logger.debug("[FileUploadController][get] failed to obtain a form url using existing envelope")
+                    Future.successful(Redirect(routes.GlobalErrorController.get))
+                }
               }
             case _ =>
-              createFileUploadUrl(None, userDetails)(request, hc).flatMap {
+              createFileUploadUrl(None, userId)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.debug("[FileUploadController][get] stored new envelope id successfully")
                   Future.successful(Ok(views.html.file_upload(url,"")))
@@ -70,7 +75,7 @@ trait FileUploadController extends RasController with PageFlowController {
       }
   }
 
-  def createFileUploadUrl(envelope: Option[Envelope], userDetails : UserDetails)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
+  def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
 
     val config = ApplicationConfig
     val rasFrontendBaseUrl = config.getString("ras-frontend.host")
@@ -87,7 +92,7 @@ trait FileUploadController extends RasController with PageFlowController {
         val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
         Future.successful(Some(completeFileUploadUrl))
       case _ =>
-        fileUploadConnector.createEnvelope(userDetails).flatMap { response =>
+        fileUploadConnector.createEnvelope(userId).flatMap { response =>
           response.header("Location") match {
             case Some(locationHeader) =>
               locationHeader match {
@@ -129,8 +134,13 @@ trait FileUploadController extends RasController with PageFlowController {
   def uploadSuccess = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
-        Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
-        Future.successful(Ok(views.html.file_upload_successful()))
+        sessionService.cacheFileInProcess(true).map{
+          case Some(session) =>
+            Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
+            Ok(views.html.file_upload_successful())
+          case _ =>
+            Redirect(routes.GlobalErrorController.get())
+        }
       case Left(resp) =>
         Logger.debug("[FileUploadController][uploadSuccess] user not authorised")
         resp
