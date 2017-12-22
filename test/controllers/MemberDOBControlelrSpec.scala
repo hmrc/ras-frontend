@@ -86,7 +86,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
   "MemberDobController get" should {
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
-    
+
     when(mockUserDetailsConnector.getUserDetails(any())(any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
 

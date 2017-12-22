@@ -44,7 +44,7 @@ class FileUploadConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoS
       "return service response to caller" in {
         val response = HttpResponse(201, None, Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653")), None)
         when(TestConnector.http.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(response))
-        val result = await(TestConnector.createEnvelope())
+        val result = await(TestConnector.createEnvelope(""))
         result shouldBe response
       }
 

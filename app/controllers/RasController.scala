@@ -41,14 +41,8 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
     authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
     ).retrieve(authorisedEnrolments) {
       case (enrolments) =>
-      Logger.warn("User authorised");
-
-      //val userUri = uri.getOrElse(throw new RuntimeException("No userDetailsUri for user"))
-
-      //authEnrolments.enrolments.head.identifiers.head.value
-
+      Logger.warn("User authorised")
       Future(Right(enrolments.enrolments.head.identifiers.head.value))
-//      userDetailsConnector.getUserDetails(userUri)(hc) map{Right(_)}
     } recover {
       case _ : NoActiveSession => Left(notLogged)
       case _ : AuthorisationException => Left(unAuthorise)
