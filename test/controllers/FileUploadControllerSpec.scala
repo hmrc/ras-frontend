@@ -94,6 +94,23 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       }
     }
 
+    "redirect to dashboard" when {
+      "a file is already in process" in {
+        val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")),Some(true))
+        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestFileUploadController.get.apply(fakeRequest))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/dashboard")
+      }
+    }
+
+    "display file upload page when a file is not in processing" in {
+      val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")),Some(false))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val result = await(TestFileUploadController.get.apply(fakeRequest))
+      status(result) shouldBe OK
+      doc(result).getElementById("header").text shouldBe Messages("file.upload.page.header")
+    }
 
     "redirect to global error page" when {
 
@@ -140,9 +157,11 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
     "display file upload successful page" when {
       "file has been uploaded successfully" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+        when(mockSessionService.cacheFileInProcess(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
         status(result) shouldBe OK
+        doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
       }
     }
 
@@ -259,6 +278,13 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
       doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
+    }
+
+    "cache successful upload" in {
+      val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("0b215e97-11d4-4006-91db-c067e74fc653")),Some(true))
+      when(mockSessionService.cacheFileInProcess(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
+      status(result) shouldBe OK
     }
 
   }

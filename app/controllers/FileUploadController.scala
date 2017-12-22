@@ -41,14 +41,19 @@ trait FileUploadController extends RasController with PageFlowController {
         case Right(userDetails) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
-              createFileUploadUrl(session.envelope, userDetails)(request, hc).flatMap {
-                case Some(url) =>
-                  Logger.debug("[FileUploadController][get] form url created successfully")
-                  val error = extractErrorReason(session.uploadResponse)
-                  Future.successful(Ok(views.html.file_upload(url,error)))
-                case _ =>
-                  Logger.debug("[FileUploadController][get] failed to obtain a form url using existing envelope")
-                  Future.successful(Redirect(routes.GlobalErrorController.get))
+              if(session.aFileIsInProcess.getOrElse(false)){
+                Logger.debug("[FileUploadController][get] a file is still processing")
+                Future.successful(Redirect(routes.DashboardController.get))
+              }else{
+                createFileUploadUrl(session.envelope, userDetails)(request, hc).flatMap {
+                  case Some(url) =>
+                    Logger.debug("[FileUploadController][get] form url created successfully")
+                    val error = extractErrorReason(session.uploadResponse)
+                    Future.successful(Ok(views.html.file_upload(url,error)))
+                  case _ =>
+                    Logger.debug("[FileUploadController][get] failed to obtain a form url using existing envelope")
+                    Future.successful(Redirect(routes.GlobalErrorController.get))
+                }
               }
             case _ =>
               createFileUploadUrl(None, userDetails)(request, hc).flatMap {
@@ -129,8 +134,13 @@ trait FileUploadController extends RasController with PageFlowController {
   def uploadSuccess = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
-        Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
-        Future.successful(Ok(views.html.file_upload_successful()))
+        sessionService.cacheFileInProcess(true).map{
+          case Some(session) =>
+            Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
+            Ok(views.html.file_upload_successful())
+          case _ =>
+            Redirect(routes.GlobalErrorController.get())
+        }
       case Left(resp) =>
         Logger.debug("[FileUploadController][uploadSuccess] user not authorised")
         resp
