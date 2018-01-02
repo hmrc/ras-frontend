@@ -16,10 +16,13 @@
 
 package services
 
-import config.SessionCacheWiring
+import config.{RasShortLivedHttpCaching, SessionCacheWiring}
 import models._
+import org.joda.time.DateTime
+import play.api.Logger
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.cache.client.ShortLivedHttpCaching
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -156,6 +159,37 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
+}
+
+trait ShortLivedCache {
+
+  val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
+  private val source = "ras"
+  private val cacheId = "fileSession"
+
+  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier) = {
+
+    shortLivedCache.cache[FileSession](source, cacheId, userId,
+      FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true)recover {
+      case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
+        s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
+        false
+        //retry or what is the other option?
+    }
+  }
+
+  def fetchFileSession(userId: String)(implicit hc:HeaderCarrier) = {
+    shortLivedCache.fetchAndGetEntry[FileSession](source,cacheId,userId).recover {
+      case ex: Throwable => Logger.error(s"unable to fetch FileSession to cache => " +
+        s"${userId} , Exception is ${ex.getMessage}")
+        None
+    }
+  }
+
+}
+
+object ShortLivedCache extends ShortLivedCache {
+  override val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
 }
 
 
