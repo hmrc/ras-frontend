@@ -23,15 +23,16 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.json.{Json, Writes}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedHttpCaching}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ShortLivedServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutures with MockitoSugar with BeforeAndAfter {
+class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutures with MockitoSugar with BeforeAndAfter {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val fileId = "file-id-1"
   val fileStatus = "AVAILABLE"
@@ -48,6 +49,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFu
   val mockSessionCache = mock[ShortLivedHttpCaching]
   val SUT = new ShortLivedCache {
     override val shortLivedCache: ShortLivedHttpCaching = mockSessionCache
+
     when(shortLivedCache.fetchAndGetEntry[FileSession] (any(), any(),any())
       (any(),any(), any()))
       .thenReturn(Future.successful(Some(fileSession)))

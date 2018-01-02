@@ -16,7 +16,7 @@
 
 package services
 
-import config.{RasShortLivedHttpCaching, SessionCacheWiring}
+import config.{ApplicationConfig, RasShortLivedHttpCaching, SessionCacheWiring}
 import models._
 import org.joda.time.DateTime
 import play.api.Logger
@@ -161,11 +161,12 @@ trait SessionService extends SessionCacheWiring {
 
 }
 
-trait ShortLivedCache {
+trait ShortLivedCache  {
 
   val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
   private val source = "ras"
   private val cacheId = "fileSession"
+  val hoursToWaitForReUpload = 24
 
   def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier) = {
 
@@ -190,7 +191,7 @@ trait ShortLivedCache {
 
     def uploadTimeDiff(time: Long) = {
       val newTime = new DateTime(time)
-      newTime.isBefore(DateTime.now.minusHours(24).getMillis)
+      newTime.isBefore(DateTime.now.minusHours(hoursToWaitForReUpload).getMillis)
     }
 
     fetchFileSession(userId).map(res => res.isDefined match {
@@ -221,6 +222,7 @@ trait ShortLivedCache {
 
 object ShortLivedCache extends ShortLivedCache {
   override val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
+  override val hoursToWaitForReUpload = ApplicationConfig.hoursToWaitForReUpload
 }
 
 
