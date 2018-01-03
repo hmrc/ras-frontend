@@ -112,7 +112,6 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
     "contain more results link" in {
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("more-results-link").text shouldBe Messages("more.results")
-
     }
 
   }
