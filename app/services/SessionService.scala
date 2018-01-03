@@ -16,7 +16,7 @@
 
 package services
 
-import config.{RasShortLivedHttpCaching, SessionCacheWiring}
+import config.{ApplicationConfig, RasShortLivedHttpCaching, SessionCacheWiring}
 import models._
 import org.joda.time.DateTime
 import play.api.Logger
@@ -33,11 +33,11 @@ object SessionService extends SessionService
 trait SessionService extends SessionCacheWiring {
 
   val RAS_SESSION_KEY = "ras_session"
-  val cleanSession = RasSession(MemberName("",""),
-                                MemberNino(""),
-                                MemberDateOfBirth(RasDate(None,None,None)),
-                                ResidencyStatusResult("","","","","","",""),
-                                None)
+  val cleanSession = RasSession(MemberName("", ""),
+    MemberNino(""),
+    MemberDateOfBirth(RasDate(None, None, None)),
+    ResidencyStatusResult("", "", "", "", "", "", ""),
+    None)
 
   def fetchRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) map (rasSession => rasSession)
@@ -111,7 +111,7 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
-  def cacheUploadResponse (uploadResponse: UploadResponse)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+  def cacheUploadResponse(uploadResponse: UploadResponse)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
 
     val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
       sessionCache.cache[RasSession](RAS_SESSION_KEY,
@@ -161,35 +161,68 @@ trait SessionService extends SessionCacheWiring {
 
 }
 
-trait ShortLivedCache {
+trait ShortLivedCache  {
 
   val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
   private val source = "ras"
   private val cacheId = "fileSession"
+  val hoursToWaitForReUpload = 24
 
   def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier) = {
 
     shortLivedCache.cache[FileSession](source, cacheId, userId,
-      FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true)recover {
+      FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true) recover {
       case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
         s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
         false
-        //retry or what is the other option?
+      //retry or what is the other option?
     }
   }
 
-  def fetchFileSession(userId: String)(implicit hc:HeaderCarrier) = {
-    shortLivedCache.fetchAndGetEntry[FileSession](source,cacheId,userId).recover {
-      case ex: Throwable => Logger.error(s"unable to fetch FileSession to cache => " +
+  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier) = {
+    shortLivedCache.fetchAndGetEntry[FileSession](source, cacheId, userId).recover {
+      case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache => " +
         s"${userId} , Exception is ${ex.getMessage}")
         None
     }
   }
 
+  def isFileInProgress(userId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+
+    def uploadTimeDiff(time: Long) = {
+      val newTime = new DateTime(time)
+      newTime.isBefore(DateTime.now.minusHours(hoursToWaitForReUpload).getMillis)
+    }
+
+    fetchFileSession(userId).map(res => res.isDefined match {
+      //if the fileSession has results file then allow user to upload
+      case true => //check if it is more than a day that file has been uploaded and there are no results file
+        res.get.resultsFile.isDefined || !uploadTimeDiff(res.get.uploadTimeStamp.get)
+      // if FileSession is not available for the userId
+      case false => Logger.warn("fileSession not defined for " + userId)
+        false
+    }).recover {
+      case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache  to check  isFileInProgress => " +
+        s"${userId} , Exception is ${ex.getMessage}")
+        false
+    }
+  }
+
+  def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier) = {
+    val res = shortLivedCache.remove(userId).map(_.status).recover {
+      case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
+        s"${userId} , Exception is ${ex.getMessage}")
+      //try again as the only option left if sessioncache fails
+        shortLivedCache.remove(userId).map(_.status)
+      }
+
+    res
+  }
 }
 
 object ShortLivedCache extends ShortLivedCache {
   override val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
+  override val hoursToWaitForReUpload = ApplicationConfig.hoursToWaitForReUpload
 }
 
 

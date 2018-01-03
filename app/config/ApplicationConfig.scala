@@ -29,6 +29,7 @@ trait ApplicationConfig {
   val betaFeedbackUnauthenticatedUrl: String
   val loginCallback:String
   val fileUploadCallBack: String
+  val hoursToWaitForReUpload :Int
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -41,6 +42,10 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   override lazy val analyticsToken = loadConfig(s"google-analytics.token")
   override lazy val analyticsHost = loadConfig(s"google-analytics.host")
+
+  override lazy val hoursToWaitForReUpload = configuration.getInt(s"re-upload.wait.time.hours").getOrElse(
+    throw new Exception("Missing configuration key: re-upload.wait.time.hours "))
+
 
   private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/lifetime-isa")
 
