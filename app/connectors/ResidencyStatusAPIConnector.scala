@@ -56,7 +56,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     implicit val materializer = ActorMaterializer()
 
     Logger.debug(s"Get results file  with URI for " + fileName)
-    wsHttp.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/:name").map { res =>
+    wsHttp.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/$fileName").map { res =>
       Some(res.body.runWith(StreamConverters.asInputStream()))
     }
 
