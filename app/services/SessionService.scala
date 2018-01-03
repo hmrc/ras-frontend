@@ -194,16 +194,16 @@ trait ShortLivedCache  {
       newTime.isBefore(DateTime.now.minusHours(hoursToWaitForReUpload).getMillis)
     }
 
-    fetchFileSession(userId).map(res => res.isDefined match {
-      //if the fileSession has results file then don't allow user to upload
-      case true => //check if it is more than a day that file has been uploaded and there are no results file
-        res.get.resultsFile.isDefined || !uploadTimeDiff(res.get.uploadTimeStamp.get)
-      // if FileSession is not available for the userId
-      case false => Logger.warn("fileSession not defined for " + userId)
-        false
+    fetchFileSession(userId).map(fileSession =>
+      fileSession.isDefined match {
+        case true =>
+          fileSession.get.resultsFile.isDefined || !uploadTimeDiff(fileSession.get.uploadTimeStamp.get)
+        case false =>
+          Logger.warn("fileSession not defined for " + userId)
+          false
     }).recover {
-      case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache  to check  isFileInProgress => " +
-        s"${userId} , Exception is ${ex.getMessage}")
+      case ex: Throwable =>
+        Logger.error(s"unable to fetch FileSession from cache to check isFileInProgress => ${userId} , Exception is ${ex.getMessage}")
         false
     }
   }
