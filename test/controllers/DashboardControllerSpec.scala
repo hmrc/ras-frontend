@@ -16,32 +16,36 @@
 
 package controllers
 
-import connectors.UserDetailsConnector
+import java.io.ByteArrayInputStream
+
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import helpers.helpers.I18nHelper
 import models.UserDetails
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers.{OK, contentAsString, _}
+import play.api.test.{FakeRequest, Helpers}
 import play.api.{Configuration, Environment}
 import services.SessionService
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
 
-
-class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with MockitoSugar with I18nHelper{
+class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with MockitoSugar with I18nHelper {
 
   implicit val headerCarrier = HeaderCarrier()
+  implicit val actorSystem = ActorSystem()
+  implicit val materializer = ActorMaterializer()
 
   val fakeRequest = FakeRequest()
   val mockAuthConnector = mock[AuthConnector]
@@ -50,19 +54,27 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
   val mockConfig = mock[Configuration]
   val mockEnvironment = mock[Environment]
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated", ConfidenceLevel.L500)
   private val enrolments = new Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
+  val mockRasConnector = mock[ResidencyStatusAPIConnector]
+
+  val row1 = "John,Smith,AB123456C,1990-02-21"
+  val inputStream = new ByteArrayInputStream(row1.getBytes)
 
   object TestDashboardController extends DashboardController {
+
     val authConnector: AuthConnector = mockAuthConnector
     override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
+    override val resultsFileConnector: ResidencyStatusAPIConnector = mockRasConnector
     override val sessionService = mockSessionService
     override val config: Configuration = mockConfig
     override val env: Environment = mockEnvironment
 
-    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
+    when(mockRasConnector.getFile(any())(any())).
+      thenReturn(Future.successful(Some(inputStream)))
 
     when(mockUserDetailsConnector.getUserDetails(any())(any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
@@ -113,6 +125,13 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("more-results-link").text shouldBe Messages("more.results")
 
+    }
+
+    "get results file" in {
+      val result = await(TestDashboardController.getResultsFile("testFile.csv").apply(FakeRequest(Helpers.GET,
+        "/dashboard/results/:testFile.csv")))
+      val content = contentAsString(result)
+      content shouldBe row1
     }
 
   }

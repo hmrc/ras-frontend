@@ -16,9 +16,11 @@
 
 package controllers
 
+import akka.stream.scaladsl.{Source, StreamConverters}
+import akka.util.ByteString
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.UserDetailsConnector
-import play.api.mvc.Action
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 
@@ -30,21 +32,39 @@ object DashboardController extends DashboardController {
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
+  override val resultsFileConnector:ResidencyStatusAPIConnector = ResidencyStatusAPIConnector
   // $COVERAGE-ON$
 }
 
 trait DashboardController extends RasController with PageFlowController {
 
+  val resultsFileConnector:ResidencyStatusAPIConnector
   implicit val context: RasContext = RasContextImpl
+  private val _contentType =   "application/octet-stream"
 
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) => Future.successful(Ok(views.html.dashboard()))
         case Left(resp) =>
-          Logger.debug("[DashboardController][get] user not authorised")
+          Logger.warn("[DashboardController][get] user not authorised")
           resp
       }
   }
 
+  def getResultsFile(fileName:String):  Action[AnyContent] = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>  resultsFileConnector.getFile(fileName).map { response =>
+          val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
+          Ok.chunked(dataContent)
+        }.recover {
+          case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
+            Redirect(routes.GlobalErrorController.get())
+        }
+        case Left(resp) =>
+          Logger.warn("[DashboardController][get] user not authorised")
+          resp
+      }
+  }
 }

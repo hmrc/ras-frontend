@@ -58,12 +58,8 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     Logger.debug(s"Get results file  with URI for " + fileName)
     wsHttp.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/:name").map { res =>
       Some(res.body.runWith(StreamConverters.asInputStream()))
-    } recover {
-      case ex: Throwable => {
-        Logger.error("Exception thrown while retrieving file / converting to InputStream.", ex)
-        throw new RuntimeException("Error Streaming results file from ras-api service")
-      }
     }
+
   }
 
 }
