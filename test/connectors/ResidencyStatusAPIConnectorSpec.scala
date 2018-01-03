@@ -16,23 +16,34 @@
 
 package connectors
 
+import java.io.{BufferedReader, InputStreamReader}
+
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
+import config.WSHttp
 import models._
 import org.mockito.Matchers.{eq => meq, _}
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.test.Helpers._
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.libs.ws.{DefaultWSResponseHeaders, StreamedResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet}
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet }
 
-class ResidencyStatusAPIConnectorSpec extends PlaySpec with OneAppPerSuite with MockitoSugar with ServicesConfig {
+class ResidencyStatusAPIConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with ServicesConfig {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  val mockWsHttp = mock[WSHttp]
 
   object TestConnector extends ResidencyStatusAPIConnector {
     override val http: HttpGet = mock[HttpGet]
+    override val wsHttp: WSHttp = mockWsHttp
+
   }
 
   "Residency Status API connector" should {
@@ -47,11 +58,34 @@ class ResidencyStatusAPIConnectorSpec extends PlaySpec with OneAppPerSuite with 
 
       val result = TestConnector.getResidencyStatus(uuid)
 
-      await(result) mustBe expectedResponse
+      await(result) shouldBe expectedResponse
 
     }
 
 
+  }
+
+  "getFile" should {
+
+    "return an StreamedResponse from ras-api service" in {
+
+      implicit val system = ActorSystem()
+      implicit val materializer = ActorMaterializer()
+
+      val streamResponse:StreamedResponse = StreamedResponse(DefaultWSResponseHeaders(200, Map("CONTENT_TYPE" -> Seq("application/octet-stream"))),
+        Source.apply[ByteString](Seq(ByteString("Test"),  ByteString("\r\n"), ByteString("Passed")).to[scala.collection.immutable.Iterable]) )
+
+      when(mockWsHttp.buildRequestWithStream(any())(any())).thenReturn(Future.successful(streamResponse))
+
+      val values = List("Test", "Passed")
+
+      val result = await(TestConnector.getFile("file1"))
+
+      val reader = new BufferedReader(new InputStreamReader(result.get))
+
+      (Iterator continually reader.readLine takeWhile (_ != null) toList) should contain theSameElementsAs List("Test", "Passed")
+
+    }
   }
 
 }
