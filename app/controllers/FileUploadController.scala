@@ -137,15 +137,20 @@ trait FileUploadController extends RasController with PageFlowController {
       case Right(userId) =>
         sessionService.fetchRasSession.flatMap {
           case Some(session) =>
-            shortLivedCache.createFileSession(userId,session.envelope.get.id).map {
-              case true =>
-                Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
-                Ok(views.html.file_upload_successful())
+            session.envelope match {
+              case Some(envelope) =>
+                shortLivedCache.createFileSession(userId,envelope.id).map {
+                  case true =>
+                    Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
+                    Ok(views.html.file_upload_successful())
+                  case _ =>
+                    Logger.debug("[FileUploadController][uploadSuccess] failed to create file session")
+                    Redirect(routes.GlobalErrorController.get())
+                }
               case _ =>
-                Logger.debug("[FileUploadController][uploadSuccess] failed to create file session")
-                Redirect(routes.GlobalErrorController.get())
+                Logger.debug("[FileUploadController][uploadSuccess] no envelope exists in the session")
+                Future.successful(Redirect(routes.GlobalErrorController.get()))
             }
-
           case _ =>
             Logger.debug("[FileUploadController][uploadSuccess] session could not be retrieved")
             Future.successful(Redirect(routes.GlobalErrorController.get()))

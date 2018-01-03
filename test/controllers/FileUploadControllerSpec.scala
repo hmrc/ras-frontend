@@ -162,6 +162,12 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         redirectLocation(result).get should include("/global-error")
       }
 
+      "upload success endpoint has been called but no envelope exists in the session" in {
+        val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, None)
+        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
+        redirectLocation(result).get should include("/global-error")
+      }
     }
 
     "redirect to dashboard page when back link is clicked" in {
