@@ -67,7 +67,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with OneAppPerSuite with 
 
   "getFile" should {
 
-    "return an StreamedResponse from File-Upload service" in {
+    "return an StreamedResponse from ras-api service" in {
 
       implicit val system = ActorSystem()
       implicit val materializer = ActorMaterializer()

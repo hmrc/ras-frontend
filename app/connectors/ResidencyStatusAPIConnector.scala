@@ -61,7 +61,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     } recover {
       case ex: Throwable => {
         Logger.error("Exception thrown while retrieving file / converting to InputStream.", ex)
-        throw new RuntimeException("Error Streaming file from file-upload service")
+        throw new RuntimeException("Error Streaming results file from ras-api service")
       }
     }
   }
