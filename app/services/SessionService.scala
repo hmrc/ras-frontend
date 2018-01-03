@@ -168,10 +168,10 @@ trait ShortLivedCache  {
   private val cacheId = "fileSession"
   val hoursToWaitForReUpload = 24
 
-  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier) = {
+  def createFileSession(userId: String, envelopeId: String, userFileName: String)(implicit hc: HeaderCarrier) = {
 
     shortLivedCache.cache[FileSession](source, cacheId, userId,
-      FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true) recover {
+      FileSession(None, None, userId, Some(DateTime.now().getMillis),userFileName)).map(res => true) recover {
       case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
         s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
         false
@@ -195,7 +195,7 @@ trait ShortLivedCache  {
     }
 
     fetchFileSession(userId).map(res => res.isDefined match {
-      //if the fileSession has results file then allow user to upload
+      //if the fileSession has results file then don't allow user to upload
       case true => //check if it is more than a day that file has been uploaded and there are no results file
         res.get.resultsFile.isDefined || !uploadTimeDiff(res.get.uploadTimeStamp.get)
       // if FileSession is not available for the userId

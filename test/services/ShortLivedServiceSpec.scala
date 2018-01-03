@@ -37,11 +37,12 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
   val fileId = "file-id-1"
   val fileStatus = "AVAILABLE"
   val reason: Option[String] = None
+  val fileName = "someFileName"
   val callbackData = CallbackData("1234", fileId, fileStatus, reason)
   val resultsFile = ResultsFileMetaData(fileId,Some("fileName.csv"),Some(1234L),123,1234L)
-  val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", Some(DateTime.now().getMillis))
-  val fileSession1 = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis))
-  val fileSession2 = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis))
+  val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", Some(DateTime.now().getMillis),fileName)
+  val fileSession1 = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis), fileName)
+  val fileSession2 = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis), fileName)
 
 
   val json = Json.toJson(fileSession)
@@ -62,14 +63,14 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
   "ShortLivedService" should {
     "cache fileSession in sav4later" in {
       val results = List("Nino, firstName, lastName, dob, cyResult, cy+1Result")
-      val res = await(SUT.createFileSession("1234","56789"))
+      val res = await(SUT.createFileSession("1234","56789",fileName))
       res shouldBe true
     }
     "return false on failing to cache fileSession data" in {
       when(mockSessionCache.cache[FileSession] (any(), any(),any(),any())
         (any[Writes[FileSession]], any[HeaderCarrier], any()))
         .thenReturn(Future.failed(new Exception))
-      val res = await(SUT.createFileSession("1234","56789"))
+      val res = await(SUT.createFileSession("1234","56789",fileName))
       res shouldBe false
     }
     "should get cached fileSession from ShortLivedCache" in {
