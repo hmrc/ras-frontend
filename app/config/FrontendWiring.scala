@@ -17,6 +17,7 @@
 package config
 
 import play.api.libs.json.{Json, Writes}
+import play.api.libs.ws.StreamedResponse
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
@@ -37,6 +38,8 @@ trait WSHttp extends WSGet with HttpGet
   with WSDelete with HttpDelete
   with AppName with RunMode {
   override val hooks = NoneRequired
+
+  def buildRequestWithStream(uri: String)(implicit hc: HeaderCarrier): Future[StreamedResponse] = buildRequest(uri).stream()
 
   override def doPost[A](url: String, body: A, headers: Seq[(String, String)])(implicit rds: Writes[A], hc: HeaderCarrier): Future[HttpResponse] = {
     buildRequest(url).withFollowRedirects(false).withHeaders(headers: _*).post(Json.toJson(body)).map(new WSHttpResponse(_))

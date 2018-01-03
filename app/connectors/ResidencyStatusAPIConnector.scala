@@ -16,6 +16,11 @@
 
 package connectors
 
+import java.io.InputStream
+
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.StreamConverters
 import config.WSHttp
 import models.ResidencyStatus
 import play.api.Logger
@@ -25,9 +30,12 @@ import scala.concurrent.Future
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 trait ResidencyStatusAPIConnector extends ServicesConfig {
 
   val http: HttpGet = WSHttp
+  val wsHttp: WSHttp
 
   lazy val serviceUrl = baseUrl("relief-at-source")
   lazy val residencyStatusUrl = getString("residency-status-url")
@@ -43,6 +51,25 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     http.GET[ResidencyStatus](rasUri)(implicitly[HttpReads[ResidencyStatus]],hc = headerCarrier, MdcLoggingExecutionContext.fromLoggingDetails(headerCarrier))
   }
 
+  def getFile(fileName: String)(implicit hc: HeaderCarrier): Future[Option[InputStream]] = {
+    implicit val system = ActorSystem()
+    implicit val materializer = ActorMaterializer()
+
+    Logger.debug(s"Get results file  with URI for " + fileName)
+    wsHttp.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/:name").map { res =>
+      Some(res.body.runWith(StreamConverters.asInputStream()))
+    } recover {
+      case ex: Throwable => {
+        Logger.error("Exception thrown while retrieving file / converting to InputStream.", ex)
+        throw new RuntimeException("Error Streaming file from file-upload service")
+      }
+    }
+  }
+
 }
 
 object ResidencyStatusAPIConnector extends ResidencyStatusAPIConnector
+{
+  override val wsHttp: WSHttp = WSHttp
+
+}
