@@ -154,6 +154,14 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         redirectLocation(result).get should include("/global-error")
       }
 
+      "upload success endpoint has been called but we fail to create a file session" in {
+        val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(false))
+        val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
+        redirectLocation(result).get should include("/global-error")
+      }
+
     }
 
     "redirect to dashboard page when back link is clicked" in {
