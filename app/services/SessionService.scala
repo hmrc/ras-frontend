@@ -168,10 +168,10 @@ trait ShortLivedCache  {
   private val cacheId = "fileSession"
   val hoursToWaitForReUpload = 24
 
-  def createFileSession(userId: String, envelopeId: String, userFileName: String)(implicit hc: HeaderCarrier) = {
+  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier):Future[Boolean] = {
 
     shortLivedCache.cache[FileSession](source, cacheId, userId,
-      FileSession(None, None, userId, Some(DateTime.now().getMillis),userFileName)).map(res => true) recover {
+      FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true) recover {
       case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
         s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
         false

@@ -23,7 +23,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status.OK
 import play.api.mvc.Result
@@ -165,8 +165,8 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
     "display file upload successful page" when {
       "file has been uploaded successfully" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
-        when(mockSessionService.cacheFileInProcess(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
         val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
         status(result) shouldBe OK
         doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
@@ -177,11 +177,18 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       "contain the correct content" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
         val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
         doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
         doc(result).getElementById("page-sub-header").text shouldBe Messages("upload.success.sub-header")
         doc(result).getElementById("continue").text shouldBe Messages("continue")
       }
+    }
+
+    "create a file session when a file has been successfully uploaded" in {
+      when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
+      val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
+      verify(mockShortLivedCache, atLeastOnce()).createFileSession(any(),any())(any())
     }
 
     "redirect to file upload page" when {
