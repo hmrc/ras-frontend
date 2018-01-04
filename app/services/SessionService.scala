@@ -143,21 +143,21 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
-  def cacheFileInProcess(aFileIsInProcess: Boolean)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
-          case None => cleanSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
+//  def cacheFileInProcess(aFileIsInProcess: Boolean)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+//
+//    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+//      sessionCache.cache[RasSession](RAS_SESSION_KEY,
+//        currentSession match {
+//          case Some(returnedSession) => returnedSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
+//          case None => cleanSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
+//        }
+//      )
+//    }
+//
+//    result.map(cacheMap => {
+//      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
+//    })
+//  }
 
 }
 
@@ -165,12 +165,12 @@ trait ShortLivedCache  {
 
   val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
   private val source = "ras"
-  private val cacheId = "fileSession"
+
   val hoursToWaitForReUpload = 24
 
   def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier):Future[Boolean] = {
 
-    shortLivedCache.cache[FileSession](source, cacheId, userId,
+    shortLivedCache.cache[FileSession](source, userId, "fileSession",
       FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true) recover {
       case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
         s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
@@ -180,7 +180,7 @@ trait ShortLivedCache  {
   }
 
   def fetchFileSession(userId: String)(implicit hc: HeaderCarrier) = {
-    shortLivedCache.fetchAndGetEntry[FileSession](source, cacheId, userId).recover {
+    shortLivedCache.fetchAndGetEntry[FileSession](source, userId, "fileSession").recover {
       case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache => " +
         s"${userId} , Exception is ${ex.getMessage}")
         None
@@ -209,15 +209,12 @@ trait ShortLivedCache  {
   }
 
   def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier) = {
-    val res =
-      shortLivedCache.remove(userId).map(_.status).recover {
-      case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
-        s"${userId} , Exception is ${ex.getMessage}")
-      //try again as the only option left if sessioncache fails
-        shortLivedCache.remove(userId).map(_.status)
-      }
-
-    res
+    shortLivedCache.remove(userId).map(_.status).recover {
+    case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
+      s"${userId} , Exception is ${ex.getMessage}")
+    //try again as the only option left if sessioncache fails
+      shortLivedCache.remove(userId).map(_.status)
+    }
   }
 }
 

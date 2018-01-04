@@ -43,6 +43,12 @@ trait DashboardController extends RasController with PageFlowController {
   implicit val context: RasContext = RasContextImpl
   private val _contentType =   "application/octet-stream"
 
+  val fileIsInProgress = true
+  val noFileInProgress = false
+  val readyForDownload = true
+  val notReadyForDownload = false
+
+
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
@@ -53,17 +59,16 @@ trait DashboardController extends RasController with PageFlowController {
                 case Some(fileSession) =>
                   fileSession.userFile match {
                     case Some(callbackData) =>
-                      Ok(views.html.dashboard(true, callbackData.fileId))
+                      Ok(views.html.dashboard(fileIsInProgress, callbackData.fileId, readyForDownload))
                     case _ =>
-                      Logger.error("[DashboardController][get] no callbackdata exists in retrieved file session")
-                      Redirect(routes.GlobalErrorController.get)
+                      Ok(views.html.dashboard(fileIsInProgress, "", notReadyForDownload))
                   }
                 case _ =>
                   Logger.error("[DashboardController][get] failed to retrieve file session")
                   Redirect(routes.GlobalErrorController.get)
               }
             case _ =>
-              Future.successful(Ok(views.html.dashboard(false,"")))
+              Future.successful(Ok(views.html.dashboard(noFileInProgress,"",noFileInProgress)))
           }
         case Left(resp) =>
           Logger.warn("[DashboardController][get] user not authorised")

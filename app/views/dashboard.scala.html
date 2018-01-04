@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(fileInProgress: Boolean, fileId: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileInProgress: Boolean, fileId: String, readyForDownload: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -64,7 +64,11 @@
 
         <tbody>
           <tr>
-            <td class="r-padding" id="result"><a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">Results</a></td>
+            @if(readyForDownload){
+              <td class="r-padding" id="result"><a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">Results</a></td>
+            }else{
+              <td class="r-padding" id="result"> Results(in progress)</td>
+            }
             <td class="r-padding numeric" id="upload-date">30 July 2017</td>
             <td class="r-padding numeric" id="days-left">28 Days</td>
           </tr>
