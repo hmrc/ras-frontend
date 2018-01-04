@@ -46,7 +46,13 @@ trait DashboardController extends RasController with PageFlowController {
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) => Future.successful(Ok(views.html.dashboard()))
+        case Right(userId) =>
+          shortLivedCache.isFileInProgress(userId).map {
+            case true =>
+              Ok(views.html.dashboard(true))
+            case _ =>
+              Ok(views.html.dashboard(false))
+          }
         case Left(resp) =>
           Logger.warn("[DashboardController][get] user not authorised")
           resp

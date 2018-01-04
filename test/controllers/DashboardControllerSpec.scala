@@ -33,7 +33,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
 import play.api.test.{FakeRequest, Helpers}
 import play.api.{Configuration, Environment}
-import services.SessionService
+import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
@@ -51,6 +51,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
   val mockAuthConnector = mock[AuthConnector]
   val mockUserDetailsConnector = mock[UserDetailsConnector]
   val mockSessionService = mock[SessionService]
+  val mockShortLivedCache = mock[ShortLivedCache]
   val mockConfig = mock[Configuration]
   val mockEnvironment = mock[Environment]
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
@@ -68,6 +69,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
     override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
     override val resultsFileConnector: ResidencyStatusAPIConnector = mockRasConnector
     override val sessionService = mockSessionService
+    override val shortLivedCache = mockShortLivedCache
     override val config: Configuration = mockConfig
     override val env: Environment = mockEnvironment
 
@@ -85,35 +87,41 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
   "DashboardController" should {
 
     "respond to GET /dashboard" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestDashboardController.get(fakeRequest)
       status(result) shouldBe OK
     }
 
     "contain the correct title and header" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestDashboardController.get(fakeRequest)
       doc(result).title shouldBe Messages("dashboard.page.title")
       doc(result).getElementById("header").text shouldBe Messages("dashboard.page.header")
     }
 
     "contain single lookup link and description" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("single-lookup-link").text shouldBe Messages("single.lookup.link")
       doc(result).getElementById("single-lookup-description").text shouldBe Messages("single.lookup.description")
     }
 
     "contain bulk lookup link and description" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("bulk-lookup-link").text shouldBe Messages("bulk.lookup.link")
       doc(result).getElementById("bulk-lookup-description").text shouldBe Messages("bulk.lookup.description")
     }
 
     "contain recent bulk lookups header and description" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("recent-lookups").text shouldBe Messages("recent.lookups")
       doc(result).getElementById("recent-lookups-description").text shouldBe Messages("recent.lookups.description")
     }
 
     "contain bulk lookup table" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("recent-lookups-table") should not be null
       doc(result).getElementById("reference-table-header").text shouldBe Messages("reference.table.header")
@@ -121,9 +129,16 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
       doc(result).getElementById("time-left-table-header").text shouldBe Messages("time.left.table.header")
     }
 
-    "contain more results link" in {
+    "not contain a result link when no file is in progress" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestDashboardController.get(fakeRequest)
-      doc(result).getElementById("more-results-link").text shouldBe Messages("more.results")
+      doc(result).getElementById("result-link") shouldBe null
+    }
+
+    "contain a result link when file is in progress" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
+      val result = TestDashboardController.get(fakeRequest)
+      doc(result).getElementById("result-link") should not be null
     }
 
     "get results file" in {

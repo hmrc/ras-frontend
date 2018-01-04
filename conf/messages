@@ -13,13 +13,13 @@ bulk.lookup.link = Bulk look up
 bulk.lookup.description = Look up the details of multiple members in one file.
 
 recent.lookups = Recent bulk look ups
-recent.lookups.description = You have 30 days from the processing date to view the results.
+recent.lookups.description = You have 3 days from the processing date to view the results.
 
 reference.table.header = Reference
 upload.date.table.header = Processing date
 time.left.table.header = Time left
 
-more.results = More results
+result = Result
 
 member.name.page.title = Member name - GOV.UK
 member.name.page.header = What is the member''s name?
