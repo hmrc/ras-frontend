@@ -209,7 +209,8 @@ trait ShortLivedCache  {
   }
 
   def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier) = {
-    val res = shortLivedCache.remove(userId).map(_.status).recover {
+    val res =
+      shortLivedCache.remove(userId).map(_.status).recover {
       case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
         s"${userId} , Exception is ${ex.getMessage}")
       //try again as the only option left if sessioncache fails

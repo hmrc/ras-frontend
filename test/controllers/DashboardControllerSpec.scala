@@ -170,7 +170,6 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
       }
     }
 
-
     "get results file" in {
       val result = await(TestDashboardController.getResultsFile("testFile.csv").apply(FakeRequest(Helpers.GET,
         "/dashboard/results/:testFile.csv")))
