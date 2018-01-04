@@ -55,9 +55,10 @@ trait DashboardController extends RasController with PageFlowController {
   def getResultsFile(fileName:String):  Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>  resultsFileConnector.getFile(fileName).map { response =>
-          val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
-          Ok.chunked(dataContent)
+        case Right(_) =>
+          resultsFileConnector.getFile(fileName).map { response =>
+            val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
+            Ok.chunked(dataContent)
         }.recover {
           case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
             Redirect(routes.GlobalErrorController.get())
