@@ -22,7 +22,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import helpers.helpers.I18nHelper
-import models.UserDetails
+import models.{CallbackData, FileSession, UserDetails}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers.any
@@ -59,6 +59,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
   private val enrolments = new Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
   val mockRasConnector = mock[ResidencyStatusAPIConnector]
+  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
@@ -74,6 +75,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
     override val env: Environment = mockEnvironment
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
+    when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
 
     when(mockRasConnector.getFile(any())(any())).
       thenReturn(Future.successful(Some(inputStream)))
@@ -100,6 +102,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
     }
 
     "contain single lookup link and description" in {
+
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("single-lookup-link").text shouldBe Messages("single.lookup.link")
@@ -140,6 +143,33 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("result-link") should not be null
     }
+
+    "contain file id in the download results link" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = TestDashboardController.get(fakeRequest)
+      doc(result).getElementById("result-link").attr("href") should include("someFileId")
+    }
+
+    "redirect to global error page" when {
+      "no callback data is available" in {
+        val fileSession = FileSession(None,None,"1234",None)
+        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+        val result = TestDashboardController.get(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("global-error")
+      }
+
+      "no file session is available" in {
+        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+        val result = TestDashboardController.get(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("global-error")
+      }
+    }
+
 
     "get results file" in {
       val result = await(TestDashboardController.getResultsFile("testFile.csv").apply(FakeRequest(Helpers.GET,

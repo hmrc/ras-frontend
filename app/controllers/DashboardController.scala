@@ -47,11 +47,23 @@ trait DashboardController extends RasController with PageFlowController {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          shortLivedCache.isFileInProgress(userId).map {
+          shortLivedCache.isFileInProgress(userId).flatMap {
             case true =>
-              Ok(views.html.dashboard(true))
+              shortLivedCache.fetchFileSession(userId).map {
+                case Some(fileSession) =>
+                  fileSession.userFile match {
+                    case Some(callbackData) =>
+                      Ok(views.html.dashboard(true, callbackData.fileId))
+                    case _ =>
+                      Logger.error("[DashboardController][get] no callbackdata exists in retrieved file session")
+                      Redirect(routes.GlobalErrorController.get)
+                  }
+                case _ =>
+                  Logger.error("[DashboardController][get] failed to retrieve file session")
+                  Redirect(routes.GlobalErrorController.get)
+              }
             case _ =>
-              Ok(views.html.dashboard(false))
+              Future.successful(Ok(views.html.dashboard(false,"")))
           }
         case Left(resp) =>
           Logger.warn("[DashboardController][get] user not authorised")
