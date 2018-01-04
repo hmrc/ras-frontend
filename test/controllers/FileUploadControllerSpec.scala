@@ -309,13 +309,6 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
     }
 
-    "cache successful upload" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("0b215e97-11d4-4006-91db-c067e74fc653")),Some(true))
-      when(mockSessionService.cacheFileInProcess(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
-      status(result) shouldBe OK
-    }
-
   }
 
 

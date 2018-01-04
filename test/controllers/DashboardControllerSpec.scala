@@ -151,16 +151,15 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
       doc(result).getElementById("result-link").attr("href") should include("someFileId")
     }
 
-    "redirect to global error page" when {
-      "no callback data is available" in {
-        val fileSession = FileSession(None,None,"1234",None)
-        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = TestDashboardController.get(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("global-error")
-      }
+    "disable results link when no callback data is available" in {
+      val fileSession = FileSession(None,None,"1234",None)
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = TestDashboardController.get(fakeRequest)
+      doc(result).getElementById("result").text shouldBe Messages("result")
+    }
 
+    "redirect to global error page" when {
       "no file session is available" in {
         when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
