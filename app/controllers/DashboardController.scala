@@ -20,6 +20,7 @@ import akka.stream.scaladsl.{Source, StreamConverters}
 import akka.util.ByteString
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import play.api.http.HttpEntity
 import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -55,10 +56,13 @@ trait DashboardController extends RasController with PageFlowController {
   def getResultsFile(fileName:String):  Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>
-          resultsFileConnector.getFile(fileName).map { response =>
-            val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
-            Ok.chunked(dataContent)
+        case Right(_) =>  resultsFileConnector.getFile(fileName).map { response =>
+          val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
+
+          Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
+            .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${fileName}"""",
+             // CONTENT_LENGTH -> s"${fileData.get.length}",
+              CONTENT_TYPE -> _contentType)
         }.recover {
           case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
             Redirect(routes.GlobalErrorController.get())
