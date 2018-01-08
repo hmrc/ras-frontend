@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(fileInProgress: Boolean, fileId: String, readyForDownload: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileInProgress: Boolean, fileId: String, readyForDownload: Boolean, expiryDate: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -51,14 +51,12 @@
         <colgroup>
           <col width="2%">
           <col width="2%">
-          <col width="2%">
         </colgroup>
 
         <thead>
           <tr id="table-row">
             <th id="reference-table-header"><span>@Messages("reference.table.header")</span></th>
-            <th id="upload-date-table-header" class="r-padding numeric"><span>@Messages("upload.date.table.header")</span></th>
-            <th id="time-left-table-header" class="r-padding numeric"><span>@Messages("time.left.table.header")</span></th>
+            <th id="time-left-table-header" class="r-padding numeric"><span>@Messages("expiry.date.table.header")</span></th>
           </tr>
         </thead>
 
@@ -66,11 +64,11 @@
           <tr>
             @if(readyForDownload){
               <td class="r-padding" id="result"><a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">@Messages("result")</a></td>
+              <td class="r-padding numeric" id="days-left">@expiryDate</td>
             }else{
               <td class="r-padding" id="result">@Messages("result")</td>
             }
-            <td class="r-padding numeric" id="upload-date">30 July 2017</td>
-            <td class="r-padding numeric" id="days-left">28 Days</td>
+
           </tr>
         </tbody>
 

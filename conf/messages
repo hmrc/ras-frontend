@@ -16,8 +16,7 @@ recent.lookups = Recent bulk look ups
 recent.lookups.description = You have 3 days from the processing date to view the results.
 
 reference.table.header = Reference
-upload.date.table.header = Processing date
-time.left.table.header = Time left
+expiry.date.table.header = Expires on
 
 result = Result
 
