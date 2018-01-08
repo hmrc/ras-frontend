@@ -23,6 +23,7 @@ import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import helpers.helpers.I18nHelper
 import models.{CallbackData, FileSession, UserDetails}
+import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers.any
@@ -59,7 +60,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
   private val enrolments = new Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
   val mockRasConnector = mock[ResidencyStatusAPIConnector]
-  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
+  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",Some(new DateTime().plusDays(10).getMillis))
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
@@ -128,8 +129,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("recent-lookups-table") should not be null
       doc(result).getElementById("reference-table-header").text shouldBe Messages("reference.table.header")
-      doc(result).getElementById("upload-date-table-header").text shouldBe Messages("upload.date.table.header")
-      doc(result).getElementById("time-left-table-header").text shouldBe Messages("time.left.table.header")
+      doc(result).getElementById("expiry-date-table-header").text shouldBe Messages("expiry.date.table.header")
     }
 
     "not contain a result link when no file is in progress" in {
@@ -152,7 +152,7 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
     }
 
     "disable results link when no callback data is available" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",Some(new DateTime().plusDays(10).getMillis))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = TestDashboardController.get(fakeRequest)
