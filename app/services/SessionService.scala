@@ -191,20 +191,7 @@ trait ShortLivedCache  {
         false
     }
   }
-
-  def getUploadTimeStamp(userId: String)(implicit hc: HeaderCarrier) = {
-    fetchFileSession(userId).map{
-      case Some(fileSession) =>
-        fileSession.uploadTimeStamp match {
-          case Some(timeStamp) => timeStamp
-          case _ => Logger.error("[SessionService][getUploadTimeStamp] no timestamp retrieved")
-        }
-      case _ => Logger.error("[SessionService][getUploadTimeStamp] no fileSession retrieved")
-    }
-  }
-
-
-
+  
   def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier) = {
     shortLivedCache.remove(userId).map(_.status).recover {
     case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
