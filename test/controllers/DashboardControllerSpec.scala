@@ -167,6 +167,15 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("global-error")
       }
+
+      "no upload timestamp is available" in {
+        val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
+        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+        val result = TestDashboardController.get(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("global-error")
+      }
     }
 
     "get results file" in {

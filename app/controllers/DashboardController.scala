@@ -58,7 +58,7 @@ trait DashboardController extends RasController with PageFlowController {
             case true =>
               shortLivedCache.fetchFileSession(userId).map {
                 case Some(fileSession) =>
-                  fileSession.uploadTimeStamp match{
+                  fileSession.uploadTimeStamp match {
                     case Some(timeStamp) =>
                       val expiryDate = new DateTime(timeStamp).plusDays(3).toString("d MMMM yyyy HH:mm")
                       fileSession.userFile match {
@@ -71,8 +71,6 @@ trait DashboardController extends RasController with PageFlowController {
                       Logger.error("[DashboardController][get] no timestamp retrieved")
                       Redirect(routes.GlobalErrorController.get)
                   }
-
-
                 case _ =>
                   Logger.error("[DashboardController][get] failed to retrieve file session")
                   Redirect(routes.GlobalErrorController.get)
