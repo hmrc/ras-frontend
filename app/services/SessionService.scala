@@ -143,34 +143,18 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
-  def cacheFileInProcess(aFileIsInProcess: Boolean)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
-          case None => cleanSession.copy(aFileIsInProcess = Some(aFileIsInProcess))
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
 }
 
 trait ShortLivedCache  {
 
   val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
   private val source = "ras"
-  private val cacheId = "fileSession"
+
   val hoursToWaitForReUpload = 24
 
-  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier) = {
+  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier):Future[Boolean] = {
 
-    shortLivedCache.cache[FileSession](source, cacheId, userId,
+    shortLivedCache.cache[FileSession](source, userId, "fileSession",
       FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true) recover {
       case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
         s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
@@ -180,7 +164,7 @@ trait ShortLivedCache  {
   }
 
   def fetchFileSession(userId: String)(implicit hc: HeaderCarrier) = {
-    shortLivedCache.fetchAndGetEntry[FileSession](source, cacheId, userId).recover {
+    shortLivedCache.fetchAndGetEntry[FileSession](source, userId, "fileSession").recover {
       case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache => " +
         s"${userId} , Exception is ${ex.getMessage}")
         None
@@ -194,29 +178,27 @@ trait ShortLivedCache  {
       newTime.isBefore(DateTime.now.minusHours(hoursToWaitForReUpload).getMillis)
     }
 
-    fetchFileSession(userId).map(res => res.isDefined match {
-      //if the fileSession has results file then allow user to upload
-      case true => //check if it is more than a day that file has been uploaded and there are no results file
-        res.get.resultsFile.isDefined || !uploadTimeDiff(res.get.uploadTimeStamp.get)
-      // if FileSession is not available for the userId
-      case false => Logger.warn("fileSession not defined for " + userId)
-        false
+    fetchFileSession(userId).map(fileSession =>
+      fileSession.isDefined match {
+        case true =>
+          fileSession.get.resultsFile.isDefined || !uploadTimeDiff(fileSession.get.uploadTimeStamp.get)
+        case false =>
+          Logger.warn("fileSession not defined for " + userId)
+          false
     }).recover {
-      case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache  to check  isFileInProgress => " +
-        s"${userId} , Exception is ${ex.getMessage}")
+      case ex: Throwable =>
+        Logger.error(s"unable to fetch FileSession from cache to check isFileInProgress => ${userId} , Exception is ${ex.getMessage}")
         false
     }
   }
-
+  
   def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier) = {
-    val res = shortLivedCache.remove(userId).map(_.status).recover {
-      case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
-        s"${userId} , Exception is ${ex.getMessage}")
-      //try again as the only option left if sessioncache fails
-        shortLivedCache.remove(userId).map(_.status)
-      }
-
-    res
+    shortLivedCache.remove(userId).map(_.status).recover {
+    case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
+      s"${userId} , Exception is ${ex.getMessage}")
+    //try again as the only option left if sessioncache fails
+      shortLivedCache.remove(userId).map(_.status)
+    }
   }
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileInProgress: Boolean, fileId: String, readyForDownload: Boolean, expiryDate: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -39,41 +39,41 @@
 
 </div>
 
-<div class="row">
-  <div class="grid-layout__column--1-2">
-    <h2 id="recent-lookups">@Messages("recent.lookups")</h2>
-    <p id="recent-lookups-description">@Messages("recent.lookups.description")</p>
+@if(fileInProgress){
+  <div class="row">
+    <div class="grid-layout__column--1-2">
+      <h2 id="recent-lookups">@Messages("recent.lookups")</h2>
+      <p id="recent-lookups-description">@Messages("recent.lookups.description")</p>
+    </div>
+
+      <table id="recent-lookups-table">
+
+        <colgroup>
+          <col width="2%">
+          <col width="2%">
+        </colgroup>
+
+        <thead>
+          <tr id="table-row">
+            <th id="reference-table-header"><span>@Messages("reference.table.header")</span></th>
+            <th id="expiry-date-table-header" class="r-padding numeric"><span>@Messages("expiry.date.table.header")</span></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            @if(readyForDownload){
+              <td class="r-padding" id="result"><a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">@Messages("result")</a></td>
+              <td class="r-padding numeric" id="days-left">@expiryDate</td>
+            }else{
+              <td class="r-padding" id="result">@Messages("result")</td>
+            }
+
+          </tr>
+        </tbody>
+
+      </table>
   </div>
-
-  <table id="recent-lookups-table">
-
-    <colgroup>
-      <col width="2%">
-      <col width="2%">
-      <col width="2%">
-    </colgroup>
-
-    <thead>
-      <tr id="table-row">
-        <th id="reference-table-header"><span>@Messages("reference.table.header")</span></th>
-        <th id="upload-date-table-header" class="r-padding numeric"><span>@Messages("upload.date.table.header")</span></th>
-        <th id="time-left-table-header" class="r-padding numeric"><span>@Messages("time.left.table.header")</span></th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td class="r-padding" id="reference"><a href="">Reference 1</a></td>
-        <td class="r-padding numeric" id="upload-date">30 July 2017</td>
-        <td class="r-padding numeric" id="days-left">28 Days</td>
-      </tr>
-    </tbody>
-
-  </table>
-</div>
-
-<div class="row">
-  <a id="more-results-link" href="">@Messages("more.results")</a>
-</div>
+}
 
 }

@@ -20,6 +20,7 @@ import akka.stream.scaladsl.{Source, StreamConverters}
 import akka.util.ByteString
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import org.joda.time.DateTime
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
@@ -41,12 +42,42 @@ trait DashboardController extends RasController with PageFlowController {
 
   val resultsFileConnector:ResidencyStatusAPIConnector
   implicit val context: RasContext = RasContextImpl
-  private val _contentType =   "application/octet-stream"
+  private val _contentType =   "application/csv"
+
+  val fileIsInProgress = true
+  val noFileInProgress = false
+  val readyForDownload = true
+  val notReadyForDownload = false
+
 
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) => Future.successful(Ok(views.html.dashboard()))
+        case Right(userId) =>
+          shortLivedCache.isFileInProgress(userId).flatMap {
+            case true =>
+              shortLivedCache.fetchFileSession(userId).map {
+                case Some(fileSession) =>
+                  fileSession.uploadTimeStamp match {
+                    case Some(timeStamp) =>
+                      val expiryDate = new DateTime(timeStamp).plusDays(3).toString("d MMMM yyyy HH:mm")
+                      fileSession.userFile match {
+                        case Some(callbackData) =>
+                          Ok(views.html.dashboard(fileIsInProgress, callbackData.fileId, readyForDownload, expiryDate))
+                        case _ =>
+                          Ok(views.html.dashboard(fileIsInProgress, "", notReadyForDownload, ""))
+                      }
+                    case _ =>
+                      Logger.error("[DashboardController][get] no timestamp retrieved")
+                      Redirect(routes.GlobalErrorController.get)
+                  }
+                case _ =>
+                  Logger.error("[DashboardController][get] failed to retrieve file session")
+                  Redirect(routes.GlobalErrorController.get)
+              }
+            case _ =>
+              Future.successful(Ok(views.html.dashboard(noFileInProgress,"",noFileInProgress,"")))
+          }
         case Left(resp) =>
           Logger.warn("[DashboardController][get] user not authorised")
           resp
@@ -56,13 +87,17 @@ trait DashboardController extends RasController with PageFlowController {
   def getResultsFile(fileName:String):  Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>  resultsFileConnector.getFile(fileName).map { response =>
+        case Right(userId) =>  resultsFileConnector.getFile(fileName).map { response =>
           val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
 
-          Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
-            .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${fileName}"""",
+          val res = Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
+            .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${fileName}.csv"""",
              // CONTENT_LENGTH -> s"${fileData.get.length}",
               CONTENT_TYPE -> _contentType)
+
+          shortLivedCache.removeFileSessionFromCache(userId)
+
+          res
         }.recover {
           case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
             Redirect(routes.GlobalErrorController.get())

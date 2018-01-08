@@ -16,26 +16,25 @@
 
 package controllers
 
-import config.{ApplicationConfig, RasContext, RasContextImpl}
+import config.ApplicationConfig
 import connectors.UserDetailsConnector
 import helpers.helpers.I18nHelper
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request}
-import services.SessionService
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
-import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core._
-
+import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.play.frontend.config.AuthRedirects
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
-import uk.gov.hmrc.play.frontend.config.AuthRedirects
 
 trait RasController extends FrontendController with I18nHelper with AuthorisedFunctions with AuthRedirects {
 
   val userDetailsConnector:UserDetailsConnector
   val sessionService: SessionService = SessionService
+  val shortLivedCache: ShortLivedCache = ShortLivedCache
 
   def isAuthorised()(implicit request: Request[AnyContent]) = {
     authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
