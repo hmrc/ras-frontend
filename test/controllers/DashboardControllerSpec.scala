@@ -217,6 +217,10 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         doc(result).getElementById("document").text shouldBe Messages("document")
       }
 
+      "contain a document image" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("document-image").attr("src") should include("download-the-file.png")
+      }
 
     }
 
