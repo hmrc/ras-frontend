@@ -212,6 +212,11 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         doc(result).getElementById("page-header").text shouldBe Messages("upload.result.page.header")
       }
 
+      "contain a document header" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("document").text shouldBe Messages("document")
+      }
+
 
     }
 
