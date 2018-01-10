@@ -26,6 +26,7 @@ import models.{CallbackData, FileSession, UserDetails}
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -201,10 +202,17 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         doc(result).title shouldBe Messages("upload.result.page.title")
       }
 
+      "contain a back link pointing to" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("back").attr("href") should include("dashboard")
+      }
+
       "contain the correct page header" in {
         val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("page-header").text shouldBe Messages("upload.result.page.header")
       }
+
+
     }
 
   }
