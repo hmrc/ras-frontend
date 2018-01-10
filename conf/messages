@@ -6,6 +6,8 @@ member = member
 dashboard.page.title = Choose a look up type - GOV.UK
 dashboard.page.header = Choose a look up type
 
+upload.result.page.title = The residency status has been added - GOV.UK
+
 single.lookup.link = Single look up
 single.lookup.description = Use the look up to check a single member''s residency status and get an instant on-screen result.
 
@@ -135,3 +137,4 @@ file.upload.empty.file.reason=Envelope does not allow zero length files, and sub
 file.empty.error=Cannot upload an empty file.
 file.large.error=File size exceeds limit to upload.
 upload.failed.error=There is an unknown problem with the file you are trying to upload.
+

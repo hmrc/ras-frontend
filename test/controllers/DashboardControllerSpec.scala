@@ -189,8 +189,18 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       content shouldBe row1
     }
 
+    "upload result page" should {
 
+      "return ok when called" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        status(result) shouldBe OK
+      }
 
+      "contain the correct page title" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).title shouldBe Messages("upload.result.page.title")
+      }
+    }
 
   }
 
