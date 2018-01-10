@@ -29,7 +29,6 @@ import org.jsoup.nodes.Document
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
 import play.api.test.{FakeRequest, Helpers}
@@ -37,12 +36,12 @@ import play.api.{Configuration, Environment}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
 
-class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with MockitoSugar with I18nHelper {
+class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper with WithFakeApplication {
 
   implicit val headerCarrier = HeaderCarrier()
   implicit val actorSystem = ActorSystem()
@@ -88,6 +87,11 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
   "DashboardController" should {
+
+    "respond to GET /relief-at-source/residency-status-added" in {
+      val result = route(fakeApplication, FakeRequest(GET, "/relief-at-source/residency-status-added"))
+      status(result.get) should not equal (NOT_FOUND)
+    }
 
     "respond to GET /dashboard" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
@@ -184,6 +188,9 @@ class DashboardControllerSpec extends UnitSpec with OneServerPerSuite with Mocki
       val content = contentAsString(result)
       content shouldBe row1
     }
+
+
+
 
   }
 
