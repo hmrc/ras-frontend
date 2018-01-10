@@ -7,6 +7,7 @@ dashboard.page.title = Choose a look up type - GOV.UK
 dashboard.page.header = Choose a look up type
 
 upload.result.page.title = The residency status has been added - GOV.UK
+upload.result.page.header = The residency status has been added
 
 single.lookup.link = Single look up
 single.lookup.description = Use the look up to check a single member''s residency status and get an instant on-screen result.
