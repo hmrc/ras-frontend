@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(fileId: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileId: String, expiryDate: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -36,6 +36,8 @@
         <h2 id="document">@Messages("document")</h2>
         <a id="document-image-link" href="@routes.DashboardController.getResultsFile(fileId)"><img id="document-image" src="@routes.AssetsController.at("images/download-the-file.png")"></a>
         <a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">@Messages("residency.status.result")</a>
+        <p id="file-type-size">@Messages("file.type.size")</p>
+        <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</pid>
       </div>
 
       <div class="row">

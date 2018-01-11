@@ -25,6 +25,9 @@ result = Result
 document = Document
 residency.status.result = Residency-status-results.CSV
 
+file.type.size = CSV, 2MB.
+expiry.date.message = This spreadsheet will be deleted on {0} if you do not open it.
+
 member.name.page.title = Member name - GOV.UK
 member.name.page.header = What is the member''s name?
 member.name.page.sub-header = As shown on their birth certificate or passport.

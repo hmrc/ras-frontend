@@ -90,12 +90,17 @@ trait DashboardController extends RasController with PageFlowController {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).map {
             case Some(fileSession) =>
-              fileSession.userFile match {
-                case Some(callbackData) =>
-                  Ok(views.html.upload_result(callbackData.fileId))
-                case _ =>
-                  Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve callback data")
-                  Redirect(routes.GlobalErrorController.get)
+              fileSession.uploadTimeStamp match {
+                case Some(timeStamp) =>
+                  val expiryDate = new DateTime(timeStamp).plusDays(3).toString("EEEE d MMMM yyyy")
+                  fileSession.userFile match {
+                    case Some(callbackData) =>
+                      Ok(views.html.upload_result(callbackData.fileId,expiryDate))
+                    case _ =>
+                      Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve callback data")
+                      Redirect(routes.GlobalErrorController.get)
+                  }
+                case _ => ???
               }
             case _ =>
               Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve file session")
