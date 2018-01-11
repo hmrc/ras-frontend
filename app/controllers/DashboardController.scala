@@ -88,7 +88,16 @@ trait DashboardController extends RasController with PageFlowController {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          Future.successful(Ok(views.html.upload_result()))
+          shortLivedCache.fetchFileSession(userId).map {
+            case Some(fileSession) =>
+              fileSession.userFile match {
+                case Some(callbackData) =>
+                  Ok(views.html.upload_result(callbackData.fileId))
+                case _ => ???
+              }
+            case _ => ???
+          }
+
         case Left(resp) =>
           Logger.warn("[DashboardController][get] user not authorised")
           resp

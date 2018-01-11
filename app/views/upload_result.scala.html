@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileId: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -34,7 +34,7 @@
       <div class="row">
         <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
         <h2 id="document">@Messages("document")</h2>
-        <img id="document-image" src="@routes.AssetsController.at("images/download-the-file.png")">
+        <a id="document-image-link" href="@routes.DashboardController.getResultsFile(fileId)"><img id="document-image" src="@routes.AssetsController.at("images/download-the-file.png")"></a>
       </div>
 
       <div class="row">
