@@ -22,7 +22,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import helpers.helpers.I18nHelper
-import models.{CallbackData, FileSession, UserDetails}
+import models.{CallbackData, FileSession, ResultsFileMetaData, UserDetails}
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -62,7 +62,8 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
   val mockRasConnector = mock[ResidencyStatusAPIConnector]
   val mockUploadTimeStamp = new DateTime().minusDays(10).getMillis
   val mockExpiryTimeStamp = new DateTime().minusDays(7).getMillis
-  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",Some(mockUploadTimeStamp))
+  val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
+  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
@@ -124,38 +125,10 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       doc(result).getElementById("bulk-lookup-description").text shouldBe Messages("bulk.lookup.description")
     }
 
-    "contain recent bulk lookups header and description" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      val result = TestDashboardController.get(fakeRequest)
-      doc(result).getElementById("recent-lookups").text shouldBe Messages("recent.lookups")
-      doc(result).getElementById("recent-lookups-description").text shouldBe Messages("recent.lookups.description")
-    }
-
-    "contain bulk lookup table" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      val result = TestDashboardController.get(fakeRequest)
-      doc(result).getElementById("recent-lookups-table") should not be null
-      doc(result).getElementById("reference-table-header").text shouldBe Messages("reference.table.header")
-      doc(result).getElementById("expiry-date-table-header").text shouldBe Messages("expiry.date.table.header")
-    }
-
     "not contain a result link when no file is in progress" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestDashboardController.get(fakeRequest)
       doc(result).getElementById("result-link") shouldBe null
-    }
-
-    "contain a result link when file is in progress" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      val result = TestDashboardController.get(fakeRequest)
-      doc(result).getElementById("result-link") should not be null
-    }
-
-    "contain file id in the download results link" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = TestDashboardController.get(fakeRequest)
-      doc(result).getElementById("result-link").attr("href") should include("someFileId")
     }
 
     "disable results link when no callback data is available" in {
@@ -170,6 +143,15 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       "no file session is available" in {
         when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+        val result = TestDashboardController.get(fakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("global-error")
+      }
+
+      "no results file is available" in {
+        val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
+        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
         val result = TestDashboardController.get(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("global-error")
@@ -270,8 +252,16 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
           redirectLocation(result).get should include("/global-error")
         }
 
+        "render upload result page is called but results file does not exist" in {
+          val fileSession = FileSession(None,None,"1234",None)
+          when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+          val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get should include("/global-error")
+        }
+
         "render upload result page is called but there is no callback data in the retrieved file session" in {
-          val fileSession = FileSession(None,None,"1234",Some(new DateTime().plusDays(10).getMillis))
+          val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(new DateTime().plusDays(10).getMillis))
           when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
           val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
           status(result) shouldBe SEE_OTHER
