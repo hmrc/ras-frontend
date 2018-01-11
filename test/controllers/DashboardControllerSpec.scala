@@ -243,6 +243,11 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",expiryDate)
       }
 
+      "contain a deletion message" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
+      }
+
       "redirect to error page" when {
 
         "render upload result page is called but a file session does not exist" in {

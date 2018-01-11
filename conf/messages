@@ -27,6 +27,7 @@ residency.status.result = Residency-status-results.CSV
 
 file.type.size = CSV, 2MB.
 expiry.date.message = This spreadsheet will be deleted on {0} if you do not open it.
+deletion.message = When you have opened this spreadsheet, you should save a copy of it because it will then be automatically deleted from this service.
 
 member.name.page.title = Member name - GOV.UK
 member.name.page.header = What is the member''s name?
@@ -46,7 +47,7 @@ global.upload.error.page.title = Upload error - GOV.UK
 global.upload.error.header = There has been a problem
 global.upload.error.sub-header = This could be caused by:
 a.system.timeout = A system timeout
-a.technical.error = A technical error
+a.technical.timeout = A technical error
 try.uploading.again = Try again and upload your file
 
 first.name = first name
