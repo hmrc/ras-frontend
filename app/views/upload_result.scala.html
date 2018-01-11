@@ -24,28 +24,38 @@
 
 
 <div class="grid-layout--no-gutter">
-  <div class="grid-layout__column">
-    <div class="grid-layout__column--3-4">
-
-      <div class="back-arrow">
-        <a id="back" class="link-back" href="@routes.DashboardController.get">@Messages("back")</a>
-      </div>
-
-      <div class="row">
-        <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
-        <h2 id="document">@Messages("document")</h2>
-        <a id="document-image-link" href="@routes.DashboardController.getResultsFile(fileId)"><img id="document-image" src="@routes.AssetsController.at("images/download-the-file.png")"></a>
-        <a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">@Messages("residency.status.result")</a>
-        <p id="file-type-size">@Messages("file.type.size")</p>
-        <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</p>
-        <p id="deletion-message">@Messages("deletion.message")</p>
-      </div>
-
-      <div class="row">
-        <a id="choose-something-else" class="button" href="@routes.DashboardController.get">@Messages("choose.something.else")</a>
-      </div>
-
-    </div>
+  <div class="back-arrow">
+    <a id="back" class="link-back" href="@routes.DashboardController.get">@Messages("back")</a>
+  </div>
+  <div class="row">
+      <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
   </div>
 </div>
+
+
+<div class="row">
+
+  <div id="document-div">
+    <h2 id="document">@Messages("document")</h2>
+  </div>
+
+  <div id="document-image-div">
+    <a id="document-image-link" href="@routes.DashboardController.getResultsFile(fileId)"><img id="document-image" src="@routes.AssetsController.at("images/download-the-file.png")"></a>
+  </div>
+
+  <div id="result-link-div">
+    <a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">@Messages("residency.status.result")</a>
+    <p id="file-type-size">@Messages("file.type.size")</p>
+    <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</p>
+    <p id="deletion-message">@Messages("deletion.message")</p>
+  </div>
+
+</div>
+
+
+<div id="continue-div">
+  <a id="choose-something-else" class="button" href="@routes.DashboardController.get">@Messages("choose.something.else")</a>
+</div>
+
+
 }

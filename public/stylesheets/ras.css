@@ -110,3 +110,28 @@
   margin-bottom:0;
 }
 
+#document-div {
+  padding-top: 20px;
+  width: 15%;
+  float:left;
+}
+
+#document-image-div {
+  padding-top: 20px;
+  overflow: hidden;
+  float:left;
+}
+
+#result-link-div {
+  padding-top: 20px;
+  overflow: hidden;
+  padding-left: 20px;
+}
+
+#continue-div{
+  padding-top: 40px;
+}
+
+#document-image{
+  width:120px;
+}
