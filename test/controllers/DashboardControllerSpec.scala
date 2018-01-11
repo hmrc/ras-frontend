@@ -225,8 +225,40 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       "contain a document image that points to get results file" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
         val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
-        doc(result).getElementById("document-image-link").attr("href") should include("/results")
+        doc(result).getElementById("document-image-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
       }
+
+      "contain a result link with the correct file name" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("result-link").text shouldBe Messages("residency.status.result")
+      }
+
+      "Contain a result link pointing to the results file" in {
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("result-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
+      }
+
+      "redirect to error page" when {
+
+        "render upload result page is called but a file session does not exist" in {
+          when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+          val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get should include("/global-error")
+        }
+
+        "render upload result page is called but there is no callback data in the retrieved file session" in {
+          val fileSession = FileSession(None,None,"1234",Some(new DateTime().plusDays(10).getMillis))
+          when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+          val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get should include("/global-error")
+        }
+
+      }
+
+
     }
 
   }

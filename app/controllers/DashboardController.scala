@@ -93,9 +93,13 @@ trait DashboardController extends RasController with PageFlowController {
               fileSession.userFile match {
                 case Some(callbackData) =>
                   Ok(views.html.upload_result(callbackData.fileId))
-                case _ => ???
+                case _ =>
+                  Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve callback data")
+                  Redirect(routes.GlobalErrorController.get)
               }
-            case _ => ???
+            case _ =>
+              Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve file session")
+              Redirect(routes.GlobalErrorController.get)
           }
 
         case Left(resp) =>

@@ -23,6 +23,7 @@ expiry.date.table.header = Expires on
 
 result = Result
 document = Document
+residency.status.result = Residency-status-results.CSV
 
 member.name.page.title = Member name - GOV.UK
 member.name.page.header = What is the member''s name?
