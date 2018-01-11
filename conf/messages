@@ -21,6 +21,8 @@ recent.lookups.description = You have 3 days from the processing date to view th
 reference.table.header = Reference
 expiry.date.table.header = Expires on
 
+
+choose.something.else = Choose something else to do
 result = Result
 document = Document
 residency.status.result = Residency-status-results.CSV

@@ -248,6 +248,16 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
       }
 
+      "contain a button to choose something else to do" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+      }
+
+      "contain a button to choose something else to do which points to what do you want to do page" in {
+        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        doc(result).getElementById("choose-something-else").attr("href") should include("/dashboard")
+      }
+
       "redirect to error page" when {
 
         "render upload result page is called but a file session does not exist" in {
