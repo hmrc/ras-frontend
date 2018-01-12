@@ -50,7 +50,6 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   val readyForDownload = true
   val notReadyForDownload = false
 
-
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
@@ -61,7 +60,6 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                 case Some(fileSession) =>
                   fileSession.uploadTimeStamp match {
                     case Some(timeStamp) =>
-                      val expiryDate = new DateTime(timeStamp).plusDays(3).toString("d MMMM yyyy HH:mm")
                       fileSession.userFile match {
                         case Some(callbackData) =>
                           Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, callbackData.fileId, readyForDownload))
@@ -95,7 +93,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,noFileInProgress,"",notReadyForDownload)))
             },
             userChoice =>
-              Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, "", notReadyForDownload)))
+              ???
           )
         case Left(resp) =>
           Logger.debug("[WhatDoYouWantToDoController][post] user mot authorised")

@@ -150,21 +150,18 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
   "post" should {
 
+    "respond with bad request, must choose option" in {
+      val postData = Json.obj("userChoice" -> "")
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      status(result) should equal(BAD_REQUEST)
+    }
 
-//    "respond with bad request, must choose option" in {
-//      val postData = Json.obj("userChoice" -> "")
-//      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-//      status(result) should equal(BAD_REQUEST)
-//    }
-
-//    "cache userChoice" in {
-//val postData = Json.obj("userChoice" -> Messages("single.status.radio"))
-
-    //      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
-//      val postData = Json.obj("userChoice" -> Messages("single.status.radio"))
-//      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-//
-//    }
+    "redirect to member name page when relevant option is selected" in {
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      val postData = Json.obj("userChoice" -> Messages("single.status.radio"))
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      redirectLocation(result).get should include("member-name")
+    }
   }
 
   "renderUploadResultsPage" should {
