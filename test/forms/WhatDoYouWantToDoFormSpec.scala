@@ -32,13 +32,13 @@ class WhatDoYouWantToDoFormSpec extends UnitSpec with I18nHelper with OneAppPerS
       val whatDoYouWantToDo =  Json.toJson(WhatDoYouWantToDo(Some("1")))
       val result = whatDoYouWantToDoForm.bind(whatDoYouWantToDo)
       assert(result.errors.size == 0)
-      assert(!result.errors.contains(FormError("userChoice",List("have to select an option"))))
+      assert(!result.errors.contains(FormError("userChoice",List(Messages("select.an.answer")))))
     }
 
     "contain an error if no option is selected" in {
       val result = whatDoYouWantToDoForm.bind(Map[String, String]())
       assert(result.errors.size == 1)
-      assert(result.errors.contains(FormError("userChoice",List("have to select an option"))))
+      assert(result.errors.contains(FormError("userChoice",List(Messages("select.an.answer")))))
     }
 
   }
