@@ -92,9 +92,10 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           whatDoYouWantToDoForm.bindFromRequest.fold(
             formWithErrors => {
               Logger.debug("[WhatDoYouWantToDoController][post] No option selected")
-              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,false,"",false)))
+              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,noFileInProgress,"",notReadyForDownload)))
             },
-            userChoice => {???}
+            userChoice =>
+              Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, "", notReadyForDownload)))
           )
         case Left(resp) =>
           Logger.debug("[WhatDoYouWantToDoController][post] user mot authorised")

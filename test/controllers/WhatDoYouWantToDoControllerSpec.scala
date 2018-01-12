@@ -21,8 +21,9 @@ import java.io.ByteArrayInputStream
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import helpers.RandomNino
 import helpers.helpers.I18nHelper
-import models.{CallbackData, FileSession, ResultsFileMetaData, UserDetails}
+import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,6 +31,7 @@ import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
@@ -65,6 +67,8 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
   val mockExpiryTimeStamp = new DateTime().minusDays(7).getMillis
   val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
   val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+  val userChoice = ""
+  val rasSession = RasSession(userChoice ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""))
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
@@ -146,13 +150,21 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
   "post" should {
 
-    "respond with bad request must choose option" in {
-      val postData = Json.obj(
-        "userChoice" -> Messages("single.status.radio"))
-      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) should equal(BAD_REQUEST)
-    }
 
+//    "respond with bad request, must choose option" in {
+//      val postData = Json.obj("userChoice" -> "")
+//      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+//      status(result) should equal(BAD_REQUEST)
+//    }
+
+//    "cache userChoice" in {
+//val postData = Json.obj("userChoice" -> Messages("single.status.radio"))
+
+    //      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+//      val postData = Json.obj("userChoice" -> Messages("single.status.radio"))
+//      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+//
+//    }
   }
 
   "renderUploadResultsPage" should {

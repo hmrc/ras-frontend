@@ -56,7 +56,8 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
   val memberName = MemberName("Jackie","Chan")
   val memberNino = MemberNino("AB123456C")
   val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
-  val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""), None)
+  val userChoice = ""
+  val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""), None)
   val postData = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
 
 
@@ -156,7 +157,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "redirect to nino page when name cached" in {
-      val session = RasSession(memberName, MemberNino(""), MemberDateOfBirth(RasDate(None,None,None)), ResidencyStatusResult("","","","","","",""),None)
+      val session = RasSession(userChoice, memberName, MemberNino(""), MemberDateOfBirth(RasDate(None,None,None)), ResidencyStatusResult("","","","","","",""),None)
       when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(session)))
       val result = TestMemberNameController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303

@@ -66,7 +66,8 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   val memberDob = MemberDateOfBirth(dob)
   val residencyStatusResult = ResidencyStatusResult("", "", "", "", "", "", "")
   val postData = Json.obj("firstName" -> "Jim", "lastName" -> "McGill", "nino" -> nino, "dateOfBirth" -> dob)
-  val rasSession = RasSession(name, nino, memberDob, residencyStatusResult, None)
+  val userChoice = ""
+  val rasSession = RasSession(userChoice, name, nino, memberDob, residencyStatusResult, None)
 
 
   object TestResultsController extends ResultsController {
@@ -126,7 +127,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     "contain customer details and residency status when match found" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
-          RasSession(name, nino, memberDob,
+          RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
               SCOTTISH, NON_SCOTTISH,
               currentTaxYear.toString, (currentTaxYear + 1).toString,
@@ -152,7 +153,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     "display correct residency status for UK UK" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
-          RasSession(name, nino, memberDob,
+          RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
               NON_SCOTTISH, NON_SCOTTISH,
               currentTaxYear.toString, (currentTaxYear + 1).toString,
@@ -169,7 +170,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     "contain customer details and residency status when match not found" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
-          RasSession(name, nino, memberDob,
+          RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
               "", "",
               currentTaxYear.toString, (currentTaxYear + 1).toString,
@@ -207,7 +208,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     "return to member dob page when back link is clicked" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
-          RasSession(name, nino, memberDob,
+          RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
               NON_SCOTTISH, NON_SCOTTISH,
               currentTaxYear.toString, (currentTaxYear + 1).toString,

@@ -19,7 +19,8 @@ package models
 import play.api.libs.json.Json
 
 
-case class RasSession(name:MemberName,
+case class RasSession(userChoice:String,
+                      name:MemberName,
                       nino:MemberNino,
                       dateOfBirth:MemberDateOfBirth,
                       residencyStatusResult: ResidencyStatusResult,
