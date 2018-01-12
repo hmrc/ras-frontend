@@ -112,7 +112,6 @@ trait DashboardController extends RasController with PageFlowController {
               Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve file session")
               Redirect(routes.GlobalErrorController.get)
           }
-
         case Left(resp) =>
           Logger.warn("[DashboardController][get] user not authorised")
           resp

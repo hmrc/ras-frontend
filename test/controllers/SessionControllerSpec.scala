@@ -82,10 +82,10 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
         redirectLocation(result).get should include("member-date-of-birth")
       }
 
-      "redirect is called with dashboard and clean" in {
+      "redirect is called with what do you want to do and clean" in {
         when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = await(TestSessionController.redirect("dashboard",true)(FakeRequest()))
-        redirectLocation(result).get should include("dashboard")
+        val result = await(TestSessionController.redirect("whatDoYouWantToDo",true)(FakeRequest()))
+        redirectLocation(result).get should include("what-do-you-want-to-do")
       }
 
       "redirect is called with member-name" in {

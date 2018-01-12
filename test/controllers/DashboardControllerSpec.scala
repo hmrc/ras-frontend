@@ -90,7 +90,12 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
-  "DashboardController" should {
+  "WhatDoYouWantToDoController" should {
+
+    "respond to GET /relief-at-source/what-do-you-want-to-do" in {
+      val result = route(fakeApplication, FakeRequest(GET, "/relief-at-source/what-do-you-want-to-do"))
+      status(result.get) should not equal (NOT_FOUND)
+    }
 
     "respond to GET /relief-at-source/residency-status-added" in {
       val result = route(fakeApplication, FakeRequest(GET, "/relief-at-source/residency-status-added"))
@@ -191,7 +196,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       "contain a back link pointing to" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
         val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
-        doc(result).getElementById("back").attr("href") should include("dashboard")
+        doc(result).getElementById("back").attr("href") should include("what-do-you-want-to-do")
       }
 
       "contain the correct page header" in {
@@ -255,7 +260,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
 
       "contain a button to choose something else to do which points to what do you want to do page" in {
         val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
-        doc(result).getElementById("choose-something-else").attr("href") should include("/dashboard")
+        doc(result).getElementById("choose-something-else").attr("href") should include("/what-do-you-want-to-do")
       }
 
       "redirect to error page" when {
