@@ -48,7 +48,7 @@ trait SessionController extends RasController {
         sessionService.resetRasSession() map {
           case Some(session) =>
             target match {
-              case WHAT_DO_YOU_WANT_TO_DO => Redirect(routes.DashboardController.get())
+              case WHAT_DO_YOU_WANT_TO_DO => Redirect(routes.WhatDoYouWantToDoController.get())
               case MEMBER_NAME => Redirect(routes.MemberNameController.get())
               case MEMBER_NINO => Redirect(routes.MemberNinoController.get())
               case MEMBER_DOB => Redirect(routes.MemberDOBController.get())
@@ -62,7 +62,7 @@ trait SessionController extends RasController {
         }
       } else {
         target match {
-          case WHAT_DO_YOU_WANT_TO_DO => Future.successful(Redirect(routes.DashboardController.get()))
+          case WHAT_DO_YOU_WANT_TO_DO => Future.successful(Redirect(routes.WhatDoYouWantToDoController.get()))
           case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get()))
           case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get()))
           case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get()))

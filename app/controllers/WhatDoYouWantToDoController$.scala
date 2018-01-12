@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
-object DashboardController extends DashboardController {
+object WhatDoYouWantToDoController extends WhatDoYouWantToDoController {
   // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
   val authConnector: AuthConnector = FrontendAuthConnector
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
@@ -38,7 +38,7 @@ object DashboardController extends DashboardController {
   // $COVERAGE-ON$
 }
 
-trait DashboardController extends RasController with PageFlowController {
+trait WhatDoYouWantToDoController extends RasController with PageFlowController {
 
   val resultsFileConnector:ResidencyStatusAPIConnector
   implicit val context: RasContext = RasContextImpl

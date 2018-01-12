@@ -2,9 +2,9 @@
 
 GET         /assets/*file                 @controllers.AssetsController.at(path="/public", file)
 
-GET         /what-do-you-want-to-do       controllers.DashboardController.get
-GET         /residency-status-added       controllers.DashboardController.renderUploadResultsPage
-GET         /dashboard/results/:fileName  controllers.DashboardController.getResultsFile(fileName:String)
+GET         /what-do-you-want-to-do       controllers.WhatDoYouWantToDoController.get
+GET         /residency-status-added       controllers.WhatDoYouWantToDoController.renderUploadResultsPage
+GET         /dashboard/results/:fileName  controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
 
 
 GET         /bulk/bulk-upload             controllers.FileUploadController.get

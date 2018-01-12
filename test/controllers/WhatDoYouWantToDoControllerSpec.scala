@@ -42,7 +42,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import scala.concurrent.Future
 
 
-class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper with WithFakeApplication {
+class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I18nHelper with WithFakeApplication {
 
   implicit val headerCarrier = HeaderCarrier()
   implicit val actorSystem = ActorSystem()
@@ -68,7 +68,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
 
-  object TestDashboardController extends DashboardController {
+  object TestWhatDoYouWantToDoController extends WhatDoYouWantToDoController {
 
     val authConnector: AuthConnector = mockAuthConnector
     override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
@@ -102,15 +102,15 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       status(result.get) should not equal (NOT_FOUND)
     }
 
-    "respond to GET /dashboard" in {
+    "respond to GET /what-do-you-want-to-do" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestDashboardController.get(fakeRequest)
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       status(result) shouldBe OK
     }
 
     "contain the correct title and header" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestDashboardController.get(fakeRequest)
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).title shouldBe Messages("dashboard.page.title")
       doc(result).getElementById("header").text shouldBe Messages("dashboard.page.header")
     }
@@ -118,21 +118,21 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
     "contain single lookup link and description" in {
 
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestDashboardController.get(fakeRequest)
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementById("single-lookup-link").text shouldBe Messages("single.lookup.link")
       doc(result).getElementById("single-lookup-description").text shouldBe Messages("single.lookup.description")
     }
 
     "contain bulk lookup link and description" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestDashboardController.get(fakeRequest)
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementById("bulk-lookup-link").text shouldBe Messages("bulk.lookup.link")
       doc(result).getElementById("bulk-lookup-description").text shouldBe Messages("bulk.lookup.description")
     }
 
     "not contain a result link when no file is in progress" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestDashboardController.get(fakeRequest)
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementById("result-link") shouldBe null
     }
 
@@ -140,7 +140,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       val fileSession = FileSession(None,None,"1234",Some(new DateTime().plusDays(10).getMillis))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = TestDashboardController.get(fakeRequest)
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementById("result").text shouldBe Messages("result")
     }
 
@@ -148,7 +148,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
       "no file session is available" in {
         when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
-        val result = TestDashboardController.get(fakeRequest)
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("global-error")
       }
@@ -157,7 +157,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
         when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = TestDashboardController.get(fakeRequest)
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("global-error")
       }
@@ -166,14 +166,14 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
         when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = TestDashboardController.get(fakeRequest)
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("global-error")
       }
     }
 
     "get results file" in {
-      val result = await(TestDashboardController.getResultsFile("testFile.csv").apply(FakeRequest(Helpers.GET,
+      val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(FakeRequest(Helpers.GET,
         "/dashboard/results/:testFile.csv")))
       val content = contentAsString(result)
       content shouldBe row1
@@ -183,83 +183,83 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
 
       "return ok when called" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         status(result) shouldBe OK
       }
 
       "contain the correct page title" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).title shouldBe Messages("upload.result.page.title")
       }
 
       "contain a back link pointing to" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("back").attr("href") should include("what-do-you-want-to-do")
       }
 
       "contain the correct page header" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("page-header").text shouldBe Messages("upload.result.page.header")
       }
 
       "contain a document header" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("document").text shouldBe Messages("document")
       }
 
       "contain a document image" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("document-image").attr("src") should include("download-the-file.png")
       }
 
       "contain a document image that points to get results file" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("document-image-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
       }
 
       "contain a result link with the correct file name" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("result-link").text shouldBe Messages("residency.status.result")
       }
 
       "contain a result link pointing to the results file" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("result-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
       }
 
       "contain type and size of the file" in {
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("file-type-size").text shouldBe Messages("file.type.size")
       }
 
       "contain expiry date message" in {
         val expiryDate = new DateTime(mockExpiryTimeStamp).toString("EEEE d MMMM yyyy")
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",expiryDate)
       }
 
       "contain a deletion message" in {
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
       }
 
       "contain a button to choose something else to do" in {
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
       }
 
       "contain a button to choose something else to do which points to what do you want to do page" in {
-        val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("choose-something-else").attr("href") should include("/what-do-you-want-to-do")
       }
 
@@ -267,7 +267,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
 
         "render upload result page is called but a file session does not exist" in {
           when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
-          val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+          val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get should include("/global-error")
         }
@@ -275,7 +275,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         "render upload result page is called but results file does not exist" in {
           val fileSession = FileSession(None,None,"1234",None)
           when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-          val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+          val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get should include("/global-error")
         }
@@ -283,7 +283,7 @@ class DashboardControllerSpec extends UnitSpec with MockitoSugar with I18nHelper
         "render upload result page is called but there is no callback data in the retrieved file session" in {
           val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(new DateTime().plusDays(10).getMillis))
           when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-          val result = await(TestDashboardController.renderUploadResultsPage(fakeRequest))
+          val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
           status(result) shouldBe SEE_OTHER
           redirectLocation(result).get should include("/global-error")
         }

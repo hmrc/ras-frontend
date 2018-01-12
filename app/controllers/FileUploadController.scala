@@ -44,7 +44,7 @@ trait FileUploadController extends RasController with PageFlowController {
               shortLivedCache.isFileInProgress(userId).flatMap {
                 case true =>
                   Logger.debug("[FileUploadController][get] a file is still processing")
-                  Future.successful(Redirect(routes.DashboardController.get))
+                  Future.successful(Redirect(routes.WhatDoYouWantToDoController.get))
                 case _ =>
                   createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
                     case Some(url) =>

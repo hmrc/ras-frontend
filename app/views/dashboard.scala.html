@@ -63,7 +63,7 @@
         <tbody>
           <tr>
             @if(readyForDownload){
-              <td class="r-padding" id="result"><a id="result-link" href="@routes.DashboardController.getResultsFile(fileId)">@Messages("result")</a></td>
+              <td class="r-padding" id="result"><a id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)">@Messages("result")</a></td>
               <td class="r-padding numeric" id="days-left">@expiryDate</td>
             }else{
               <td class="r-padding" id="result">@Messages("result")</td>
