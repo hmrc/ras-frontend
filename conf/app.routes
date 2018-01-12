@@ -3,6 +3,7 @@
 GET         /assets/*file                         @controllers.AssetsController.at(path="/public", file)
 
 GET         /what-do-you-want-to-do               controllers.WhatDoYouWantToDoController.get
+GET         /what-do-you-want-to-do               controllers.WhatDoYouWantToDoController.post
 GET         /residency-status-added               controllers.WhatDoYouWantToDoController.renderUploadResultsPage
 GET         /whatDoYouWantToDo/results/:fileName  controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
 
