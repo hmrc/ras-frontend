@@ -24,56 +24,7 @@
 
 
 <div class="row">
-
   <h1 id="header">@Messages("whatDoYouWantToDo.page.header")</h1>
-
-  <div class="grid-layout__column--1-2">
-    <a id="single-lookup-link" class="large-underlined-link" href="@routes.MemberNameController.get">@Messages("single.lookup.link")</a>
-    <p id="single-lookup-description">@Messages("single.lookup.description")</p>
-  </div>
-
-  <div class="grid-layout__column--1-2">
-    <a id="bulk-lookup-link" class="large-underlined-link" href="@routes.FileUploadController.get">@Messages("bulk.lookup.link")</a>
-    <p id="bulk-lookup-description">@Messages("bulk.lookup.description")</p>
-  </div>
-
 </div>
-
-@if(fileInProgress){
-  <div class="row">
-    <div class="grid-layout__column--1-2">
-      <h2 id="recent-lookups">@Messages("recent.lookups")</h2>
-      <p id="recent-lookups-description">@Messages("recent.lookups.description")</p>
-    </div>
-
-      <table id="recent-lookups-table">
-
-        <colgroup>
-          <col width="2%">
-          <col width="2%">
-        </colgroup>
-
-        <thead>
-          <tr id="table-row">
-            <th id="reference-table-header"><span>@Messages("reference.table.header")</span></th>
-            <th id="expiry-date-table-header" class="r-padding numeric"><span>@Messages("expiry.date.table.header")</span></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            @if(readyForDownload){
-              <td class="r-padding" id="result"><a id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)">@Messages("result")</a></td>
-              <td class="r-padding numeric" id="days-left">@expiryDate</td>
-            }else{
-              <td class="r-padding" id="result">@Messages("result")</td>
-            }
-
-          </tr>
-        </tbody>
-
-      </table>
-  </div>
-}
 
 }

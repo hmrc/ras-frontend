@@ -115,35 +115,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("header").text shouldBe Messages("whatDoYouWantToDo.page.header")
     }
 
-    "contain single lookup link and description" in {
-
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementById("single-lookup-link").text shouldBe Messages("single.lookup.link")
-      doc(result).getElementById("single-lookup-description").text shouldBe Messages("single.lookup.description")
-    }
-
-    "contain bulk lookup link and description" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementById("bulk-lookup-link").text shouldBe Messages("bulk.lookup.link")
-      doc(result).getElementById("bulk-lookup-description").text shouldBe Messages("bulk.lookup.description")
-    }
-
-    "not contain a result link when no file is in progress" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementById("result-link") shouldBe null
-    }
-
-    "disable results link when no callback data is available" in {
-      val fileSession = FileSession(None,None,"1234",Some(new DateTime().plusDays(10).getMillis))
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementById("result").text shouldBe Messages("result")
-    }
-
     "redirect to global error page" when {
       "no file session is available" in {
         when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
