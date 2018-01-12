@@ -90,7 +90,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
-  "WhatDoYouWantToDoController" should {
+  "WhatDoYouWantToDoController get" should {
 
     "respond to GET /relief-at-source/what-do-you-want-to-do" in {
       val result = route(fakeApplication, FakeRequest(GET, "/relief-at-source/what-do-you-want-to-do"))
@@ -113,6 +113,14 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).title shouldBe Messages("whatDoYouWantToDo.page.title")
       doc(result).getElementById("header").text shouldBe Messages("whatDoYouWantToDo.page.header")
+    }
+
+    "contain three options as radio buttons when no file is in progress" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+      doc(result).getElementById("userChoice-single-status-radio").attr("value") shouldBe Messages("single.status.radio")
+      doc(result).getElementById("userChoice-bulk-status-radio").attr("value") shouldBe Messages("bulk.status.radio")
+      doc(result).getElementById("userChoice-result-radio").attr("value") shouldBe Messages("result.radio")
     }
 
     "redirect to global error page" when {
@@ -141,13 +149,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("global-error")
       }
-    }
-
-    "get results file" in {
-      val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(FakeRequest(Helpers.GET,
-        "/whatDoYouWantToDo/results/:testFile.csv")))
-      val content = contentAsString(result)
-      content shouldBe row1
     }
 
     "upload result page" should {
@@ -232,6 +233,12 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       "contain a button to choose something else to do which points to what do you want to do page" in {
         val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         doc(result).getElementById("choose-something-else").attr("href") should include("/what-do-you-want-to-do")
+      }
+
+      "download a file containing the results" in {
+        val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
+          FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+        contentAsString(result) shouldBe row1
       }
 
       "redirect to error page" when {

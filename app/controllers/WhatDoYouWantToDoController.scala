@@ -25,6 +25,7 @@ import play.api.http.HttpEntity
 import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
+import forms.WhatDoYouWantToDoForm._
 
 import scala.concurrent.Future
 
@@ -63,9 +64,9 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                       val expiryDate = new DateTime(timeStamp).plusDays(3).toString("d MMMM yyyy HH:mm")
                       fileSession.userFile match {
                         case Some(callbackData) =>
-                          Ok(views.html.what_do_you_want_to_do(fileIsInProgress, callbackData.fileId, readyForDownload, expiryDate))
+                          Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, callbackData.fileId, readyForDownload))
                         case _ =>
-                          Ok(views.html.what_do_you_want_to_do(fileIsInProgress, "", notReadyForDownload, ""))
+                          Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, "", notReadyForDownload))
                       }
                     case _ =>
                       Logger.error("[WhatDoYouWantToDoController][get] no timestamp retrieved")
@@ -76,7 +77,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                   Redirect(routes.GlobalErrorController.get)
               }
             case _ =>
-              Future.successful(Ok(views.html.what_do_you_want_to_do(noFileInProgress,"",noFileInProgress,"")))
+              Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,noFileInProgress,"",noFileInProgress)))
           }
         case Left(resp) =>
           Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")

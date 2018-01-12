@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(fileInProgress: Boolean, fileId: String, readyForDownload: Boolean, expiryDate: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(whatDoYouWantToDoForm: Form[models.WhatDoYouWantToDo], fileInProgress: Boolean, fileId: String, readyForDownload: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -23,8 +23,34 @@
 @ras_main(title = Messages("whatDoYouWantToDo.page.title")) {
 
 
-<div class="row">
-  <h1 id="header">@Messages("whatDoYouWantToDo.page.header")</h1>
-</div>
+  <div class="row">
+    <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
+  </div>
+
+  @form(action = routes.WhatDoYouWantToDoController.get ) {
+
+    <div class="form-group">
+      @radioGroup(
+        whatDoYouWantToDoForm("userChoice"),
+          Seq(
+            Messages("single.status.radio") -> "single-status-radio" -> Messages("single.status.radio"),
+            Messages("bulk.status.radio")  ->  "bulk-status-radio" -> Messages("bulk.status.radio"),
+            Messages("result.radio")  -> "result-radio" -> Messages("result.radio")
+          ),
+          '_fieldsetAttributesLegend -> "userChoice",
+          '_legend -> Messages("whatDoYouWantToDo.page.header"),
+          '_legendClass -> "visuallyhidden",
+          '_labelAfter -> true,
+          '_labelClass -> "block-label",
+          '_groupClass -> "inline-block"
+      )
+    </div>
+
+    <div>
+      <button class="button" type="submit" id="submit-button">@Messages("continue")</button>
+    </div>
+
+  }
+
 
 }
