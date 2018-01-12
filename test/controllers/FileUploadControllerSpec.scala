@@ -100,7 +100,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       }
     }
 
-    "redirect to dashboard" when {
+    "redirect to whatDoYouWantToDo" when {
       "a file is already in process" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
@@ -170,7 +170,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       }
     }
 
-    "redirect to dashboard page when back link is clicked" in {
+    "redirect to whatDoYouWantToDo page when back link is clicked" in {
       val result = TestFileUploadController.back.apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/what-do-you-want-to-do")

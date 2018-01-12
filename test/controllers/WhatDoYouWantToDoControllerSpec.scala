@@ -111,8 +111,8 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain the correct title and header" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).title shouldBe Messages("dashboard.page.title")
-      doc(result).getElementById("header").text shouldBe Messages("dashboard.page.header")
+      doc(result).title shouldBe Messages("whatDoYouWantToDo.page.title")
+      doc(result).getElementById("header").text shouldBe Messages("whatDoYouWantToDo.page.header")
     }
 
     "contain single lookup link and description" in {
@@ -174,7 +174,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "get results file" in {
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(FakeRequest(Helpers.GET,
-        "/dashboard/results/:testFile.csv")))
+        "/whatDoYouWantToDo/results/:testFile.csv")))
       val content = contentAsString(result)
       content shouldBe row1
     }

@@ -63,23 +63,23 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                       val expiryDate = new DateTime(timeStamp).plusDays(3).toString("d MMMM yyyy HH:mm")
                       fileSession.userFile match {
                         case Some(callbackData) =>
-                          Ok(views.html.dashboard(fileIsInProgress, callbackData.fileId, readyForDownload, expiryDate))
+                          Ok(views.html.what_do_you_want_to_do(fileIsInProgress, callbackData.fileId, readyForDownload, expiryDate))
                         case _ =>
-                          Ok(views.html.dashboard(fileIsInProgress, "", notReadyForDownload, ""))
+                          Ok(views.html.what_do_you_want_to_do(fileIsInProgress, "", notReadyForDownload, ""))
                       }
                     case _ =>
-                      Logger.error("[DashboardController][get] no timestamp retrieved")
+                      Logger.error("[WhatDoYouWantToDoController][get] no timestamp retrieved")
                       Redirect(routes.GlobalErrorController.get)
                   }
                 case _ =>
-                  Logger.error("[DashboardController][get] failed to retrieve file session")
+                  Logger.error("[WhatDoYouWantToDoController][get] failed to retrieve file session")
                   Redirect(routes.GlobalErrorController.get)
               }
             case _ =>
-              Future.successful(Ok(views.html.dashboard(noFileInProgress,"",noFileInProgress,"")))
+              Future.successful(Ok(views.html.what_do_you_want_to_do(noFileInProgress,"",noFileInProgress,"")))
           }
         case Left(resp) =>
-          Logger.warn("[DashboardController][get] user not authorised")
+          Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")
           resp
       }
   }
@@ -99,21 +99,21 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                         case Some(callbackData) =>
                           Ok(views.html.upload_result(callbackData.fileId,expiryDate))
                         case _ =>
-                          Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve callback data")
+                          Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.GlobalErrorController.get)
                       }
-                    case _ => Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve upload time stamp")
+                    case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload time stamp")
                       Redirect(routes.GlobalErrorController.get)
                   }
-                case _ => Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve results file")
+                case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")
                   Redirect(routes.GlobalErrorController.get)
               }
             case _ =>
-              Logger.error("[DashboardController][renderUploadResultsPage] failed to retrieve file session")
+              Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve file session")
               Redirect(routes.GlobalErrorController.get)
           }
         case Left(resp) =>
-          Logger.warn("[DashboardController][get] user not authorised")
+          Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")
           resp
       }
   }
@@ -137,7 +137,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
             Redirect(routes.GlobalErrorController.get())
         }
         case Left(resp) =>
-          Logger.warn("[DashboardController][get] user not authorised")
+          Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")
           resp
       }
   }

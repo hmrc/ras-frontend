@@ -174,7 +174,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
 
   "Member name controller back" should {
 
-    "return to dashboard page when back link is clicked" in {
+    "return to whatDoYouWantToDo page when back link is clicked" in {
       val result = TestMemberNameController.back.apply(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/what-do-you-want-to-do")
