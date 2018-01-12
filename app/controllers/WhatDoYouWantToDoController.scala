@@ -25,7 +25,7 @@ import play.api.http.HttpEntity
 import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
-import forms.WhatDoYouWantToDoForm._
+import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
 
 import scala.concurrent.Future
 
@@ -81,6 +81,23 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           }
         case Left(resp) =>
           Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")
+          resp
+      }
+  }
+
+  def post = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>
+          whatDoYouWantToDoForm.bindFromRequest.fold(
+            formWithErrors => {
+              Logger.debug("[WhatDoYouWantToDoController][post] No option selected")
+              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,false,"",false)))
+            },
+            userChoice => {???}
+          )
+        case Left(resp) =>
+          Logger.debug("[WhatDoYouWantToDoController][post] user mot authorised")
           resp
       }
   }
