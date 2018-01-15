@@ -103,7 +103,9 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                     case WhatDoYouWantToDo.RESULT => Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
                     case _ => Future.successful(Redirect(routes.GlobalErrorController.get()))
                   }
-                case _ => ???
+                case _ =>
+                  Logger.error("[WhatDoYouWantToDoController][post] failed to retrieve session")
+                  Future.successful(Redirect(routes.GlobalErrorController.get()))
               }
 
           )
@@ -131,7 +133,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.GlobalErrorController.get)
                       }
-                    case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload time stamp")
+                    case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload timestamp")
                       Redirect(routes.GlobalErrorController.get)
                   }
                 case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")

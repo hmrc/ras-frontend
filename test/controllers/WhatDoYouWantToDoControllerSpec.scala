@@ -185,6 +185,13 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         redirectLocation(result).get should include("/global-error")
       }
+
+      "no session has been retrieved" in {
+        when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(None))
+        val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
+        val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+        redirectLocation(result).get should include("/global-error")
+      }
     }
   }
 
