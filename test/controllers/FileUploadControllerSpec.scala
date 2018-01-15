@@ -211,7 +211,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         when(mockSessionService.cacheUploadResponse(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val uploadRequest = FakeRequest(GET, "/relief-at-source/upload-error?errorCode=400&reason={%22error%22:{%22msg%22:%22Envelope%20does%20not%20allow%20zero%20length%20files,%20and%20submitted%20file%20has%20length%200%22}}")
         val result = await(TestFileUploadController.uploadError().apply(uploadRequest))
-        redirectLocation(result).get should include("bulk/bulk-upload")
+        redirectLocation(result).get should include("/upload-a-file")
       }
     }
   }

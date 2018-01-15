@@ -20,12 +20,16 @@ import akka.stream.scaladsl.{Source, StreamConverters}
 import akka.util.ByteString
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import forms.WhatDoYouWantToDoForm
 import org.joda.time.DateTime
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
+import helpers.helpers.I18nHelper
+import models.WhatDoYouWantToDo
+import play.i18n.Messages
 
 import scala.concurrent.Future
 
@@ -39,7 +43,7 @@ object WhatDoYouWantToDoController extends WhatDoYouWantToDoController {
   // $COVERAGE-ON$
 }
 
-trait WhatDoYouWantToDoController extends RasController with PageFlowController {
+trait WhatDoYouWantToDoController extends RasController with PageFlowController with I18nHelper {
 
   val resultsFileConnector:ResidencyStatusAPIConnector
   implicit val context: RasContext = RasContextImpl
@@ -95,7 +99,12 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
             whatDoYouWantToDo =>
               sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {
                 case Some(session) =>
-                  Future.successful(Redirect(routes.MemberNameController.get))
+                  session.userChoice match {
+                    case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get))
+                    case WhatDoYouWantToDo.BULK => Future.successful(Redirect(routes.FileUploadController.get))
+                    case WhatDoYouWantToDo.RESULT => Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
+                    case _ => Future.successful(Redirect(routes.GlobalErrorController.get()))
+                  }
                 case _ => ???
               }
 

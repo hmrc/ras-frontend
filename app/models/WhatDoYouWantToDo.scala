@@ -25,5 +25,5 @@ object WhatDoYouWantToDo extends I18nHelper{
   implicit val formats = Json.format[WhatDoYouWantToDo]
   val SINGLE = Messages("single.status.radio")
   val BULK = Messages("bulk.status.radio")
-  val RESULTS = Messages("result.radio")
+  val RESULT = Messages("result.radio")
 }

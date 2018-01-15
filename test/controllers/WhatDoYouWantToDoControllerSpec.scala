@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import forms.WhatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models._
 import org.joda.time.DateTime
@@ -154,10 +155,36 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "redirect to member name page when single lookup option is selected" in {
+      val rasSession = RasSession(WhatDoYouWantToDo.SINGLE ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""))
       when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
-      val postData = Json.obj("userChoice" -> Messages("single.status.radio"))
+      val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.SINGLE)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      redirectLocation(result).get should include("member-name")
+      redirectLocation(result).get should include("/member-name")
+    }
+
+    "redirect to file upload page when bulk lookup option is selected" in {
+      val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      redirectLocation(result).get should include("/upload-a-file")
+    }
+
+    "redirect to file result page when result option is selected" in {
+      val rasSession = RasSession(WhatDoYouWantToDo.RESULT ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      redirectLocation(result).get should include("/residency-status-added")
+    }
+
+    "redirect to global error page" when {
+      "no option is selected" in {
+        when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+        val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
+        val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+        redirectLocation(result).get should include("/global-error")
+      }
     }
   }
 
