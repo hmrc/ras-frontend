@@ -55,7 +55,6 @@ trait MemberDOBController extends RasController with PageFlowController {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
-          Logger.debug("[DobController][get] user authorised")
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
@@ -63,7 +62,7 @@ trait MemberDOBController extends RasController with PageFlowController {
             case _ => Ok(views.html.member_dob(form, firstName))
           }
         case Left(resp) =>
-          Logger.debug("[DobController][get] user Not authorised")
+          Logger.error("[DobController][get] user Not authorised")
           resp
       }
   }
@@ -75,12 +74,11 @@ trait MemberDOBController extends RasController with PageFlowController {
       case Right(_) =>
         form.bindFromRequest.fold(
         formWithErrors => {
-          Logger.debug("[DobController][post] Invalid form field passed")
+          Logger.error("[DobController][post] Invalid form field passed")
           Future.successful(BadRequest(views.html.member_dob(formWithErrors, firstName)))
         },
         dateOfBirth => {
           val timer = Metrics.responseTimer.time()
-          Logger.debug("[DobController][post] valid form")
           sessionService.cacheDob(dateOfBirth) flatMap {
             case Some(session) => {
 
@@ -101,7 +99,7 @@ trait MemberDOBController extends RasController with PageFlowController {
                   val nyResidencyStatus = extractResidencyStatus(rasResponse.nextYearForecastResidencyStatus)
 
                   if (cyResidencyStatus.isEmpty) {
-                    Logger.info("[DobController][post] An unknown residency status was returned")
+                    Logger.error("[DobController][post] An unknown residency status was returned")
                     Redirect(routes.GlobalErrorController.get)
                   }
                   else {

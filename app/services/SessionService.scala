@@ -201,7 +201,7 @@ trait ShortLivedCache  {
         case true =>
           fileSession.get.resultsFile.isDefined || !uploadTimeDiff(fileSession.get.uploadTimeStamp.get)
         case false =>
-          Logger.warn("fileSession not defined for " + userId)
+          Logger.error("fileSession not defined for " + userId)
           false
     }).recover {
       case ex: Throwable =>

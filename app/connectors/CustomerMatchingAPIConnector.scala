@@ -45,7 +45,7 @@ trait CustomerMatchingAPIConnector extends ServicesConfig{
 
     val matchingUri = s"$serviceUrl/$environmentSuffix"
 
-    Logger.debug(s"[CustomerMatchingAPIConnector][findMemberDetails] Calling Customer Matching api at ${matchingUri}")
+    Logger.info(s"[CustomerMatchingAPIConnector][findMemberDetails] Calling Customer Matching api at ${matchingUri}")
 
     http.POST[JsValue, Option[String]](matchingUri, memberDetails.asCustomerDetailsPayload, Seq("Accept" -> "application/vnd.hmrc.1.0+json", "Content-Type" -> "application/json" ))(implicitly, rds = responseHandler, hc, MdcLoggingExecutionContext.fromLoggingDetails(hc))
   }

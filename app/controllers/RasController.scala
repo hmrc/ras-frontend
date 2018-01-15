@@ -40,7 +40,7 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
     authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
     ).retrieve(authorisedEnrolments) {
       case (enrolments) =>
-      Logger.warn("User authorised")
+      Logger.info("User authorised")
       Future(Right(enrolments.enrolments.head.identifiers.head.value))
     } recover {
       case _ : NoActiveSession => Left(notLogged)
@@ -51,12 +51,12 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
   def notLogged() = {Logger.warn("User not logged in - no active session found");Future.successful(toGGLogin(ApplicationConfig.loginCallback))}
 
   def unAuthorise() = {
-    Logger.warn("User not authorised");
+    Logger.error("User not authorised");
     Future.successful(Redirect(routes.GlobalErrorController.notAuthorised))
   }
 
   def userInfoNotFond(idName:String) = {
-    Logger.warn(s"${idName} not found");
+    Logger.error(s"${idName} not found");
     Future.successful(Redirect(routes.GlobalErrorController.get()))
   }
 

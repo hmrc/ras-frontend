@@ -46,7 +46,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
 
     val headerCarrier = hc.withExtraHeaders("Accept" -> "application/vnd.hmrc.1.0+json", "Content-Type" -> "application/json" )
 
-    Logger.debug(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
+    Logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
 
     http.GET[ResidencyStatus](rasUri)(implicitly[HttpReads[ResidencyStatus]],hc = headerCarrier, MdcLoggingExecutionContext.fromLoggingDetails(headerCarrier))
   }
@@ -55,7 +55,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
 
-    Logger.debug(s"Get results file  with URI for " + fileName)
+    Logger.info(s"Get results file  with URI for " + fileName)
     wsHttp.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/$fileName").map { res =>
       Some(res.body.runWith(StreamConverters.asInputStream()))
     }

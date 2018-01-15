@@ -54,7 +54,7 @@ trait ResultsController extends RasController with PageFlowController{
                 val currentYearResidencyStatus = session.residencyStatusResult.currentYearResidencyStatus
                 val nextYearResidencyStatus = session.residencyStatusResult.nextYearResidencyStatus
 
-                Logger.debug("[ResultsController][matchFound] Successfully retrieved ras session")
+                Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
                 Ok(views.html.match_found(
                   name, dateOfBirth, nino,
                   currentYearResidencyStatus,
@@ -82,7 +82,7 @@ trait ResultsController extends RasController with PageFlowController{
                 val nino = session.nino.nino
                 val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
 
-                Logger.debug("[ResultsController][noMatchFound] Successfully retrieved ras session")
+                Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
                 Ok(views.html.match_not_found(name,dateOfBirth,nino))
               case _ =>
                 Logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")

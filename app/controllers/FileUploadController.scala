@@ -43,26 +43,26 @@ trait FileUploadController extends RasController with PageFlowController {
             case Some(session) =>
               shortLivedCache.isFileInProgress(userId).flatMap {
                 case true =>
-                  Logger.debug("[FileUploadController][get] a file is still processing")
+                  Logger.info("[FileUploadController][get] a file is still processing")
                   Future.successful(Redirect(routes.WhatDoYouWantToDoController.get))
                 case _ =>
                   createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
                     case Some(url) =>
-                      Logger.debug("[FileUploadController][get] form url created successfully")
+                      Logger.info("[FileUploadController][get] form url created successfully")
                       val error = extractErrorReason(session.uploadResponse)
                       Future.successful(Ok(views.html.file_upload(url,error)))
                     case _ =>
-                      Logger.debug("[FileUploadController][get] failed to obtain a form url using existing envelope")
+                      Logger.error("[FileUploadController][get] failed to obtain a form url using existing envelope")
                       Future.successful(Redirect(routes.GlobalErrorController.get))
                   }
               }
             case _ =>
               createFileUploadUrl(None, userId)(request, hc).flatMap {
                 case Some(url) =>
-                  Logger.debug("[FileUploadController][get] stored new envelope id successfully")
+                  Logger.info("[FileUploadController][get] stored new envelope id successfully")
                   Future.successful(Ok(views.html.file_upload(url,"")))
                 case _ =>
-                  Logger.debug("[FileUploadController][get] failed to obtain a form url using new envelope")
+                  Logger.error("[FileUploadController][get] failed to obtain a form url using new envelope")
                   Future.successful(Redirect(routes.GlobalErrorController.get))
               }
           }.recover {
@@ -71,7 +71,7 @@ trait FileUploadController extends RasController with PageFlowController {
               Redirect(routes.GlobalErrorController.get)
           }
         case Left(resp) =>
-          Logger.debug("[FileUploadController][get] user not authorised")
+          Logger.error("[FileUploadController][get] user not authorised")
           resp
       }
   }
@@ -100,25 +100,25 @@ trait FileUploadController extends RasController with PageFlowController {
                 case envelopeIdPattern(id) =>
                   sessionService.cacheEnvelope(Envelope(id)).map {
                     case Some(session) =>
-                      Logger.debug("[UploadService][createFileUploadUrl] Envelope id obtained and cached")
+                      Logger.info("[UploadService][createFileUploadUrl] Envelope id obtained and cached")
                       val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
                       val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
                       Some(completeFileUploadUrl)
                     case _ =>
-                      Logger.debug("[FileUploadController][get] failed to retrieve cache after storing the envelope")
+                      Logger.error("[FileUploadController][get] failed to retrieve cache after storing the envelope")
                       None
                   }
                 case _ =>
-                  Logger.debug("[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header")
+                  Logger.error("[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header")
                   Future.successful(None)
               }
             case _ =>
-              Logger.debug("[UploadService][createFileUploadUrl] Failed to find a location header in the response")
+              Logger.error("[UploadService][createFileUploadUrl] Failed to find a location header in the response")
               Future.successful(None)
           }
         }.recover {
           case e: Throwable =>
-            Logger.debug("[UploadService][createFileUploadUrl] Failed to create envelope")
+            Logger.error("[UploadService][createFileUploadUrl] Failed to create envelope")
             None
         }
     }
@@ -141,22 +141,22 @@ trait FileUploadController extends RasController with PageFlowController {
               case Some(envelope) =>
                 shortLivedCache.createFileSession(userId,envelope.id).map {
                   case true =>
-                    Logger.debug("[FileUploadController][uploadSuccess] upload has been successful")
+                    Logger.info("[FileUploadController][uploadSuccess] upload has been successful")
                     Ok(views.html.file_upload_successful())
                   case _ =>
-                    Logger.debug("[FileUploadController][uploadSuccess] failed to create file session")
+                    Logger.error("[FileUploadController][uploadSuccess] failed to create file session")
                     Redirect(routes.GlobalErrorController.get())
                 }
               case _ =>
-                Logger.debug("[FileUploadController][uploadSuccess] no envelope exists in the session")
+                Logger.error("[FileUploadController][uploadSuccess] no envelope exists in the session")
                 Future.successful(Redirect(routes.GlobalErrorController.get()))
             }
           case _ =>
-            Logger.debug("[FileUploadController][uploadSuccess] session could not be retrieved")
+            Logger.error("[FileUploadController][uploadSuccess] session could not be retrieved")
             Future.successful(Redirect(routes.GlobalErrorController.get()))
         }
       case Left(resp) =>
-        Logger.debug("[FileUploadController][uploadSuccess] user not authorised")
+        Logger.error("[FileUploadController][uploadSuccess] user not authorised")
         resp
     }
   }
@@ -172,7 +172,7 @@ trait FileUploadController extends RasController with PageFlowController {
           case _ => Future.successful(Redirect(routes.GlobalErrorController.get()))
         }
       case Left(resp) =>
-        Logger.debug("[FileUploadController][uploadError] user not authorised")
+        Logger.error("[FileUploadController][uploadError] user not authorised")
         resp
     }
   }
@@ -182,25 +182,25 @@ trait FileUploadController extends RasController with PageFlowController {
       case Some(response) =>
         response.code match {
           case "400" if response.reason.getOrElse("").contains(Messages("file.upload.empty.file.reason")) =>
-            Logger.debug("[FileUploadController][extractErrorReason] empty file")
+            Logger.error("[FileUploadController][extractErrorReason] empty file")
             Messages("file.empty.error")
           case "400" =>
-            Logger.debug("[FileUploadController][extractErrorReason] bad request")
+            Logger.error("[FileUploadController][extractErrorReason] bad request")
             Messages("upload.failed.error")
           case "404" =>
-            Logger.debug("[FileUploadController][extractErrorReason] enveloper not found")
+            Logger.error("[FileUploadController][extractErrorReason] enveloper not found")
             Messages("upload.failed.error")
           case "413" =>
-            Logger.debug("[FileUploadController][extractErrorReason] file too large")
+            Logger.error("[FileUploadController][extractErrorReason] file too large")
             Messages("file.large.error")
           case "415" =>
-            Logger.debug("[FileUploadController][extractErrorReason] file type other than the supported type")
+            Logger.error("[FileUploadController][extractErrorReason] file type other than the supported type")
             Messages("upload.failed.error")
           case "423" =>
-            Logger.debug("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
+            Logger.error("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
             Messages("upload.failed.error")
           case _ =>
-            Logger.debug("[FileUploadController][extractErrorReason] unknown cause")
+            Logger.error("[FileUploadController][extractErrorReason] unknown cause")
             Messages("upload.failed.error")
         }
       case _ => ""

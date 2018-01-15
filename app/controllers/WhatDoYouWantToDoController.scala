@@ -80,7 +80,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,noFileInProgress,"",noFileInProgress)))
           }
         case Left(resp) =>
-          Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")
+          Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
       }
   }
@@ -91,7 +91,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
         case Right(_) =>
           whatDoYouWantToDoForm.bindFromRequest.fold(
             formWithErrors => {
-              Logger.debug("[WhatDoYouWantToDoController][post] No option selected")
+              Logger.error("[WhatDoYouWantToDoController][post] No option selected")
               Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,noFileInProgress,"",notReadyForDownload)))
             },
             whatDoYouWantToDo =>
@@ -107,10 +107,9 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                   Logger.error("[WhatDoYouWantToDoController][post] failed to retrieve session")
                   Future.successful(Redirect(routes.GlobalErrorController.get()))
               }
-
           )
         case Left(resp) =>
-          Logger.debug("[WhatDoYouWantToDoController][post] user mot authorised")
+          Logger.error("[WhatDoYouWantToDoController][post] user mot authorised")
           resp
       }
   }
@@ -144,7 +143,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               Redirect(routes.GlobalErrorController.get)
           }
         case Left(resp) =>
-          Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")
+          Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
       }
   }
@@ -168,7 +167,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
             Redirect(routes.GlobalErrorController.get())
         }
         case Left(resp) =>
-          Logger.warn("[WhatDoYouWantToDoController][get] user not authorised")
+          Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
       }
   }
