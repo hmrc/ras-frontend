@@ -20,7 +20,6 @@ import akka.stream.scaladsl.{Source, StreamConverters}
 import akka.util.ByteString
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import forms.WhatDoYouWantToDoForm
 import org.joda.time.DateTime
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, AnyContent}
@@ -29,7 +28,6 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models.WhatDoYouWantToDo
-import play.i18n.Messages
 
 import scala.concurrent.Future
 
