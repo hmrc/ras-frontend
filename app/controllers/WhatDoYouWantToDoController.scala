@@ -92,8 +92,13 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               Logger.debug("[WhatDoYouWantToDoController][post] No option selected")
               Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,noFileInProgress,"",notReadyForDownload)))
             },
-            userChoice =>
-              ???
+            whatDoYouWantToDo =>
+              sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {
+                case Some(session) =>
+                  Future.successful(Redirect(routes.MemberNameController.get))
+                case _ => ???
+              }
+
           )
         case Left(resp) =>
           Logger.debug("[WhatDoYouWantToDoController][post] user mot authorised")

@@ -34,7 +34,6 @@ import play.api.test.Helpers.{contentAsString, _}
 import play.api.{Configuration, Environment}
 import services.SessionService
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
