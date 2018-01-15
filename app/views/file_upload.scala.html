@@ -50,7 +50,7 @@
 
       <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
 
-      <!-- div is closed early due to styling -->
+      <!-- div is closed early due to styling restrictions -->
       @if(error==""){
         <div id="file-upload" class="form-group no-margin">
       }else{
@@ -62,7 +62,7 @@
 
           <form
               id = "upload-form"
-              action=@fileUploadUrl
+              action="@fileUploadUrl"
               enctype="multipart/form-data"
               method="post"
               onsubmit="return checkFileType(this)">
