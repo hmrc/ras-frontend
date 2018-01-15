@@ -1,0 +1,56 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(whatDoYouWantToDoForm: Form[models.WhatDoYouWantToDo], fileInProgress: Boolean, fileId: String, readyForDownload: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+
+@ras_main(title = Messages("whatDoYouWantToDo.page.title")) {
+
+
+  <div class="row">
+    <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
+  </div>
+
+  @form(action = routes.WhatDoYouWantToDoController.post ) {
+
+    <div class="form-group">
+      @radioGroup(
+        whatDoYouWantToDoForm("userChoice"),
+          Seq(
+            Messages("single.status.radio") -> "single-status-radio" -> Messages("single.status.radio"),
+            Messages("bulk.status.radio")  ->  "bulk-status-radio" -> Messages("bulk.status.radio"),
+            Messages("result.radio")  -> "result-radio" -> Messages("result.radio")
+          ),
+          '_fieldsetAttributesLegend -> "userChoice",
+          '_legend -> Messages("whatDoYouWantToDo.page.header"),
+          '_legendClass -> "visuallyhidden",
+          '_labelAfter -> true,
+          '_labelClass -> "block-label",
+          '_groupClass -> "inline-block"
+      )
+    </div>
+
+    <div>
+      <button class="button" type="submit" id="submit-button">@Messages("continue")</button>
+    </div>
+
+  }
+
+
+}

@@ -43,7 +43,6 @@ trait MemberNinoController extends RasController with PageFlowController{
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
-          Logger.debug("[NinoController][get] user authorised")
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
@@ -52,7 +51,7 @@ trait MemberNinoController extends RasController with PageFlowController{
               Ok(views.html.member_nino(form, Messages("member")))
           }
         case Left(resp) =>
-          Logger.debug("[NinoController][get] user Not authorised")
+          Logger.error("[NinoController][get] user Not authorised")
           resp
       }
   }
@@ -63,11 +62,10 @@ trait MemberNinoController extends RasController with PageFlowController{
         case Right(_) =>
           form.bindFromRequest.fold(
             formWithErrors => {
-              Logger.debug("[NinoController][post] Invalid form field passed")
+              Logger.error("[NinoController][post] Invalid form field passed")
               Future.successful(BadRequest(views.html.member_nino(formWithErrors,firstName)))
             },
             nino => {
-              Logger.debug("[NinoController][post] valid form")
               sessionService.cacheNino(nino) flatMap {
                 case Some(session) => Future.successful(Redirect(routes.MemberDOBController.get()))
                 case _ => Future.successful(Redirect(routes.GlobalErrorController.get))
@@ -75,7 +73,7 @@ trait MemberNinoController extends RasController with PageFlowController{
             }
           )
         case Left(resp) =>
-          Logger.debug("[NinoController][post] user Not authorised")
+          Logger.error("[NinoController][post] user Not authorised")
           resp
       }
   }

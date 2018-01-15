@@ -40,13 +40,12 @@ trait MemberNameController extends RasController with PageFlowController {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
-          Logger.debug("[NameController][get] user authorised")
           sessionService.fetchRasSession() map {
             case Some(session) => Ok(views.html.member_name(form.fill(session.name)))
             case _ => Ok(views.html.member_name(form))
           }
         case Left(resp) =>
-          Logger.debug("[NameController][get] user Not authorised")
+          Logger.error("[NameController][get] user Not authorised")
           resp
       }
   }
@@ -56,11 +55,10 @@ trait MemberNameController extends RasController with PageFlowController {
       case Right(_) =>
       form.bindFromRequest.fold(
         formWithErrors => {
-          Logger.debug("[NameController][post] Invalid form field passed")
+          Logger.error("[NameController][post] Invalid form field passed")
           Future.successful(BadRequest(views.html.member_name(formWithErrors)))
         },
         memberName => {
-          Logger.debug("[NameController][post] valid form")
           sessionService.cacheName(memberName) flatMap {
             case Some(session) => Future.successful(Redirect(routes.MemberNinoController.get()))
             case _ => Future.successful(Redirect(routes.GlobalErrorController.get))

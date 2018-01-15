@@ -55,7 +55,7 @@ trait FileUploadConnector extends ServicesConfig {
           }
       """.stripMargin)
 
-    Logger.debug(s"[FileUploadConnector][createEnvelope] envelope parameters: ${requestBody}")
+    Logger.info(s"[FileUploadConnector][createEnvelope] envelope parameters: ${requestBody}")
 
     http.POST[JsValue, HttpResponse](
       s"$fileUploadBaseUrl/$fileUploadUrlSuffix", requestBody, Seq()

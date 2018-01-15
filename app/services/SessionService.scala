@@ -33,7 +33,9 @@ object SessionService extends SessionService
 trait SessionService extends SessionCacheWiring {
 
   val RAS_SESSION_KEY = "ras_session"
-  val cleanSession = RasSession(MemberName("", ""),
+  val cleanSession = RasSession(
+    "",
+    MemberName("", ""),
     MemberNino(""),
     MemberDateOfBirth(RasDate(None, None, None)),
     ResidencyStatusResult("", "", "", "", "", "", ""),
@@ -45,6 +47,22 @@ trait SessionService extends SessionCacheWiring {
 
   def resetRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.cache[RasSession](RAS_SESSION_KEY, cleanSession) map (cacheMap => Some(cleanSession))
+  }
+
+  def cacheWhatDoYouWantToDo(userChoice: String)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+
+    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+      sessionCache.cache[RasSession](RAS_SESSION_KEY,
+        currentSession match {
+          case Some(returnedSession) => returnedSession.copy(userChoice = userChoice)
+          case None => cleanSession.copy(userChoice = userChoice)
+        }
+      )
+    }
+
+    result.map(cacheMap => {
+      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
+    })
   }
 
   def cacheName(name: MemberName)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
@@ -183,7 +201,7 @@ trait ShortLivedCache  {
         case true =>
           fileSession.get.resultsFile.isDefined || !uploadTimeDiff(fileSession.get.uploadTimeStamp.get)
         case false =>
-          Logger.warn("fileSession not defined for " + userId)
+          Logger.error("fileSession not defined for " + userId)
           false
     }).recover {
       case ex: Throwable =>

@@ -42,8 +42,8 @@ trait PageFlowController extends RasController {
 
   def previousPage(from: String): Result = {
     from match {
-      case FILE_UPLOAD => Redirect(routes.DashboardController.get)
-      case MEMBER_NAME => Redirect(routes.DashboardController.get)
+      case FILE_UPLOAD => Redirect(routes.WhatDoYouWantToDoController.get)
+      case MEMBER_NAME => Redirect(routes.WhatDoYouWantToDoController.get)
       case MEMBER_NINO => Redirect(routes.MemberNameController.get)
       case MEMBER_DOB  => Redirect(routes.MemberNinoController.get)
       case RESULTS     => Redirect(routes.MemberDOBController.get)

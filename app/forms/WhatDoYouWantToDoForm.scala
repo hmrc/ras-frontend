@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import play.api.libs.json.Json
+import helpers.helpers.I18nHelper
+import models.WhatDoYouWantToDo
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.i18n.Messages
 
+object WhatDoYouWantToDoForm extends I18nHelper{
 
-case class RasSession(userChoice:String,
-                      name:MemberName,
-                      nino:MemberNino,
-                      dateOfBirth:MemberDateOfBirth,
-                      residencyStatusResult: ResidencyStatusResult,
-                      uploadResponse: Option[UploadResponse] = None,
-                      envelope: Option[Envelope] = None,
-                      aFileIsInProcess: Option[Boolean] = None)
+  val whatDoYouWantToDoForm = Form(
+    mapping(
+      "userChoice" ->
+        optional(text).verifying(Messages("select.an.answer"), {choice => choice.isDefined})
+    )(WhatDoYouWantToDo.apply)(WhatDoYouWantToDo.unapply)
+  )
 
-object RasSession{
-  implicit val format = Json.format[RasSession]
 }

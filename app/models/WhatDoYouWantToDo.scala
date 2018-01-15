@@ -16,18 +16,14 @@
 
 package models
 
+import helpers.helpers.I18nHelper
 import play.api.libs.json.Json
 
+case class WhatDoYouWantToDo(userChoice: Option[String])
 
-case class RasSession(userChoice:String,
-                      name:MemberName,
-                      nino:MemberNino,
-                      dateOfBirth:MemberDateOfBirth,
-                      residencyStatusResult: ResidencyStatusResult,
-                      uploadResponse: Option[UploadResponse] = None,
-                      envelope: Option[Envelope] = None,
-                      aFileIsInProcess: Option[Boolean] = None)
-
-object RasSession{
-  implicit val format = Json.format[RasSession]
+object WhatDoYouWantToDo extends I18nHelper{
+  implicit val formats = Json.format[WhatDoYouWantToDo]
+  val SINGLE = Messages("single.status.radio")
+  val BULK = Messages("bulk.status.radio")
+  val RESULT = Messages("result.radio")
 }

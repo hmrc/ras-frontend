@@ -59,7 +59,8 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
   val memberNino = MemberNino("AB123456C")
   val dob = RasDate(Some("12"),Some("12"),Some("2012"))
   val memberDob = MemberDateOfBirth(dob)
-  val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),None)
+  val userChoice = ""
+  val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),None)
   val postData = Json.obj("dateOfBirth" -> dob)
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
