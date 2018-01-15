@@ -61,7 +61,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               shortLivedCache.fetchFileSession(userId).map {
                 case Some(fileSession) =>
                   fileSession.uploadTimeStamp match {
-                    case Some(timeStamp) =>
+                    case Some(timestamp) =>
                       fileSession.userFile match {
                         case Some(callbackData) =>
                           Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, callbackData.fileId, readyForDownload))
@@ -123,8 +123,8 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               fileSession.resultsFile match {
                 case Some(resultFile) =>
                   resultFile.uploadDate match {
-                    case Some(timeStamp) =>
-                      val expiryDate = new DateTime(timeStamp).plusDays(3).toString("EEEE d MMMM yyyy")
+                    case Some(timestamp) =>
+                      val expiryDate = new DateTime(timestamp).plusDays(3).toString("EEEE d MMMM yyyy")
                       fileSession.userFile match {
                         case Some(callbackData) =>
                           Ok(views.html.upload_result(callbackData.fileId,expiryDate))
