@@ -21,8 +21,8 @@ recent.lookups.description = You have 3 days from the processing date to view th
 reference.table.header = Reference
 expiry.date.table.header = Expires on
 
-single.status.radio = Find the residency status of a pension scheme member
-bulk.status.radio = Upload a file to find the residency status of pension scheme members
+single.lookup.radio = Find the residency status of a pension scheme member
+bulk.lookup.radio = Upload a file to find the residency status of pension scheme members
 result.radio = Get the residency status results from a file you have uploaded
 select.an.answer = Select an answer
 
