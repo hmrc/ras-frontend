@@ -19,7 +19,7 @@
 @if(form.hasGlobalErrors || form.hasErrors) {
 
       <div id="errors" class="validation-summary" role="alert" aria-labelledby="error-summary-heading">
-          <h2 class="heading-medium error-summary-heading" id="error-summary-heading-example-1">@Messages("generic.errors_heading")</h2>
+          <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h2>
 
           <ul class="error-summary-list">
               @form.errors.map{ error =>
