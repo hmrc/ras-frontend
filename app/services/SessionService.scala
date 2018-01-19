@@ -197,7 +197,8 @@ trait ShortLivedCache  {
     fetchFileSession(userId).map {
       case Some(fileSession) =>
         fileSession.uploadTimeStamp match {
-          case Some(timestamp) => hasBeen24HoursSinceTheUpload(timestamp) && !fileSession.resultsFile.isDefined
+          case Some(timestamp) =>
+            hasBeen24HoursSinceTheUpload(timestamp) && !fileSession.resultsFile.isDefined
           case _ =>
             Logger.error("[ShortLivedCache][failedProcessingUploadedFile] no upload timestamp found")
             false

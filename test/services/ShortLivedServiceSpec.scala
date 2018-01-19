@@ -141,17 +141,31 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
   "failedProcessingUploadedFile" should {
 
     "return true if it has been 24 hours since upload and no results file exists" in {
-      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession1)))
+      val fileSession = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis))
+      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
       val res = await(SUT.failedProcessingUploadedFile("userId"))
       res shouldBe true
     }
 
     "return false if it hasn't been 24 hours since upload and no results file exists" in {
-      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession2)))
+      val fileSession = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis))
+      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
       val res = await(SUT.failedProcessingUploadedFile("userId"))
       res shouldBe false
     }
 
+    "return false if no upload timestamp has been found" in {
+      val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", None)
+      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
+      val res = await(SUT.failedProcessingUploadedFile("userId"))
+      res shouldBe false
+    }
+
+    "return false if no file session has been found" in {
+      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(None))
+      val res = await(SUT.failedProcessingUploadedFile("userId"))
+      res shouldBe false
+    }
 
   }
 }
