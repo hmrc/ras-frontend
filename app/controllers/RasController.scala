@@ -52,12 +52,12 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
 
   def unAuthorise() = {
     Logger.error("User not authorised");
-    Future.successful(Redirect(routes.GlobalErrorController.notAuthorised))
+    Future.successful(Redirect(routes.ErrorController.notAuthorised))
   }
 
   def userInfoNotFond(idName:String) = {
     Logger.error(s"${idName} not found");
-    Future.successful(Redirect(routes.GlobalErrorController.get()))
+    Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
   }
 
 }

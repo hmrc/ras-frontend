@@ -23,13 +23,13 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object GlobalErrorController extends GlobalErrorController
+object ErrorController extends ErrorController
 
-trait GlobalErrorController extends FrontendController with I18nHelper {
+trait ErrorController extends FrontendController with I18nHelper {
 
   implicit val context: config.RasContext = RasContextImpl
 
-  def get = Action.async {
+  def renderGlobalErrorPage = Action.async {
     implicit request =>
         Future.successful(InternalServerError(views.html.global_error()))
   }

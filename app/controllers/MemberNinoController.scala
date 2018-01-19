@@ -68,7 +68,7 @@ trait MemberNinoController extends RasController with PageFlowController{
             nino => {
               sessionService.cacheNino(nino) flatMap {
                 case Some(session) => Future.successful(Redirect(routes.MemberDOBController.get()))
-                case _ => Future.successful(Redirect(routes.GlobalErrorController.get))
+                case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }
             }
           )
@@ -84,7 +84,7 @@ trait MemberNinoController extends RasController with PageFlowController{
         case Right(userInfo) =>
           sessionService.fetchRasSession() map {
             case Some(session) => previousPage("MemberNinoController")
-            case _ => Redirect(routes.GlobalErrorController.get)
+            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) => res
       }
