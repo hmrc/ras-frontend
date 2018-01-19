@@ -103,8 +103,12 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                     case WhatDoYouWantToDo.RESULT =>
                       shortLivedCache.failedProcessingUploadedFile(userId).map {
                         case true =>
+                          // try to view results for U76765433 on monday and you should get this
+                          // since it has been over 24 hours and no result has been generated or alternatively
+                          // edit the DB records timestamp to 24 hours in the past
                           Future.successful(Redirect(routes.ErrorController.renderProblemGettingResultsPage()))
                         case _ =>
+                          // calling render upload page when the file is still in progress should show still in progress page
                           Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
                       }
                       Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
@@ -142,7 +146,9 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                     case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload timestamp")
                       Redirect(routes.ErrorController.renderGlobalErrorPage)
                   }
-                case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")
+                case _ =>
+                  // this means file could be still in progress so check if file in progress
+                  Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")
                   Redirect(routes.ErrorController.renderGlobalErrorPage)
               }
             case _ =>

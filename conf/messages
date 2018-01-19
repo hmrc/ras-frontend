@@ -56,6 +56,10 @@ a.system.timeout = A system timeout
 a.technical.timeout = A technical error
 try.uploading.again = Try again and upload your file
 
+problem.getting.results.title = There has been a problem getting the results - GOV.UK
+problem.getting.results.header = There has been a problem getting the results
+upload.file.again = You should upload your file again.
+
 first.name = first name
 last.name = last name
 nino = National Insurance number

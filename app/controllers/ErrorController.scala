@@ -34,7 +34,7 @@ trait ErrorController extends FrontendController with I18nHelper {
   }
 
   def renderProblemGettingResultsPage = Action.async {
-    implicit request => Future.successful(InternalServerError(views.html.global_error()))
+    implicit request => Future.successful(InternalServerError(views.html.problem_getting_results()))
   }
 
   def notAuthorised = Action.async {

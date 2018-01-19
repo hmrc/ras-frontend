@@ -85,13 +85,10 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
     "contain correct title and header when upload error" in {
       val result = TestGlobalErrorController.renderProblemGettingResultsPage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
-//      doc.title shouldBe Messages("global.upload.error.page.title")
-//      doc.getElementById("header").text shouldBe Messages("global.upload.error.header")
-//      doc.getElementById("sub-header").text shouldBe Messages("global.upload.error.sub-header")
-//      doc.getElementById("timeout-bullet").text shouldBe Messages("a.system.timeout")
-//      doc.getElementById("technical-bullet").text shouldBe Messages("a.technical.timeout")
-//      doc.getElementById("try-again").text shouldBe Messages("try.uploading.again")
-//      doc.getElementById("continue").text shouldBe Messages("continue")
+      doc.title shouldBe Messages("problem.getting.results.title")
+      doc.getElementById("header").text shouldBe Messages("problem.getting.results.header")
+      doc.getElementById("try-again").text shouldBe Messages("upload.file.again")
+      doc.getElementById("continue").text shouldBe Messages("continue")
     }
   }
 
