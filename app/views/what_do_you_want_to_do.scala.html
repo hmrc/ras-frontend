@@ -33,9 +33,9 @@
       @radioGroup(
         whatDoYouWantToDoForm("userChoice"),
           Seq(
-            Messages("single.status.radio") -> "single-status-radio" -> Messages("single.status.radio"),
-            Messages("bulk.status.radio")  ->  "bulk-status-radio" -> Messages("bulk.status.radio"),
-            Messages("result.radio")  -> "result-radio" -> Messages("result.radio")
+            Messages("single.lookup.radio") -> "single-lookup" -> Messages("single.lookup.radio"),
+            Messages("bulk.lookup.radio")  ->  "bulk-lookup" -> Messages("bulk.lookup.radio"),
+            Messages("result.radio")  -> "result" -> Messages("result.radio")
           ),
           '_fieldsetAttributesLegend -> "userChoice",
           '_legend -> Messages("whatDoYouWantToDo.page.header"),
@@ -47,7 +47,7 @@
     </div>
 
     <div>
-      <button class="button" type="submit" id="submit-button">@Messages("continue")</button>
+      <button class="button" type="submit" id="continue">@Messages("continue")</button>
     </div>
 
   }

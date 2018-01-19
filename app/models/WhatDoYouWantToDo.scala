@@ -23,7 +23,7 @@ case class WhatDoYouWantToDo(userChoice: Option[String])
 
 object WhatDoYouWantToDo extends I18nHelper{
   implicit val formats = Json.format[WhatDoYouWantToDo]
-  val SINGLE = Messages("single.status.radio")
-  val BULK = Messages("bulk.status.radio")
+  val SINGLE = Messages("single.lookup.radio")
+  val BULK = Messages("bulk.lookup.radio")
   val RESULT = Messages("result.radio")
 }
