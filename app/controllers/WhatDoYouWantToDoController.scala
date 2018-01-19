@@ -103,7 +103,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                     case WhatDoYouWantToDo.RESULT =>
                       shortLivedCache.failedProcessingUploadedFile(userId).map {
                         case true =>
-                          Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
+                          Future.successful(Redirect(routes.ErrorController.renderProblemGettingResultsPage()))
                         case _ =>
                           Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
                       }

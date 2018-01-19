@@ -173,7 +173,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "redirect to file result page when result option is selected and a result is ready" in {
       val rasSession = RasSession(WhatDoYouWantToDo.RESULT ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""))
       when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.failedProcessingUploadedFile(any())).thenReturn(Future.successful(false))
+      when(mockShortLivedCache.failedProcessingUploadedFile(any())(any())).thenReturn(Future.successful(false))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/residency-status-added")
@@ -182,7 +182,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "redirect to file failed processing if it has been over 24 hours and no results file has been generated" in {
       val rasSession = RasSession(WhatDoYouWantToDo.RESULT ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("","","","","","",""))
       when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.failedProcessingUploadedFile(any())).thenReturn(Future.successful(true))
+      when(mockShortLivedCache.failedProcessingUploadedFile(any())(any())).thenReturn(Future.successful(true))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/problem-getting-results")

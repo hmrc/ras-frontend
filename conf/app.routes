@@ -32,6 +32,7 @@ GET         /match-not-found                      controllers.ResultsController.
 GET         /match-not-found/back                 controllers.ResultsController.back
 
 GET         /global-error                         controllers.ErrorController.renderGlobalErrorPage
+GET         /problem-getting-results              controllers.ErrorController.renderProblemGettingResultsPage
 
 GET         /notauthorised                        controllers.ErrorController.notAuthorised
 
