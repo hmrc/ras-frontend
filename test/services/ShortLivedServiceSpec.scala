@@ -138,4 +138,20 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
     }
   }
 
+  "failedProcessingUploadedFile" should {
+
+    "return true if it has been 24 hours since upload and no results file exists" in {
+      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession1)))
+      val res = await(SUT.failedProcessingUploadedFile("userId"))
+      res shouldBe true
+    }
+
+    "return false if it hasn't been 24 hours since upload and no results file exists" in {
+      when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession2)))
+      val res = await(SUT.failedProcessingUploadedFile("userId"))
+      res shouldBe false
+    }
+
+
+  }
 }

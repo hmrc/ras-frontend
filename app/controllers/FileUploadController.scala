@@ -188,7 +188,7 @@ trait FileUploadController extends RasController with PageFlowController {
             Logger.error("[FileUploadController][extractErrorReason] bad request")
             Messages("upload.failed.error")
           case "404" =>
-            Logger.error("[FileUploadController][extractErrorReason] enveloper not found")
+            Logger.error("[FileUploadController][extractErrorReason] envelope not found")
             Messages("upload.failed.error")
           case "413" =>
             Logger.error("[FileUploadController][extractErrorReason] file too large")

@@ -189,17 +189,30 @@ trait ShortLivedCache  {
     }
   }
 
-  def isFileInProgress(userId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def hasBeen24HoursSinceTheUpload(fileUploadTime: Long) = {
+    new DateTime(fileUploadTime).plusHours(hoursToWaitForReUpload).isBefore(DateTime.now.getMillis)
+  }
 
-    def uploadTimeDiff(time: Long) = {
-      val newTime = new DateTime(time)
-      newTime.isBefore(DateTime.now.minusHours(hoursToWaitForReUpload).getMillis)
+  def failedProcessingUploadedFile(userId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    fetchFileSession(userId).map {
+      case Some(fileSession) =>
+        fileSession.uploadTimeStamp match {
+          case Some(timestamp) => hasBeen24HoursSinceTheUpload(timestamp) && !fileSession.resultsFile.isDefined
+          case _ =>
+            Logger.error("[ShortLivedCache][failedProcessingUploadedFile] no upload timestamp found")
+            false
+        }
+      case _ =>
+        Logger.error("[ShortLivedCache][failedProcessingUploadedFile] no file session found")
+        false
     }
+  }
 
+  def isFileInProgress(userId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     fetchFileSession(userId).map(fileSession =>
       fileSession.isDefined match {
         case true =>
-          fileSession.get.resultsFile.isDefined || !uploadTimeDiff(fileSession.get.uploadTimeStamp.get)
+          fileSession.get.resultsFile.isDefined || !hasBeen24HoursSinceTheUpload(fileSession.get.uploadTimeStamp.get)
         case false =>
           Logger.error("fileSession not defined for " + userId)
           false
