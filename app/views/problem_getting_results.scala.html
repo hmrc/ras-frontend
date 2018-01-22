@@ -32,13 +32,13 @@
    <div class="row">
     <h1 id="header" class="heading-xlarge">@Messages("problem.getting.results.header")</h1>
    </div>
-
+   <br>
    <div class="row">
     <p id="try-again">@Messages("upload.file.again")</p>
    </div>
-
+   <br>
    <div class="row">
-    <a id="continue" class="button" href="@routes.SessionController.redirect("whatDoYouWantToDo",true)">@Messages("continue")</a>
+    <a id="continue" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
    </div>
 
   </div>
