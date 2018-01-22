@@ -101,17 +101,12 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                     case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get))
                     case WhatDoYouWantToDo.BULK => Future.successful(Redirect(routes.FileUploadController.get))
                     case WhatDoYouWantToDo.RESULT =>
-                      shortLivedCache.failedProcessingUploadedFile(userId).map {
+                      shortLivedCache.failedProcessingUploadedFile(userId).flatMap {
                         case true =>
-                          // try to view results for U76765433 on monday and you should get this
-                          // since it has been over 24 hours and no result has been generated or alternatively
-                          // edit the DB records timestamp to 24 hours in the past
                           Future.successful(Redirect(routes.ErrorController.renderProblemGettingResultsPage()))
                         case _ =>
-                          // calling render upload page when the file is still in progress should show still in progress page
                           Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
                       }
-                      Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
                     case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                   }
                 case _ =>
@@ -147,7 +142,6 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                       Redirect(routes.ErrorController.renderGlobalErrorPage)
                   }
                 case _ =>
-                  // this means file could be still in progress so check if file in progress
                   Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")
                   Redirect(routes.ErrorController.renderGlobalErrorPage)
               }
@@ -172,7 +166,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
              // CONTENT_LENGTH -> s"${fileData.get.length}",
               CONTENT_TYPE -> _contentType)
 
-          shortLivedCache.removeFileSessionFromCache(userId)
+          //shortLivedCache.removeFileSessionFromCache(userId)
 
           res
         }.recover {
