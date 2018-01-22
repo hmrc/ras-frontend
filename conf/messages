@@ -46,7 +46,7 @@ member.dob.page.title = Member date of birth - GOV.UK
 member.dob.page.header = What is {0}''s date of birth?
 
 match.found.page.title = Match found - GOV.UK
-match.not.found.page.title = Match not found - GOV.UK
+match.not.found.page.title = Member''s residency status cannot be displayed - GOV.UK
 global.error.page.title = Technical error - GOV.UK
 
 global.upload.error.page.title = Upload error - GOV.UK
@@ -115,9 +115,9 @@ finish = Finish
 service.unavailable = Service unavailable
 technical.difficulty = Sorry, there is a technical problem and you cannot use the service at the moment. Please try again later.
 
-member.details.not.found = {0} has not been found
+member.details.not.found = {0}''s residency status cannot be displayed
 
-match.not.found.subheader = The details you''ve entered don'"t match HM Revenue and Customs'' records. Check you''ve entered the correct information.
+match.not.found.subheader = You should check with to make sure you have their correct details.
 
 try.again = Try again
 
@@ -132,8 +132,8 @@ tax.year.period = {0} to {1}
 sign.out = Sign out
 change = Change
 
-match.not.found.what.to.do = Check with the member to make sure they have given you the correct details. If you have think the details you have entered are correct, the member must
-contact.hmrc = contact HMRC to confirm their National Insurance number
+match.not.found.what.to.do = If you have checked and everything is correct, {0} to update their personal details.
+contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">must contact HMRC</a>
 
 signout = Sign out
 

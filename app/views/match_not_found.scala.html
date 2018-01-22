@@ -18,6 +18,7 @@
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
 
 @ras_main(title = Messages("match.not.found.page.title")) {
 
@@ -29,8 +30,7 @@
         <a class="link-back" href="@routes.ResultsController.back">@Messages("back")</a>
       </div>
 
-      <br>
-      <h1 id="match-not-found">@Messages("member.details.not.found",name)</h1>
+      <h1 id="match-not-found" class="heading-xlarge">@Messages("member.details.not.found",name)</h1>
 
       <p id="subheader">@Messages("match.not.found.subheader")</p>
 
@@ -56,14 +56,12 @@
         </tbody>
       </table>
 
-      <p id="what-to-do">@Messages("match.not.found.what.to.do")
-        <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">@Messages("contact.hmrc")</a>.
-      </p>
+      <p id="what-to-do">@Html(Messages("match.not.found.what.to.do", Messages("contact.hmrc")))</p>
 
-      <div>
-        <a id="check-another-person" href="@routes.SessionController.redirect("member-name",true)">@Messages("check.another.person")</a>
+      <br>
+      <div class="row">
+        <a id="continue" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
       </div>
-
 
 
   </div>
