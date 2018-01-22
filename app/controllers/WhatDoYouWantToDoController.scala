@@ -70,11 +70,11 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                       }
                     case _ =>
                       Logger.error("[WhatDoYouWantToDoController][get] no timestamp retrieved")
-                      Redirect(routes.GlobalErrorController.get)
+                      Redirect(routes.ErrorController.renderGlobalErrorPage)
                   }
                 case _ =>
                   Logger.error("[WhatDoYouWantToDoController][get] failed to retrieve file session")
-                  Redirect(routes.GlobalErrorController.get)
+                  Redirect(routes.ErrorController.renderGlobalErrorPage)
               }
             case _ =>
               Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,noFileInProgress,"",noFileInProgress)))
@@ -88,7 +88,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   def post = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>
+        case Right(userId) =>
           whatDoYouWantToDoForm.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[WhatDoYouWantToDoController][post] No option selected")
@@ -100,12 +100,18 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                   session.userChoice match {
                     case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get))
                     case WhatDoYouWantToDo.BULK => Future.successful(Redirect(routes.FileUploadController.get))
-                    case WhatDoYouWantToDo.RESULT => Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
-                    case _ => Future.successful(Redirect(routes.GlobalErrorController.get()))
+                    case WhatDoYouWantToDo.RESULT =>
+                      shortLivedCache.failedProcessingUploadedFile(userId).flatMap {
+                        case true =>
+                          Future.successful(Redirect(routes.ErrorController.renderProblemGettingResultsPage()))
+                        case _ =>
+                          Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
+                      }
+                    case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                   }
                 case _ =>
                   Logger.error("[WhatDoYouWantToDoController][post] failed to retrieve session")
-                  Future.successful(Redirect(routes.GlobalErrorController.get()))
+                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
               }
           )
         case Left(resp) =>
@@ -130,17 +136,18 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                           Ok(views.html.upload_result(callbackData.fileId,expiryDate))
                         case _ =>
                           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
-                          Redirect(routes.GlobalErrorController.get)
+                          Redirect(routes.ErrorController.renderGlobalErrorPage)
                       }
                     case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload timestamp")
-                      Redirect(routes.GlobalErrorController.get)
+                      Redirect(routes.ErrorController.renderGlobalErrorPage)
                   }
-                case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")
-                  Redirect(routes.GlobalErrorController.get)
+                case _ =>
+                  Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")
+                  Redirect(routes.ErrorController.renderGlobalErrorPage)
               }
             case _ =>
               Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve file session")
-              Redirect(routes.GlobalErrorController.get)
+              Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
@@ -159,12 +166,12 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
              // CONTENT_LENGTH -> s"${fileData.get.length}",
               CONTENT_TYPE -> _contentType)
 
-          shortLivedCache.removeFileSessionFromCache(userId)
+          //shortLivedCache.removeFileSessionFromCache(userId)
 
           res
         }.recover {
           case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
-            Redirect(routes.GlobalErrorController.get())
+            Redirect(routes.ErrorController.renderGlobalErrorPage)
         }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")

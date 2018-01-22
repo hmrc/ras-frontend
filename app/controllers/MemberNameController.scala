@@ -61,7 +61,7 @@ trait MemberNameController extends RasController with PageFlowController {
         memberName => {
           sessionService.cacheName(memberName) flatMap {
             case Some(session) => Future.successful(Redirect(routes.MemberNinoController.get()))
-            case _ => Future.successful(Redirect(routes.GlobalErrorController.get))
+            case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
           }
         }
       )

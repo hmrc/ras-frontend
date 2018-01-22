@@ -31,8 +31,9 @@ GET         /match-found/back                     controllers.ResultsController.
 GET         /match-not-found                      controllers.ResultsController.noMatchFound
 GET         /match-not-found/back                 controllers.ResultsController.back
 
-GET         /global-error                         controllers.GlobalErrorController.get
+GET         /global-error                         controllers.ErrorController.renderGlobalErrorPage
+GET         /problem-getting-results              controllers.ErrorController.renderProblemGettingResultsPage
 
-GET         /notauthorised                        controllers.GlobalErrorController.notAuthorised
+GET         /notauthorised                        controllers.ErrorController.notAuthorised
 
 GET         /check-another-member/:target         controllers.SessionController.redirect(target:String, cleanSession:Boolean)
