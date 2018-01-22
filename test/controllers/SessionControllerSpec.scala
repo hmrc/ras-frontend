@@ -73,7 +73,7 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       "redirect is called with member-nino and clean" in {
         when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-nino",true)(FakeRequest()))
-        redirectLocation(result).get should include("member-nino")
+        redirectLocation(result).get should include("member-national-insurance-number")
       }
 
       "redirect is called with member-dob and clean" in {
@@ -97,7 +97,7 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       "redirect is called with member-nino" in {
         when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-nino",false)(FakeRequest()))
-        redirectLocation(result).get should include("member-nino")
+        redirectLocation(result).get should include("member-national-insurance-number")
       }
 
       "redirect is called with member-dob" in {

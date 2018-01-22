@@ -34,9 +34,8 @@
       <div class="back-arrow">
         <a class="link-back" href="@routes.ResultsController.back">@Messages("back")</a>
       </div>
-      <br>
 
-      <h1 id="header">@Messages("match.found.header",name)</h1>
+      <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
 
       <p id="sub-header">@Messages("match.found.sub-header",name ,currentYearResidencyStatus ,currentTaxYear.toString,(currentTaxYear + 1).toString,(currentTaxYear + 2).toString, nextYearResidencyStatus)</p>
 

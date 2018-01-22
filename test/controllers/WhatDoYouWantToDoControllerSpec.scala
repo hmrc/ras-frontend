@@ -91,11 +91,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
   "get" should {
 
-    "respond to GET /relief-at-source/what-do-you-want-to-do" in {
-      val result = route(fakeApplication, FakeRequest(GET, "/relief-at-source/what-do-you-want-to-do"))
-      status(result.get) should not equal (NOT_FOUND)
-    }
-
     "respond to GET /what-do-you-want-to-do" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
@@ -206,11 +201,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
   }
 
   "renderUploadResultsPage" should {
-
-    "respond to GET /relief-at-source/residency-status-added" in {
-      val result = route(fakeApplication, FakeRequest(GET, "/relief-at-source/residency-status-added"))
-      status(result.get) should not equal (NOT_FOUND)
-    }
 
     "return ok when called" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))

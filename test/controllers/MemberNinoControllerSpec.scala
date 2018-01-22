@@ -108,8 +108,8 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
 
   "MemberNinoController post" should {
 
-    "respond to POST /relief-at-source/member-nino" in {
-      val result = route(fakeApplication, FakeRequest(POST, "/relief-at-source/member-nino"))
+    "respond to POST /relief-at-source/member-national-insurance-number" in {
+      val result = route(fakeApplication, FakeRequest(POST, "/relief-at-source/member-national-insurance-number"))
       status(result.get) should not equal (NOT_FOUND)
     }
 

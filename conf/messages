@@ -1,57 +1,84 @@
+######  TITLES #####################################################################################
 
-continue = Continue
-
-member = member
-
+unauthorised.error.page.title = Un-Authorised - GOV.UK
+file.upload.page.title = Upload a file - GOV.UK
+file.upload.successful.page.title = Your file has been uploaded - GOV.UK
 whatDoYouWantToDo.page.title = What do you want to do? - GOV.UK
-whatDoYouWantToDo.page.header = What do you want to do?
-
 upload.result.page.title = The residency status has been added - GOV.UK
+member.name.page.title = What is the member's name? - GOV.UK
+member.nino.page.title = What is the member's National Insurance number? - GOV.UK
+member.dob.page.title = What is the member's date of birth? - GOV.UK
+match.found.page.title = Member''s residency status - GOV.UK
+match.not.found.page.title = Member''s residency status cannot be displayed - GOV.UK
+global.error.page.title = Technical error - GOV.UK
+global.upload.error.page.title = Upload error - GOV.UK
+
+######  HEADERS ####################################################################################
+
+whatDoYouWantToDo.page.header = What do you want to do?
 upload.result.page.header = The residency status has been added
-
-single.lookup.link = Single look up
-single.lookup.description = Use the look up to check a single member''s residency status and get an instant on-screen result.
-
-bulk.lookup.link = Bulk look up
-bulk.lookup.description = Look up the details of multiple members in one file.
-
-recent.lookups = Recent bulk look ups
-recent.lookups.description = You have 3 days from the processing date to view the results.
-
+member.name.page.header = What is the member''s name?
+member.nino.page.header = What is {0}''s National Insurance number?
+member.dob.page.header = What is {0}''s date of birth?
+global.upload.error.header = There has been a problem
 reference.table.header = Reference
 expiry.date.table.header = Expires on
+match.found.header = {0}''s details
+file.upload.page.header = Upload your file
+upload.success.header = Upload success
 
+###### SUB-HEADERS #################################################################################
+
+global.upload.error.sub-header = This could be caused by:
+member.name.page.sub-header = As shown on their birth certificate or passport.
+match.found.sub-header = {0} pays their tax in {1} for the current tax year of {2} to {3}. They are expected to pay tax in {5} in the next tax year of {3} to {4}.
+file.upload.page.sub-header = The file must contain mandatory information and in a specific format. You can {0} on how to create your file first.
+upload.success.sub-header = Your file will now be processed. This may take up to 24 hours.
+match.not.found.subheader = You should check with to make sure you have their correct details.
+
+###### ERRORS ######################################################################################
+
+error.mandatory = Enter a {0}
+error.nino.invalid = The National Insurance number you have entered does not have the correct number of letters and numbers
+error.nino.length = Enter a valid National Insurance number using 8 or 9 characters
+error.nino.special.character = Enter a National Insurance number using only letters and numbers
+error.length = {0} is too long (>{1})
+error.name.invalid = Enter a {0} using only letters, hyphens, apostrophes and spaces
+error.date.non.number = Enter a {0} using numbers only
+error.day.invalid = Enter a day between 1 and 31
+error.day.invalid.feb = Enter a day between 1 and 28
+error.day.invalid.feb.leap = Enter a day between 1 and 29
+error.day.invalid.thirty = Enter a day between 1 and 30
+error.month.invalid = Enter a month between 1 and 12
+error.year.invalid.format = Enter a year in full using 4 numbers
+error.dob.invalid.future = Enter a date of birth that is not in the future
+generic.errors_heading = There is a problem with the form
+upload.error.heading = There is a problem
+unauthorised.error = you are not authorised to access this service , you need Pension scheme administrator or pension scheme provider enrolments.
+file.large.error=File size exceeds limit to upload.
+file.empty.error=Cannot upload an empty file.
+upload.failed.error=There is an unknown problem with the file you are trying to upload.
+
+##### OTHER ######################################################################################
+continue = Continue
+member = member
+single.lookup.link = Single look up
+single.lookup.description = Use the look up to check a single member''s residency status and get an instant on-screen result.
+bulk.lookup.link = Bulk look up
+bulk.lookup.description = Look up the details of multiple members in one file.
+recent.lookups = Recent bulk look ups
+recent.lookups.description = You have 3 days from the processing date to view the results.
 single.lookup.radio = Find the residency status of a pension scheme member
 bulk.lookup.radio = Upload a file to find the residency status of pension scheme members
 result.radio = Get the residency status results from a file you have uploaded
 select.an.answer = Select an answer
-
 choose.something.else = Choose something else to do
 result = Result
 document = Document
 residency.status.result = Residency-status-results.CSV
-
 file.type.size = CSV, 2MB.
 expiry.date.message = This spreadsheet will be deleted on {0} if you do not open it.
 deletion.message = When you have opened this spreadsheet, you should save a copy of it because it will then be automatically deleted from this service.
-
-member.name.page.title = Member name - GOV.UK
-member.name.page.header = What is the member''s name?
-member.name.page.sub-header = As shown on their birth certificate or passport.
-
-member.nino.page.title = Member nino - GOV.UK
-member.nino.page.header = What is {0}''s National Insurance number?
-
-member.dob.page.title = Member date of birth - GOV.UK
-member.dob.page.header = What is {0}''s date of birth?
-
-match.found.page.title = Match found - GOV.UK
-match.not.found.page.title = Member''s residency status cannot be displayed - GOV.UK
-global.error.page.title = Technical error - GOV.UK
-
-global.upload.error.page.title = Upload error - GOV.UK
-global.upload.error.header = There has been a problem
-global.upload.error.sub-header = This could be caused by:
 a.system.timeout = A system timeout
 a.technical.timeout = A technical error
 try.uploading.again = Try again and upload your file
@@ -65,93 +92,35 @@ last.name = last name
 nino = National Insurance number
 dob = date of birth
 name = name
-
 day = day
 month = month
 year = year
-
 dob.hint = For example, 21 2 1983
 nino.hint = For example, 'QQ 12 34 56 C'
-
 back = Back
-
-error.mandatory = Enter a {0}
-
-error.nino.invalid = The National Insurance number you have entered does not have the correct number of letters and numbers
-error.nino.length = Enter a valid National Insurance number using 8 or 9 characters
-error.nino.special.character = Enter a National Insurance number using only letters and numbers
-
-error.length = {0} is too long (>{1})
-error.name.invalid = Enter a {0} using only letters, hyphens, apostrophes and spaces
-error.date.non.number = Enter a {0} using numbers only
-
 tried = Tried already and can''t find them?
 tried.confirm.details = Confirm with your scheme member the details you hold are correct
 tried.guidance = If you have already done this and still can''t find them, your scheme member will need to contact HMRC themselves to
 confirm.nino.link = confirm their National Insurance number
-
-match.found.header = {0}''s details
-match.found.sub-header = {0} pays their tax in {1} for the current tax year of {2} to {3}. They are expected to pay tax in {5} in the next tax year of {3} to {4}.
-
-error.day.invalid = Enter a day between 1 and 31
-error.day.invalid.feb = Enter a day between 1 and 28
-error.day.invalid.feb.leap = Enter a day between 1 and 29
-error.day.invalid.thirty = Enter a day between 1 and 30
-
-error.month.invalid = Enter a month between 1 and 12
-error.year.invalid.format = Enter a year in full using 4 numbers
-error.dob.invalid.future = Enter a date of birth that is not in the future
-
-generic.errors_heading = There is a problem with the form
-upload.error.heading = There is a problem
-
 scottish.taxpayer = Scotland
 non.scottish.taxpayer = Rest of UK
-
 this.tax.year = This tax year
 status.for.next.tax.year = Status for next tax year, {0} to {1}
 tax.year.period = 6 April {0} to 5 April {1}
-
 print.this.page = Print this page
 check.another.person = Check another person
 finish = Finish
-
 service.unavailable = Service unavailable
 technical.difficulty = Sorry, there is a technical problem and you cannot use the service at the moment. Please try again later.
-
 member.details.not.found = {0}''s residency status cannot be displayed
-
-match.not.found.subheader = You should check with to make sure you have their correct details.
-
 try.again = Try again
-
-unauthorised.error.page.title = Un-Authorised - GOV.UK
-unauthorised.error = you are not authorised to access this service , you need Pension scheme administrator or pension scheme provider enrolments.
-
 tax.year = Tax year
 location = Location
-
 tax.year.period = {0} to {1}
-
 sign.out = Sign out
 change = Change
-
 match.not.found.what.to.do = If you have checked and everything is correct, {0} to update their personal details.
 contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">must contact HMRC</a>
-
-signout = Sign out
-
-file.upload.page.title = Upload your file - GOV.UK
-file.upload.page.header = Upload your file
-file.upload.page.sub-header = The file must contain mandatory information and in a specific format. You can {0} on how to create your file first.
 templates.link = <a href="">download a template and instructions (2 files)</a>
-
-upload.success.header = Upload success
-upload.success.sub-header = Your file will now be processed. This may take up to 24 hours.
 upload = Upload
-
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
-file.empty.error=Cannot upload an empty file.
-file.large.error=File size exceeds limit to upload.
-upload.failed.error=There is an unknown problem with the file you are trying to upload.
-
