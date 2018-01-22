@@ -32,7 +32,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
 
   val fakeRequest = FakeRequest("GET", "/")
 
-  object TestGlobalErrorController extends ErrorController
+  object TestErrorController extends ErrorController
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
@@ -49,29 +49,29 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
     }
 
     "return 200 when global error endpoint is called" in {
-      val result = TestGlobalErrorController.renderGlobalErrorPage(fakeRequest)
+      val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return 200 when problem getting results in called" in {
-      val result = TestGlobalErrorController.renderProblemGettingResultsPage(fakeRequest)
+      val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
     "return HTML when global error is called" in {
-      val result = TestGlobalErrorController.renderGlobalErrorPage(fakeRequest)
+      val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }
 
     "return HTML when upload error is called" in {
-      val result = TestGlobalErrorController.renderProblemGettingResultsPage(fakeRequest)
+      val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }
 
     "contain correct title and header when global error" in {
-      val result = TestGlobalErrorController.renderGlobalErrorPage(fakeRequest)
+      val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.title shouldBe Messages("global.upload.error.page.title")
       doc.getElementById("header").text shouldBe Messages("global.upload.error.header")
@@ -83,9 +83,10 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
     }
 
     "contain correct title and header when upload error" in {
-      val result = TestGlobalErrorController.renderProblemGettingResultsPage(fakeRequest)
+      val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.title shouldBe Messages("problem.getting.results.title")
+      doc.getElementById("back").attr("href") should include("/what-do-you-want-to-do")
       doc.getElementById("header").text shouldBe Messages("problem.getting.results.header")
       doc.getElementById("try-again").text shouldBe Messages("upload.file.again")
       doc.getElementById("continue").text shouldBe Messages("continue")
