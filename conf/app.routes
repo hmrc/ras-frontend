@@ -25,11 +25,11 @@ GET         /member-date-of-birth                 controllers.MemberDOBControlle
 POST        /member-date-of-birth                 controllers.MemberDOBController.post
 GET         /member-date-of-birth/back            controllers.MemberDOBController.back
 
-GET         /match-found                          controllers.ResultsController.matchFound
-GET         /match-found/back                     controllers.ResultsController.back
+GET         /member-residency-status              controllers.ResultsController.matchFound
+GET         /member-residency-status/back         controllers.ResultsController.back
 
-GET         /match-not-found                      controllers.ResultsController.noMatchFound
-GET         /match-not-found/back                 controllers.ResultsController.back
+GET         /no-residency-status-displayed        controllers.ResultsController.noMatchFound
+GET         /no-residency-status-displayed/back   controllers.ResultsController.back
 
 GET         /global-error                         controllers.GlobalErrorController.get
 
