@@ -63,7 +63,7 @@ trait ResultsController extends RasController with PageFlowController{
 
               case _ =>
                 Logger.error("[ResultsController][matchFound] failed to retrieve ras session")
-                Redirect(routes.GlobalErrorController.get)
+                Redirect(routes.ErrorController.renderGlobalErrorPage())
             }
           }
         case Left(res) => res
@@ -86,7 +86,7 @@ trait ResultsController extends RasController with PageFlowController{
                 Ok(views.html.match_not_found(name,dateOfBirth,nino))
               case _ =>
                 Logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
-                Redirect(routes.GlobalErrorController.get)
+                Redirect(routes.ErrorController.renderGlobalErrorPage())
             }
 
           }
@@ -101,7 +101,7 @@ trait ResultsController extends RasController with PageFlowController{
         case Right(userInfo) =>
           sessionService.fetchRasSession() map {
             case Some(session) => previousPage("ResultsController")
-            case _ => Redirect(routes.GlobalErrorController.get)
+            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) => res
       }

@@ -19,27 +19,26 @@
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@ras_main(title = Messages("global.upload.error.page.title")) {
+@ras_main(title = Messages("problem.getting.results.title")) {
 
 <div class="grid-layout--no-gutter">
  <div class="grid-layout__column">
   <div class="grid-layout__column--3-4">
 
-   <div class="row">
-    <h1 id="header" class="heading-xlarge">@Messages("global.upload.error.header")</h1>
-    <h2 id="sub-header">@Messages("global.upload.error.sub-header")</h2>
-    <ul class="list list-bullet">
-     <li id="timeout-bullet">@Messages("a.system.timeout")</li>
-     <li id="technical-bullet">@Messages("a.technical.timeout")</li>
-    </ul>
+   <div class="back-arrow">
+    <a class="link-back" id="back" href="@routes.WhatDoYouWantToDoController.get">@Messages("back")</a>
    </div>
 
    <div class="row">
-    <p id="try-again">@Messages("try.uploading.again")</p>
+    <h1 id="header" class="heading-xlarge">@Messages("problem.getting.results.header")</h1>
    </div>
-
+   <br>
    <div class="row">
-    <a id="continue" class="button" href="@routes.SessionController.redirect("whatDoYouWantToDo",true)">@Messages("continue")</a>
+    <p id="try-again">@Messages("upload.file.again")</p>
+   </div>
+   <br>
+   <div class="row">
+    <a id="continue" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
    </div>
 
   </div>
