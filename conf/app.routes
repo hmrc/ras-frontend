@@ -1,38 +1,38 @@
 # microservice specific routes
 
-GET         /assets/*file                         @controllers.AssetsController.at(path="/public", file)
+GET         /assets/*file                           @controllers.AssetsController.at(path="/public", file)
 
-GET         /what-do-you-want-to-do               controllers.WhatDoYouWantToDoController.get
-POST        /what-do-you-want-to-do               controllers.WhatDoYouWantToDoController.post
-GET         /residency-status-added               controllers.WhatDoYouWantToDoController.renderUploadResultsPage
-GET         /whatDoYouWantToDo/results/:fileName  controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
+GET         /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.get
+POST        /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.post
+GET         /residency-status-added                 controllers.WhatDoYouWantToDoController.renderUploadResultsPage
+GET         /whatDoYouWantToDo/results/:fileName    controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
 
-GET         /upload-a-file                        controllers.FileUploadController.get
-GET         /upload-a-file/back                   controllers.FileUploadController.back
+GET         /upload-a-file                          controllers.FileUploadController.get
+GET         /upload-a-file/back                     controllers.FileUploadController.back
 
-GET         /upload-success                       controllers.FileUploadController.uploadSuccess
-GET         /upload-error                         controllers.FileUploadController.uploadError
+GET         /file-uploaded                          controllers.FileUploadController.uploadSuccess
+GET         /file-upload-problem                    controllers.FileUploadController.uploadError
 
-GET         /member-name                          controllers.MemberNameController.get
-POST        /member-name                          controllers.MemberNameController.post
-GET         /member-name/back                     controllers.MemberNameController.back
+GET         /member-name                            controllers.MemberNameController.get
+POST        /member-name                            controllers.MemberNameController.post
+GET         /member-name/back                       controllers.MemberNameController.back
 
-GET         /member-nino                          controllers.MemberNinoController.get
-POST        /member-nino                          controllers.MemberNinoController.post
-GET         /member-nino/back                     controllers.MemberNinoController.back
+GET         /member-national-insurance-number       controllers.MemberNinoController.get
+POST        /member-national-insurance-number       controllers.MemberNinoController.post
+GET         /member-national-insurance-number/back  controllers.MemberNinoController.back
 
-GET         /member-date-of-birth                 controllers.MemberDOBController.get
-POST        /member-date-of-birth                 controllers.MemberDOBController.post
-GET         /member-date-of-birth/back            controllers.MemberDOBController.back
+GET         /member-date-of-birth                   controllers.MemberDOBController.get
+POST        /member-date-of-birth                   controllers.MemberDOBController.post
+GET         /member-date-of-birth/back              controllers.MemberDOBController.back
 
-GET         /member-residency-status              controllers.ResultsController.matchFound
-GET         /member-residency-status/back         controllers.ResultsController.back
+GET         /member-residency-status                controllers.ResultsController.matchFound
+GET         /member-residency-status/back           controllers.ResultsController.back
 
-GET         /no-residency-status-displayed        controllers.ResultsController.noMatchFound
-GET         /no-residency-status-displayed/back   controllers.ResultsController.back
+GET         /no-residency-status-displayed          controllers.ResultsController.noMatchFound
+GET         /no-residency-status-displayed/back     controllers.ResultsController.back
 
-GET         /global-error                         controllers.GlobalErrorController.get
+GET         /global-error                           controllers.GlobalErrorController.get
 
-GET         /notauthorised                        controllers.GlobalErrorController.notAuthorised
+GET         /notauthorised                          controllers.GlobalErrorController.notAuthorised
 
-GET         /check-another-member/:target         controllers.SessionController.redirect(target:String, cleanSession:Boolean)
+GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean)

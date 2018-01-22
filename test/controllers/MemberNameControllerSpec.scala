@@ -161,7 +161,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(session)))
       val result = TestMemberNameController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
-      redirectLocation(result).get should include("member-nino")
+      redirectLocation(result).get should include("/member-national-insurance-number")
     }
 
     "redirect to technical error page if name is not cached" in {

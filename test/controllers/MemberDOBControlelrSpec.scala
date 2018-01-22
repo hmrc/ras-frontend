@@ -201,7 +201,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     val result = TestMemberDobController.back.apply(FakeRequest())
     status(result) shouldBe SEE_OTHER
-    redirectLocation(result).get should include("/member-nino")
+    redirectLocation(result).get should include("/member-national-insurance-number")
   }
 
   "redirect to global error page navigating back with no session" in {

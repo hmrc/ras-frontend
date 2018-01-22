@@ -52,7 +52,7 @@ class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18n
       "on member dob page" in {
         val result = TestPageFlowController.previousPage("MemberDOBController")
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/member-nino")
+        redirectLocation(result).get should include("/member-national-insurance-number")
       }
     }
 
