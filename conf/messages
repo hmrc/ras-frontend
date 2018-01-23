@@ -24,7 +24,7 @@ global.upload.error.header = There has been a problem
 reference.table.header = Reference
 expiry.date.table.header = Expires on
 match.found.header = {0}''s details
-file.upload.page.header = Upload your file
+file.upload.page.header = Upload a file
 upload.success.header = Upload success
 
 ###### SUB-HEADERS #################################################################################
@@ -34,7 +34,7 @@ member.name.page.sub-header = As shown on their birth certificate or passport.
 match.found.sub-header = {0} pays their tax in {1} for the current tax year of {2} to {3}. They are expected to pay tax in {5} in the next tax year of {3} to {4}.
 file.upload.page.sub-header = The file must contain mandatory information and in a specific format. You can {0} on how to create your file first.
 upload.success.sub-header = Your file will now be processed. This may take up to 24 hours.
-match.not.found.subheader = You should check with to make sure you have their correct details.
+match.not.found.subheader = You should check with {0} to make sure you have their correct details.
 
 ###### ERRORS ######################################################################################
 
@@ -119,7 +119,7 @@ location = Location
 tax.year.period = {0} to {1}
 sign.out = Sign out
 change = Change
-match.not.found.what.to.do = If you have checked and everything is correct, {0} to update their personal details.
+match.not.found.what.to.do = If you have checked and everything is correct, {0} {1} to update their personal details.
 contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">must contact HMRC</a>
 templates.link = <a href="">download a template and instructions (2 files)</a>
 upload = Upload

@@ -181,6 +181,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       ))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("match-not-found").text shouldBe Messages("member.details.not.found", "Jim McGill")
+      doc(result).getElementById("subheader").text shouldBe Messages("match.not.found.subheader","Jim McGill")
       doc(result).getElementById("change-name").text shouldBe Messages("change")
       doc(result).getElementById("name").text shouldBe "Jim McGill"
       doc(result).getElementById("change-nino").text shouldBe Messages("change")

@@ -32,7 +32,7 @@
 
       <h1 id="match-not-found" class="heading-xlarge">@Messages("member.details.not.found",name)</h1>
 
-      <p id="subheader">@Messages("match.not.found.subheader")</p>
+      <p id="subheader">@Messages("match.not.found.subheader", name)</p>
 
 
       <table>
@@ -56,7 +56,7 @@
         </tbody>
       </table>
 
-      <p id="what-to-do">@Html(Messages("match.not.found.what.to.do", Messages("contact.hmrc")))</p>
+      <p id="what-to-do">@Html(Messages("match.not.found.what.to.do", name ,Messages("contact.hmrc")))</p>
 
       <br>
       <div class="row">
