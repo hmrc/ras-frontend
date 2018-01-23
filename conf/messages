@@ -25,7 +25,7 @@ reference.table.header = Reference
 expiry.date.table.header = Expires on
 match.found.header = {0}''s details
 file.upload.page.header = Upload a file
-upload.success.header = Upload success
+upload.success.header = Your file has been uploaded
 
 ###### SUB-HEADERS #################################################################################
 
