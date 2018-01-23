@@ -187,7 +187,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("nino").text shouldBe nino.nino
       doc(result).getElementById("change-dob").text shouldBe Messages("change")
       doc(result).getElementById("dob").text shouldBe memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
-      doc(result).getElementById("continue").text shouldBe Messages("choose.something.else")
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
     "redirect to global error page when no session data is returned on match found" in {
