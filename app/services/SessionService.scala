@@ -21,7 +21,7 @@ import models._
 import org.joda.time.DateTime
 import play.api.Logger
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.ShortLivedHttpCaching
 
 import scala.concurrent.ExecutionContext.Implicits.global

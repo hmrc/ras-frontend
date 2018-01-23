@@ -166,7 +166,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
              // CONTENT_LENGTH -> s"${fileData.get.length}",
               CONTENT_TYPE -> _contentType)
 
-          //shortLivedCache.removeFileSessionFromCache(userId)
+          shortLivedCache.removeFileSessionFromCache(userId)
 
           res
         }.recover {
