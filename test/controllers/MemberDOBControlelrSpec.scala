@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.{CustomerMatchingAPIConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import helpers.helpers.I18nHelper
 import metrics.Metrics
 import models._
