@@ -89,7 +89,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.getElementById("back").attr("href") should include("/what-do-you-want-to-do")
       doc.getElementById("header").text shouldBe Messages("problem.getting.results.header")
       doc.getElementById("try-again").text shouldBe Messages("upload.file.again")
-      doc.getElementById("continue").text shouldBe Messages("choose.something.else")
+      doc.getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
   }
 

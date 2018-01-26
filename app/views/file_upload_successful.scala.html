@@ -29,11 +29,12 @@
 
       <div class="row">
         <h1 id="page-header" class="heading-xlarge">@Messages("upload.success.header")</h1>
-        <p id="page-sub-header">@Messages("upload.success.sub-header")</p>
+        <p id="first-description">@Messages("upload.success.first-description")</p>
+        <p id="second-description">@Messages("upload.success.second-description")</p>
       </div>
 
       <div class="row">
-        <a id="continue" class="button" href="@routes.SessionController.redirect("whatDoYouWantToDo",false)">@Messages("continue")</a>
+        <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
       </div>
 
     </div>

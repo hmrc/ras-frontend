@@ -33,7 +33,8 @@ global.upload.error.sub-header = This could be caused by:
 member.name.page.sub-header = As shown on their birth certificate or passport.
 match.found.sub-header = {0} pays their tax in {1} for the current tax year of {2} to {3}. They are expected to pay tax in {5} in the next tax year of {3} to {4}.
 file.upload.page.sub-header = The file must contain mandatory information and in a specific format. You can {0} on how to create your file first.
-upload.success.sub-header = Your file will now be processed. This may take up to 24 hours.
+upload.success.first-description = It can take up to 24 hours to get the residency status results for all of the members. You will not be able to upload another file during this time.
+upload.success.second-description = You need to come back to this service to get the results. The results will be available on the uploaded file for 3 days before being deleted.
 match.not.found.subheader = You should check with {0} to make sure you have their correct details.
 
 ###### ERRORS ######################################################################################

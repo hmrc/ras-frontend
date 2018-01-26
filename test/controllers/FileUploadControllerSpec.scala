@@ -195,8 +195,9 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
         val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
         doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
-        doc(result).getElementById("page-sub-header").text shouldBe Messages("upload.success.sub-header")
-        doc(result).getElementById("continue").text shouldBe Messages("continue")
+        doc(result).getElementById("first-description").text shouldBe Messages("upload.success.first-description")
+        doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
+        doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
       }
     }
 
