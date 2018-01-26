@@ -1,0 +1,49 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
+
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+
+@ras_main(title = "problem uploading file") {
+
+<div class="grid-layout--no-gutter">
+ <div class="grid-layout__column">
+  <div class="grid-layout__column--3-4">
+
+   <div class="back-arrow">
+    <a class="link-back" id="back" href="@routes.FileUploadController.get">@Messages("back")</a>
+   </div>
+
+   <div class="row">
+    <h1 id="header" class="heading-xlarge">There has been a problem uploading your file</h1>
+   </div><br>
+
+   <div class="row">
+    <p id="try-again">You should upload your file again.</p>
+    <p id="check-file">If this problem continues, you should check the file you are trying to upload. You can also try to create a new file and then upload that new copy.</p>
+   </div><br>
+
+   <div class="row">
+    <a id="return-to-upload" class="button" href="@routes.FileUploadController.get">Return to upload a file</a>
+   </div>
+
+  </div>
+ </div>
+</div>
+
+}

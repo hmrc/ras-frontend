@@ -50,7 +50,10 @@ trait FileUploadController extends RasController with PageFlowController {
                     case Some(url) =>
                       Logger.info("[FileUploadController][get] form url created successfully")
                       val error = extractErrorReason(session.uploadResponse)
-                      Future.successful(Ok(views.html.file_upload(url,error)))
+                      if(error == Messages("upload.failed.error"))
+                        Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
+                      else
+                        Future.successful(Ok(views.html.file_upload(url,error)))
                     case _ =>
                       Logger.error("[FileUploadController][get] failed to obtain a form url using existing envelope")
                       Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
@@ -164,13 +167,18 @@ trait FileUploadController extends RasController with PageFlowController {
   def uploadError = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
+
         val errorCode = request.getQueryString("errorCode").getOrElse("")
         val errorReason = request.getQueryString("reason").getOrElse("")
         val errorResponse = UploadResponse(errorCode, Some(errorReason))
+
         sessionService.cacheUploadResponse(errorResponse).flatMap {
-          case Some(session) => Future.successful(Redirect(routes.FileUploadController.get()))
-          case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+          case Some(session) =>
+            Future.successful(Redirect(routes.FileUploadController.get()))
+          case _ =>
+            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
+
       case Left(resp) =>
         Logger.error("[FileUploadController][uploadError] user not authorised")
         resp
