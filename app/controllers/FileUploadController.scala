@@ -88,7 +88,7 @@ trait FileUploadController extends RasController with PageFlowController {
     val fileUploadFrontendSuffix = config.getString("file-upload-frontend-url-suffix")
     val envelopeIdPattern = "envelopes/([\\w\\d-]+)$".r.unanchored
     val successRedirectUrl = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-uploaded"
-    val errorRedirectUrl = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-problem"
+    val errorRedirectUrl = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-failed"
 
     envelope match {
       case Some(envelope) =>
@@ -176,7 +176,7 @@ trait FileUploadController extends RasController with PageFlowController {
           case Some(session) =>
             Future.successful(Redirect(routes.FileUploadController.get()))
           case _ =>
-            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+            Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
         }
 
       case Left(resp) =>
