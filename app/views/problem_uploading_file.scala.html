@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@ras_main(title = "problem uploading file") {
+@ras_main(title = Messages("problem.uploading.file.title")) {
 
 <div class="grid-layout--no-gutter">
  <div class="grid-layout__column">
@@ -30,16 +30,16 @@
    </div>
 
    <div class="row">
-    <h1 id="header" class="heading-xlarge">There has been a problem uploading your file</h1>
+    <h1 id="header" class="heading-xlarge">@Messages("problem.uploading.file.header")</h1>
    </div><br>
 
    <div class="row">
-    <p id="try-again">You should upload your file again.</p>
-    <p id="check-file">If this problem continues, you should check the file you are trying to upload. You can also try to create a new file and then upload that new copy.</p>
+    <p id="try-again">@Messages("upload.file.again")</p>
+    <p id="check-file">@Messages("check.file")</p>
    </div><br>
 
    <div class="row">
-    <a id="return-to-upload" class="button" href="@routes.FileUploadController.get">Return to upload a file</a>
+    <a id="return-to-upload" class="button" href="@routes.FileUploadController.get">@Messages("return.to.upload")</a>
    </div>
 
   </div>

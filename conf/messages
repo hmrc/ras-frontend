@@ -12,6 +12,7 @@ match.found.page.title = Member''s residency status - GOV.UK
 match.not.found.page.title = Member''s residency status cannot be displayed - GOV.UK
 global.error.page.title = Technical error - GOV.UK
 global.upload.error.page.title = Upload error - GOV.UK
+problem.uploading.file.title = There has been a problem uploading your file - GOV.UK
 
 ######  HEADERS ####################################################################################
 
@@ -26,6 +27,7 @@ expiry.date.table.header = Expires on
 match.found.header = {0}''s details
 file.upload.page.header = Upload a file
 upload.success.header = Your file has been uploaded
+problem.uploading.file.header = There has been a problem uploading your file
 
 ###### SUB-HEADERS #################################################################################
 
@@ -83,11 +85,11 @@ deletion.message = When you have opened this spreadsheet, you should save a copy
 a.system.timeout = A system timeout
 a.technical.timeout = A technical error
 try.uploading.again = Try again and upload your file
-
+check.file = If this problem continues, you should check the file you are trying to upload. You can also try to create a new file and then upload that new copy.
 problem.getting.results.title = There has been a problem getting the results - GOV.UK
 problem.getting.results.header = There has been a problem getting the results
 upload.file.again = You should upload your file again.
-
+return.to.upload = Return to upload a file
 first.name = first name
 last.name = last name
 nino = National Insurance number

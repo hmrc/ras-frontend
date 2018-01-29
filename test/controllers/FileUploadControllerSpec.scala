@@ -269,7 +269,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      redirectLocation(result).get should include("/problem-uploading-file")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "contain file too large error if present in session cache" in {
@@ -286,7 +286,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      redirectLocation(result).get should include("/problem-uploading-file")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if file type is wrong" in {
@@ -295,7 +295,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      redirectLocation(result).get should include("/problem-uploading-file")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if locked" in {
@@ -304,7 +304,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      redirectLocation(result).get should include("/problem-uploading-file")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if server error" in {
@@ -313,7 +313,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      redirectLocation(result).get should include("/problem-uploading-file")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if any unknown errors" in {
@@ -322,7 +322,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      redirectLocation(result).get should include("/problem-uploading-file")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
   }
