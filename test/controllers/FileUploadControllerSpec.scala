@@ -127,7 +127,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         when(mockSessionService.cacheUploadResponse(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         val uploadRequest = FakeRequest(GET, "/relief-at-source/upload-error?errorCode=400&reason={%22error%22:{%22msg%22:%22Envelope%20does%20not%20allow%20zero%20length%20files,%20and%20submitted%20file%20has%20length%200%22}}")
         val result = await(TestFileUploadController.uploadError().apply(uploadRequest))
-        redirectLocation(result).get should include("/global-error")
+        redirectLocation(result).get should include("/file-upload-problem")
       }
 
       "a url is not successfully created from an existing envelope stored in the session" in {
@@ -317,10 +317,11 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "redirect to problem uploading file if any unknown errors" in {
-      val uploadResponse = UploadResponse("",Some(""))
-      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val uploadResponse1 = UploadResponse("500",None)
+      val rasSession1 = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession1)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(mockSessionService.cacheUploadResponse(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession1)))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
       redirectLocation(result).get should include("/file-upload-problem")
     }
