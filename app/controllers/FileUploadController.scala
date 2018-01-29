@@ -51,7 +51,13 @@ trait FileUploadController extends RasController with PageFlowController {
                       Logger.info("[FileUploadController][get] form url created successfully")
                       val error = extractErrorReason(session.uploadResponse)
                       if(error == Messages("upload.failed.error")){
-                        Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
+                        sessionService.cacheUploadResponse(UploadResponse("",None)).map {
+                          case Some(session) =>
+                            Redirect(routes.ErrorController.renderProblemUploadingFilePage())
+                          case _ =>
+                            Logger.error("[FileUploadController][get] failed to obtain a session")
+                            Redirect(routes.ErrorController.renderGlobalErrorPage())
+                        }
                       }
                       else
                         Future.successful(Ok(views.html.file_upload(url,error)))
@@ -89,6 +95,7 @@ trait FileUploadController extends RasController with PageFlowController {
     val envelopeIdPattern = "envelopes/([\\w\\d-]+)$".r.unanchored
     val successRedirectUrl = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-uploaded"
     val errorRedirectUrl = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-failed"
+
 
     envelope match {
       case Some(envelope) =>
@@ -207,6 +214,9 @@ trait FileUploadController extends RasController with PageFlowController {
           case "423" =>
             Logger.error("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
             Messages("upload.failed.error")
+          case "" =>
+            Logger.error("[FileUploadController][extractErrorReason] no error code returned")
+            ""
           case _ =>
             Logger.error("[FileUploadController][extractErrorReason] unknown cause")
             Messages("upload.failed.error")

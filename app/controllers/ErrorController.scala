@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.RasContextImpl
+import config.{RasContext, RasContextImpl}
 import helpers.helpers.I18nHelper
 import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -27,7 +27,7 @@ object ErrorController extends ErrorController
 
 trait ErrorController extends FrontendController with I18nHelper {
 
-  implicit val context: config.RasContext = RasContextImpl
+  implicit val context: RasContext = RasContextImpl
 
   def renderGlobalErrorPage = Action.async {
     implicit request =>
