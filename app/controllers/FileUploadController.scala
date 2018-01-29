@@ -50,8 +50,9 @@ trait FileUploadController extends RasController with PageFlowController {
                     case Some(url) =>
                       Logger.info("[FileUploadController][get] form url created successfully")
                       val error = extractErrorReason(session.uploadResponse)
-                      if(error == Messages("upload.failed.error"))
+                      if(error == Messages("upload.failed.error")){
                         Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
+                      }
                       else
                         Future.successful(Ok(views.html.file_upload(url,error)))
                     case _ =>
@@ -80,7 +81,6 @@ trait FileUploadController extends RasController with PageFlowController {
   }
 
   def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
-
     val config = ApplicationConfig
     val rasFrontendBaseUrl = config.getString("ras-frontend.host")
     val rasFrontendUrlSuffix = config.getString("ras-frontend-url-suffix")
