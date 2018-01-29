@@ -31,10 +31,10 @@ GET         /member-residency-status/back           controllers.ResultsControlle
 GET         /no-residency-status-displayed          controllers.ResultsController.noMatchFound
 GET         /no-residency-status-displayed/back     controllers.ResultsController.back
 
-GET         /global-error                         controllers.ErrorController.renderGlobalErrorPage
-GET         /problem-getting-results              controllers.ErrorController.renderProblemGettingResultsPage
-GET         /problem-uploading-file               controllers.ErrorController.renderProblemUploadingFilePage
+GET         /global-error                           controllers.ErrorController.renderGlobalErrorPage
+GET         /problem-getting-results                controllers.ErrorController.renderProblemGettingResultsPage
+GET         /problem-uploading-file                 controllers.ErrorController.renderProblemUploadingFilePage
 
-GET         /notauthorised                        controllers.ErrorController.notAuthorised
+GET         /notauthorised                          controllers.ErrorController.notAuthorised
 
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean)
