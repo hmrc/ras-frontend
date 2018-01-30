@@ -102,7 +102,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.title shouldBe Messages("problem.getting.results.title")
-      doc.getElementById("back").attr("href") should include("/what-do-you-want-to-do")
+      doc.getElementById("back").attr("href") should include("/")
       doc.getElementById("header").text shouldBe Messages("problem.getting.results.header")
       doc.getElementById("try-again").text shouldBe Messages("upload.file.again")
       doc.getElementById("choose-something-else").text shouldBe Messages("choose.something.else")

@@ -108,7 +108,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
         val result = await(TestFileUploadController.get.apply(fakeRequest))
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/what-do-you-want-to-do")
+        redirectLocation(result).get should include("/")
       }
     }
 
@@ -174,7 +174,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
     "redirect to whatDoYouWantToDo page when back link is clicked" in {
       val result = TestFileUploadController.back.apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/what-do-you-want-to-do")
+      redirectLocation(result).get should include("/")
     }
 
     "display file upload successful page" when {

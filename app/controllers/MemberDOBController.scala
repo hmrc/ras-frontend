@@ -17,7 +17,7 @@
 package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.{CustomerMatchingAPIConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -35,7 +35,6 @@ object MemberDOBController extends MemberDOBController {
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  override val customerMatchingAPIConnector = CustomerMatchingAPIConnector
   override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
   // $COVERAGE-ON$
 }
@@ -43,7 +42,6 @@ object MemberDOBController extends MemberDOBController {
 trait MemberDOBController extends RasController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
-  val customerMatchingAPIConnector: CustomerMatchingAPIConnector
   val residencyStatusAPIConnector : ResidencyStatusAPIConnector
   val SCOTTISH = "scotResident"
   val NON_SCOTTISH = "otherUKResident"
@@ -80,50 +78,39 @@ trait MemberDOBController extends RasController with PageFlowController {
         dateOfBirth => {
           val timer = Metrics.responseTimer.time()
           sessionService.cacheDob(dateOfBirth) flatMap {
-            case Some(session) => {
+            case Some(session) =>
 
               val memberDetails = MemberDetails(session.name, session.nino.nino, session.dateOfBirth.dateOfBirth)
 
-              customerMatchingAPIConnector.findMemberDetails(memberDetails).flatMap { uuid =>
+              residencyStatusAPIConnector.getResidencyStatus(memberDetails).map { rasResponse =>
 
-                if (!uuid.isDefined) {
-                  Logger.info("[DobController][post] UUID not contained in the Location header")
-                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                val formattedName = session.name.firstName + " " + session.name.lastName
+                val formattedDob = dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+                val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
+                val nyResidencyStatus = extractResidencyStatus(rasResponse.nextYearForecastResidencyStatus)
+
+                if (cyResidencyStatus.isEmpty) {
+                  Logger.error("[DobController][post] An unknown residency status was returned")
+                  Redirect(routes.ErrorController.renderGlobalErrorPage())
                 }
+                else {
+                  Logger.info("[DobController][post] Match found")
 
-                residencyStatusAPIConnector.getResidencyStatus(uuid.get).map { rasResponse =>
+                  timer.stop()
 
-                  val formattedName = session.name.firstName + " " + session.name.lastName
-                  val formattedDob = dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
-                  val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
-                  val nyResidencyStatus = extractResidencyStatus(rasResponse.nextYearForecastResidencyStatus)
+                  val residencyStatusResult =
+                    ResidencyStatusResult(
+                      cyResidencyStatus, nyResidencyStatus,
+                      TaxYearResolver.currentTaxYear.toString,
+                      (TaxYearResolver.currentTaxYear + 1).toString,
+                      formattedName, formattedDob, memberDetails.nino)
 
-                  if (cyResidencyStatus.isEmpty) {
-                    Logger.error("[DobController][post] An unknown residency status was returned")
-                    Redirect(routes.ErrorController.renderGlobalErrorPage())
-                  }
-                  else {
-                    Logger.info("[DobController][post] Match found")
-                    timer.stop()
+                  sessionService.cacheResidencyStatusResult(residencyStatusResult)
 
-                    val residencyStatusResult =
-                      ResidencyStatusResult(
-                        cyResidencyStatus, nyResidencyStatus,
-                        TaxYearResolver.currentTaxYear.toString,
-                        (TaxYearResolver.currentTaxYear + 1).toString,
-                        formattedName, formattedDob, memberDetails.nino)
-
-                    sessionService.cacheResidencyStatusResult(residencyStatusResult)
-
-                    Redirect(routes.ResultsController.matchFound())
-                  }
-                }.recover {
-                  case e: Throwable =>
-                    Logger.error("[DobController][getResult] Residency status failed")
-                    Redirect(routes.ErrorController.renderGlobalErrorPage())
+                  Redirect(routes.ResultsController.matchFound())
                 }
               }.recover {
-                case e: Upstream4xxResponse if (e.upstreamResponseCode == FORBIDDEN) =>
+                case e: Upstream4xxResponse if e.upstreamResponseCode == FORBIDDEN =>
                   Logger.info("[DobController][getResult] No match found from customer matching")
                   timer.stop()
                   Redirect(routes.ResultsController.noMatchFound())
@@ -131,7 +118,6 @@ trait MemberDOBController extends RasController with PageFlowController {
                   Logger.error(s"[DobController][getResult] Customer Matching failed: ${e.getMessage}")
                   Redirect(routes.ErrorController.renderGlobalErrorPage())
               }
-            }
             case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
           }
         }
