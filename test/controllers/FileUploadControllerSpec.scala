@@ -127,7 +127,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         when(mockSessionService.cacheUploadResponse(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         val uploadRequest = FakeRequest(GET, "/relief-at-source/upload-error?errorCode=400&reason={%22error%22:{%22msg%22:%22Envelope%20does%20not%20allow%20zero%20length%20files,%20and%20submitted%20file%20has%20length%200%22}}")
         val result = await(TestFileUploadController.uploadError().apply(uploadRequest))
-        redirectLocation(result).get should include("/global-error")
+        redirectLocation(result).get should include("/file-upload-problem")
       }
 
       "a url is not successfully created from an existing envelope stored in the session" in {
@@ -195,8 +195,9 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
         val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
         doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
-        doc(result).getElementById("page-sub-header").text shouldBe Messages("upload.success.sub-header")
-        doc(result).getElementById("continue").text shouldBe Messages("continue")
+        doc(result).getElementById("first-description").text shouldBe Messages("upload.success.first-description")
+        doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
+        doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
       }
     }
 
@@ -262,12 +263,13 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       doc(result).getElementById("upload-error").text shouldBe Messages("file.empty.error")
     }
 
-    "contain upload file error if a bad request has been submitted" in {
+    "redirect to problem uploading file if a bad request has been submitted" in {
       val uploadResponse = UploadResponse("400",None)
-      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse),Some(Envelope("123456")))
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "contain file too large error if present in session cache" in {
@@ -278,37 +280,71 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       doc(result).getElementById("upload-error").text shouldBe Messages("file.large.error")
     }
 
-    "contain upload failed error if envelope not found in session cache" in {
+    "redirect to problem uploading file if envelope not found in session cache" in {
       val uploadResponse = UploadResponse("404",Some(""))
       val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
-    "contain upload failed error if file type is wrong" in {
+    "redirect to problem uploading file if file type is wrong" in {
       val uploadResponse = UploadResponse("415",Some(""))
       val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
-    "contain upload failed error if locked" in {
+    "redirect to problem uploading file if locked" in {
       val uploadResponse = UploadResponse("423",Some(""))
       val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
 
-    "contain file failed to upload if present in session cache" in {
-      val uploadResponse = UploadResponse("",Some(""))
+    "redirect to problem uploading file if server error" in {
+      val uploadResponse = UploadResponse("500",None)
       val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe Messages("upload.failed.error")
+      redirectLocation(result).get should include("/file-upload-problem")
     }
+
+    "redirect to problem uploading file if any unknown errors" in {
+      val uploadResponse1 = UploadResponse("500",None)
+      val rasSession1 = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession1)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(mockSessionService.cacheUploadResponse(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession1)))
+      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      redirectLocation(result).get should include("/file-upload-problem")
+    }
+
+    "render file upload page id upload response contains no errors" in {
+      val uploadResponse1 = UploadResponse("",None)
+      val rasSession1 = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession1)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      status(result) shouldBe OK
+    }
+
+    "redirect to global error page when upload response has not been cleared properly (no session returned form cache upload response)" in {
+      val uploadResponse1 = UploadResponse("500",None)
+      val rasSession1 = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession1)))
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(mockSessionService.cacheUploadResponse(any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      redirectLocation(result).get should include("/global-error")
+    }
+
 
   }
 
