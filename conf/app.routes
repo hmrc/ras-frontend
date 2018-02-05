@@ -13,6 +13,8 @@ GET         /upload-a-file/back                     controllers.FileUploadContro
 GET         /file-uploaded                          controllers.FileUploadController.uploadSuccess
 GET         /file-upload-problem                    controllers.FileUploadController.uploadError
 
+GET         /cannot-upload-another-file             controllers.FileUploadController.uploadInProgress
+
 GET         /member-name                            controllers.MemberNameController.get
 POST        /member-name                            controllers.MemberNameController.post
 GET         /member-name/back                       controllers.MemberNameController.back

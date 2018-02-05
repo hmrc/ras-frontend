@@ -5,6 +5,7 @@ file.upload.page.title = Upload a file - GOV.UK
 file.upload.successful.page.title = Your file has been uploaded - GOV.UK
 whatDoYouWantToDo.page.title = What do you want to do? - GOV.UK
 upload.result.page.title = The residency status has been added - GOV.UK
+cannot.upload.another.file.page.title = You cannot upload another file at the moment - GOV.UK
 member.name.page.title = What is the member''s name? - GOV.UK
 member.nino.page.title = What is the member''s National Insurance number? - GOV.UK
 member.dob.page.title = What is the member''s date of birth? - GOV.UK
@@ -26,6 +27,7 @@ expiry.date.table.header = Expires on
 match.found.header = {0}''s details
 file.upload.page.header = Upload a file
 upload.success.header = Your file has been uploaded
+cannot.upload.another.file.page.header = You cannot upload another file at the moment
 
 ###### SUB-HEADERS #################################################################################
 
@@ -124,3 +126,6 @@ contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/org
 templates.link = <a href="">download a template and instructions (2 files)</a>
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
+
+cannot.upload.another.file.page.reason = The last file you uploaded is still being processed.
+cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.
