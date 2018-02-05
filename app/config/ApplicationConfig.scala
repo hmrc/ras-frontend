@@ -19,6 +19,8 @@ package config
 import play.api.Play.{configuration, current}
 import uk.gov.hmrc.play.config.ServicesConfig
 
+import scala.util.Try
+
 trait ApplicationConfig {
   val analyticsToken: String
   val analyticsHost: String
@@ -30,6 +32,7 @@ trait ApplicationConfig {
   val loginCallback:String
   val fileUploadCallBack: String
   val hoursToWaitForReUpload :Int
+  val rasApiResidencyStatusEndpoint: String
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -57,4 +60,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/lifetime-isa")
   override lazy val fileUploadCallBack: String = configuration.getString("file-upload-ras-callback-url")
     .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
+
+  override lazy val rasApiResidencyStatusEndpoint: String = getString("residency-status-url")
 }
