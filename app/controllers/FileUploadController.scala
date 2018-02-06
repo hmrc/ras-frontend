@@ -50,7 +50,17 @@ trait FileUploadController extends RasController with PageFlowController {
                     case Some(url) =>
                       Logger.info("[FileUploadController][get] form url created successfully")
                       val error = extractErrorReason(session.uploadResponse)
-                      Future.successful(Ok(views.html.file_upload(url,error)))
+                      if(error == Messages("upload.failed.error")){
+                        sessionService.cacheUploadResponse(UploadResponse("",None)).map {
+                          case Some(session) =>
+                            Redirect(routes.ErrorController.renderProblemUploadingFilePage())
+                          case _ =>
+                            Logger.error("[FileUploadController][get] failed to obtain a session")
+                            Redirect(routes.ErrorController.renderGlobalErrorPage())
+                        }
+                      }
+                      else
+                        Future.successful(Ok(views.html.file_upload(url,error)))
                     case _ =>
                       Logger.error("[FileUploadController][get] failed to obtain a form url using existing envelope")
                       Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
@@ -77,7 +87,6 @@ trait FileUploadController extends RasController with PageFlowController {
   }
 
   def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
-
     val config = ApplicationConfig
     val rasFrontendBaseUrl = config.getString("ras-frontend.host")
     val rasFrontendUrlSuffix = config.getString("ras-frontend-url-suffix")
@@ -85,7 +94,8 @@ trait FileUploadController extends RasController with PageFlowController {
     val fileUploadFrontendSuffix = config.getString("file-upload-frontend-url-suffix")
     val envelopeIdPattern = "envelopes/([\\w\\d-]+)$".r.unanchored
     val successRedirectUrl = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-uploaded"
-    val errorRedirectUrl = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-problem"
+    val errorRedirectUrl = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-failed"
+
 
     envelope match {
       case Some(envelope) =>
@@ -164,13 +174,18 @@ trait FileUploadController extends RasController with PageFlowController {
   def uploadError = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
+
         val errorCode = request.getQueryString("errorCode").getOrElse("")
         val errorReason = request.getQueryString("reason").getOrElse("")
         val errorResponse = UploadResponse(errorCode, Some(errorReason))
+
         sessionService.cacheUploadResponse(errorResponse).flatMap {
-          case Some(session) => Future.successful(Redirect(routes.FileUploadController.get()))
-          case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+          case Some(session) =>
+            Future.successful(Redirect(routes.FileUploadController.get()))
+          case _ =>
+            Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
         }
+
       case Left(resp) =>
         Logger.error("[FileUploadController][uploadError] user not authorised")
         resp
@@ -210,6 +225,9 @@ trait FileUploadController extends RasController with PageFlowController {
           case "423" =>
             Logger.error("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
             Messages("upload.failed.error")
+          case "" =>
+            Logger.error("[FileUploadController][extractErrorReason] no error code returned")
+            ""
           case _ =>
             Logger.error("[FileUploadController][extractErrorReason] unknown cause")
             Messages("upload.failed.error")

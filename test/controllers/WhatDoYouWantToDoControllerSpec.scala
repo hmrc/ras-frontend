@@ -217,7 +217,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain a back link pointing to" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("back").attr("href") should include("what-do-you-want-to-do")
+      doc(result).getElementById("back").attr("href") should include("/")
     }
 
     "contain the correct page header" in {
@@ -281,7 +281,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "contain a button to choose something else to do which points to what do you want to do page" in {
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("href") should include("/what-do-you-want-to-do")
+      doc(result).getElementById("choose-something-else").attr("href") should include("/")
     }
 
     "download a file containing the results" in {

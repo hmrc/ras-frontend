@@ -13,6 +13,7 @@ match.found.page.title = Member''s residency status - GOV.UK
 match.not.found.page.title = Member''s residency status cannot be displayed - GOV.UK
 global.error.page.title = Technical error - GOV.UK
 global.upload.error.page.title = Upload error - GOV.UK
+problem.uploading.file.title = There has been a problem uploading your file - GOV.UK
 
 ######  HEADERS ####################################################################################
 
@@ -28,6 +29,7 @@ match.found.header = {0}''s details
 file.upload.page.header = Upload a file
 upload.success.header = Your file has been uploaded
 cannot.upload.another.file.page.header = You cannot upload another file at the moment
+problem.uploading.file.header = There has been a problem uploading your file
 
 ###### SUB-HEADERS #################################################################################
 
@@ -35,7 +37,8 @@ global.upload.error.sub-header = This could be caused by:
 member.name.page.sub-header = As shown on their birth certificate or passport.
 match.found.sub-header = {0} pays their tax in {1} for the current tax year of {2} to {3}. They are expected to pay tax in {5} in the next tax year of {3} to {4}.
 file.upload.page.sub-header = The file must contain mandatory information and in a specific format. You can {0} on how to create your file first.
-upload.success.sub-header = Your file will now be processed. This may take up to 24 hours.
+upload.success.first-description = It can take up to 24 hours to get the residency status results for all of the members. You will not be able to upload another file during this time.
+upload.success.second-description = You need to come back to this service to get the results. The results will be available on the uploaded file for 3 days before being deleted.
 match.not.found.subheader = You should check with {0} to make sure you have their correct details.
 
 ###### ERRORS ######################################################################################
@@ -84,11 +87,11 @@ deletion.message = When you have opened this spreadsheet, you should save a copy
 a.system.timeout = A system timeout
 a.technical.timeout = A technical error
 try.uploading.again = Try again and upload your file
-
+check.file = If this problem continues, you should check the file you are trying to upload. You can also try to create a new file and then upload that new copy.
 problem.getting.results.title = There has been a problem getting the results - GOV.UK
 problem.getting.results.header = There has been a problem getting the results
 upload.file.again = You should upload your file again.
-
+return.to.upload = Return to upload a file
 first.name = first name
 last.name = last name
 nino = National Insurance number

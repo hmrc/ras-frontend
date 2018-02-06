@@ -19,26 +19,27 @@
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@ras_main(title = Messages("problem.getting.results.title")) {
+@ras_main(title = Messages("problem.uploading.file.title")) {
 
 <div class="grid-layout--no-gutter">
  <div class="grid-layout__column">
   <div class="grid-layout__column--3-4">
 
    <div class="back-arrow">
-    <a class="link-back" id="back" href="@routes.WhatDoYouWantToDoController.get">@Messages("back")</a>
+    <a class="link-back" id="back" href="@routes.FileUploadController.get">@Messages("back")</a>
    </div>
 
    <div class="row">
-    <h1 id="header" class="heading-xlarge">@Messages("problem.getting.results.header")</h1>
-   </div>
-   <br>
+    <h1 id="header" class="heading-xlarge">@Messages("problem.uploading.file.header")</h1>
+   </div><br>
+
    <div class="row">
     <p id="try-again">@Messages("upload.file.again")</p>
-   </div>
-   <br>
+    <p id="check-file">@Messages("check.file")</p>
+   </div><br>
+
    <div class="row">
-    <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
+    <a id="return-to-upload" class="button" href="@routes.FileUploadController.get">@Messages("return.to.upload")</a>
    </div>
 
   </div>

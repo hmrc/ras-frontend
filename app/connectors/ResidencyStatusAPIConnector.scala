@@ -21,34 +21,36 @@ import java.io.InputStream
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.StreamConverters
-import config.WSHttp
-import models.ResidencyStatus
+import config.{ApplicationConfig, WSHttp}
+import models.{MemberDetails, ResidencyStatus}
 import play.api.Logger
+import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Success, Try}
 
 trait ResidencyStatusAPIConnector extends ServicesConfig {
 
-  val http: HttpGet = WSHttp
+  val http: HttpPost
   val wsHttp: WSHttp
 
   lazy val serviceUrl = baseUrl("relief-at-source")
-  lazy val residencyStatusUrl = getString("residency-status-url")
+  lazy val residencyStatusUrl = ApplicationConfig.rasApiResidencyStatusEndpoint
 
-  def getResidencyStatus(uuid: String)(implicit hc: HeaderCarrier): Future[ResidencyStatus] = {
+  def getResidencyStatus(memberDetails: MemberDetails)(implicit hc: HeaderCarrier): Future[ResidencyStatus] = {
 
-    val rasUri = s"$serviceUrl/${String.format(residencyStatusUrl, uuid)}"
+    val rasUri = s"$serviceUrl/$residencyStatusUrl"
 
     val headerCarrier = hc.withExtraHeaders("Accept" -> "application/vnd.hmrc.1.0+json", "Content-Type" -> "application/json" )
 
     Logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
 
-    http.GET[ResidencyStatus](rasUri)(implicitly[HttpReads[ResidencyStatus]],hc = headerCarrier, MdcLoggingExecutionContext.fromLoggingDetails(headerCarrier))
+    http.POST[JsValue, ResidencyStatus](rasUri, memberDetails.asCustomerDetailsPayload)(implicitly, rds = responseHandler, headerCarrier, MdcLoggingExecutionContext.fromLoggingDetails(hc))
   }
 
   def getFile(fileName: String)(implicit hc: HeaderCarrier): Future[Option[InputStream]] = {
@@ -62,10 +64,26 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
 
   }
 
+  private val responseHandler = new HttpReads[ResidencyStatus] {
+    override def read(method: String, url: String, response: HttpResponse): ResidencyStatus = {
+      response.status match {
+        case 200 => Try(response.json.validate[ResidencyStatus]) match {
+          case Success(JsSuccess(payload, _)) => payload
+          case _ => Logger.error("ResidencyStatusAPIConnector responseHandler | There was a problem parsing the response json.")
+                    throw new InternalServerException("ResidencyStatusAPIConnector responseHandler | Response json could not be parsed.")
+        }
+        case 400 => Logger.error("ResidencyStatusAPIConnector responseHandler | Data sent to the API was not sent in the correct format.")
+                    throw new InternalServerException("Internal Server Error")
+        case 403 => Logger.info("ResidencyStatusAPIConnector responseHandler | Member not found.")
+                    throw new Upstream4xxResponse("Member not found", 403, 403, response.allHeaders)
+        case _ => Logger.error(s"ResidencyStatusAPIConnector responseHandler | ${response.status} status code received from RAS-API.")
+                  throw new InternalServerException("Internal Server Error")
+      }
+    }
+  }
 }
 
-object ResidencyStatusAPIConnector extends ResidencyStatusAPIConnector
-{
+object ResidencyStatusAPIConnector extends ResidencyStatusAPIConnector {
+  override val http: HttpPost = WSHttp
   override val wsHttp: WSHttp = WSHttp
-
 }

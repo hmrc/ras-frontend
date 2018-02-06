@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.{CustomerMatchingAPIConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import helpers.helpers.I18nHelper
 import metrics.Metrics
 import models._
@@ -51,7 +51,6 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
   val mockConfig = mock[Configuration]
   val mockEnvironment = mock[Environment]
   val mockRasConnector = mock[ResidencyStatusAPIConnector]
-  val mockMatchingConnector = mock[CustomerMatchingAPIConnector]
   val SCOTTISH = "scotResident"
   val NON_SCOTTISH = "otherUKResident"
   val uuid = "b5a4c95d-93ff-4054-b416-79c8a7e6f712"
@@ -74,12 +73,10 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     override val config: Configuration = mockConfig
     override val env: Environment = mockEnvironment
     override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockRasConnector
-    override val customerMatchingAPIConnector: CustomerMatchingAPIConnector = mockMatchingConnector
 
     when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
-    when(customerMatchingAPIConnector.findMemberDetails(any())(any())).thenReturn(Future.successful(Some(uuid)))
     when(residencyStatusAPIConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, NON_SCOTTISH)))
 
   }
@@ -173,28 +170,18 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "redirect to technical error page if customer matching fails to return a response" in {
-      when(mockMatchingConnector.findMemberDetails(any())(any())).thenReturn(Future.failed(new Exception()))
+      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(new Exception()))
       val result = await(TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData))))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")
     }
 
     "redirect to technical error page if ras fails to return a response" in {
-      when(mockMatchingConnector.findMemberDetails(any())(any())).thenReturn(Future.successful(Some(uuid)))
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(new Exception()))
       val result = await(TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData))))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")
     }
-
-    "redirect to technical error page if no uuid" in {
-      when(mockMatchingConnector.findMemberDetails(any())(any())).thenReturn(Future.successful(None))
-      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(new Exception()))
-      val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe 303
-      redirectLocation(result).get should include("global-error")
-    }
-
   }
 
   "return to member nino page when back link is clicked" in {

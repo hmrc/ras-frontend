@@ -24,12 +24,12 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import config.WSHttp
 import models._
-import org.mockito.Matchers.{eq => meq, _}
+import org.mockito.Matchers.{eq => Meq, _}
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.ws.{DefaultWSResponseHeaders, StreamedResponse}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpPost}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -41,7 +41,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with OneAppPerSuite with 
   val mockWsHttp = mock[WSHttp]
 
   object TestConnector extends ResidencyStatusAPIConnector {
-    override val http: HttpGet = mock[HttpGet]
+    override val http: HttpPost = mock[HttpPost]
     override val wsHttp: WSHttp = mockWsHttp
 
   }
@@ -50,19 +50,17 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with OneAppPerSuite with 
 
     "send a get request to residency status service" in {
 
-      val uuid = "633e0ee7-315b-49e6-baed-d79c3dffe467"
+      val memberDetails = MemberDetails(MemberName("John", "Smith"), "AB123456C", RasDate(Some("21"), Some("09"), Some("1970")))
 
       val expectedResponse = ResidencyStatus("scotResident","otherUKResident")
 
-      when(TestConnector.http.GET[ResidencyStatus](any())(any(),any(), any())).thenReturn(Future.successful(expectedResponse))
+      when(TestConnector.http.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(),any(), any(), any())).thenReturn(Future.successful(expectedResponse))
 
-      val result = TestConnector.getResidencyStatus(uuid)
+      val result = TestConnector.getResidencyStatus(memberDetails)
 
       await(result) shouldBe expectedResponse
 
     }
-
-
   }
 
   "getFile" should {

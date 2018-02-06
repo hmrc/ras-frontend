@@ -2,6 +2,7 @@
 
 GET         /assets/*file                           @controllers.AssetsController.at(path="/public", file)
 
+GET         /                                       controllers.WhatDoYouWantToDoController.get
 GET         /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.get
 POST        /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.post
 GET         /residency-status-added                 controllers.WhatDoYouWantToDoController.renderUploadResultsPage
@@ -11,7 +12,7 @@ GET         /upload-a-file                          controllers.FileUploadContro
 GET         /upload-a-file/back                     controllers.FileUploadController.back
 
 GET         /file-uploaded                          controllers.FileUploadController.uploadSuccess
-GET         /file-upload-problem                    controllers.FileUploadController.uploadError
+GET         /file-upload-failed                     controllers.FileUploadController.uploadError
 
 GET         /cannot-upload-another-file             controllers.FileUploadController.uploadInProgress
 
@@ -33,9 +34,10 @@ GET         /member-residency-status/back           controllers.ResultsControlle
 GET         /no-residency-status-displayed          controllers.ResultsController.noMatchFound
 GET         /no-residency-status-displayed/back     controllers.ResultsController.back
 
-GET         /global-error                         controllers.ErrorController.renderGlobalErrorPage
-GET         /problem-getting-results              controllers.ErrorController.renderProblemGettingResultsPage
+GET         /global-error                           controllers.ErrorController.renderGlobalErrorPage
+GET         /problem-getting-results                controllers.ErrorController.renderProblemGettingResultsPage
+GET         /file-upload-problem                    controllers.ErrorController.renderProblemUploadingFilePage
 
-GET         /notauthorised                        controllers.ErrorController.notAuthorised
+GET         /notauthorised                          controllers.ErrorController.notAuthorised
 
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean)
