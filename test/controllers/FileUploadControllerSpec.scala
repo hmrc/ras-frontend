@@ -101,14 +101,14 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       }
     }
 
-    "redirect to whatDoYouWantToDo" when {
+    "redirect to cannot upload another file page" when {
       "a file is already in process" in {
         val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
         val result = await(TestFileUploadController.get.apply(fakeRequest))
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/")
+        redirectLocation(result).get should include("/cannot-upload-another-file")
       }
     }
 
@@ -348,5 +348,46 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
 
   }
 
+  "cannot upload another file page" should {
+    "contains the right title" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
+      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
+      doc(result).title() shouldBe Messages("cannot.upload.another.file.page.title")
+    }
+
+    "contains the right header" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
+      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
+      doc(result).getElementById("page-header").text shouldBe Messages("cannot.upload.another.file.page.header")
+    }
+
+    "contains a reason paragraph" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
+      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
+      doc(result).getElementById("page-reason").text shouldBe Messages("cannot.upload.another.file.page.reason")
+    }
+
+    "contains a clarification paragraph" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
+      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
+      doc(result).getElementById("page-clarification").text shouldBe Messages("cannot.upload.another.file.page.clarification")
+    }
+
+    "contains a 'choose something else to do' button" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", "", "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
+      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+  }
 
 }
