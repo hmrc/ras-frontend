@@ -30,7 +30,7 @@ case class MemberDetails(name: MemberName,
           "nino":"${nino.toUpperCase}",
           "firstName":"${name.firstName.capitalize}",
           "lastName":"${name.lastName.capitalize}",
-          "dateOfBirth":"${dateOfBirth.asLocalDate.toString("yyyy-MM-d")}"
+          "dateOfBirth":"${dateOfBirth.asLocalDate.toString("yyyy-MM-dd")}"
         }
       """)
   }
