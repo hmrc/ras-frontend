@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.Json
 
-case class ResidencyStatus(currentYearResidencyStatus: String, nextYearForecastResidencyStatus: String) {
+case class ResidencyStatus(currentYearResidencyStatus: String, nextYearForecastResidencyStatus: Option[String]) {
 
   val SCOTTISH = "scotResident"
   val NON_SCOTTISH = "otherUKResident"

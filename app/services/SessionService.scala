@@ -38,7 +38,7 @@ trait SessionService extends SessionCacheWiring {
     MemberName("", ""),
     MemberNino(""),
     MemberDateOfBirth(RasDate(None, None, None)),
-    ResidencyStatusResult("", "", "", "", "", "", ""),
+    ResidencyStatusResult("", None, "", "", "", "", ""),
     None)
 
   def fetchRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
