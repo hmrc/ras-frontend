@@ -7,7 +7,7 @@ GET         /what-do-you-want-to-do                 controllers.WhatDoYouWantToD
 POST        /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.post
 GET         /residency-status-added                 controllers.WhatDoYouWantToDoController.renderUploadResultsPage
 GET         /whatDoYouWantToDo/results/:fileName    controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
-GET         /no-results-available                   controllers.WhatDoYouWantToDoController.renderNotResultAvailablePage
+GET         /no-results-available                   controllers.WhatDoYouWantToDoController.renderNoResultAvailablePage
 
 GET         /upload-a-file                          controllers.FileUploadController.get
 GET         /upload-a-file/back                     controllers.FileUploadController.back

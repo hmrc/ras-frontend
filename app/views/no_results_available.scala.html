@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@ras_main(title = Messages("problem.getting.results.title")) {
+@ras_main(title = Messages("no.results.available.page.title")) {
 
 <div class="grid-layout--no-gutter">
  <div class="grid-layout__column">
@@ -30,11 +30,18 @@
    </div>
 
    <div class="row">
-    <h1 id="header" class="heading-xlarge">@Messages("problem.getting.results.header")</h1>
+    <h1 id="header" class="heading-xlarge">@Messages("no.results.available.page.header")</h1>
    </div>
    <br>
    <div class="row">
-    <p id="try-again">@Messages("upload.file.again")</p>
+    <p id="sub-header">
+     @Html(
+       Messages(
+         "no.results.available.sub-header",
+         "<a href='" + routes.FileUploadController.get + "'>" + Messages("no.results.available.link") + "</a>"
+       )
+     )
+    </p>
    </div>
    <br>
    <div class="row">

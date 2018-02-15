@@ -147,7 +147,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               }
             case _ =>
               Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] no results available")
-              Redirect(routes.WhatDoYouWantToDoController.renderNotResultAvailablePage)
+              Redirect(routes.WhatDoYouWantToDoController.renderNoResultAvailablePage)
           }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] user not authorised")
@@ -155,7 +155,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
       }
   }
 
-  def renderNotResultAvailablePage() = Action.async {
+  def renderNoResultAvailablePage = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>

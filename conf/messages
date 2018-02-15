@@ -14,6 +14,7 @@ match.not.found.page.title = Member''s residency status cannot be displayed - GO
 global.error.page.title = Technical error - GOV.UK
 global.upload.error.page.title = Upload error - GOV.UK
 problem.uploading.file.title = There has been a problem uploading your file - GOV.UK
+no.results.available.page.title = You have not uploaded a file - GOV.UK
 
 ######  HEADERS ####################################################################################
 
@@ -30,6 +31,7 @@ file.upload.page.header = Upload a file
 upload.success.header = Your file has been uploaded
 cannot.upload.another.file.page.header = You cannot upload another file at the moment
 problem.uploading.file.header = There has been a problem uploading your file
+no.results.available.page.header = You have not uploaded a file
 
 ###### SUB-HEADERS #################################################################################
 
@@ -40,6 +42,7 @@ file.upload.page.sub-header = The file must contain mandatory information and in
 upload.success.first-description = It can take up to 24 hours to get the residency status results for all of the members. You will not be able to upload another file during this time.
 upload.success.second-description = You need to come back to this service to get the results. The results will be available on the uploaded file for 3 calendar days before being deleted.
 match.not.found.subheader = You should check with {0} to make sure you have their correct details.
+no.results.available.sub-header = You need to {0} before you can get any results.
 
 ###### ERRORS ######################################################################################
 
@@ -129,6 +132,7 @@ contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/org
 templates.link = <a href="">download a template and instructions (2 files)</a>
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
+no.results.available.link = upload a file
 
 cannot.upload.another.file.page.reason = The last file you uploaded is still being processed.
 cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.

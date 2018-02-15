@@ -309,20 +309,50 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       }
     }
 
-    "renderNoResultsAvailablePage" should {
-      "return ok when called" in {
-        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
-        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/no-results-available")
-      }
+  }
 
-      "contain the correct page title" in {
-        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
-        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-        doc(result).title shouldBe Messages("no.results.available.page.title")
-      }
+  "renderNoResultsAvailablePage" should {
+    "return ok when called" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/no-results-available")
     }
 
+    "contain the correct page title" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).title shouldBe Messages("no.results.available.page.title")
+    }
+
+    "contain the correct page header" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).getElementById("header").text shouldBe Messages("no.results.available.page.header")
+    }
+
+    "contain the correct page content" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).getElementById("sub-header").text shouldBe Messages("no.results.available.sub-header")
+    }
+
+    "contain a back link pointing to /" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).getElementById("back").attr("href") should include("/")
+    }
+
+    "contain a choose something else to do button" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
+    "contain a choose something else to do button that points to /" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).getElementById("choose-something-else").attr("href") should include ("/")
+    }
   }
 }
