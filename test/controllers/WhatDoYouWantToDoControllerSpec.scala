@@ -334,7 +334,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain the correct page content" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("sub-header").text shouldBe Messages("no.results.available.sub-header")
+      doc(result).getElementById("sub-header").text shouldBe Messages("no.results.available.sub-header", Messages("no.results.available.link"))
     }
 
     "contain a back link pointing to /" in {
@@ -353,6 +353,12 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
       doc(result).getElementById("choose-something-else").attr("href") should include ("/")
+    }
+
+    "contain a link back to the upload a file page" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
     }
   }
 }
