@@ -146,11 +146,23 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                   Redirect(routes.ErrorController.renderGlobalErrorPage)
               }
             case _ =>
-              Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve file session")
-              Redirect(routes.ErrorController.renderGlobalErrorPage)
+              Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] no results available")
+              Redirect(routes.WhatDoYouWantToDoController.renderNotResultAvailablePage)
           }
         case Left(resp) =>
-          Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
+          Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] user not authorised")
+          resp
+      }
+  }
+
+  def renderNotResultAvailablePage() = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>
+          Logger.info("[WhatDoYouWantToDoController][renderNotResultAvailablePage] rendering no result available page")
+          Future.successful(Ok(views.html.no_results_available()))
+        case Left(resp) =>
+          Logger.error("[WhatDoYouWantToDoController][renderNotResultAvailablePage] user not authorised")
           resp
       }
   }
@@ -174,7 +186,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
             Redirect(routes.ErrorController.renderGlobalErrorPage)
         }
         case Left(resp) =>
-          Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
+          Logger.error("[WhatDoYouWantToDoController][getResultsFile] user not authorised")
           resp
       }
   }

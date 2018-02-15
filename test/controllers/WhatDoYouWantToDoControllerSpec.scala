@@ -292,13 +292,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "redirect to error page" when {
 
-      "render upload result page is called but a file session does not exist" in {
-        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
-        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/global-error")
-      }
-
       "render upload result page is called but results file does not exist" in {
         val fileSession = FileSession(None,None,"1234",None)
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
@@ -315,8 +308,21 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         redirectLocation(result).get should include("/global-error")
       }
     }
+
+    "renderNoResultsAvailablePage" should {
+      "return ok when called" in {
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/no-results-available")
+      }
+
+      "contain the correct page title" in {
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+        val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+        doc(result).title shouldBe Messages("no.results.available.page.title")
+      }
+    }
+
   }
-
-
-
 }
