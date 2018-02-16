@@ -15,6 +15,7 @@ global.error.page.title = Technical error - GOV.UK
 global.upload.error.page.title = Upload error - GOV.UK
 problem.uploading.file.title = There has been a problem uploading your file - GOV.UK
 no.results.available.page.title = You have not uploaded a file - GOV.UK
+results.not.available.yet.page.title = The results file is not available yet - GOV.UK
 
 ######  HEADERS ####################################################################################
 
@@ -32,6 +33,7 @@ upload.success.header = Your file has been uploaded
 cannot.upload.another.file.page.header = You cannot upload another file at the moment
 problem.uploading.file.header = There has been a problem uploading your file
 no.results.available.page.header = You have not uploaded a file
+results.not.available.yet.page.header = The results file is not available yet
 
 ###### SUB-HEADERS #################################################################################
 
@@ -43,6 +45,8 @@ upload.success.first-description = It can take up to 24 hours to get the residen
 upload.success.second-description = You need to come back to this service to get the results. The results will be available on the uploaded file for 3 calendar days before being deleted.
 match.not.found.subheader = You should check with {0} to make sure you have their correct details.
 no.results.available.sub-header = You need to {0} before you can get any results.
+results.not.available.yet.sub-header1 = The results are still being added to the file you uploaded.
+results.not.available.yet.sub-header2 = It can take up to 24 hours for the results to be added from when you uploaded the file.
 
 ###### ERRORS ######################################################################################
 
