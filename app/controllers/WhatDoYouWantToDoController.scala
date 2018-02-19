@@ -172,7 +172,6 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
-          print("@@@here")
           Logger.info("[WhatDoYouWantToDoController][renderNotResultAvailableYetPage] rendering results not available page")
           Future.successful(Ok(views.html.results_not_available_yet()))
         case Left(resp) =>

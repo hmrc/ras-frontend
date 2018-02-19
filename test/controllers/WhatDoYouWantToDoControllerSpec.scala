@@ -315,7 +315,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(None,None,"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
-      print("@@@@result=" + result)
       doc(result).title shouldBe Messages("results.not.available.yet.page.title")
     }
 
