@@ -138,19 +138,44 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.ErrorController.renderGlobalErrorPage)
                       }
-                    case _ => Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload timestamp")
+                    case _ =>
+                      Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload timestamp")
                       Redirect(routes.ErrorController.renderGlobalErrorPage)
                   }
                 case _ =>
-                  Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve results file")
-                  Redirect(routes.ErrorController.renderGlobalErrorPage)
+                  Logger.info("[WhatDoYouWantToDoController][renderUploadResultsPage] file upload in progress")
+                  Redirect(routes.WhatDoYouWantToDoController.renderNoResultsAvailableYetPage)
               }
             case _ =>
-              Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve file session")
-              Redirect(routes.ErrorController.renderGlobalErrorPage)
+              Logger.info("[WhatDoYouWantToDoController][renderUploadResultsPage] no results available")
+              Redirect(routes.WhatDoYouWantToDoController.renderNoResultAvailablePage)
           }
         case Left(resp) =>
-          Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
+          Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] user not authorised")
+          resp
+      }
+  }
+
+  def renderNoResultAvailablePage = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>
+          Logger.info("[WhatDoYouWantToDoController][renderNotResultAvailablePage] rendering no result available page")
+          Future.successful(Ok(views.html.no_results_available()))
+        case Left(resp) =>
+          Logger.error("[WhatDoYouWantToDoController][renderNotResultAvailablePage] user not authorised")
+          resp
+      }
+  }
+
+  def renderNoResultsAvailableYetPage = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>
+          Logger.info("[WhatDoYouWantToDoController][renderNotResultAvailableYetPage] rendering results not available page")
+          Future.successful(Ok(views.html.results_not_available_yet()))
+        case Left(resp) =>
+          Logger.error("[WhatDoYouWantToDoController][renderNotResultAvailableYetPage] user not authorised")
           resp
       }
   }
@@ -174,7 +199,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
             Redirect(routes.ErrorController.renderGlobalErrorPage)
         }
         case Left(resp) =>
-          Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
+          Logger.error("[WhatDoYouWantToDoController][getResultsFile] user not authorised")
           resp
       }
   }
