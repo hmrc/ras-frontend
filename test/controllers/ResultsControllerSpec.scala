@@ -65,7 +65,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   val nino = MemberNino(RandomNino.generate)
   val dob = RasDate(Some("1"), Some("1"), Some("1999"))
   val memberDob = MemberDateOfBirth(dob)
-  val residencyStatusResult = ResidencyStatusResult("", "", "", "", "", "", "")
+  val residencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
   val postData = Json.obj("firstName" -> "Jim", "lastName" -> "McGill", "nino" -> nino, "dateOfBirth" -> dob)
   val userChoice = ""
   val rasSession = RasSession(userChoice, name, nino, memberDob, residencyStatusResult, None)
@@ -125,12 +125,12 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc.title shouldBe Messages("match.not.found.page.title")
     }
 
-    "contain customer details and residency status when match found" in {
+    "contain customer details and residency status when match found and CY and CY+1 is present" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
-              SCOTTISH, NON_SCOTTISH,
+              SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
@@ -138,8 +138,9 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       ))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
+
       doc(result).getElementById("header").text shouldBe Messages("match.found.header", formattedName)
-      doc(result).getElementById("sub-header").text shouldBe Messages("match.found.sub-header", formattedName, SCOTTISH,
+      doc(result).getElementById("sub-header").text shouldBe Messages("match.found.sub-header.current-year-and-next-year", formattedName, SCOTTISH,
         currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString,NON_SCOTTISH)
       doc(result).getElementById("tax-year-header").text shouldBe Messages("tax.year")
       doc(result).getElementById("location-header").text shouldBe Messages("location")
@@ -151,12 +152,36 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("sign-out").text shouldBe Messages("sign.out")
     }
 
+    "contain customer details and residency status when match found and only CY is present" in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              SCOTTISH, None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
+      doc(result).getElementById("header").text shouldBe Messages("match.found.header", formattedName)
+      doc(result).getElementById("sub-header").text shouldBe Messages("match.found.sub-header.current-year", formattedName, SCOTTISH,
+        currentTaxYear.toString, (currentTaxYear + 1).toString)
+      doc(result).getElementById("tax-year-header").text shouldBe Messages("tax.year")
+      doc(result).getElementById("location-header").text shouldBe Messages("location")
+      doc(result).getElementById("cy-tax-year-period").text shouldBe Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
+      doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
+      doc(result).getElementById("check-another-person").text shouldBe Messages("check.another.person")
+      doc(result).getElementById("sign-out").text shouldBe Messages("sign.out")
+    }
+
     "display correct residency status for UK UK" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
-              NON_SCOTTISH, NON_SCOTTISH,
+              NON_SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
@@ -173,7 +198,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
-              "", "",
+              "", None,
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
@@ -210,7 +235,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
-              NON_SCOTTISH, NON_SCOTTISH,
+              NON_SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),

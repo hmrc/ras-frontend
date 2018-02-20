@@ -52,7 +52,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
   val memberNino = MemberNino("AB123456C")
   val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
   val userChoice = ""
-  val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),None)
+  val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("",None,"","","","",""),None)
   val postData = Json.obj("nino" -> RandomNino.generate)
 
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")

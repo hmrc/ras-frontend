@@ -43,6 +43,7 @@ trait MemberDOBController extends RasController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
   val residencyStatusAPIConnector : ResidencyStatusAPIConnector
+
   val SCOTTISH = "scotResident"
   val NON_SCOTTISH = "otherUKResident"
   val RAS = "ras"
@@ -87,7 +88,11 @@ trait MemberDOBController extends RasController with PageFlowController {
                 val formattedName = session.name.firstName + " " + session.name.lastName
                 val formattedDob = dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
                 val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
-                val nyResidencyStatus = extractResidencyStatus(rasResponse.nextYearForecastResidencyStatus)
+                val nyResidencyStatus:Option[String] =
+                  if (rasResponse.nextYearForecastResidencyStatus.nonEmpty)
+                    Some(extractResidencyStatus(rasResponse.nextYearForecastResidencyStatus.get))
+                  else
+                    None
 
                 if (cyResidencyStatus.isEmpty) {
                   Logger.error("[DobController][post] An unknown residency status was returned")

@@ -18,7 +18,7 @@
   dateOfBirth:String,
   nino:String,
   currentYearResidencyStatus: String,
-  nextYearResidencyStatus: String,
+  nextYearResidencyStatus: Option[String],
   currentTaxYear:Int,
   nextTaxYear:Int)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
@@ -37,7 +37,11 @@
 
       <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
 
-      <p id="sub-header">@Messages("match.found.sub-header",name ,currentYearResidencyStatus ,currentTaxYear.toString,(currentTaxYear + 1).toString,(currentTaxYear + 2).toString, nextYearResidencyStatus)</p>
+        @if(nextYearResidencyStatus.nonEmpty) {
+            <p id="sub-header">@Messages("match.found.sub-header.current-year-and-next-year",name ,currentYearResidencyStatus ,currentTaxYear.toString,(currentTaxYear + 1).toString,(currentTaxYear + 2).toString, nextYearResidencyStatus.get)</p>
+        } else {
+            <p id="sub-header">@Messages("match.found.sub-header.current-year",name ,currentYearResidencyStatus ,currentTaxYear.toString,(currentTaxYear + 1).toString)</p>
+        }
 
       <table>
         <tbody>
@@ -52,10 +56,12 @@
           <td id="cy-residency-status">@currentYearResidencyStatus</td>
         </tr>
 
-        <tr>
-          <td id="ny-tax-year-period">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</td>
-          <td id="ny-residency-status">@nextYearResidencyStatus</td>
-        </tr>
+        @if(nextYearResidencyStatus.nonEmpty) {
+            <tr>
+                <td id="ny-tax-year-period">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</td>
+                <td id="ny-residency-status">@nextYearResidencyStatus.get</td>
+            </tr>
+        }
 
         </tbody>
       </table>

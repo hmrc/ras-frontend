@@ -48,18 +48,33 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with OneAppPerSuite with 
 
   "Residency Status API connector" should {
 
-    "send a get request to residency status service" in {
+    "send a get request to residency status service" when {
+      "the date is between 1st January and 5th April" in {
 
-      val memberDetails = MemberDetails(MemberName("John", "Smith"), "AB123456C", RasDate(Some("21"), Some("09"), Some("1970")))
+        val memberDetails = MemberDetails(MemberName("John", "Smith"), "AB123456C", RasDate(Some("21"), Some("09"), Some("1970")))
 
-      val expectedResponse = ResidencyStatus("scotResident","otherUKResident")
+        val expectedResponse = ResidencyStatus("scotResident", Some("otherUKResident"))
 
-      when(TestConnector.http.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(),any(), any(), any())).thenReturn(Future.successful(expectedResponse))
+        when(TestConnector.http.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
 
-      val result = TestConnector.getResidencyStatus(memberDetails)
+        val result = TestConnector.getResidencyStatus(memberDetails)
 
-      await(result) shouldBe expectedResponse
+        await(result) shouldBe expectedResponse
 
+      }
+
+      "the date is between 6th April and 31st December" in {
+
+        val memberDetails = MemberDetails(MemberName("John", "Smith"), "AB123456C", RasDate(Some("21"), Some("09"), Some("1970")))
+
+        val expectedResponse = ResidencyStatus("scotResident", None)
+
+        when(TestConnector.http.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
+
+        val result = TestConnector.getResidencyStatus(memberDetails)
+
+        await(result) shouldBe expectedResponse
+      }
     }
   }
 

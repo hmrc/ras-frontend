@@ -19,7 +19,7 @@ package models
 import play.api.libs.json.Json
 
 case class ResidencyStatusResult(currentYearResidencyStatus: String,
-                                 nextYearResidencyStatus: String,
+                                 nextYearResidencyStatus: Option[String],
                                  currentTaxYear: String,
                                  nextTaxYear:String,
                                  name:String,

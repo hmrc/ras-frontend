@@ -44,7 +44,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
   val uploadResponse = UploadResponse("111",Some("error error"))
   val envelope = Envelope("someEnvelopeId1234")
   val userChoice = "Find the residency status of a pension scheme member"
-  val rasSession = RasSession(userChoice,name,nino,memberDob,ResidencyStatusResult("","","","","","",""))
+  val rasSession = RasSession(userChoice,name,nino,memberDob,ResidencyStatusResult("",None,"","","","",""))
 
 
   object TestSessionService extends SessionService {
@@ -90,7 +90,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
     "cache residency status" when {
       "member details is submitted via the form when no returned session" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
-        val rd = ResidencyStatusResult("uk","uk","2000","2001","Jack","1-1-1999",RandomNino.generate)
+        val rd = ResidencyStatusResult("uk",Some("uk"),"2000","2001","Jack","1-1-1999",RandomNino.generate)
         val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = rd))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.cacheResidencyStatusResult(rd)(FakeRequest(), HeaderCarrier()), 10 seconds)
@@ -98,7 +98,15 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
       "member details is submitted via the form when some returned session" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val rd = ResidencyStatusResult("uk","uk","2000","2001","Jack","1-1-1999",RandomNino.generate)
+        val rd = ResidencyStatusResult("uk",Some("uk"),"2000","2001","Jack","1-1-1999",RandomNino.generate)
+        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = rd))
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
+        val result = Await.result(TestSessionService.cacheResidencyStatusResult(rd)(FakeRequest(), HeaderCarrier()), 10 seconds)
+        result shouldBe Some(rasSession.copy(residencyStatusResult = rd))
+      }
+      "member deatails is submitted via the form and the date is in the period where only CY is returned" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
+        val rd = ResidencyStatusResult("uk",None,"2000","2001","Jack","1-1-1999",RandomNino.generate)
         val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = rd))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.cacheResidencyStatusResult(rd)(FakeRequest(), HeaderCarrier()), 10 seconds)

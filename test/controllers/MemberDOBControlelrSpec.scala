@@ -59,7 +59,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
   val dob = RasDate(Some("12"),Some("12"),Some("2012"))
   val memberDob = MemberDateOfBirth(dob)
   val userChoice = ""
-  val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("","","","","","",""),None)
+  val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("",None,"","","","",""),None)
   val postData = Json.obj("dateOfBirth" -> dob)
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
@@ -77,7 +77,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
-    when(residencyStatusAPIConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, NON_SCOTTISH)))
+    when(residencyStatusAPIConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
 
   }
 
@@ -150,7 +150,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "redirect if current year residency status is empty" in {
-      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus("", NON_SCOTTISH)))
+      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus("", Some(NON_SCOTTISH))))
       val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("global-error")
@@ -163,7 +163,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "redirect if unknown current year residency status is returned" in {
-      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus("blah", NON_SCOTTISH)))
+      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus("blah", Some(NON_SCOTTISH))))
       val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")
