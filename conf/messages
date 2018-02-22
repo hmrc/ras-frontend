@@ -137,6 +137,8 @@ templates.link = <a href="">download a template and instructions (2 files)</a>
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
 no.results.available.link = upload a file
+nav.title = Look up residency status for relief at source
+signout = Sign out
 
 cannot.upload.another.file.page.reason = The last file you uploaded is still being processed.
 cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.
