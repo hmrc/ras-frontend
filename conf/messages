@@ -37,9 +37,14 @@ results.not.available.yet.page.header = The results file is not available yet
 
 ###### SUB-HEADERS #################################################################################
 
+match.found.what.happens.next = What happens next
 global.upload.error.sub-header = This could be caused by:
-match.found.sub-header.current-year-and-next-year = {0} pays their tax in {1} for the current tax year of {2} to {3}. They are expected to pay tax in {5} in the next tax year of {3} to {4}.
-match.found.sub-header.current-year = {0} pays their tax in {1} for the current tax year of {2} to {3}.
+match.found.top.current-year-and-next-year = Use this residency status for the whole tax year in your relief at source claims. You cannot change the residency status in your claims during the tax year.
+match.found.top.current-year.top = This residency status must be used for the full tax year and cannot be changed.
+match.found.top.current-year.bottom = Contact HMRC if you think the results are not correct.
+match.found.bottom.current-year-and-next-year = You must use the {0} to {1} tax year residency status to claim relief at source for {2} from 6 April {0}.
+match.found.bottom.current-year.top = You must use this residency status to claim relief at source for {0}.
+match.found.bottom.current-year.bottom = You should also use this service from January to get {0}''s residency status for the {1} to {2} tax year.
 file.upload.page.sub-header = The file must contain mandatory information and in a specific format. You can {0} on how to create your file first.
 upload.success.first-description = It can take up to 24 hours to get the residency status results for all of the members. You will not be able to upload another file during this time.
 upload.success.second-description = You need to come back to this service to get the results. The results will be available on the uploaded file for 3 calendar days before being deleted.
@@ -115,19 +120,16 @@ tried.confirm.details = Confirm with your scheme member the details you hold are
 tried.guidance = If you have already done this and still can''t find them, your scheme member will need to contact HMRC themselves to
 confirm.nino.link = confirm their National Insurance number
 scottish.taxpayer = Scotland
-non.scottish.taxpayer = Rest of UK
+non.scottish.taxpayer = England, Northern Ireland or Wales
 this.tax.year = This tax year
 status.for.next.tax.year = Status for next tax year, {0} to {1}
-tax.year.period = 6 April {0} to 5 April {1}
 print.this.page = Print this page
 finish = Finish
 service.unavailable = Service unavailable
 technical.difficulty = Sorry, there is a technical problem and you cannot use the service at the moment. Please try again later.
 member.details.not.found = {0}''s residency status cannot be displayed
 try.again = Try again
-tax.year = Tax year
-location = Location
-tax.year.period = {0} to {1}
+tax.year.period = {0} to {1} tax year
 change = Change
 match.not.found.what.to.do = If you have checked and everything is correct, {0} {1} to update their personal details.
 contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">must contact HMRC</a>
