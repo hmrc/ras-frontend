@@ -148,7 +148,6 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
       doc(result).getElementById("ny-tax-year-period").text shouldBe Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
       doc(result).getElementById("ny-residency-status").text shouldBe Messages("non.scottish.taxpayer")
-      doc(result).getElementById("check-another-person").text shouldBe Messages("check.another.person")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
@@ -172,7 +171,6 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("location-header").text shouldBe Messages("location")
       doc(result).getElementById("cy-tax-year-period").text shouldBe Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
-      doc(result).getElementById("check-another-person").text shouldBe Messages("check.another.person")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 

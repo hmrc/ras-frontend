@@ -120,7 +120,6 @@ this.tax.year = This tax year
 status.for.next.tax.year = Status for next tax year, {0} to {1}
 tax.year.period = 6 April {0} to 5 April {1}
 print.this.page = Print this page
-check.another.person = Check another person
 finish = Finish
 service.unavailable = Service unavailable
 technical.difficulty = Sorry, there is a technical problem and you cannot use the service at the moment. Please try again later.
