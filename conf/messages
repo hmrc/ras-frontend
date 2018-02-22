@@ -133,7 +133,7 @@ tax.year.period = {0} to {1} tax year
 change = Change
 match.not.found.what.to.do = If you have checked and everything is correct, {0} {1} to update their personal details.
 contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">must contact HMRC</a>
-templates.link = <a href="">download a template and instructions (2 files)</a>
+get.help.uploading.link = Get help with uploading files
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
 no.results.available.link = upload a file
