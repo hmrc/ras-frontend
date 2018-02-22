@@ -102,7 +102,6 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
       val result = TestMemberNameController.get(fakeRequest)
       doc(result).title shouldBe Messages("member.name.page.title")
       doc(result).getElementById("header").text shouldBe Messages("member.name.page.header")
-      doc(result).getElementById("sub-header").text shouldBe Messages("member.name.page.sub-header")
     }
 
     "contain correct field labels" in {
