@@ -252,7 +252,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("upload-button").text shouldBe Messages("upload")
+      doc(result).getElementById("continue-button").text shouldBe Messages("continue")
     }
 
     "contain empty file error if present in session cache" in {
