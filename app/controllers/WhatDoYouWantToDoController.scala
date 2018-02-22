@@ -130,10 +130,11 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                 case Some(resultFile) =>
                   resultFile.uploadDate match {
                     case Some(timestamp) =>
-                      val expiryDate = new DateTime(timestamp).plusDays(3).toString("EEEE d MMMM yyyy")
+                      val expiryDate = new DateTime(timestamp).plusDays(3)
+                      val expiry = s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("HH:mma").toLowerCase()}"
                       fileSession.userFile match {
                         case Some(callbackData) =>
-                          Ok(views.html.upload_result(callbackData.fileId,expiryDate))
+                          Ok(views.html.upload_result(callbackData.fileId,expiry))
                         case _ =>
                           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.ErrorController.renderGlobalErrorPage)
