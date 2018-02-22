@@ -65,8 +65,8 @@ trait MemberNinoController extends RasController with PageFlowController{
               Logger.error("[NinoController][post] Invalid form field passed")
               Future.successful(BadRequest(views.html.member_nino(formWithErrors,firstName)))
             },
-            nino => {
-              sessionService.cacheNino(nino) flatMap {
+            memberNino => {
+              sessionService.cacheNino(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", ""))) flatMap {
                 case Some(session) => Future.successful(Redirect(routes.MemberDOBController.get()))
                 case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }
