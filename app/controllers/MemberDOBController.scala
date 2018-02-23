@@ -145,7 +145,7 @@ trait MemberDOBController extends RasController with PageFlowController {
 
   private def extractResidencyStatus(residencyStatus: String) : String = {
     if(residencyStatus == SCOTTISH)
-      Messages("scottish.taxpayer ")
+      Messages("scottish.taxpayer")
     else if(residencyStatus == NON_SCOTTISH)
       Messages("non.scottish.taxpayer")
     else
