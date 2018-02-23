@@ -39,7 +39,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
-  private val contactHost = configuration.getString(s"contact-frontend.host").getOrElse("")
+  private val contactHost = baseUrl("contact-frontend")
   private val contactFormServiceIdentifier = "RAS"
   private val caFrontendHost = configuration.getString("ca-frontend.host").getOrElse("")
 
