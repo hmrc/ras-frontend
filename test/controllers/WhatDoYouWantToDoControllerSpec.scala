@@ -278,40 +278,40 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
     }
 
-    "contain a cy message when upload date is 05/04/2018" in {
+    "contain a cy+1 message when upload date is 05/04/2018" in {
       val mockUploadTimeStamp = DateTime.parse("2018-04-05").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
-    "contain a cy message when upload date is 01/01/2018" in {
+    "contain a cy+1 message when upload date is 01/01/2018" in {
       val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
-    "contain a cy+1 message when upload date is 06/04/2018" in {
+    "contain a cy message when upload date is 06/04/2018" in {
       val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
-    "contain a cy+1 message when upload date is 31/12/2018" in {
+    "contain a cy message when upload date is 31/12/2018" in {
       val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
     "contain a button to choose something else to do" in {

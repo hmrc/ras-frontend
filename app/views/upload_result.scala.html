@@ -50,9 +50,9 @@
     <p id="deletion-message">@Messages("deletion.message")</p>
 
       @if(isBeforeApr6){
-        <p id="cy-message">@Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
-      }else{
         <p id="cy-1-message">@Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+      }else{
+        <p id="cy-message">@Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
       }
 
   </div>
