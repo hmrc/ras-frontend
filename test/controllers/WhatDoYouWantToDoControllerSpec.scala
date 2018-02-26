@@ -302,7 +302,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
     }
 
     "contain a cy message when upload date is 31/12/2018" in {
@@ -311,7 +311,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
     }
 
     "contain a button to choose something else to do" in {
