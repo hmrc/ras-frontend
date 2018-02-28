@@ -35,7 +35,8 @@
 
 .form-field--error .error-notification{
   font-size:19px;
-  color: #b10e1e;
+  color: #A80F1C;
+  font-weight: bold;
 }
 
 

@@ -46,20 +46,23 @@
 <div class="form-group">
 
     @if(errors.nonEmpty) {
-        <div class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
+        <p class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
     }
+
+    @if(elements.args.contains('_hintText)) {
+        <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
+    }
+
+    @if(elements.args.contains('_symbol)) {
+        <span class="inline-fields">@elements.args.get('_symbol)</span>
+    }
+
+    @commonHelper(field, errors)
 
     <label for="@labelFor" class="@labelClass" id="@labelId">
         @if(labelHighlight) {<strong>}
         @if(elements.args.contains('_label)) {@elements.label}
         @if(labelHighlight) {</strong>}
-        @if(elements.args.contains('_hintText)) {
-            <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
-        }
-        @if(elements.args.contains('_symbol)) {
-            <span class="inline-fields">@elements.args.get('_symbol)</span>
-        }
-        @commonHelper(field, errors)
     </label>
 
     <input @if(elements.args.contains('_type)){type="@elements.args.get('_type)"}else{type="text"}
@@ -92,7 +95,6 @@
     }
 
     @if(errors.nonEmpty) {
-
-  </div>
+        </p>
     }
 </div>

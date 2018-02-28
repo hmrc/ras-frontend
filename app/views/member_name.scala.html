@@ -26,13 +26,14 @@
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
 
-      @views.html.helpers.errorSummary(memberNameForm)
-
       <div>
         <a class="link-back" href="@routes.MemberNameController.back">@Messages("back")</a>
       </div>
 
+        @views.html.helpers.errorSummary(memberNameForm)
+
         <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>
+        <br /><br />
 
           @form(action = routes.MemberNameController.post) {
 

@@ -26,13 +26,15 @@
  <div class="grid-layout__column">
   <div class="grid-layout__column--3-4">
 
-   @views.html.helpers.errorSummary(memberNinoForm)
-
    <div>
     <a class="link-back" href="@routes.MemberNinoController.back">@Messages("back")</a>
    </div>
 
+      @views.html.helpers.errorSummary(memberNinoForm)
+
      <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
+      <br /><br />
+
      @form(action = routes.MemberNinoController.post) {
 
        <div class="form-group">
