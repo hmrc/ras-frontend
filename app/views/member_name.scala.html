@@ -37,29 +37,26 @@
 
           @form(action = routes.MemberNameController.post) {
 
-            <div class="form-group">
+            <fieldset>
+                <legend class="visually-hidden">@Messages("member.name.page.header")</legend>
 
-              <div>
                @rasInput(memberNameForm("firstName"),
                '_label -> Html(Messages("first.name").capitalize),
                 '_labelClass -> "form-label",
                '_id -> "firstName",
                '_maxLength -> 35)
-              </div>
 
-              <div>
+
                @rasInput(memberNameForm("lastName"),
                '_label -> Html(Messages("last.name").capitalize),
                 '_labelClass -> "form-label",
                '_id -> "lastName",
                '_maxLength -> 35)
-              </div>
 
-            </div>
+            </fieldset>
 
-            <div>
-             <button class="button" type="submit" id="continue">@Messages("continue")</button>
-            </div>
+            <button class="button" type="submit" id="continue">@Messages("continue")</button>
+
           }
 
     </div>
