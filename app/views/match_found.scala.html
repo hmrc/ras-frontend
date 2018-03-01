@@ -57,6 +57,8 @@
         </tbody>
       </table>
 
+        <br />
+
         @if(nextYearResidencyStatus.nonEmpty) {
             <p id="top-content-cy-1">@Messages("match.found.top.current-year-and-next-year")</p>
         } else {
@@ -64,7 +66,6 @@
             <p id="top-content-2-cy">@Messages("match.found.top.current-year.bottom")</p>
         }
 
-        <br />
         <h2 id="sub-header">@Messages("match.found.what.happens.next")</h2>
 
         @if(nextYearResidencyStatus.nonEmpty) {
