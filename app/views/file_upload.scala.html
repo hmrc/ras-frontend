@@ -52,14 +52,15 @@
       <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
       <br /><br />
 
+
+            <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
+
       <!-- div is closed early due to styling restrictions -->
       @if(error==""){
         <div id="file-upload" class="form-group no-margin">
       }else{
         <div id="file-upload-with-error" class="form-group no-margin form-field--error">
       }
-
-          <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
 
           <p id="upload-error" class="error-list">@error</p>
 
