@@ -37,19 +37,20 @@
       </div>
 
       @if(error == ""){
-        <div id="no-errors" class="validation-summary" role="group" tabindex="-1" style="display:none;">
+        <div id="no-errors" class="validation-summary error-summary" role="group" tabindex="-1" style="display:none;">
       }else {
-        <div id="errors" class="validation-summary" role="group" tabindex="-1" >
+        <div id="errors" class="validation-summary error-summary" role="group" tabindex="-1" >
       }
-        <h2 class="heading-medium">@Messages("upload.error.heading")</h2>
+        <h1 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h1>
 
-        <ul class="list error-summary-list">
-          <li><a id="error" class="error-list" href="#sub-header">@error</a></li>
+        <ul class="error-summary-list">
+          <li role="tooltip" data-journey="upload-page:error:choose-file"><a id="error" class="error-list" href="#sub-header" data-focuses="choose-file">@error</a></li>
         </ul>
       </div>
 
+
       <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
-      <br />
+      <br /><br />
 
       <!-- div is closed early due to styling restrictions -->
       @if(error==""){
@@ -57,6 +58,7 @@
       }else{
         <div id="file-upload-with-error" class="form-group no-margin form-field--error">
       }
+
           <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
 
           <p id="upload-error" class="error-list">@error</p>
@@ -68,6 +70,8 @@
               method="post"
               onsubmit="return checkFileType(this)">
             <input id="choose-file" name="file" type="file" size="40"/>
+
+
         </div>
 
             <p><a href="" id="upload-help-link">@Messages("get.help.uploading.link")</a></p>
