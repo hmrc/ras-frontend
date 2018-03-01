@@ -44,15 +44,15 @@
 
 <div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error}" style="margin-bottom: 0px;">
 
+    @if(elements.args.contains('_hintText)) {
+        <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
+    }
+
     <p id="@elements.args.get('_id)-error" style="color: #A80F1C; font-weight: bold;">
         @if(errors.nonEmpty) {
             @commonHelper(field, errors)
         }
     </p>
-
-    @if(elements.args.contains('_hintText)) {
-        <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
-    }
 
     @if(elements.args.contains('_symbol)) {
         <span class="inline-fields">@elements.args.get('_symbol)</span>
