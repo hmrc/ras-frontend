@@ -18,13 +18,14 @@ package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent, Request}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import forms.MemberDateOfBirthForm.form
 import metrics.Metrics
-import models.{MemberDetails, ResidencyStatusResult}
-import uk.gov.hmrc.http.Upstream4xxResponse
+import models.{MemberDetails, ResidencyStatus, ResidencyStatusResult}
+import services.AuditService
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
@@ -36,6 +37,7 @@ object MemberDOBController extends MemberDOBController {
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
   override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
+  override val auditService: AuditService = AuditService
   // $COVERAGE-ON$
 }
 
@@ -43,6 +45,7 @@ trait MemberDOBController extends RasController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
   val residencyStatusAPIConnector : ResidencyStatusAPIConnector
+  val auditService: AuditService
 
   val SCOTTISH = "scotResident"
   val NON_SCOTTISH = "otherUKResident"
@@ -66,11 +69,10 @@ trait MemberDOBController extends RasController with PageFlowController {
       }
   }
 
-
   def post = Action.async {
     implicit request =>
     isAuthorised.flatMap{
-      case Right(_) =>
+      case Right(userId) =>
         form.bindFromRequest.fold(
         formWithErrors => {
           Logger.error("[DobController][post] Invalid form field passed")
@@ -112,14 +114,22 @@ trait MemberDOBController extends RasController with PageFlowController {
 
                   sessionService.cacheResidencyStatusResult(residencyStatusResult)
 
+                  auditResponse(failureReason = None, nino = Some(memberDetails.nino),
+                    residencyStatus = Some(rasResponse),
+                    userId = userId)
+
                   Redirect(routes.ResultsController.matchFound())
                 }
               }.recover {
                 case e: Upstream4xxResponse if e.upstreamResponseCode == FORBIDDEN =>
+                  auditResponse(failureReason = Some("MATCHING_FAILED"), nino = Some(memberDetails.nino),
+                    residencyStatus = None, userId = userId)
                   Logger.info("[DobController][getResult] No match found from customer matching")
                   timer.stop()
                   Redirect(routes.ResultsController.noMatchFound())
                 case e: Throwable =>
+                  auditResponse(failureReason = Some("INTERNAL_SERVER_ERROR"), nino = Some(memberDetails.nino),
+                    residencyStatus = None, userId = userId)
                   Logger.error(s"[DobController][getResult] Customer Matching failed: ${e.getMessage}")
                   Redirect(routes.ErrorController.renderGlobalErrorPage())
               }
@@ -150,6 +160,36 @@ trait MemberDOBController extends RasController with PageFlowController {
       Messages("non.scottish.taxpayer")
     else
       ""
+  }
+
+  /**
+    * Audits the response, if failure reason is None then residencyStatus is Some (sucess) and vice versa (failure).
+    * @param failureReason Optional message, present if the journey failed, else not
+    * @param nino Optional user identifier, present if the customer-matching-cache call was a success, else not
+    * @param residencyStatus Optional status object returned from the HoD, present if the journey succeeded, else not
+    * @param userId Identifies the user which made the request
+    * @param request Object containing request made by the user
+    * @param hc Headers
+    */
+  private def auditResponse(failureReason: Option[String], nino: Option[String],
+                            residencyStatus: Option[ResidencyStatus], userId: String)
+                           (implicit request: Request[AnyContent], hc: HeaderCarrier): Unit = {
+
+    val ninoMap: Map[String, String] = nino.map(nino => Map("nino" -> nino)).getOrElse(Map())
+    val nextYearStatusMap: Map[String, String] = if (residencyStatus.nonEmpty) residencyStatus.get.nextYearForecastResidencyStatus
+      .map(nextYear => Map("NextCYStatus" -> nextYear)).getOrElse(Map())
+    else Map()
+    val auditDataMap: Map[String, String] = failureReason.map(reason => Map("successfulLookup" -> "false",
+      "reason" -> reason)).
+      getOrElse(Map(
+        "successfulLookup" -> "true",
+        "CYStatus" -> residencyStatus.get.currentYearResidencyStatus
+      ) ++ nextYearStatusMap)
+
+    auditService.audit(auditType = "ReliefAtSourceResidency",
+      path = request.path,
+      auditData = auditDataMap ++ Map("userIdentifier" -> userId, "requestSource" -> "FE_SINGLE") ++ ninoMap
+    )
   }
 
 }
