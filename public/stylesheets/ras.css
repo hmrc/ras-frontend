@@ -141,7 +141,6 @@ input:focus {
 
 #document-image-div {
   padding-top: 20px;
-  overflow: hidden;
   float:left;
 }
 
@@ -160,7 +159,7 @@ input:focus {
     width: 99px;
     height: 140px;
     background: #fff;
-    border: 5px solid rgba(11,12,12,0.1);
+    outline: 5px solid rgba(11,12,12,0.1);
     -webkit-box-shadow: 0 2px 2px rgba(11,12,12,0.4);
     -moz-box-shadow: 0 2px 2px rgba(11,12,12,0.4);
     box-shadow: 0 2px 2px rgba(11,12,12,0.4);
