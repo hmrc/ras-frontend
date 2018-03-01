@@ -42,7 +42,7 @@
 @labelId = {@if(elements.args.get('_id)){@elements.args.get('_id)_label}else{@elements.field.name.replaceAll("""[\.\[\]]""", "-")}}
 @hintId = {@if(elements.args.get('_id)){@elements.args.get('_id)_hint}}
 
-<div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {from-group-error}" style="margin-bottom: 10px;">
+<div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error}" style="margin-bottom: 0px;">
 
     <p id="@elements.args.get('_id)-error" style="color: #A80F1C; font-weight: bold;">
         @if(errors.nonEmpty) {
