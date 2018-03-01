@@ -164,3 +164,13 @@ input:focus {
     -moz-box-shadow: 0 2px 2px rgba(11,12,12,0.4);
     box-shadow: 0 2px 2px rgba(11,12,12,0.4);
 }
+
+.common-error {
+    color: #A80F1C;
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+
+.no-bottom-margin {
+    margin-bottom: 0px;
+}

@@ -42,13 +42,13 @@
 @labelId = {@if(elements.args.get('_id)){@elements.args.get('_id)_label}else{@elements.field.name.replaceAll("""[\.\[\]]""", "-")}}
 @hintId = {@if(elements.args.get('_id)){@elements.args.get('_id)_hint}}
 
-<div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error}" style="margin-bottom: 0px;">
+<div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error} no-bottom-margin">
 
     @if(elements.args.contains('_hintText)) {
         <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
     }
 
-    <p id="@elements.args.get('_id)-error" style="color: #A80F1C; font-weight: bold;">
+    <p id="@elements.args.get('_id)-error" class="common-error">
         @if(errors.nonEmpty) {
             @commonHelper(field, errors)
         }

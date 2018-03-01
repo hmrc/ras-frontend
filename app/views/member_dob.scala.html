@@ -44,7 +44,7 @@
               <div class="form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
                   <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
                   @if(memberDobForm.errors.nonEmpty) {
-                      <p style="color: #A80F1C; font-weight: bold; margin-bottom: 0px;">
+                      <p class="common-error">
                           @views.html.helpers.groupError(memberDobForm("dateOfBirth"))
                       </p>
                   }
