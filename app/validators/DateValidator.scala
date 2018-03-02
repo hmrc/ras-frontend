@@ -26,6 +26,9 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 trait DateValidator {
 
   val YEAR_FIELD_LENGTH: Int = 4
+  val year = "year"
+  val month = "month"
+  val day = "day"
 
   val rasDateConstraint : Constraint[RasDate] = Constraint("dateOfBirth") ({
     date => {
@@ -38,47 +41,47 @@ trait DateValidator {
         }
 
       if (date.day.isEmpty && date.month.isEmpty && date.year.isEmpty)
-        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages("dob")))))
+        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages("dob")), day)))
 
       else if (date.day.isEmpty)
-        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages("day")))))
+        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages(day)), day)))
 
       else if (date.month.isEmpty)
-        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages("month")))))
+        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages(month)), month)))
 
       else if (date.year.isEmpty)
-        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages("year")))))
+        Invalid(Seq(ValidationError(Messages("error.mandatory", Messages(year)), year)))
 
       else if (!DateValidator.checkForNumber(date.day.getOrElse("0")))
-        Invalid(Seq(ValidationError(Messages("error.date.non.number",Messages("day")))))
+        Invalid(Seq(ValidationError(Messages("error.date.non.number",Messages(day)), day)))
 
       else if (!DateValidator.checkForNumber(date.month.getOrElse("0")))
-        Invalid(Seq(ValidationError(Messages("error.date.non.number",Messages("month")))))
+        Invalid(Seq(ValidationError(Messages("error.date.non.number",Messages(month)), month)))
 
       else if (!DateValidator.checkForNumber(date.year.getOrElse("0")))
-        Invalid(Seq(ValidationError(Messages("error.date.non.number",Messages("year")))))
+        Invalid(Seq(ValidationError(Messages("error.date.non.number",Messages(year)), year)))
 
       else if (!DateValidator.checkDayRange(date)) {
         if(date.month.getOrElse("0").toInt == 2 && leapYear)
-          Invalid(Seq(ValidationError(Messages("error.day.invalid.feb.leap"))))
+          Invalid(Seq(ValidationError(Messages("error.day.invalid.feb.leap"), day)))
         else if(date.month.getOrElse("0").toInt == 2)
-          Invalid(Seq(ValidationError(Messages("error.day.invalid.feb"))))
+          Invalid(Seq(ValidationError(Messages("error.day.invalid.feb"), day)))
         else if(List(4,6,9,11).contains(date.month.getOrElse("0").toInt))
-          Invalid(Seq(ValidationError(Messages("error.day.invalid.thirty"))))
+          Invalid(Seq(ValidationError(Messages("error.day.invalid.thirty"), day)))
         else
-          Invalid(Seq(ValidationError(Messages("error.day.invalid"))))
+          Invalid(Seq(ValidationError(Messages("error.day.invalid"), day)))
       }
 
       else if (!DateValidator.checkMonthRange(date.month.getOrElse("0")))
-        Invalid(Seq(ValidationError(Messages("error.month.invalid"))))
+        Invalid(Seq(ValidationError(Messages("error.month.invalid"), month)))
 
       else if (!DateValidator.checkYearLength(date.year.getOrElse("0")))
-        Invalid(Seq(ValidationError(Messages("error.year.invalid.format"))))
+        Invalid(Seq(ValidationError(Messages("error.year.invalid.format"), year)))
 
       else {
         try {
           if (date.isInFuture)
-            Invalid(Seq(ValidationError(Messages("error.dob.invalid.future"))))
+            Invalid(Seq(ValidationError(Messages("error.dob.invalid.future"), day)))
           else
             Valid
         }

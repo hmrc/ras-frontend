@@ -103,18 +103,18 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header","Jackie Chan")
         doc(result).getElementById("dob_hint").text shouldBe Messages("dob.hint")
         doc(result).getElementById("continue").text shouldBe Messages("continue")
-        doc(result).getElementById("dob-day_label").text shouldBe Messages("Day")
-        doc(result).getElementById("dob-month_label").text shouldBe Messages("Month")
-        doc(result).getElementById("dob-year_label").text shouldBe Messages("Year")
+        doc(result).getElementById("dateOfBirth.day_label").text shouldBe Messages("Day")
+        doc(result).getElementById("dateOfBirth.month_label").text shouldBe Messages("Month")
+        doc(result).getElementById("dateOfBirth.year_label").text shouldBe Messages("Year")
       }
     }
 
     "fill in form" when {
       "details returned from session cache" in {
         val result = TestMemberDobController.get(fakeRequest)
-        doc(result).getElementById("dob-year").value.toString should include(memberDob.dateOfBirth.year.getOrElse("0"))
-        doc(result).getElementById("dob-month").value.toString should include(memberDob.dateOfBirth.month.getOrElse("0"))
-        doc(result).getElementById("dob-day").value.toString should include(memberDob.dateOfBirth.day.getOrElse("0"))
+        doc(result).getElementById("dateOfBirth.year").value.toString should include(memberDob.dateOfBirth.year.getOrElse("0"))
+        doc(result).getElementById("dateOfBirth.month").value.toString should include(memberDob.dateOfBirth.month.getOrElse("0"))
+        doc(result).getElementById("dateOfBirth.day").value.toString should include(memberDob.dateOfBirth.day.getOrElse("0"))
       }
     }
 
@@ -122,9 +122,9 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       "no details returned from session cache" in {
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         val result = TestMemberDobController.get(fakeRequest)
-        assert(doc(result).getElementById("dob-year").attr("value").isEmpty)
-        assert(doc(result).getElementById("dob-month").attr("value").isEmpty)
-        assert(doc(result).getElementById("dob-day").attr("value").isEmpty)
+        assert(doc(result).getElementById("dateOfBirth.year").attr("value").isEmpty)
+        assert(doc(result).getElementById("dateOfBirth.month").attr("value").isEmpty)
+        assert(doc(result).getElementById("dateOfBirth.day").attr("value").isEmpty)
       }
     }
   }
