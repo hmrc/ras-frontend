@@ -113,7 +113,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
       status(result.get) should not equal (NOT_FOUND)
     }
 
-    "return bad request with sesssion name when form error is present and session contains a name" in {
+    "return bad request with session name when form error is present and session contains a name" in {
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj(
         "nino" -> RandomNino.generate.substring(3))

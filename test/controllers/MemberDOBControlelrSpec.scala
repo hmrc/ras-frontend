@@ -136,12 +136,21 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       status(result.get) should not equal (NOT_FOUND)
     }
 
-    "return bad request when form error present" in {
+    "return bad request with session name when form error present and session has a name" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"),Some("1"),Some("1111")))
       val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
+      doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", "Jackie Chan")
     }
 
+    "return bad request with member as name when form error present and session has no name" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"),Some("1"),Some("1111")))
+      val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      status(result) should equal(BAD_REQUEST)
+      doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", Messages("member"))
+    }
 
     "redirect" in {
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("1"), Some("1"), Some("1999")))
