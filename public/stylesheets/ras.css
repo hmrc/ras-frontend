@@ -38,7 +38,6 @@
   color: #b10e1e;
 }
 
-
 .validation-summary{
   border: 5px solid #b10e1e;
   font-weight: bold;
@@ -134,4 +133,8 @@
 
 #document-image{
   width:120px;
+}
+
+.phase-tag{
+  background-color: #005EA5 !important;
 }

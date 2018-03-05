@@ -56,7 +56,7 @@
       }else{
         <div id="file-upload-with-error" class="form-group no-margin form-field--error">
       }
-          <p id="sub-header">@Html(Messages("file.upload.page.sub-header",Messages("templates.link")))</p>
+          <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
 
           <p id="upload-error" class="error-list">@error</p>
 
@@ -69,7 +69,9 @@
             <input id="choose-file" name="file" type="file" size="40"/>
         </div>
 
-            <button type="submit" id="upload-button">@Messages("upload")</button>
+            <p><a href="" id="upload-help-link">@Messages("get.help.uploading.link")</a></p>
+            <br />
+            <button type="submit" id="continue">@Messages("continue")</button>
           </form>
 
 

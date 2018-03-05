@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models.WhatDoYouWantToDo
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
@@ -130,10 +131,12 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                 case Some(resultFile) =>
                   resultFile.uploadDate match {
                     case Some(timestamp) =>
-                      val expiryDate = new DateTime(timestamp).plusDays(3).toString("EEEE d MMMM yyyy")
+                      val expiryDate = new DateTime(timestamp).plusDays(3)
+                      val expiry = s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("HH:mma").toLowerCase()}"
                       fileSession.userFile match {
                         case Some(callbackData) =>
-                          Ok(views.html.upload_result(callbackData.fileId,expiryDate))
+                          val currentTaxYear = TaxYearResolver.currentTaxYear
+                          Ok(views.html.upload_result(callbackData.fileId, expiry, isBeforeApr6(timestamp), currentTaxYear))
                         case _ =>
                           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.ErrorController.renderGlobalErrorPage)
@@ -202,5 +205,10 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           Logger.error("[WhatDoYouWantToDoController][getResultsFile] user not authorised")
           resp
       }
+  }
+
+  private def isBeforeApr6(timestamp: Long) : Boolean = {
+    val uploadDate = new DateTime(timestamp)
+    uploadDate.isBefore(DateTime.parse(s"${uploadDate.getYear()}-04-06"))
   }
 }

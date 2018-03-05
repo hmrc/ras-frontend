@@ -39,6 +39,7 @@ import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
@@ -48,6 +49,8 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
   implicit val headerCarrier = HeaderCarrier()
   implicit val actorSystem = ActorSystem()
   implicit val materializer = ActorMaterializer()
+
+  val currentTaxYear = TaxYearResolver.currentTaxYear
 
   val fakeRequest = FakeRequest()
   val mockAuthConnector = mock[AuthConnector]
@@ -263,15 +266,52 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "contain expiry date message" in {
-      val expiryDate = new DateTime(mockExpiryTimeStamp).toString("EEEE d MMMM yyyy")
+      val expiryDate = new DateTime(mockExpiryTimeStamp)
+      val formattedDate =  s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("HH:mma").toLowerCase()}"
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",expiryDate)
+      doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",formattedDate)
     }
 
     "contain a deletion message" in {
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
+    }
+
+    "contain a cy+1 message when upload date is 05/04/2018" in {
+      val mockUploadTimeStamp = DateTime.parse("2018-04-05").getMillis
+      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+    }
+
+    "contain a cy+1 message when upload date is 01/01/2018" in {
+      val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
+      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+    }
+
+    "contain a cy message when upload date is 06/04/2018" in {
+      val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
+      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
+    }
+
+    "contain a cy message when upload date is 31/12/2018" in {
+      val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
+      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
     }
 
     "contain a button to choose something else to do" in {

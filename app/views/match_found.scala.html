@@ -31,46 +31,50 @@
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
 
-      <div class="back-arrow">
-        <a class="link-back" href="@routes.ResultsController.back">@Messages("back")</a>
-      </div>
-
       <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
 
-        @if(nextYearResidencyStatus.nonEmpty) {
-            <p id="sub-header">@Messages("match.found.sub-header.current-year-and-next-year",name ,currentYearResidencyStatus ,currentTaxYear.toString,(currentTaxYear + 1).toString,(currentTaxYear + 2).toString, nextYearResidencyStatus.get)</p>
-        } else {
-            <p id="sub-header">@Messages("match.found.sub-header.current-year",name ,currentYearResidencyStatus ,currentTaxYear.toString,(currentTaxYear + 1).toString)</p>
-        }
-
+        <br />
       <table>
         <tbody>
 
         <tr>
-          <th id="tax-year-header">@Messages("tax.year")</th>
-          <th id="location-header">@Messages("location")</th>
+          <th id="tax-year-header"></th>
+          <th id="location-header"></th>
         </tr>
 
         <tr>
           <td id="cy-tax-year-period">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)</td>
-          <td id="cy-residency-status">@currentYearResidencyStatus</td>
+          <td id="cy-residency-status">@Messages(currentYearResidencyStatus)</td>
         </tr>
 
         @if(nextYearResidencyStatus.nonEmpty) {
             <tr>
                 <td id="ny-tax-year-period">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</td>
-                <td id="ny-residency-status">@nextYearResidencyStatus.get</td>
+                <td id="ny-residency-status">@Messages(nextYearResidencyStatus.get)</td>
             </tr>
         }
 
         </tbody>
       </table>
 
-      <div>
-        <a id="check-another-person" href="@routes.SessionController.redirect("member-name",true)">@Messages("check.another.person")</a>
-      </div>
+        @if(nextYearResidencyStatus.nonEmpty) {
+            <p id="top-content-cy-1">@Messages("match.found.top.current-year-and-next-year")</p>
+        } else {
+            <p id="top-content-cy">@Messages("match.found.top.current-year.top")</p>
+            <p id="top-content-2-cy">@Messages("match.found.top.current-year.bottom")</p>
+        }
 
-      <br>
+        <br />
+        <h2 id="sub-header">@Messages("match.found.what.happens.next")</h2>
+
+        @if(nextYearResidencyStatus.nonEmpty) {
+            <p id="bottom-content-cy-1">@Messages("match.found.bottom.current-year-and-next-year", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString, name)</p>
+        } else {
+            <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.top", name)</p>
+            <p id="bottom-content-2-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+        }
+
+        <br>
 
         <div class="row">
             <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("whatDoYouWantToDo",true)'>@Messages("choose.something.else")</a>

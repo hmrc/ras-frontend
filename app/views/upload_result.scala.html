@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(fileId: String, expiryDate: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -48,6 +48,13 @@
     <p id="file-type-size">@Messages("file.type.size")</p>
     <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</p>
     <p id="deletion-message">@Messages("deletion.message")</p>
+
+      @if(isBeforeApr6){
+        <p id="cy-1-message">@Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+      }else{
+        <p id="cy-message">@Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)</p>
+      }
+
   </div>
 
 </div>

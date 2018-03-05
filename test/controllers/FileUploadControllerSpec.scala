@@ -238,7 +238,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("sub-header").html shouldBe Messages("file.upload.page.sub-header", Messages("templates.link"))
+      doc(result).getElementById("sub-header").html shouldBe Messages("file.upload.page.sub-header")
     }
 
     "contain 'choose file' button" in {
@@ -252,7 +252,14 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("upload-button").text shouldBe Messages("upload")
+      doc(result).getElementById("continue").text shouldBe Messages("continue")
+    }
+
+    "contain an uploading help link" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val result = TestFileUploadController.get().apply(fakeRequest)
+      doc(result).getElementById("upload-help-link").text shouldBe Messages("get.help.uploading.link")
     }
 
     "contain empty file error if present in session cache" in {
