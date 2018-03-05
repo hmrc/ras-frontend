@@ -106,5 +106,4 @@ trait ResultsController extends RasController with PageFlowController{
         case Left(res) => res
       }
   }
-
 }
