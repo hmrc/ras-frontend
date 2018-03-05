@@ -149,7 +149,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("ny-tax-year-period").text shouldBe Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
       doc(result).getElementById("ny-residency-status").text shouldBe Messages("non.scottish.taxpayer")
       doc(result).getElementById("check-another-person").text shouldBe Messages("check.another.person")
-      doc(result).getElementById("sign-out").text shouldBe Messages("sign.out")
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
     "contain customer details and residency status when match found and only CY is present" in {
@@ -173,7 +173,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("cy-tax-year-period").text shouldBe Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
       doc(result).getElementById("check-another-person").text shouldBe Messages("check.another.person")
-      doc(result).getElementById("sign-out").text shouldBe Messages("sign.out")
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
     "display correct residency status for UK UK" in {
