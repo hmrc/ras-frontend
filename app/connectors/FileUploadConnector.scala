@@ -17,7 +17,6 @@
 package connectors
 
 import config.{ApplicationConfig, WSHttp}
-import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -54,8 +53,6 @@ trait FileUploadConnector extends ServicesConfig {
               }
           }
       """.stripMargin)
-
-    Logger.info(s"[FileUploadConnector][createEnvelope] envelope parameters: ${requestBody}")
 
     http.POST[JsValue, HttpResponse](
       s"$fileUploadBaseUrl/$fileUploadUrlSuffix", requestBody, Seq()
