@@ -33,7 +33,7 @@
     <div class="grid-layout__column--3-4">
 
       <div class="back-arrow">
-        <a class="link-back" href="@routes.FileUploadController.back">@Messages("back")</a>
+        <a class="link-back" href="@routes.FileUploadController.back" data-journey-click="navigation - link:Upload a file:Back">@Messages("back")</a>
       </div>
 
       @if(error == ""){
@@ -66,12 +66,12 @@
               enctype="multipart/form-data"
               method="post"
               onsubmit="return checkFileType(this)">
-            <input id="choose-file" name="file" type="file" size="40"/>
+            <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>
         </div>
 
-            <p><a href="" id="upload-help-link">@Messages("get.help.uploading.link")</a></p>
+            <p><a href="" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help with uploading files">@Messages("get.help.uploading.link")</a></p>
             <br />
-            <button type="submit" id="continue">@Messages("continue")</button>
+            <button type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@Messages("continue")</button>
           </form>
 
 
