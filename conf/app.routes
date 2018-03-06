@@ -42,3 +42,8 @@ GET         /file-upload-problem                    controllers.ErrorController.
 GET         /notauthorised                          controllers.ErrorController.notAuthorised
 
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean)
+
+
+GET        /signed-out                      controllers.QuestionnaireController.showQuestionnaire
+POST       /signed-out                      controllers.QuestionnaireController.submitQuestionnaire
+GET        /thank-you                       controllers.QuestionnaireController.feedbackThankyou
