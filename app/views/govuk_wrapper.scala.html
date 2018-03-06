@@ -41,8 +41,9 @@
 }
 
 @headerNavLinks = {
-  <li><a id="homeNavHref" href="http://www.google.com" data-journey-click="primary-navigation:Click:Home"></a></li>
-  <li><a id="logOutStatusHref" href="@ApplicationConfig.signOutUrl">@Messages("signout")</a></li>
+    @if(signOutEnabled) {
+        <li><a id="logOutStatusHref" href="@ApplicationConfig.signOutUrl">@Messages("signout")</a></li>
+    }
 }
 
 @insideHeader = {
