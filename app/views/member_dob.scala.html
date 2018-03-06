@@ -29,7 +29,7 @@
       @views.html.helpers.errorSummary(memberDobForm)
 
       <div class="back-arrow">
-        <a class="link-back" href="@routes.MemberDOBController.back">@Messages("back")</a>
+        <a class="link-back" href="@routes.MemberDOBController.back" data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
       </div>
 
         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
@@ -138,7 +138,7 @@
 
              </div>
          <div>
-          <button class="button" type="submit" id="continue">@Messages("continue")</button>
+          <button class="button" type="submit" id="continue" data-journey-click="button - link:What is their DOB?:Continue">@Messages("continue")</button>
          </div>
        }
 
