@@ -46,4 +46,4 @@ GET         /check-another-member/:target           controllers.SessionControlle
 
 GET        /signed-out                      controllers.QuestionnaireController.showQuestionnaire
 POST       /signed-out                      controllers.QuestionnaireController.submitQuestionnaire
-POST       /thank-you                       controllers.QuestionnaireController.feedbackThankyou
+GET        /thank-you                       controllers.QuestionnaireController.feedbackThankyou
