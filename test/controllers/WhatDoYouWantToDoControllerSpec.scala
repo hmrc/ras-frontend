@@ -399,6 +399,15 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("choose-something-else").attr("href") should include ("/")
     }
+
+    "contain the correct ga events" in {
+      val fileSession = FileSession(None,None,"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Results are still being added:Back"
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Results are still being added:Choose something else to do"
+    }
+
   }
 
   "renderNoResultsAvailablePage" should {
