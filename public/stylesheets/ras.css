@@ -138,3 +138,23 @@
 .phase-tag{
   background-color: #005EA5 !important;
 }
+
+.logged-out-page fieldset {
+    margin-top: 20px;
+}
+
+.logged-out-page textarea {
+    width: 100%;
+    padding: 0px;
+    background-color: white;
+    border: 1px solid #bfc1c3;
+}
+
+.logged-out-page legend{
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logged-out-page #dont-include-text {
+    margin-bottom: 30px;
+}

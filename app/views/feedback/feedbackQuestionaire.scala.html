@@ -38,7 +38,8 @@
                 ),
                 '_legend -> Messages("label.how_easy_was_the_service_to_use"),
                 '_labelAfter -> true,
-                '_fieldsetAttributes -> "id=easyToUseFieldset"
+                '_fieldsetAttributes -> "id=easyToUseFieldset",
+                '_groupClass -> "survey-fieldset"
             )
 
             @inputRadioGroup(questionnaireForm("satisfactionLevel"),
@@ -50,7 +51,8 @@
                     "0" -> Messages("label.very_dissatisfied")
                 ),
                 '_legend -> Messages("label.how_satisfied_were_you_with_the_service"),
-                '_labelAfter -> true
+                '_labelAfter -> true,
+                '_groupClass -> "survey-fieldset"
             )
 
             @helper.textarea(questionnaireForm("whyGiveThisRating"),
