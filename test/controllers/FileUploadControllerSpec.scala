@@ -413,6 +413,14 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
+
+    "contains the correct ga events" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
+      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You cannot upload another file:Choose something else to do"
+    }
   }
 
 }
