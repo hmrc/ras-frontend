@@ -108,6 +108,13 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
+    "contain correct ga events when upload error" in {
+      val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.getElementById("back").attr("data-journey-click") shouldBe "navigation - link:There has been a problem getting your results:Back"
+      doc.getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:There has been a problem getting your results:Choose something else to do"
+    }
+
     "contain correct title and header when problem uploading file" in {
       val result = TestErrorController.renderProblemUploadingFilePage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
