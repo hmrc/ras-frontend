@@ -399,15 +399,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("choose-something-else").attr("href") should include ("/")
     }
-
-    "contain the correct ga events" in {
-      val fileSession = FileSession(None,None,"1234",None)
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You have not uploaded a file:Choose something else to do"
-      doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:You have not uploaded a file:Back"
-      doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:You have not uploaded a file:Upload a file"
-    }
   }
 
   "renderNoResultsAvailablePage" should {
@@ -458,6 +449,14 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
       doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
+    }
+
+    "contain the correct ga events" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.renderNoResultAvailablePage.apply(fakeRequest))
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You have not uploaded a file:Choose something else to do"
+      doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:You have not uploaded a file:Back"
+      doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:You have not uploaded a file:Upload a file"
     }
   }
 }
