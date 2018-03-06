@@ -125,6 +125,13 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.getElementById("check-file").text shouldBe Messages("check.file")
       doc.getElementById("return-to-upload").text shouldBe Messages("return.to.upload")
     }
+
+    "contain correct ga events when problem uploading file" in {
+      val result = TestErrorController.renderProblemUploadingFilePage(fakeRequest)
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.getElementById("back").attr("data-journey-click") shouldBe "navigation - link:There has been a problem uploading your file:Back"
+      doc.getElementById("return-to-upload").attr("data-journey-click") shouldBe "button - click:There has been a problem uploading your file:Return to upload a file"
+    }
   }
 
 }
