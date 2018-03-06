@@ -104,10 +104,9 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
       }
 
       "contain the correct ga data" in {
-        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        val result = await(TestMemberNinoController.get(fakeRequest))
-        assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their NINO?:Continue"))
-        assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their NINO?:Back"))
+        val result = TestMemberNinoController.get(fakeRequest)
+        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue"
+        doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their NINO?:Back"
       }
     }
 

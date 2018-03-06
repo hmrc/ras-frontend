@@ -115,8 +115,8 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
 
       "contain the correct ga data" in {
         val result = TestMemberDobController.get(fakeRequest)
-        assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their DOB?:Continue"))
-        assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their DOB?:Back"))
+        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue"
+        doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their DOB?:Back"
       }
     }
 
