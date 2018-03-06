@@ -214,6 +214,24 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
+    "contain ga event data when match not found " in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              "", None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("change-name-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change Name"
+      doc(result).getElementById("change-nino-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change NINO"
+      doc(result).getElementById("change-dob-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change DOB"
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:User details not found:Choose something else to do"
+    }
+
     "redirect to global error page when no session data is returned on match found" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(None))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
