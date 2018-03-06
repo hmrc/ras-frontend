@@ -199,6 +199,14 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
         doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
       }
+
+      "contains the correct ga events" in {
+        val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
+        val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
+        doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Your file has been uploaded:Choose something else to do"
+      }
     }
 
     "create a file session when a file has been successfully uploaded" in {
