@@ -24,9 +24,13 @@
     <div class="grid-row logged-out-page">
 
         <h1 class="heading-xlarge" id="heading">@Messages("label.youre_signed_out")</h1>
-        <p id="signed-out-text">@Messages("label.youre_now_signed_out_of_your_relief_at_source_account")</p>
+
+        <br />
 
         <h2 class="heading-medium" id="satisfaction-survey-heading">@Messages("label.satisfaction_survey")</h2>
+
+        <br /><br />
+
         @helpers.form(action = controllers.routes.QuestionnaireController.submitQuestionnaire, 'class -> "satisfactionSurveyForm") {
             @inputRadioGroup(questionnaireForm("easyToUse"),
                 Seq(
@@ -42,6 +46,8 @@
                 '_groupClass -> "survey-fieldset"
             )
 
+            <br /><br />
+
             @inputRadioGroup(questionnaireForm("satisfactionLevel"),
                 Seq(
                     "4" -> Messages("label.very_satisfied"),
@@ -55,14 +61,21 @@
                 '_groupClass -> "survey-fieldset"
             )
 
+            <br />
+
             @helper.textarea(questionnaireForm("whyGiveThisRating"),
-                args = 'rows -> 3,
+                args = 'rows -> 9,
                 '_help -> Messages("label.limit_is_1200_characters"),
                 '_label -> Messages("label.why_did_you_give_this_rating"),
+                '_hintText -> "test",
+                '_class -> "",
                 'maxlength -> 1200
             )
 
+
             <p id="dont-include-text">@Messages("label.please_dont_include_any_personal_or_financial_information")</p>
+
+            <br />
             <button id="submit" type="submit" class="button">@Messages("label.send_feedback")</button>
 
         }
