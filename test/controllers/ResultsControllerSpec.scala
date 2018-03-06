@@ -150,6 +150,21 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
+    "contain correct ga events when match found and CY and CY+1 is present" in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              SCOTTISH, Some(NON_SCOTTISH),
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status added CY & CY + 1:Choose something else to do"
+    }
+
     "contain customer details and residency status when match found and only CY is present" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
@@ -172,6 +187,21 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("cy-tax-year-period").text shouldBe Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
+    "contain correct ga event when match found and only CY is present" in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              SCOTTISH, None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status added CY:Choose something else to do"
     }
 
     "display correct residency status for UK UK" in {
