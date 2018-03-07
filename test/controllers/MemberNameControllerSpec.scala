@@ -133,6 +133,13 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
       assert(doc(result).getElementById("firstName").attr("value").equals(""))
       assert(doc(result).getElementById("lastName").attr("value").equals(""))
     }
+
+    "contain the correct ga data" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      val result = await(TestMemberNameController.get(fakeRequest))
+      assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue"))
+      assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their name?:Back"))
+    }
   }
 
   "Member name controller form submission" should {
