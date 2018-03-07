@@ -25,7 +25,7 @@
 
 <div class="grid-layout--no-gutter">
   <div class="back-arrow">
-    <a id="back" class="link-back" href="@routes.WhatDoYouWantToDoController.get">@Messages("back")</a>
+    <a id="back" class="link-back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:Back">@Messages("back")</a>
   </div>
   <div class="row">
       <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
@@ -40,11 +40,11 @@
   </div>
 
   <div id="document-image-div">
-    <a id="document-image-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)"><img id="document-image" src="@routes.AssetsController.at("images/download-the-file.png")"></a>
+    <a id="document-image-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="image - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV"><img id="document-image" src="@routes.AssetsController.at("images/download-the-file.png")"></a>
   </div>
 
   <div id="result-link-div">
-    <a id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)">@Messages("residency.status.result")</a>
+    <a id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="link - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">@Messages("residency.status.result")</a>
     <p id="file-type-size">@Messages("file.type.size")</p>
     <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</p>
     <p id="deletion-message">@Messages("deletion.message")</p>
@@ -61,7 +61,7 @@
 
 
 <div id="continue-div">
-  <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
+  <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="button - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:Choose something else to do">@Messages("choose.something.else")</a>
 </div>
 
 

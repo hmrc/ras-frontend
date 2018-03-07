@@ -102,6 +102,12 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
         doc(result).title shouldBe Messages("member.nino.page.title")
         doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header",Messages("member"))
       }
+
+      "contain the correct ga data" in {
+        val result = TestMemberNinoController.get(fakeRequest)
+        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue"
+        doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their NINO?:Back"
+      }
     }
 
   }

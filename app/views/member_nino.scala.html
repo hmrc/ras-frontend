@@ -29,7 +29,7 @@
    @views.html.helpers.errorSummary(memberNinoForm)
 
    <div class="back-arrow">
-    <a class="link-back" href="@routes.MemberNinoController.back">@Messages("back")</a>
+    <a class="link-back" href="@routes.MemberNinoController.back" data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
    </div>
 
      <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
@@ -48,7 +48,7 @@
        </div>
 
        <div>
-        <button class="button" type="submit" id="continue">@Messages("continue")</button>
+        <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their NINO?:Continue">@Messages("continue")</button>
        </div>
      }
 
