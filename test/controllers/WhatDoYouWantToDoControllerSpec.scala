@@ -297,7 +297,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "contain a cy message when upload date is 06/04/2018" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
