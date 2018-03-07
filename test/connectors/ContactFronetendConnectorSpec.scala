@@ -16,6 +16,7 @@
 
 package connectors
 
+import config.ApplicationConfig
 import org.mockito.Matchers.{eq => meq, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -48,8 +49,7 @@ class ContactFrontendConnectorSpec extends PlaySpec with OneAppPerSuite with Moc
   "ContactFrontendConnector" must {
 
     val dummyResponseHtml = "<div id=\"contact-partial\"></div>"
-    lazy val serviceBase = s"${baseUrl("contact-frontend")}/contact"
-    lazy val serviceUrl = s"$serviceBase/problem_reports"
+    lazy val serviceUrl = ApplicationConfig.reportAProblemUrl
 
     "contact the front end service to download the 'get help' partial" in {
 
