@@ -16,7 +16,7 @@
 
 package connectors
 
-import config.{ApplicationConfig, WSHttp}
+import config.WSHttp
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -29,7 +29,7 @@ trait ContactFrontendConnector extends ServicesConfig {
 
   val http: HttpGet = WSHttp
 
-  lazy val serviceBase = s"${ApplicationConfig.contactHost}/contact"
+  lazy val serviceBase = s"${baseUrl("contact-frontend")}/contact"
 
   def getHelpPartial(implicit hc: HeaderCarrier): Future[String] = {
 
