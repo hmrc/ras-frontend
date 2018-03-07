@@ -256,6 +256,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
               ""),None))
       ))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Users details not found:Back"
       doc(result).getElementById("change-name-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change Name"
       doc(result).getElementById("change-nino-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change NINO"
       doc(result).getElementById("change-dob-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change DOB"
