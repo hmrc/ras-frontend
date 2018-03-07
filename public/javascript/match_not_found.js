@@ -17,7 +17,7 @@
 $(function() {
 
     $('p[id=what-to-do] a').click(function() {
-        ga('send', 'event', 'link - click', 'User details not found', 'contact HMRC link');
+        ga('send', 'event', 'link - click', 'User details not found', 'Contact HMRC link');
     });
 
 });
