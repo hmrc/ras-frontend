@@ -150,6 +150,21 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
+    "contain correct ga events when match found and CY and CY+1 is present" in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              SCOTTISH, Some(NON_SCOTTISH),
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status added CY & CY + 1:Choose something else to do"
+    }
+
     "contain customer details and residency status when match found and only CY is present" in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
@@ -172,6 +187,21 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("cy-tax-year-period").text shouldBe Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
+    "contain correct ga event when match found and only CY is present" in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              SCOTTISH, None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status added CY:Choose something else to do"
     }
 
     "display correct residency status for UK UK" in {
@@ -212,6 +242,25 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("change-dob").text shouldBe Messages("change")
       doc(result).getElementById("dob").text shouldBe memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
+    "contain ga event data when match not found " in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              "", None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Users details not found:Back"
+      doc(result).getElementById("change-name-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change Name"
+      doc(result).getElementById("change-nino-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change NINO"
+      doc(result).getElementById("change-dob-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change DOB"
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:User details not found:Choose something else to do"
     }
 
     "redirect to global error page when no session data is returned on match found" in {

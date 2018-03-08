@@ -20,14 +20,18 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@ras_main(title = Messages("match.not.found.page.title")) {
+@scriptElem = {
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/match_not_found.js")'></script>
+}
+
+@ras_main(title = Messages("match.not.found.page.title"), scriptElem = Some(scriptElem)) {
 
 <div class="grid-layout--no-gutter">
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
 
-      <div>
-        <a class="link-back" href="@routes.ResultsController.back">@Messages("back")</a>
+      <div class="back-arrow">
+        <a class="link-back" id="back" href="@routes.ResultsController.back" data-journey-click="navigation - link:Users details not found:Back">@Messages("back")</a>
       </div>
 
       <h1 id="match-not-found" class="heading-xlarge">@Messages("member.details.not.found",name)</h1>
@@ -40,17 +44,17 @@
 
           <tr>
             <td id="name">@name</td>
-            <td id="change-name"><a id="change-name-link" href="@routes.SessionController.redirect("member-name",false)">@Messages("change")</a></td>
+            <td id="change-name"><a id="change-name-link" href='@routes.SessionController.redirect("member-name",false)' data-journey-click="link - click:User details not found:Change Name">@Messages("change")</a></td>
           </tr>
 
           <tr>
             <td id="nino">@nino</td>
-            <td id="change-nino"><a id="change-nino-link" href="@routes.SessionController.redirect("member-nino",false)">@Messages("change")</a></td>
+            <td id="change-nino"><a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false)' data-journey-click="link - click:User details not found:Change NINO">@Messages("change")</a></td>
           </tr>
 
           <tr>
             <td id="dob">@dateOfBirth</td>
-            <td id="change-dob"><a id="change-dob-link" href="@routes.SessionController.redirect("member-dob",false)">@Messages("change")</a></td>
+            <td id="change-dob"><a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false)' data-journey-click="link - click:User details not found:Change DOB">@Messages("change")</a></td>
           </tr>
 
         </tbody>
@@ -62,7 +66,7 @@
 
       <br>
       <div class="row">
-        <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("whatDoYouWantToDo",true)'>@Messages("choose.something.else")</a>
+        <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("whatDoYouWantToDo",true)' data-journey-click="button - click:User details not found:Choose something else to do">@Messages("choose.something.else")</a>
       </div>
 
   </div>

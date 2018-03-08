@@ -26,11 +26,11 @@
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
 
-      <div>
-        <a class="link-back" href="@routes.MemberDOBController.back">@Messages("back")</a>
-      </div>
+      @views.html.helpers.errorSummary(memberDobForm)
 
-        @views.html.helpers.errorSummary(memberDobForm)
+      <div class="back-arrow">
+        <a class="link-back" href="@routes.MemberDOBController.back" data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
+      </div>
 
         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
         <br /><br />
@@ -136,7 +136,7 @@
 
          <br />
          <div>
-          <button class="button" type="submit" id="continue">@Messages("continue")</button>
+          <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their DOB?:Continue">@Messages("continue")</button>
          </div>
        }
 

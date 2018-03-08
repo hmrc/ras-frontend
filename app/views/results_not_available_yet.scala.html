@@ -25,8 +25,8 @@
  <div class="grid-layout__column">
   <div class="grid-layout__column--3-4">
 
-   <div>
-    <a class="link-back" id="back" href="@routes.WhatDoYouWantToDoController.get">@Messages("back")</a>
+   <div class="back-arrow">
+    <a class="link-back" id="back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:Results are still being added:Back">@Messages("back")</a>
    </div>
 
    <div class="row">
@@ -39,7 +39,7 @@
    </div>
    <br>
    <div class="row">
-    <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
+    <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="button - click:Results are still being added:Choose something else to do">@Messages("choose.something.else")</a>
    </div>
 
   </div>

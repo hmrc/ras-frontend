@@ -25,8 +25,8 @@
  <div class="grid-layout__column">
   <div class="grid-layout__column--3-4">
 
-   <div>
-    <a class="link-back" id="back" href="@routes.FileUploadController.get">@Messages("back")</a>
+   <div class="back-arrow">
+    <a class="link-back" id="back" href="@routes.FileUploadController.get" data-journey-click="navigation - link:There has been a problem uploading your file:Back">@Messages("back")</a>
    </div>
 
    <div class="row">
@@ -39,7 +39,7 @@
    </div><br>
 
    <div class="row">
-    <a id="return-to-upload" class="button" href="@routes.FileUploadController.get">@Messages("return.to.upload")</a>
+    <a id="return-to-upload" class="button" href="@routes.FileUploadController.get" data-journey-click="button - click:There has been a problem uploading your file:Return to upload a file">@Messages("return.to.upload")</a>
    </div>
 
   </div>

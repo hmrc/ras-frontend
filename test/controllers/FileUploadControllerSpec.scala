@@ -199,6 +199,14 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
         doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
         doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
       }
+
+      "contains the correct ga events" in {
+        val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
+        val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
+        doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Your file has been uploaded:Choose something else to do"
+      }
     }
 
     "create a file session when a file has been successfully uploaded" in {
@@ -260,6 +268,16 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestFileUploadController.get().apply(fakeRequest)
       doc(result).getElementById("upload-help-link").text shouldBe Messages("get.help.uploading.link")
+    }
+
+    "contains the correct ga events" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val result = TestFileUploadController.get().apply(fakeRequest)
+      doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:Upload a file:Continue"
+      doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:Upload a file:Back"
+      doc(result).getElementById("choose-file").attr("data-journey-click") shouldBe "button - click:Upload a file:Choose file"
+      doc(result).getElementById("upload-help-link").attr("data-journey-click") shouldBe "link - click:Upload a file:Get help with uploading files"
     }
 
     "contain empty file error if present in session cache" in {
@@ -394,6 +412,14 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
       val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
+    "contains the correct ga events" in {
+      val rasSession = RasSession(userChoice, memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockShortLivedCache.isFileInProgress(any())(Matchers.any())).thenReturn(Future.successful(true))
+      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You cannot upload another file:Choose something else to do"
     }
   }
 

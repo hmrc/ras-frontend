@@ -33,13 +33,14 @@ trait ApplicationConfig {
   val fileUploadCallBack: String
   val hoursToWaitForReUpload :Int
   val rasApiResidencyStatusEndpoint: String
+  val reportAProblemUrl: String
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
-  private val contactHost = baseUrl("contact-frontend")
+  private val contactHost = configuration.getString("contact-frontend.host").getOrElse("")
   private val contactFormServiceIdentifier = "RAS"
   private val caFrontendHost = configuration.getString("ca-frontend.host").getOrElse("")
 
@@ -52,6 +53,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/lifetime-isa")
 
+  override lazy val reportAProblemUrl = s"$contactHost/contact"
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val signOutUrl = s"$caFrontendHost/gg/sign-out?continue=$logoutCallback"
