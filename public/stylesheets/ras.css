@@ -156,6 +156,11 @@ input:focus {
     margin-bottom: 0px;
 }
 
+/*#whyGiveThisRating_field label {
+    font-size: 36px;
+    font-weight: bold;
+    padding-top: 30px;
+}*/
 
 /*
 .logged-out-page textarea {
@@ -163,8 +168,4 @@ input:focus {
     width: 50%;
     background-color: white;
 }
-
-#whyGiveThisRating_field label {
-    font-size: 36px;
-    font-weight: bold;
-}*/
+*/

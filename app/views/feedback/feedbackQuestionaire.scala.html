@@ -49,7 +49,7 @@
                     '_fieldsetAttributes -> "id=easyToUseFieldset"
                 )
 
-                <br /><br /><br /><br />
+                <br /><br /><br />
 
                 @radioGroup(
                     questionnaireForm("satisfactionLevel"),
@@ -66,20 +66,20 @@
                     '_groupClass -> "inline-block",
                     '_fieldsetAttributes -> "id=satisfactionLevelFieldset"
                 )
-            </div>
 
             <br /><br />
 
-            @helper.textarea(questionnaireForm("whyGiveThisRating"),
-                args = 'rows -> 9,
-                '_help -> Messages("label.limit_is_1200_characters"),
-                '_label -> Messages("label.why_did_you_give_this_rating"),
-                '_info -> Messages("label.please_dont_include_any_personal_or_financial_information"),
-                'maxlength -> 1200
-            )
+                <label class="form-label" for="textarea">
+                    <h3 class="heading-large">@Messages("label.why_did_you_give_this_rating")</h3>
+                </label>
+                <span class="form-hint">
+                    @Messages("label.please_dont_include_any_personal_or_financial_information")
+                </span>
+                <textarea class="form-control form-control-3-4" name="textarea" id="textarea" rows="9"></textarea>
 
-            <br />
-            <button id="submit" type="submit" class="button">@Messages("label.send_feedback")</button>
+                <br />
+                <button id="submit" type="submit" class="button">@Messages("label.send_feedback")</button>
+            </div>
 
         }
 
