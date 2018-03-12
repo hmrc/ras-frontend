@@ -58,7 +58,7 @@
         <span class="inline-fields">@elements.args.get('_symbol)</span>
     }
 
-    <div class="form-group">
+    <div class="form-group @if(elements.args.contains('_groupClass)){@elements.args.get('_groupClass)}">
         <label for="@labelFor" class="form-label" id="@labelId">
             @if(labelHighlight) {<strong>}
             @if(elements.args.contains('_label)) {@elements.label}
