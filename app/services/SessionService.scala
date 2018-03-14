@@ -212,14 +212,11 @@ trait ShortLivedCache  {
   }
 
   def errorInFileUpload(fileSession: FileSession)(implicit hc: HeaderCarrier): Boolean = {
-    println("@@@in method")
     fileSession.userFile match {
       case Some(userFile) =>
-        Logger.debug("@@@@userFile.status= " + userFile.status)
         userFile.status match {
           case STATUS_AVAILABLE => false
           case _ => {
-            Logger.debug("@@@@HERE")
             removeFileSessionFromCache(fileSession.userId)
             true
           }
