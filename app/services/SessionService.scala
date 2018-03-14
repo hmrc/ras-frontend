@@ -170,6 +170,8 @@ trait ShortLivedCache  {
 
   val hoursToWaitForReUpload = 24
 
+  val STATUS_AVAILABLE: String = "AVAILABLE"
+
   def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier):Future[Boolean] = {
 
     shortLivedCache.cache[FileSession](source, userId, "fileSession",
@@ -198,7 +200,7 @@ trait ShortLivedCache  {
       case Some(fileSession) =>
         fileSession.uploadTimeStamp match {
           case Some(timestamp) =>
-            hasBeen24HoursSinceTheUpload(timestamp) && !fileSession.resultsFile.isDefined
+            errorInFileUpload(fileSession) || (hasBeen24HoursSinceTheUpload(timestamp) && !fileSession.resultsFile.isDefined)
           case _ =>
             Logger.error("[ShortLivedCache][failedProcessingUploadedFile] no upload timestamp found")
             false
@@ -206,6 +208,23 @@ trait ShortLivedCache  {
       case _ =>
         Logger.error("[ShortLivedCache][failedProcessingUploadedFile] no file session found")
         false
+    }
+  }
+
+  def errorInFileUpload(fileSession: FileSession)(implicit hc: HeaderCarrier): Boolean = {
+    println("@@@in method")
+    fileSession.userFile match {
+      case Some(userFile) =>
+        Logger.debug("@@@@userFile.status= " + userFile.status)
+        userFile.status match {
+          case STATUS_AVAILABLE => false
+          case _ => {
+            Logger.debug("@@@@HERE")
+            removeFileSessionFromCache(fileSession.userId)
+            true
+          }
+        }
+      case _ => false
     }
   }
 
