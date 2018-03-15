@@ -153,5 +153,8 @@ input:focus {
 .common-error {
     color: #A80F1C;
     font-weight: bold;
+}
+
+.no-bottom-margin {
     margin-bottom: 0px;
 }
