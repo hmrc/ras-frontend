@@ -92,7 +92,6 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.title shouldBe Messages("global.error.page.title")
       doc.getElementById("header").text shouldBe Messages("global.error.header")
       doc.getElementById("message").text shouldBe Messages("global.error.message")
-      doc.getElementById("continue").text shouldBe Messages("continue")
     }
 
     "contain correct title and header when upload error" in {
