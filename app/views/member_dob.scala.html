@@ -26,8 +26,9 @@
 
 @ras_main(title = Messages("member.dob.page.title"), scriptElem = Some(scriptElem)) {
 
-<div class="header-wrapper">
-    <div class="column-two-thirds">
+<div class="grid-layout--no-gutter">
+    <div class="grid-layout__column">
+        <div class="grid-layout__column--3-4">
 
       <div class="back-arrow">
         <a class="link-back" href="@routes.MemberDOBController.back" data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
@@ -144,7 +145,7 @@
           <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their DOB?:Continue">@Messages("continue")</button>
          </div>
        }
-
+        </div>
       </div>
  </div>
 

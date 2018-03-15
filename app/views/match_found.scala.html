@@ -27,8 +27,9 @@
 
 @ras_main(title = Messages("match.found.page.title")) {
 
-<div class="header-wrapper">
-    <div class="column-two-thirds">
+<div class="grid-layout--no-gutter">
+    <div class="grid-layout__column">
+        <div class="grid-layout__column--3-4">
 
       <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
 
@@ -82,7 +83,7 @@
                 data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
             >@Messages("choose.something.else")</a>
         </div>
-
+        </div>
   </div>
 </div>
 }
