@@ -21,9 +21,8 @@
 
 @ras_main(title = Messages("problem.getting.results.title")) {
 
-<div class="grid-layout--no-gutter">
- <div class="grid-layout__column">
-  <div class="grid-layout__column--3-4">
+<div class="header-wrapper">
+ <div class="column-two-thirds">
 
    <div class="back-arrow">
     <a class="link-back" id="back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:There has been a problem getting your results:Back">@Messages("back")</a>
@@ -41,7 +40,6 @@
    </div>
 
   </div>
- </div>
 </div>
 
 }

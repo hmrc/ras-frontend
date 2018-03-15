@@ -27,9 +27,8 @@
 @ras_main(title = Messages("file.upload.page.title"),scriptElem = Some(scriptElem)) {
 
 
-<div class="grid-layout--no-gutter">
-  <div class="grid-layout__column">
-    <div class="grid-layout__column--3-4">
+<div class="header-wrapper">
+    <div class="column-two-thirds">
 
       <div class="back-arrow">
         <a class="link-back" href="@routes.FileUploadController.back" data-journey-click="navigation - link:Upload a file:Back">@Messages("back")</a>
@@ -42,14 +41,16 @@
         </ul>
       </div>
 
-
       <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
-
 
       <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
 
       <!-- div is closed early due to styling restrictions -->
-      <div id="file-upload" class='@if(error==""){ form-group form-field--error }else{ form-group }'>
+      @if(error==""){
+        <div id="file-upload" class="form-group">
+      }else{
+        <div id="file-upload-with-error" class="form-group form-field--error">
+      }
 
           <p id="upload-error" class="error-list">@error</p>
 
@@ -67,9 +68,7 @@
             <button type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@Messages("continue")</button>
           </form>
 
-
     </div>
-  </div>
 </div>
 
 

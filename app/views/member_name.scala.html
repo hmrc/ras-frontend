@@ -26,9 +26,8 @@
 
 @ras_main(title = Messages("member.name.page.title"), scriptElem = Some(scriptElem)) {
 
-<div class="grid-layout--no-gutter">
-  <div class="grid-layout__column">
-    <div class="grid-layout__column--3-4">
+<div class="header-wrapper">
+    <div class="column-two-thirds">
 
       <div class="back-arrow">
         <a class="link-back" href="@routes.MemberNameController.back" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
@@ -64,6 +63,5 @@
           }
 
     </div>
-  </div>
 </div>
 }
