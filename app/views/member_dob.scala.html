@@ -26,11 +26,12 @@
   <div class="grid-layout__column">
     <div class="grid-layout__column--3-4">
 
-      @views.html.helpers.errorSummary(memberDobForm)
 
       <div class="back-arrow">
         <a class="link-back" href="@routes.MemberDOBController.back" data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
       </div>
+
+        @views.html.helpers.errorSummary(memberDobForm)
 
         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
 

@@ -26,11 +26,11 @@
  <div class="grid-layout__column">
   <div class="grid-layout__column--3-4">
 
-   @views.html.helpers.errorSummary(memberNinoForm)
-
    <div class="back-arrow">
     <a class="link-back" href="@routes.MemberNinoController.back" data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
    </div>
+
+      @views.html.helpers.errorSummary(memberNinoForm)
 
      <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
 
