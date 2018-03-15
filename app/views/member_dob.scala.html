@@ -20,7 +20,11 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@ras_main(title = Messages("member.dob.page.title")) {
+@scriptElem = {
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
+}
+
+@ras_main(title = Messages("member.dob.page.title"), scriptElem = Some(scriptElem)) {
 
 <div class="grid-layout--no-gutter">
   <div class="grid-layout__column">
