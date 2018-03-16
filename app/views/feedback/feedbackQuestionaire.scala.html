@@ -22,7 +22,9 @@
 
 @views.html.ras_main(title = "Relief at Source Feedback Questionnaire - GOV.UK", bodyClasses = None, contentHeader = None, signOutEnabled = false) {
 
-    <div class="grid-row logged-out-page">
+<div class="grid-layout--no-gutter">
+    <div class="grid-layout__column">
+        <div class="grid-layout__column--3-4">
 
         <h1 class="heading-xlarge" id="heading">@Messages("label.youre_signed_out")</h1>
 
@@ -84,5 +86,6 @@
         }
 
     </div>
-
+    </div>
+</div>
 }
