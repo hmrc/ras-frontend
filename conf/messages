@@ -11,8 +11,7 @@ member.nino.page.title = What is the member’s National Insurance number? - GOV
 member.dob.page.title = What is the member’s date of birth? - GOV.UK
 match.found.page.title = Member’s residency status - GOV.UK
 match.not.found.page.title = Member’s residency status cannot be displayed - GOV.UK
-global.error.page.title = Technical error - GOV.UK
-global.upload.error.page.title = Upload error - GOV.UK
+global.error.page.title = There is a problem with the service - Look up residency status for relief at source - GOV.UK
 problem.uploading.file.title = There has been a problem uploading your file - GOV.UK
 no.results.available.page.title = You have not uploaded a file - GOV.UK
 results.not.available.yet.page.title = The results file is not available yet - GOV.UK
@@ -24,7 +23,7 @@ upload.result.page.header = The residency status has been added
 member.name.page.header = What is the member’s name?
 member.nino.page.header = What is {0}’s National Insurance number?
 member.dob.page.header = What is {0}’s date of birth?
-global.upload.error.header = There has been a problem
+global.error.header = There is a problem with the service
 reference.table.header = Reference
 expiry.date.table.header = Expires on
 match.found.header = {0}’s residency status
@@ -38,7 +37,6 @@ results.not.available.yet.page.header = The results file is not available yet
 ###### SUB-HEADERS #################################################################################
 
 match.found.what.happens.next = What happens next
-global.upload.error.sub-header = This could be caused by:
 match.found.top.current-year-and-next-year = Use this residency status for the whole tax year in your relief at source claims. You cannot change the residency status in your claims during the tax year.
 match.found.top.current-year.top = This residency status must be used for the full tax year and cannot be changed.
 match.found.top.current-year.bottom = Contact HMRC if you think the results are not correct.
@@ -96,8 +94,6 @@ residency.status.result = Residency-status-results.CSV
 file.type.size = CSV, less than 3MB.
 expiry.date.message = This file will be deleted on {0} if you do not open it.
 deletion.message = When you have opened this file, you should save a copy of it. The file is automatically deleted from the service when you open it.
-a.system.timeout = A system timeout
-a.technical.timeout = A technical error
 try.uploading.again = Try again and upload your file
 check.file = If this problem continues, you should check the file you are trying to upload. You can also try to create a new file and then upload that new copy.
 problem.getting.results.title = There has been a problem getting the results - GOV.UK
@@ -144,6 +140,8 @@ cy.1.message = When you open the file, the first residency status is for the cur
 
 cannot.upload.another.file.page.reason = The last file you uploaded is still being processed.
 cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.
+
+global.error.message = Try again later.
 
 ##feedback
 
