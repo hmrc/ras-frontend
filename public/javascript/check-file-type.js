@@ -45,4 +45,5 @@ function showError(message){
     $('#upload-error').empty();
     $('#upload-error').html(message);
     $('#errors').focus();
+    ga("send", "event", "There is a problem - view", "Upload a file", message)
 }

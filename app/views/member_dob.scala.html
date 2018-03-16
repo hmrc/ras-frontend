@@ -34,7 +34,7 @@
         <a class="link-back" href="@routes.MemberDOBController.back" data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
       </div>
 
-        @views.html.helpers.errorSummary(memberDobForm)
+        @views.html.helpers.errorSummary(memberDobForm, "What is their DOB?")
 
         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
 

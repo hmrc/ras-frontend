@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(form: Form[_])(implicit messages: Messages)
+@(form: Form[_], gaActionPage: String)(implicit messages: Messages)
 
 @if(form.hasGlobalErrors || form.hasErrors) {
 
@@ -35,7 +35,7 @@
                           case _ => { error.key + "_label"}
                       }
                   ) { anchor =>
-                    <li role="tooltip" data-journey="search-page:error:@error.key">
+                    <li role="tooltip" data-journey='There is a problem - view:@gaActionPage:@error.message'>
                         <a href="#@anchor" class="error-list" data-focuses="@error.key"  >
                             @Messages(error.message)
                         </a>

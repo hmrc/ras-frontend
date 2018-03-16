@@ -34,7 +34,7 @@
         <a class="link-back" href="@routes.MemberNameController.back" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
       </div>
 
-        @views.html.helpers.errorSummary(memberNameForm)
+        @views.html.helpers.errorSummary(memberNameForm, "What is their name?")
 
         <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>
 
