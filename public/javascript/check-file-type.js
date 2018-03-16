@@ -14,36 +14,49 @@
 * limitations under the License.
 */
 
-function checkFileType(form) {
 
-    //scroll to top of page
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
+$(function() {
 
-    var arrInputs = form.getElementsByTagName("input");
-    var input = arrInputs[0];
-    var fileName = input.value;
+    function checkFileType(form) {
 
-    if (fileName.length > 0) {
-        if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
-            return true;
+        //scroll to top of page
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+
+        var arrInputs = form.getElementsByTagName("input");
+        var input = arrInputs[0];
+        var fileName = input.value;
+
+        if (fileName.length > 0) {
+            if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
+                return true;
+            }
+            else {
+                showError('Please upload a .csv file');
+                return false;
+            }
         }
         else {
-            showError('Please upload a .csv file');
+            showError('Please select a file');
             return false;
         }
     }
-    else {
-        showError('Please select a file');
-        return false;
-    }
-}
 
-function showError(message){
-    $('.validation-summary').show();
-    $('#error').html(message);
-    $('#file-upload').addClass("form-field--error");
-    $('#upload-error').empty();
-    $('#upload-error').html(message);
-    $('#errors').focus();
-    ga("send", "event", "There is a problem - view", "Upload a file", message)
-}
+    function showError(message){
+        $('.validation-summary').show();
+        $('#error').html(message);
+        $('#file-upload').addClass("form-field--error");
+        $('#upload-error').empty();
+        $('#upload-error').html(message);
+        $('#errors').focus();
+        ga("send", "event", "There is a problem - view", "Upload a file", message);
+    }
+
+    var errors = $('#errors');
+    if(errors.length > 0 && errors.css('display') !== 'none') {
+        $('#errors').focus();
+        var errorLink = $('.error-summary-list li a');
+        if (errorLink.length > 0) {
+            ga("send", "event", "There is a problem - view", "Upload a file", errorLink.text());
+        }
+    }
+});
