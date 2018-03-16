@@ -14,43 +14,42 @@
 * limitations under the License.
 */
 
+function checkFileType(form) {
 
-$(function() {
+    //scroll to top of page
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-    function checkFileType(form) {
+    var arrInputs = form.getElementsByTagName("input");
+    var input = arrInputs[0];
+    var fileName = input.value;
 
-        //scroll to top of page
-        document.body.scrollTop = document.documentElement.scrollTop = 0;
-
-        var arrInputs = form.getElementsByTagName("input");
-        var input = arrInputs[0];
-        var fileName = input.value;
-
-        if (fileName.length > 0) {
-            if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
-                return true;
-            }
-            else {
-                showError('Please upload a .csv file');
-                return false;
-            }
+    if (fileName.length > 0) {
+        if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
+            return true;
         }
         else {
-            showError('Please select a file');
+            showError('Please upload a .csv file');
             return false;
         }
     }
-
-    function showError(message){
-        $('.validation-summary').show();
-        $('#error').html(message);
-        $('#file-upload').addClass("form-field--error");
-        $('#upload-error').empty();
-        $('#upload-error').html(message);
-        $('#errors').focus();
-        ga("send", "event", "There is a problem - view", "Upload a file", message);
+    else {
+        showError('Please select a file');
+        return false;
     }
+}
 
+function showError(message){
+    $('.validation-summary').show();
+    $('#error').html(message);
+    $('#file-upload').addClass("form-field--error");
+    $('#upload-error').empty();
+    $('#upload-error').html(message);
+    $('#errors').focus();
+    ga("send", "event", "There is a problem - view", "Upload a file", message);
+}
+
+
+$(function() {
     var errors = $('#errors');
     if(errors.length > 0 && errors.css('display') !== 'none') {
         $('#errors').focus();
