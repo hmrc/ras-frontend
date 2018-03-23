@@ -64,6 +64,12 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   "SessionController" should {
     "redirect to target" when {
 
+      "redirect is called with member-name in edit mode" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("member-name",false, true)(FakeRequest()))
+        redirectLocation(result).get should include("member-name")
+      }
+
       "redirect is called with member-name and clean" in {
         when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-name",true)(FakeRequest()))

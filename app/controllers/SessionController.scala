@@ -42,7 +42,7 @@ trait SessionController extends RasController {
   val MEMBER_NINO = "member-nino"
   val MEMBER_DOB = "member-dob"
 
-  def redirect(target:String, cleanSession:Boolean) = Action.async {
+  def redirect(target:String, cleanSession:Boolean, edit: Boolean = false) = Action.async {
     implicit request =>
       if(cleanSession){
         sessionService.resetRasSession() map {
