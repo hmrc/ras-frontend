@@ -41,18 +41,17 @@ trait PageFlowController extends RasController {
   val RESULTS = "ResultsController"
 
   def previousPage(from: String, edit: Boolean = false): Result = {
-    from match {
-      case FILE_UPLOAD => Redirect(routes.WhatDoYouWantToDoController.get)
-      case MEMBER_NAME => {
-        edit match {
-          case true => Redirect(routes.ResultsController.noMatchFound)
-          case _ => Redirect(routes.WhatDoYouWantToDoController.get)
+    edit match {
+      case true => Redirect(routes.ResultsController.noMatchFound)
+      case false =>
+        from match {
+          case FILE_UPLOAD => Redirect(routes.WhatDoYouWantToDoController.get)
+          case MEMBER_NAME => Redirect(routes.WhatDoYouWantToDoController.get)
+          case MEMBER_NINO => Redirect(routes.MemberNameController.get)
+          case MEMBER_DOB => Redirect(routes.MemberNinoController.get)
+          case RESULTS => Redirect(routes.MemberDOBController.get)
+          case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
         }
-      }
-      case MEMBER_NINO => Redirect(routes.MemberNameController.get)
-      case MEMBER_DOB  => Redirect(routes.MemberNinoController.get)
-      case RESULTS     => Redirect(routes.MemberDOBController.get)
-      case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
     }
   }
 }

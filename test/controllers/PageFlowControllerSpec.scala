@@ -64,11 +64,27 @@ class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18n
       }
     }
 
+    "redirect to match not found page" when {
+      "on member nino page and edit is true" in {
+        val result = TestPageFlowController.previousPage("MemberNinoController", true)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/no-residency-status-displayed")
+      }
+    }
+
     "redirect to member nino page" when {
       "on member dob page" in {
         val result = TestPageFlowController.previousPage("MemberDOBController")
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/member-national-insurance-number")
+      }
+    }
+
+    "redirect to match not found page" when {
+      "on member dob page and edit is true" in {
+        val result = TestPageFlowController.previousPage("MemberDOBController", true)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/no-residency-status-displayed")
       }
     }
 
