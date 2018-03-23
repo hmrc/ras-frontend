@@ -40,14 +40,25 @@ class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18n
 
   "PageFlowController" should {
 
+    "redirect to what do you want to do page" when {
+      "on member name page and edit is false" in {
+        val result = TestPageFlowController.previousPage("MemberNameController")
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/")
+      }
+    }
+
+    "redirect to match not found page" when {
+      "on member name page and edit is true" in {
+        val result = TestPageFlowController.previousPage("MemberNameController", true)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).get should include("/no-residency-status-displayed")
+      }
+    }
+
     "redirect to member name page" when {
       "on member nino page and edit is false" in {
         val result = TestPageFlowController.previousPage("MemberNinoController")
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("/member-name")
-      }
-      "on match not found page and edit is true" in {
-        val result = TestPageFlowController.previousPage("MemberNinoController", true)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/member-name")
       }
