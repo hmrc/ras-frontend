@@ -40,7 +40,7 @@ trait PageFlowController extends RasController {
   val MEMBER_DOB = "MemberDOBController"
   val RESULTS = "ResultsController"
 
-  def previousPage(from: String): Result = {
+  def previousPage(from: String, edit: Boolean = false): Result = {
     from match {
       case FILE_UPLOAD => Redirect(routes.WhatDoYouWantToDoController.get)
       case MEMBER_NAME => Redirect(routes.WhatDoYouWantToDoController.get)
