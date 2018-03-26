@@ -85,12 +85,12 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
 
 
     "return 200" in {
-      val result = TestMemberNameController.get(fakeRequest)
+      val result = TestMemberNameController.get()(fakeRequest)
       status(result) shouldBe Status.OK
     }
 
     "return HTML" in {
-      val result = TestMemberNameController.get(fakeRequest)
+      val result = TestMemberNameController.get()(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }
@@ -99,44 +99,44 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
   "member name page" should {
 
     "contain correct title and header" in {
-      val result = TestMemberNameController.get(fakeRequest)
+      val result = TestMemberNameController.get()(fakeRequest)
       doc(result).title shouldBe Messages("member.name.page.title")
       doc(result).getElementById("header").text shouldBe Messages("member.name.page.header")
     }
 
     "contain correct field labels" in {
-      val result = TestMemberNameController.get(fakeRequest)
+      val result = TestMemberNameController.get()(fakeRequest)
       doc(result).getElementById("firstName_label").text shouldBe Messages("first.name").capitalize
       doc(result).getElementById("lastName_label").text shouldBe Messages("last.name").capitalize
     }
 
     "contain correct input fields" in {
-      val result = TestMemberNameController.get(fakeRequest)
+      val result = TestMemberNameController.get()(fakeRequest)
       assert(doc(result).getElementById("firstName").attr("input") != null)
       assert(doc(result).getElementById("lastName").attr("input") != null)
     }
 
     "contain continue button" in {
-      val result = TestMemberNameController.get(fakeRequest)
+      val result = TestMemberNameController.get()(fakeRequest)
       doc(result).getElementById("continue").text shouldBe Messages("continue")
     }
 
     "fill in form if cache data is returned" in {
-      val result = TestMemberNameController.get(fakeRequest)
+      val result = TestMemberNameController.get()(fakeRequest)
       doc(result).getElementById("firstName").value.toString should include(memberName.firstName)
       doc(result).getElementById("lastName").value.toString should include(memberName.lastName)
     }
 
     "present empty form when no cached data exists" in {
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      val result = await(TestMemberNameController.get(fakeRequest))
+      val result = await(TestMemberNameController.get()(fakeRequest))
       assert(doc(result).getElementById("firstName").attr("value").equals(""))
       assert(doc(result).getElementById("lastName").attr("value").equals(""))
     }
 
     "contain the correct ga data" in {
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      val result = await(TestMemberNameController.get(fakeRequest))
+      val result = await(TestMemberNameController.get()(fakeRequest))
       assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue"))
       assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their name?:Back"))
     }

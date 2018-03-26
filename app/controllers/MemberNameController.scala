@@ -36,7 +36,7 @@ trait MemberNameController extends RasController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
 
-  def get = Action.async {
+  def get(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>

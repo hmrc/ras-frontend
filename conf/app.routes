@@ -18,7 +18,7 @@ GET         /file-upload-failed                     controllers.FileUploadContro
 
 GET         /cannot-upload-another-file             controllers.FileUploadController.uploadInProgress
 
-GET         /member-name                            controllers.MemberNameController.get
+GET         /member-name                            controllers.MemberNameController.get(edit: Boolean ?= false)
 POST        /member-name                            controllers.MemberNameController.post
 GET         /member-name/back                       controllers.MemberNameController.back
 

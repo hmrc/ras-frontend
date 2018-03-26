@@ -52,7 +52,7 @@ trait PageFlowController extends RasController {
       case MEMBER_NINO => {
         edit match {
           case true => Redirect(routes.ResultsController.noMatchFound)
-          case _ => Redirect(routes.MemberNameController.get)
+          case _ => Redirect(routes.MemberNameController.get(edit))
         }
       }
       case MEMBER_DOB => {
