@@ -19,7 +19,7 @@ GET         /file-upload-failed                     controllers.FileUploadContro
 GET         /cannot-upload-another-file             controllers.FileUploadController.uploadInProgress
 
 GET         /member-name                            controllers.MemberNameController.get(edit: Boolean ?= false)
-POST        /member-name                            controllers.MemberNameController.post
+POST        /member-name                            controllers.MemberNameController.post(edit: Boolean ?= false)
 GET         /member-name/back                       controllers.MemberNameController.back
 
 GET         /member-national-insurance-number       controllers.MemberNinoController.get

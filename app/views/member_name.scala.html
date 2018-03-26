@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(memberNameForm: Form[models.MemberName], edit: Boolean = false)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(memberNameForm: Form[models.MemberName], edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -34,7 +34,7 @@
 
         <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>
 
-          @form(action = routes.MemberNameController.post) {
+          @form(action = routes.MemberNameController.post(edit)) {
 
             <div class="form-group">
 
