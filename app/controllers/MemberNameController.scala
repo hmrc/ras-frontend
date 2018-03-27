@@ -55,7 +55,7 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
 
   def post(edit: Boolean = false) = Action.async { implicit request =>
     isAuthorised.flatMap{
-      case Right(_) =>
+      case Right(userId) =>
       form.bindFromRequest.fold(
         formWithErrors => {
           Logger.error("[NameController][post] Invalid form field passed")
