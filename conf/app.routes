@@ -22,9 +22,9 @@ GET         /member-name                            controllers.MemberNameContro
 POST        /member-name                            controllers.MemberNameController.post(edit: Boolean ?= false)
 GET         /member-name/back                       controllers.MemberNameController.back(edit: Boolean ?= false)
 
-GET         /member-national-insurance-number       controllers.MemberNinoController.get
-POST        /member-national-insurance-number       controllers.MemberNinoController.post
-GET         /member-national-insurance-number/back  controllers.MemberNinoController.back
+GET         /member-national-insurance-number       controllers.MemberNinoController.get(edit: Boolean ?= false)
+POST        /member-national-insurance-number       controllers.MemberNinoController.post(edit: Boolean ?= false)
+GET         /member-national-insurance-number/back  controllers.MemberNinoController.back(edit: Boolean ?= false)
 
 GET         /member-date-of-birth                   controllers.MemberDOBController.get
 POST        /member-date-of-birth                   controllers.MemberDOBController.post
