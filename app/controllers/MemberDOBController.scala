@@ -68,9 +68,8 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
               Future.successful(BadRequest(views.html.member_dob(formWithErrors)))
             },
             dateOfBirth => {
-              val timer = Metrics.responseTimer.time()
               sessionService.cacheDob(dateOfBirth) flatMap {
-                case Some(session) => submitResidencyStatus(session, dateOfBirth, userId, timer)
+                case Some(session) => submitResidencyStatus(session, dateOfBirth, userId)
                 case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }
             }

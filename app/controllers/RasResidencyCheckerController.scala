@@ -18,6 +18,7 @@ package controllers
 
 import com.codahale.metrics.Timer
 import connectors.ResidencyStatusAPIConnector
+import metrics.Metrics
 import models._
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request}
@@ -33,8 +34,9 @@ trait RasResidencyCheckerController extends RasController {
   val SCOTTISH = "scotResident"
   val NON_SCOTTISH = "otherUKResident"
 
-  def submitResidencyStatus(session: RasSession, dateOfBirth: MemberDateOfBirth, userId: String, timer: Timer.Context)(implicit request: Request[AnyContent], hc: HeaderCarrier) = {
+  def submitResidencyStatus(session: RasSession, dateOfBirth: MemberDateOfBirth, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier) = {
 
+    val timer = Metrics.responseTimer.time()
     val memberDetails = MemberDetails(session.name, session.nino.nino, session.dateOfBirth.dateOfBirth)
 
     residencyStatusAPIConnector.getResidencyStatus(memberDetails).map { rasResponse =>
