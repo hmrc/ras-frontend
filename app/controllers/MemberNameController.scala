@@ -65,8 +65,7 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
           sessionService.cacheName(memberName) flatMap {
             case Some(session) => {
               edit match {
-                case true => //Submit
-                  Future.successful(Redirect(routes.MemberNinoController.get()))
+                case true => submitResidencyStatus(session, userId)
                 case _ => Future.successful(Redirect(routes.MemberNinoController.get()))
               }
             }
