@@ -69,7 +69,7 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
             },
             dateOfBirth => {
               sessionService.cacheDob(dateOfBirth) flatMap {
-                case Some(session) => submitResidencyStatus(session, dateOfBirth, userId)
+                case Some(session) => submitResidencyStatus(session, userId)
                 case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }
             }

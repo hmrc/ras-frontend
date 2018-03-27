@@ -34,14 +34,14 @@ trait RasResidencyCheckerController extends RasController {
   val SCOTTISH = "scotResident"
   val NON_SCOTTISH = "otherUKResident"
 
-  def submitResidencyStatus(session: RasSession, dateOfBirth: MemberDateOfBirth, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier) = {
+  def submitResidencyStatus(session: RasSession, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier) = {
 
     val timer = Metrics.responseTimer.time()
     val memberDetails = MemberDetails(session.name, session.nino.nino, session.dateOfBirth.dateOfBirth)
 
     residencyStatusAPIConnector.getResidencyStatus(memberDetails).map { rasResponse =>
       val formattedName = session.name.firstName + " " + session.name.lastName
-      val formattedDob = dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+      val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
       val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
       val nyResidencyStatus: Option[String] =
         if (rasResponse.nextYearForecastResidencyStatus.nonEmpty)
