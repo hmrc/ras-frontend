@@ -17,10 +17,11 @@
 package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.UserDetailsConnector
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import forms.MemberNameForm._
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
+import services.AuditService
 import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
@@ -30,9 +31,11 @@ object MemberNameController extends MemberNameController {
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
+  override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
+  override val auditService: AuditService = AuditService
 }
 
-trait MemberNameController extends RasController with PageFlowController {
+trait MemberNameController extends RasResidencyCheckerController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
 

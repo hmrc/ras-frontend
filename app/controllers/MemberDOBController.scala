@@ -41,7 +41,6 @@ object MemberDOBController extends MemberDOBController {
 trait MemberDOBController extends RasResidencyCheckerController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
-  val firstName = ""
 
   def get = Action.async {
     implicit request =>
@@ -51,7 +50,7 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
               Ok(views.html.member_dob(form.fill(session.dateOfBirth), name))
-            case _ => Ok(views.html.member_dob(form, firstName))
+            case _ => Ok(views.html.member_dob(form))
           }
         case Left(resp) =>
           Logger.error("[DobController][get] user Not authorised")
@@ -66,7 +65,7 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
           form.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[DobController][post] Invalid form field passed")
-              Future.successful(BadRequest(views.html.member_dob(formWithErrors, firstName)))
+              Future.successful(BadRequest(views.html.member_dob(formWithErrors)))
             },
             dateOfBirth => {
               val timer = Metrics.responseTimer.time()
