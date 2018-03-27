@@ -29,7 +29,7 @@
       @views.html.helpers.errorSummary(memberNameForm)
 
       <div class="back-arrow">
-        <a class="link-back" href="@routes.MemberNameController.back" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
+        <a class="link-back" href="@routes.MemberNameController.back(edit)" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
       </div>
 
         <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>

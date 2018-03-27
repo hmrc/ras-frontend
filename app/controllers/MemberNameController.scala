@@ -77,10 +77,10 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
     }
   }
 
-  def back = Action.async {
+  def back(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) => Future.successful(previousPage("MemberNameController"))
+        case Right(userInfo) => Future.successful(previousPage("MemberNameController", edit))
         case Left(res) => res
       }
   }

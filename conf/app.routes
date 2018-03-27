@@ -20,7 +20,7 @@ GET         /cannot-upload-another-file             controllers.FileUploadContro
 
 GET         /member-name                            controllers.MemberNameController.get(edit: Boolean ?= false)
 POST        /member-name                            controllers.MemberNameController.post(edit: Boolean ?= false)
-GET         /member-name/back                       controllers.MemberNameController.back
+GET         /member-name/back                       controllers.MemberNameController.back(edit: Boolean ?= false)
 
 GET         /member-national-insurance-number       controllers.MemberNinoController.get
 POST        /member-national-insurance-number       controllers.MemberNinoController.post
