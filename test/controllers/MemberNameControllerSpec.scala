@@ -207,11 +207,16 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
 
   "Member name controller back" should {
 
-    "return to whatDoYouWantToDo page when back link is clicked" in {
-      val result = TestMemberNameController.back.apply(fakeRequest)
+    "return to whatDoYouWantToDo page when back link is clicked and edit mode is false" in {
+      val result = TestMemberNameController.back().apply(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/")
     }
 
+    "return to match not found page when back link is clicked and edit mode is true" in {
+      val result = TestMemberNameController.back(true).apply(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/no-residency-status-displayed")
+    }
   }
 }
