@@ -184,7 +184,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
     redirectLocation(result).get should include("/member-name")
   }
 
-  "return to member name page when back link is clicked and edit mode is true" in {
+  "return to match not found page when back link is clicked and edit mode is true" in {
     when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     val result = TestMemberNinoController.back(true).apply(FakeRequest())
     status(result) shouldBe SEE_OTHER

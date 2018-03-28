@@ -61,7 +61,7 @@ trait PageFlowController extends RasController {
           case _ => Redirect(routes.MemberNinoController.get())
         }
       }
-      case RESULTS => Redirect(routes.MemberDOBController.get)
+      case RESULTS => Redirect(routes.MemberDOBController.get())
       case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
     }
   }

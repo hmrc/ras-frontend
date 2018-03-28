@@ -96,14 +96,14 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
 
     "return ok" when {
       "called" in {
-        val result = TestMemberDobController.get(fakeRequest)
+        val result = TestMemberDobController.get()(fakeRequest)
         status(result) shouldBe OK
       }
     }
 
     "contain correct page elements and content" when {
       "rendered" in {
-        val result = TestMemberDobController.get(fakeRequest)
+        val result = TestMemberDobController.get()(fakeRequest)
         doc(result).title shouldBe Messages("member.dob.page.title")
         doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header","Jackie Chan")
         doc(result).getElementById("dob_hint").text shouldBe Messages("dob.hint")
@@ -114,7 +114,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       }
 
       "contain the correct ga data" in {
-        val result = TestMemberDobController.get(fakeRequest)
+        val result = TestMemberDobController.get()(fakeRequest)
         doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue"
         doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their DOB?:Back"
       }
@@ -122,7 +122,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
 
     "fill in form" when {
       "details returned from session cache" in {
-        val result = TestMemberDobController.get(fakeRequest)
+        val result = TestMemberDobController.get()(fakeRequest)
         doc(result).getElementById("dob-year").value.toString should include(memberDob.dateOfBirth.year.getOrElse("0"))
         doc(result).getElementById("dob-month").value.toString should include(memberDob.dateOfBirth.month.getOrElse("0"))
         doc(result).getElementById("dob-day").value.toString should include(memberDob.dateOfBirth.day.getOrElse("0"))
@@ -132,7 +132,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     "present empty form" when {
       "no details returned from session cache" in {
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        val result = TestMemberDobController.get(fakeRequest)
+        val result = TestMemberDobController.get()(fakeRequest)
         assert(doc(result).getElementById("dob-year").attr("value").isEmpty)
         assert(doc(result).getElementById("dob-month").attr("value").isEmpty)
         assert(doc(result).getElementById("dob-day").attr("value").isEmpty)
@@ -149,7 +149,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
 
     "return bad request when form error present" in {
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"), Some("1"), Some("1111")))
-      val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
     }
 
@@ -158,13 +158,13 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
 
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("1"), Some("1"), Some("1999")))
-      val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
     }
 
     "redirect if current year residency status is empty" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus("", Some(NON_SCOTTISH))))
-      val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("global-error")
     }
@@ -172,42 +172,49 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     "save details to cache" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
 
-      val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any(), Matchers.any())
     }
 
     "redirect if unknown current year residency status is returned" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus("blah", Some(NON_SCOTTISH))))
-      val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")
     }
 
     "redirect to technical error page if customer matching fails to return a response" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(new Exception()))
-      val result = await(TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData))))
+      val result = await(TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")
     }
 
     "redirect to technical error page if ras fails to return a response" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(new Exception()))
-      val result = await(TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData))))
+      val result = await(TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")
     }
 
-    "return to member nino page when back link is clicked" in {
+    "return to member nino page when back link is clicked and edit is false" in {
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestMemberDobController.back.apply(FakeRequest())
+      val result = TestMemberDobController.back().apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/member-national-insurance-number")
     }
 
+    "return to not found page when back link is clicked and edit is true" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      val result = TestMemberDobController.back(true).apply(FakeRequest())
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/no-residency-status-displayed")
+    }
+
     "redirect to global error page navigating back with no session" in {
       when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      val result = TestMemberDobController.back.apply(FakeRequest())
+      val result = TestMemberDobController.back().apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("global-error")
     }
@@ -218,7 +225,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
         when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
-        val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+        val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
         status(result) should equal(SEE_OTHER)
         redirectLocation(result).get should include("/member-residency-status")
@@ -242,7 +249,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, None)))
         when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
-        val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+        val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
         status(result) should equal(SEE_OTHER)
         redirectLocation(result).get should include("/member-residency-status")
@@ -266,7 +273,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
 
         when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(Upstream4xxResponse("Member not found", 403, 403)))
 
-        val result = TestMemberDobController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+        val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         status(result) should equal(SEE_OTHER)
         redirectLocation(result).get should include("/no-residency-status-displayed")
 
@@ -283,6 +290,29 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         )(any())
       }
     }
+
+    "redirect to global error page" when {
+      "an exception is thrown by submitResidencyStatus" in {
+        when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(Upstream4xxResponse("Unknown Error", 500, 500)))
+
+        val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+        status(result) should equal(SEE_OTHER)
+        redirectLocation(result).get should include("/global-error")
+
+        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any(), Matchers.any())
+
+        verify(mockAuditService).audit(
+          auditType = Meq("ReliefAtSourceResidency"),
+          path = Meq("/"),
+          auditData = Meq(Map("successfulLookup" -> "false",
+            "reason" -> "INTERNAL_SERVER_ERROR",
+            "nino" -> "AB123456C",
+            "userIdentifier" -> "Z123456",
+            "requestSource" -> "FE_SINGLE"))
+        )(any())
+      }
+    }
+
   }
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))

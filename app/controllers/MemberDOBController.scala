@@ -42,15 +42,15 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
 
   implicit val context: RasContext = RasContextImpl
 
-  def get = Action.async {
+  def get(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(views.html.member_dob(form.fill(session.dateOfBirth), name))
-            case _ => Ok(views.html.member_dob(form))
+              Ok(views.html.member_dob(form.fill(session.dateOfBirth), name, edit))
+            case _ => Ok(views.html.member_dob(form, "", edit))
           }
         case Left(resp) =>
           Logger.error("[DobController][get] user Not authorised")
@@ -58,14 +58,14 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
       }
   }
 
-  def post = Action.async {
+  def post(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
           form.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[DobController][post] Invalid form field passed")
-              Future.successful(BadRequest(views.html.member_dob(formWithErrors)))
+              Future.successful(BadRequest(views.html.member_dob(formWithErrors, "", edit)))
             },
             dateOfBirth => {
               sessionService.cacheDob(dateOfBirth) flatMap {
@@ -78,12 +78,12 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
       }
   }
 
-  def back = Action.async {
+  def back(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userInfo) =>
           sessionService.fetchRasSession() map {
-            case Some(session) => previousPage("MemberDOBController")
+            case Some(session) => previousPage("MemberDOBController", edit)
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) => res

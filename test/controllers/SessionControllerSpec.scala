@@ -124,6 +124,18 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
         redirectLocation(result).get should include("relief-at-source")
       }
 
+      "redirect is called with whatDoYouWantToDo" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("whatDoYouWantToDo",false)(FakeRequest()))
+        redirectLocation(result).get should include("relief-at-source")
+      }
+
+      "redirect is called with whatDoYouWantToDo and clean" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("whatDoYouWantToDo",true)(FakeRequest()))
+        redirectLocation(result).get should include("relief-at-source")
+      }
+
     }
 
     "redirect to global error page" when {
