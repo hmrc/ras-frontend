@@ -51,7 +51,7 @@ trait SessionController extends RasController {
               case WHAT_DO_YOU_WANT_TO_DO => Redirect(routes.WhatDoYouWantToDoController.get())
               case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
               case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
-              case MEMBER_DOB => Redirect(routes.MemberDOBController.get())
+              case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
               case _ =>
                 Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target ${target}")
                 Redirect(routes.ErrorController.renderGlobalErrorPage())
@@ -65,7 +65,7 @@ trait SessionController extends RasController {
           case WHAT_DO_YOU_WANT_TO_DO => Future.successful(Redirect(routes.WhatDoYouWantToDoController.get()))
           case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get(edit)))
           case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
-          case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get()))
+          case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
           case _ =>
             Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target ${target}")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
