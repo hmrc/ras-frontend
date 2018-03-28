@@ -148,14 +148,14 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
 
     "redirect to match found page when edit mode is true and matching successful" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheNino(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("/member-residency-status")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any(), Matchers.any())
+      verify(mockSessionService, atLeastOnce()).cacheNino(Matchers.any())(Matchers.any(), Matchers.any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
@@ -165,7 +165,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("/no-residency-status-displayed")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any(), Matchers.any())
+      verify(mockSessionService, atLeastOnce()).cacheNino(Matchers.any())(Matchers.any(), Matchers.any())
     }
 
     "redirect to technical error page if nino is not cached" in {
