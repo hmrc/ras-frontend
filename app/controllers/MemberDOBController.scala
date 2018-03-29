@@ -65,7 +65,13 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
           form.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[DobController][post] Invalid form field passed")
-              Future.successful(BadRequest(views.html.member_dob(formWithErrors, "", edit)))
+              sessionService.fetchRasSession() map {
+                case Some(session) =>
+                  val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+                  BadRequest(views.html.member_dob(formWithErrors, name, edit))
+                case _ =>
+                  BadRequest(views.html.member_dob(formWithErrors, Messages("member"), edit))
+              }
             },
             dateOfBirth => {
               sessionService.cacheDob(dateOfBirth) flatMap {

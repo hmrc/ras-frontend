@@ -108,9 +108,9 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header","Jackie Chan")
         doc(result).getElementById("dob_hint").text shouldBe Messages("dob.hint")
         doc(result).getElementById("continue").text shouldBe Messages("continue")
-        doc(result).getElementById("dob-day_label").text shouldBe Messages("Day")
-        doc(result).getElementById("dob-month_label").text shouldBe Messages("Month")
-        doc(result).getElementById("dob-year_label").text shouldBe Messages("Year")
+        doc(result).getElementById("dateOfBirth.day_label").text shouldBe Messages("Day")
+        doc(result).getElementById("dateOfBirth.month_label").text shouldBe Messages("Month")
+        doc(result).getElementById("dateOfBirth.year_label").text shouldBe Messages("Year")
       }
 
       "contain the correct ga data" in {
@@ -123,9 +123,9 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     "fill in form" when {
       "details returned from session cache" in {
         val result = TestMemberDobController.get()(fakeRequest)
-        doc(result).getElementById("dob-year").value.toString should include(memberDob.dateOfBirth.year.getOrElse("0"))
-        doc(result).getElementById("dob-month").value.toString should include(memberDob.dateOfBirth.month.getOrElse("0"))
-        doc(result).getElementById("dob-day").value.toString should include(memberDob.dateOfBirth.day.getOrElse("0"))
+        doc(result).getElementById("dateOfBirth.year").value.toString should include(memberDob.dateOfBirth.year.getOrElse("0"))
+        doc(result).getElementById("dateOfBirth.month").value.toString should include(memberDob.dateOfBirth.month.getOrElse("0"))
+        doc(result).getElementById("dateOfBirth.day").value.toString should include(memberDob.dateOfBirth.day.getOrElse("0"))
       }
     }
 
@@ -133,9 +133,9 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       "no details returned from session cache" in {
         when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         val result = TestMemberDobController.get()(fakeRequest)
-        assert(doc(result).getElementById("dob-year").attr("value").isEmpty)
-        assert(doc(result).getElementById("dob-month").attr("value").isEmpty)
-        assert(doc(result).getElementById("dob-day").attr("value").isEmpty)
+        assert(doc(result).getElementById("dateOfBirth.year").attr("value").isEmpty)
+        assert(doc(result).getElementById("dateOfBirth.month").attr("value").isEmpty)
+        assert(doc(result).getElementById("dateOfBirth.day").attr("value").isEmpty)
       }
     }
   }
@@ -147,12 +147,21 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       status(result.get) should not equal (NOT_FOUND)
     }
 
-    "return bad request when form error present" in {
+    "return bad request with session name when form error present and session has a name" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"), Some("1"), Some("1111")))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
+      doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", "Jackie Chan")
     }
 
+    "return bad request with member as name when form error present and session has no name" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"),Some("1"),Some("1111")))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      status(result) should equal(BAD_REQUEST)
+      doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", Messages("member"))
+    }
 
     "redirect" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))

@@ -63,7 +63,13 @@ trait MemberNinoController extends RasResidencyCheckerController with PageFlowCo
           form.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[NinoController][post] Invalid form field passed")
-              Future.successful(BadRequest(views.html.member_nino(formWithErrors, "", edit)))
+              sessionService.fetchRasSession() map {
+                case Some(session) =>
+                  val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+                  BadRequest(views.html.member_nino(formWithErrors, name))
+                case _ =>
+                  BadRequest(views.html.member_nino(formWithErrors, Messages("member")))
+              }
             },
             memberNino => {
               sessionService.cacheNino(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", ""))) flatMap {
@@ -94,5 +100,4 @@ trait MemberNinoController extends RasResidencyCheckerController with PageFlowCo
         case Left(res) => res
       }
   }
-
 }

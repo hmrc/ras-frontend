@@ -14,12 +14,12 @@
  * limitations under the License.
  *@
 
-@(form: Form[_])(implicit messages: Messages)
+@(form: Form[_], gaActionPage: String)(implicit messages: Messages)
 
 @if(form.hasGlobalErrors || form.hasErrors) {
 
-      <div id="errors" class="validation-summary" role="alert" aria-labelledby="error-summary-heading">
-          <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h2>
+      <div id="errors" class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
+          <h1 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h1>
 
           <ul class="error-summary-list">
               @form.errors.map{ error =>
@@ -35,7 +35,7 @@
                           case _ => { error.key + "_label"}
                       }
                   ) { anchor =>
-                    <li role="tooltip" data-journey="search-page:error:@error.key">
+                    <li role="tooltip" data-journey='There is a problem - view:@gaActionPage:@error.message'>
                         <a href="#@anchor" class="error-list" data-focuses="@error.key"  >
                             @Messages(error.message)
                         </a>
