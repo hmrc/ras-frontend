@@ -119,11 +119,22 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
       status(result.get) should not equal (NOT_FOUND)
     }
 
-    "return bad request when form error present" in {
+    "return bad request with session name when form error is present and session contains a name" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj(
         "nino" -> RandomNino.generate.substring(3))
       val result = TestMemberNinoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
+      doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", "Jackie Chan")
+    }
+
+    "return bad request with member as name when form error is present and session contains no name" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      val postData = Json.obj(
+        "nino" -> RandomNino.generate.substring(3))
+      val result = TestMemberNinoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      status(result) should equal(BAD_REQUEST)
+      doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", Messages("member"))
     }
 
     "return bad request when form error present with special characters" in {
@@ -134,6 +145,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "redirect to dob page when nino cached" in {
+      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestMemberNinoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("member-date-of-birth")

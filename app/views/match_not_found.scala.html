@@ -27,8 +27,8 @@
 @ras_main(title = Messages("match.not.found.page.title"), scriptElem = Some(scriptElem)) {
 
 <div class="grid-layout--no-gutter">
-  <div class="grid-layout__column">
-    <div class="grid-layout__column--3-4">
+    <div class="grid-layout__column">
+        <div class="grid-layout__column--3-4">
 
       <div class="back-arrow">
         <a class="link-back" id="back" href="@routes.ResultsController.back" data-journey-click="navigation - link:Users details not found:Back">@Messages("back")</a>
@@ -60,6 +60,8 @@
         </tbody>
       </table>
 
+       <br />
+
       <p id="what-to-do">@Html(Messages("match.not.found.what.to.do", name ,Messages("contact.hmrc")))</p>
 
       <br>
@@ -67,8 +69,7 @@
         <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("whatDoYouWantToDo",true)' data-journey-click="button - click:User details not found:Choose something else to do">@Messages("choose.something.else")</a>
       </div>
 
-
-  </div>
+        </div>
   </div>
 </div>
 }

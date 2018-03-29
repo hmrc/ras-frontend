@@ -25,7 +25,6 @@
 @parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
 @errors = @{ FormHelpers.getErrors(field, parentField) }
 @fieldsetClass = {@elements.args.get('_groupClass)@if(errors.nonEmpty){ form-field--error}}
-@labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
 @trackGA = @{ elements.args.get('_trackGA).getOrElse(false).asInstanceOf[Boolean] }
 
 
@@ -36,7 +35,9 @@
 
   @if(elements.args.get('_legend).isDefined) {
 
-    @commonHelper(field,errors)
+    <div id="radio-group-error" class="common-error">
+        @commonHelper(field,errors)
+    </div>
 
     <legend
       @if(elements.args.get('_legendClass).isDefined) {
@@ -60,28 +61,22 @@
   }
 
   @radioOptions.map { case ((value, id), label) =>
-  @defining(s"${elements.field.name}-${id.toLowerCase.replace(" ","_")}")  {inputId =>
-    <label for="@inputId" @elements.args.get('_labelClass).map{labelClass => class="@labelClass@field.value.filter( _ == value).map{_ => selected}"}>
-        @if(!labelAfter) {
-          @if(elements.args.get('_stackedLabel)) {
-            @if(label.split(" ").length < 2) {
-              <br>@label
-            } else {
-              @for( (l, index) <- label.split(" ").zipWithIndex) {
-                @if(index != 0) {<br>}@l
-              }
-            }
-          } else { @label }
+    @defining(s"${elements.field.name}-${id.toLowerCase.replace(" ","_")}")  { inputId =>
+        <div class="multiple-choice">
+            <input
+                id="@inputId"
+                type="radio"
+                name="@elements.field.name"
+                value="@value"
+                @elements.args.get('_inputClass).map{inputClass => class="@inputClass"}
+                @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
+                @if(trackGA){data-journey-click="ras-frontend:click:@inputId"}
+                @field.value.filter( _ == value).map{_ => checked="checked"} />
+
+            <label for="@inputId" @elements.args.get('_labelClass).map{labelClass => class="@labelClass@field.value.filter( _ == value).map{_ => selected}"}>
+                @label
+            </label>
+        </div>
+    }
   }
-      <input
-          type="radio"
-          id="@inputId"
-          name="@elements.field.name"
-          value="@value"
-          @elements.args.get('_inputClass).map{inputClass => class="@inputClass"}
-          @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
-          @if(trackGA){data-journey-click="ras-frontend:click:@inputId"}
-          @field.value.filter( _ == value).map{_ => checked="checked"}/>@if(labelAfter){@if(elements.args.get('_stackedLabel)){@if(label.split(" ").length < 2){<br>@label}else{@for((l, index) <- label.split(" ").zipWithIndex){@if(index != 0){<br>}@l}}}else{@Html(label)}}</label>
-  }
-}
 </fieldset>

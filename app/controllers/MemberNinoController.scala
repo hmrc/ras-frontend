@@ -33,7 +33,7 @@ object MemberNinoController extends MemberNinoController {
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
 }
 
-trait MemberNinoController extends RasController with PageFlowController{
+trait MemberNinoController extends RasController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
 
@@ -46,7 +46,7 @@ trait MemberNinoController extends RasController with PageFlowController{
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(views.html.member_nino(form.fill(session.nino),name))
+              Ok(views.html.member_nino(form.fill(session.nino), name))
             case _ =>
               Ok(views.html.member_nino(form, Messages("member")))
           }
@@ -63,7 +63,13 @@ trait MemberNinoController extends RasController with PageFlowController{
           form.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[NinoController][post] Invalid form field passed")
-              Future.successful(BadRequest(views.html.member_nino(formWithErrors,firstName)))
+              sessionService.fetchRasSession() map {
+                case Some(session) =>
+                  val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+                  BadRequest(views.html.member_nino(formWithErrors, name))
+                case _ =>
+                  BadRequest(views.html.member_nino(formWithErrors, Messages("member")))
+              }
             },
             memberNino => {
               sessionService.cacheNino(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", ""))) flatMap {
@@ -89,5 +95,4 @@ trait MemberNinoController extends RasController with PageFlowController{
         case Left(res) => res
       }
   }
-
 }

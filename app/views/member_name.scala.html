@@ -20,48 +20,48 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@ras_main(title = Messages("member.name.page.title")) {
+@scriptElem = {
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
+}
+
+@ras_main(title = Messages("member.name.page.title"), scriptElem = Some(scriptElem)) {
 
 <div class="grid-layout--no-gutter">
-  <div class="grid-layout__column">
-    <div class="grid-layout__column--3-4">
-
-      @views.html.helpers.errorSummary(memberNameForm)
+    <div class="grid-layout__column">
+        <div class="grid-layout__column--3-4">
 
       <div class="back-arrow">
         <a class="link-back" href="@routes.MemberNameController.back" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
       </div>
 
+        @views.html.helpers.errorSummary(memberNameForm, "What is their name?")
+
         <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>
 
           @form(action = routes.MemberNameController.post) {
 
-            <div class="form-group">
+            <fieldset>
+                <legend class="visually-hidden">@Messages("member.name.page.header")</legend>
 
-              <div>
                @rasInput(memberNameForm("firstName"),
                '_label -> Html(Messages("first.name").capitalize),
                 '_labelClass -> "form-label",
                '_id -> "firstName",
                '_maxLength -> 35)
-              </div>
 
-              <div>
                @rasInput(memberNameForm("lastName"),
                '_label -> Html(Messages("last.name").capitalize),
                 '_labelClass -> "form-label",
                '_id -> "lastName",
                '_maxLength -> 35)
-              </div>
 
-            </div>
-
+            </fieldset>
+            <br />
             <div>
              <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their name?:Continue">@Messages("continue")</button>
             </div>
           }
-
+        </div>
     </div>
-  </div>
 </div>
 }
