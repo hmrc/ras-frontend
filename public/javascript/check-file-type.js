@@ -25,7 +25,13 @@ function checkFileType(form) {
 
     if (fileName.length > 0) {
         if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
-            return true;
+            if (hasErrors()) {
+                showError(reportedError());
+                return false;
+            }
+            else {
+                return true;
+            }
         }
         else {
             showError('Please upload a .csv file');
@@ -38,6 +44,22 @@ function checkFileType(form) {
     }
 }
 
+function reportedError() {
+    return $('#temp-error').val();
+}
+
+function reportError(message) {
+    $('#temp-error').val(message);
+}
+
+function cleanError() {
+    $('#temp-error').val("");
+}
+
+function hasErrors() {
+    return $('#temp-error').val() != "";
+}
+
 function showError(message){
     $('.validation-summary').show();
     $('#error').html(message);
@@ -48,6 +70,21 @@ function showError(message){
     ga("send", "event", "There is a problem - view", "Upload a file", message);
 }
 
+$('#choose-file').on('change', function() {
+    if (typeof(window.FileReader)!="undefined") {
+        var file = this.files[0];
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            var pattern = /"/;
+            var res = pattern.test(ev.target.result);
+            if (res)
+                reportError('File cannot contain quotation marks');
+            else
+                cleanError();
+        };
+        reader.readAsText(file);
+    }
+});
 
 $(function() {
     var errors = $('#errors');
