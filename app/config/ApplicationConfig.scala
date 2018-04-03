@@ -51,7 +51,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
     throw new Exception("Missing configuration key: re-upload.wait.time.hours "))
 
 
-  private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/lifetime-isa")
+  private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/relief-at-source/")
 
   override lazy val reportAProblemUrl = s"$contactHost/contact"
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
@@ -59,7 +59,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val signOutUrl = s"$caFrontendHost/gg/sign-out?continue=$logoutCallback"
   override lazy val betaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
   override lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
-  override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/lifetime-isa")
+  override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/relief-at-source/")
   override lazy val fileUploadCallBack: String = configuration.getString("file-upload-ras-callback-url")
     .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
 
