@@ -42,16 +42,16 @@ trait SessionController extends RasController {
   val MEMBER_NINO = "member-nino"
   val MEMBER_DOB = "member-dob"
 
-  def redirect(target:String, cleanSession:Boolean, edit: Boolean = false) = Action.async {
+  def redirect(target:String, cleanSession:Boolean) = Action.async {
     implicit request =>
       if(cleanSession){
         sessionService.resetRasSession() map {
           case Some(session) =>
             target match {
               case WHAT_DO_YOU_WANT_TO_DO => Redirect(routes.WhatDoYouWantToDoController.get())
-              case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
-              case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
-              case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
+              case MEMBER_NAME => Redirect(routes.MemberNameController.get())
+              case MEMBER_NINO => Redirect(routes.MemberNinoController.get())
+              case MEMBER_DOB => Redirect(routes.MemberDOBController.get())
               case _ =>
                 Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target ${target}")
                 Redirect(routes.ErrorController.renderGlobalErrorPage())
@@ -63,9 +63,9 @@ trait SessionController extends RasController {
       } else {
         target match {
           case WHAT_DO_YOU_WANT_TO_DO => Future.successful(Redirect(routes.WhatDoYouWantToDoController.get()))
-          case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get(edit)))
-          case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
-          case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
+          case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get()))
+          case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get()))
+          case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get()))
           case _ =>
             Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target ${target}")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
