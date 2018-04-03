@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(memberNinoForm: Form[models.MemberNino], name:String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(memberNinoForm: Form[models.MemberNino], name: String = "", edit: Boolean = false)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -31,15 +31,14 @@
         <div class="grid-layout__column--3-4">
 
    <div class="back-arrow">
-    <a class="link-back" href="@routes.MemberNinoController.back" data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
+    <a class="link-back" href="@routes.MemberNinoController.back(edit)" data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
    </div>
 
       @views.html.helpers.errorSummary(memberNinoForm, "What is their NINO?")
 
      <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
 
-     @form(action = routes.MemberNinoController.post) {
-
+     @form(action = routes.MemberNinoController.post(edit)) {
        <div class="form-group">
 
          @rasInput(memberNinoForm("nino"),

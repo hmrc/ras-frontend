@@ -64,6 +64,24 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   "SessionController" should {
     "redirect to target" when {
 
+      "redirect is called with member-name in edit mode" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("member-name",false, true)(FakeRequest()))
+        redirectLocation(result).get should include("member-name")
+      }
+
+      "redirect is called with member-nino in edit mode" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("member-nino",false, true)(FakeRequest()))
+        redirectLocation(result).get should include("member-national-insurance-number")
+      }
+
+      "redirect is called with member-dob in edit mode" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("member-dob",false, true)(FakeRequest()))
+        redirectLocation(result).get should include("member-date-of-birth")
+      }
+
       "redirect is called with member-name and clean" in {
         when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-name",true)(FakeRequest()))
@@ -103,6 +121,18 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       "redirect is called with start" in {
         when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("start",false)(FakeRequest()))
+        redirectLocation(result).get should include("relief-at-source")
+      }
+
+      "redirect is called with whatDoYouWantToDo" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("whatDoYouWantToDo",false)(FakeRequest()))
+        redirectLocation(result).get should include("relief-at-source")
+      }
+
+      "redirect is called with whatDoYouWantToDo and clean" in {
+        when(mockSessionService.resetRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("whatDoYouWantToDo",true)(FakeRequest()))
         redirectLocation(result).get should include("relief-at-source")
       }
 
