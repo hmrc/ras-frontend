@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(memberDobForm: Form[models.MemberDateOfBirth], name:String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(memberDobForm: Form[models.MemberDateOfBirth], name:String, edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -31,14 +31,14 @@
         <div class="grid-layout__column--3-4">
 
       <div class="back-arrow">
-        <a class="link-back" href="@routes.MemberDOBController.back" data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
+        <a class="link-back" href="@routes.MemberDOBController.back(edit)" data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
       </div>
 
         @views.html.helpers.errorSummary(memberDobForm, "What is their DOB?")
 
         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
 
-        @form(action = routes.MemberDOBController.post) {
+        @form(action = routes.MemberDOBController.post(edit)) {
 
           <fieldset id="dateOfBirth_label">
 
