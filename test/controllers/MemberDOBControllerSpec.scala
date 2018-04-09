@@ -113,10 +113,15 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         doc(result).getElementById("dateOfBirth.year_label").text shouldBe Messages("Year")
       }
 
-      "contain the correct ga data" in {
+      "contain the correct ga data when edit mode is false" in {
         val result = TestMemberDobController.get()(fakeRequest)
         doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue"
         doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their DOB?:Back"
+      }
+
+      "contain the correct ga data when edit mode is true" in {
+        val result = TestMemberDobController.get(true)(fakeRequest)
+        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue and submit"
       }
     }
 
