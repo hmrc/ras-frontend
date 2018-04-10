@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models.WhatDoYouWantToDo
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
@@ -186,25 +187,55 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   def getResultsFile(fileName:String):  Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userId) =>  resultsFileConnector.getFile(fileName).map { response =>
-          val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
-
-          val res = Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
-            .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${fileName}.csv"""",
-             // CONTENT_LENGTH -> s"${fileData.get.length}",
-              CONTENT_TYPE -> _contentType)
-
-          shortLivedCache.removeFileSessionFromCache(userId)
-
-          res
-        }.recover {
-          case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
-            Redirect(routes.ErrorController.renderGlobalErrorPage)
-        }
+        case Right(userId) =>
+          userCanGetFile(userId, fileName).flatMap {
+            case true =>
+              shortLivedCache.removeFileSessionFromCache(userId)
+              getFile(fileName)
+            case false =>
+              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+          }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][getResultsFile] user not authorised")
           resp
       }
+  }
+
+  private def userCanGetFile(userId: String, fileName: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    shortLivedCache.fetchFileSession(userId).map {
+      case Some(fileSession) =>
+        fileSession.resultsFile match {
+          case Some(resultFile) =>
+            resultFile.filename match {
+              case Some(name) if name == fileName =>
+                true
+              case _ =>
+                Logger.error("[WhatDoYouWantToDoController][getResultsFile] filename empty")
+                false
+            }
+          case _ =>
+            Logger.error("[WhatDoYouWantToDoController][getResultsFile] no result file found")
+            false
+        }
+      case _ =>
+        Logger.error("[WhatDoYouWantToDoController][getResultsFile] no file session for User Id")
+        false
+    }
+  }
+
+  private def getFile(fileName: String)(implicit hc: HeaderCarrier): Future[play.api.mvc.Result] = {
+    resultsFileConnector.getFile(fileName).map { response =>
+      val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
+
+      Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
+        .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${fileName}.csv"""",
+          // CONTENT_LENGTH -> s"${fileData.get.length}",
+          CONTENT_TYPE -> _contentType)
+
+    }.recover {
+      case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
+        Redirect(routes.ErrorController.renderGlobalErrorPage)
+    }
   }
 
   private def isBeforeApr6(timestamp: Long) : Boolean = {
