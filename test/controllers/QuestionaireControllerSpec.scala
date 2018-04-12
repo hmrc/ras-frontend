@@ -19,11 +19,13 @@ package controllers
 import config.RasContext
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.test.FakeRequest
+import play.api.libs.json._
 import play.api.test.Helpers._
 import play.api.http.Status
 import org.scalatest.mockito.MockitoSugar
 import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
+import org.mockito.Matchers._
 
 class QuestionnaireControllerSpec extends PlaySpec with MockitoSugar  with OneAppPerSuite {
 
@@ -56,6 +58,18 @@ class QuestionnaireControllerSpec extends PlaySpec with MockitoSugar  with OneAp
     "respond with OK" in {
       val result = SUT.feedbackThankyou(fakeRequest)
       status(result) mustBe Status.OK
+    }
+  }
+
+  "Questionnaire form submission" should {
+
+    "return bad request when form error present" in {
+      val postData = Json.obj(
+        "easyToUse" -> 1,
+        "satisfactionLevel" -> "incorrect",
+        "whyGiveThisRating" -> "some feedback")
+      val result = SUT.submitQuestionnaire.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      status(result) mustBe BAD_REQUEST
     }
   }
 
