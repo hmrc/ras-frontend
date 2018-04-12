@@ -58,5 +58,4 @@ class QuestionnaireControllerSpec extends PlaySpec with MockitoSugar  with OneAp
       status(result) mustBe Status.OK
     }
   }
-
 }
