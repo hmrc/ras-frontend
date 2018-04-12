@@ -16,7 +16,6 @@
 
 package controllers
 
-import config.RasContext
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.test.FakeRequest
 import play.api.libs.json._
@@ -25,7 +24,6 @@ import play.api.http.Status
 import org.scalatest.mockito.MockitoSugar
 import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
-import org.mockito.Matchers._
 
 class QuestionnaireControllerSpec extends PlaySpec with MockitoSugar  with OneAppPerSuite {
 
