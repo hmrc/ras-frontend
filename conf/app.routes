@@ -18,17 +18,17 @@ GET         /file-upload-failed                     controllers.FileUploadContro
 
 GET         /cannot-upload-another-file             controllers.FileUploadController.uploadInProgress
 
-GET         /member-name                            controllers.MemberNameController.get
-POST        /member-name                            controllers.MemberNameController.post
-GET         /member-name/back                       controllers.MemberNameController.back
+GET         /member-name                            controllers.MemberNameController.get(edit: Boolean ?= false)
+POST        /member-name                            controllers.MemberNameController.post(edit: Boolean ?= false)
+GET         /member-name/back                       controllers.MemberNameController.back(edit: Boolean ?= false)
 
-GET         /member-national-insurance-number       controllers.MemberNinoController.get
-POST        /member-national-insurance-number       controllers.MemberNinoController.post
-GET         /member-national-insurance-number/back  controllers.MemberNinoController.back
+GET         /member-national-insurance-number       controllers.MemberNinoController.get(edit: Boolean ?= false)
+POST        /member-national-insurance-number       controllers.MemberNinoController.post(edit: Boolean ?= false)
+GET         /member-national-insurance-number/back  controllers.MemberNinoController.back(edit: Boolean ?= false)
 
-GET         /member-date-of-birth                   controllers.MemberDOBController.get
-POST        /member-date-of-birth                   controllers.MemberDOBController.post
-GET         /member-date-of-birth/back              controllers.MemberDOBController.back
+GET         /member-date-of-birth                   controllers.MemberDOBController.get(edit: Boolean ?= false)
+POST        /member-date-of-birth                   controllers.MemberDOBController.post(edit: Boolean ?= false)
+GET         /member-date-of-birth/back              controllers.MemberDOBController.back(edit: Boolean ?= false)
 
 GET         /member-residency-status                controllers.ResultsController.matchFound
 
@@ -41,7 +41,7 @@ GET         /file-upload-problem                    controllers.ErrorController.
 
 GET         /notauthorised                          controllers.ErrorController.notAuthorised
 
-GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean)
+GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
 
 
 GET        /signed-out                      controllers.QuestionnaireController.showQuestionnaire

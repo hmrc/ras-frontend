@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(memberNameForm: Form[models.MemberName])(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(memberNameForm: Form[models.MemberName], edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -31,14 +31,14 @@
         <div class="grid-layout__column--3-4">
 
       <div class="back-arrow">
-        <a class="link-back" href="@routes.MemberNameController.back" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
+        <a class="link-back" href="@routes.MemberNameController.back(edit)" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
       </div>
 
         @views.html.helpers.errorSummary(memberNameForm, "What is their name?")
 
         <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>
 
-          @form(action = routes.MemberNameController.post) {
+          @form(action = routes.MemberNameController.post(edit)) {
 
             <fieldset>
                 <legend class="visually-hidden">@Messages("member.name.page.header")</legend>
@@ -58,7 +58,7 @@
             </fieldset>
             <br />
             <div>
-             <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their name?:Continue">@Messages("continue")</button>
+             <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their name?:Continue@if(edit){ and submit}">@Messages("continue")</button>
             </div>
           }
         </div>

@@ -17,10 +17,11 @@
 package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.UserDetailsConnector
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import forms.MemberNameForm._
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
+import services.AuditService
 import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
@@ -30,19 +31,21 @@ object MemberNameController extends MemberNameController {
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
+  override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
+  override val auditService: AuditService = AuditService
 }
 
-trait MemberNameController extends RasController with PageFlowController {
+trait MemberNameController extends RasResidencyCheckerController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
 
-  def get = Action.async {
+  def get(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
-            case Some(session) => Ok(views.html.member_name(form.fill(session.name)))
-            case _ => Ok(views.html.member_name(form))
+            case Some(session) => Ok(views.html.member_name(form.fill(session.name), edit))
+            case _ => Ok(views.html.member_name(form, edit))
           }
         case Left(resp) =>
           Logger.error("[NameController][get] user Not authorised")
@@ -50,17 +53,22 @@ trait MemberNameController extends RasController with PageFlowController {
       }
   }
 
-  def post = Action.async { implicit request =>
+  def post(edit: Boolean = false) = Action.async { implicit request =>
     isAuthorised.flatMap{
-      case Right(_) =>
+      case Right(userId) =>
       form.bindFromRequest.fold(
         formWithErrors => {
           Logger.error("[NameController][post] Invalid form field passed")
-          Future.successful(BadRequest(views.html.member_name(formWithErrors)))
+          Future.successful(BadRequest(views.html.member_name(formWithErrors, edit)))
         },
         memberName => {
           sessionService.cacheName(memberName) flatMap {
-            case Some(session) => Future.successful(Redirect(routes.MemberNinoController.get()))
+            case Some(session) => {
+              edit match {
+                case true => submitResidencyStatus(session, userId)
+                case _ => Future.successful(Redirect(routes.MemberNinoController.get()))
+              }
+            }
             case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
           }
         }
@@ -69,10 +77,10 @@ trait MemberNameController extends RasController with PageFlowController {
     }
   }
 
-  def back = Action.async {
+  def back(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) => Future.successful(previousPage("MemberNameController"))
+        case Right(userInfo) => Future.successful(previousPage("MemberNameController", edit))
         case Left(res) => res
       }
   }

@@ -99,7 +99,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {
                 case Some(session) =>
                   session.userChoice match {
-                    case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get))
+                    case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get()))
                     case WhatDoYouWantToDo.BULK => Future.successful(Redirect(routes.FileUploadController.get))
                     case WhatDoYouWantToDo.RESULT =>
                       shortLivedCache.failedProcessingUploadedFile(userId).flatMap {
