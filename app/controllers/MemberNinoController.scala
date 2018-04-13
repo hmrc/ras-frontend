@@ -17,12 +17,12 @@
 package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.UserDetailsConnector
+import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import forms.MemberNinoForm.form
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
+import services.AuditService
 import uk.gov.hmrc.auth.core.AuthConnector
-
 
 import scala.concurrent.Future
 
@@ -31,24 +31,24 @@ object MemberNinoController extends MemberNinoController {
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
+  override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
+  override val auditService: AuditService = AuditService
 }
 
-trait MemberNinoController extends RasController with PageFlowController {
+trait MemberNinoController extends RasResidencyCheckerController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
 
-  var firstName = ""
-
-  def get = Action.async {
+  def get(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(views.html.member_nino(form.fill(session.nino), name))
+              Ok(views.html.member_nino(form.fill(session.nino), name, edit))
             case _ =>
-              Ok(views.html.member_nino(form, Messages("member")))
+              Ok(views.html.member_nino(form, Messages("member"), edit))
           }
         case Left(resp) =>
           Logger.error("[NinoController][get] user Not authorised")
@@ -56,24 +56,29 @@ trait MemberNinoController extends RasController with PageFlowController {
       }
   }
 
-  def post = Action.async {
+  def post(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>
+        case Right(userId) =>
           form.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[NinoController][post] Invalid form field passed")
               sessionService.fetchRasSession() map {
                 case Some(session) =>
                   val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-                  BadRequest(views.html.member_nino(formWithErrors, name))
+                  BadRequest(views.html.member_nino(formWithErrors, name, edit))
                 case _ =>
-                  BadRequest(views.html.member_nino(formWithErrors, Messages("member")))
+                  BadRequest(views.html.member_nino(formWithErrors, Messages("member"), edit))
               }
             },
             memberNino => {
               sessionService.cacheNino(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", ""))) flatMap {
-                case Some(session) => Future.successful(Redirect(routes.MemberDOBController.get()))
+                case Some(session) => {
+                  edit match {
+                    case true => submitResidencyStatus(session, userId)
+                    case _ => Future.successful(Redirect(routes.MemberDOBController.get()))
+                  }
+                }
                 case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }
             }
@@ -84,12 +89,12 @@ trait MemberNinoController extends RasController with PageFlowController {
       }
   }
 
-  def back = Action.async {
+  def back(edit: Boolean = false) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userInfo) =>
           sessionService.fetchRasSession() map {
-            case Some(session) => previousPage("MemberNinoController")
+            case Some(session) => previousPage("MemberNinoController", edit)
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) => res
