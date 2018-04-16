@@ -49,8 +49,8 @@ trait ErrorController extends FrontendController with I18nHelper {
       Future.successful(Ok(views.html.unauthorised()))
   }
 
-  def fileNotFound = Action.async {
+  def fileNotAvailable = Action.async {
     implicit request =>
-      Future.successful(InternalServerError("Error"))
+      Future.successful(InternalServerError(views.html.file_not_available()))
   }
 }
