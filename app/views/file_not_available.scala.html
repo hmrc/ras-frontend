@@ -31,6 +31,18 @@
    </div>
 
    <div class="row">
+    <p id="sub-header">
+     @Html(
+     Messages(
+     "file.not.available.sub-header",
+     "" + Messages("file.not.available.link") + ""
+     )
+     )
+    </p>
+   </div>
+   <br>
+
+   <div class="row">
     <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get">@Messages("choose.something.else")</a>
    </div>
 

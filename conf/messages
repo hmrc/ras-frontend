@@ -52,6 +52,7 @@ match.not.found.subheader = You should check with {0} to make sure you have thei
 no.results.available.sub-header = You need to {0} before you can get any results.
 results.not.available.yet.sub-header1 = The results are still being added to the file you uploaded.
 results.not.available.yet.sub-header2 = It can take up to 24 hours for the results to be added from when you uploaded the file.
+file.not.available.sub-header = You can {0}.
 
 ###### ERRORS ######################################################################################
 
@@ -135,6 +136,7 @@ get.help.uploading.link = Get help with uploading files
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
 no.results.available.link = upload a file
+file.not.available.link = upload a new file or download one that''s waiting
 nav.title = Look up residency status for relief at source
 signout = Sign out
 cy.message = You should also use this service from January to get the residency status for these members for the {0} to {1} tax year.
