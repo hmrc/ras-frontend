@@ -171,6 +171,11 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc(result).getElementById("header").text shouldBe Messages("file.not.available.page.header")
     }
 
+    "contain a back link pointing to /" in {
+      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
+      doc(result).getElementById("back").attr("href") should include("/")
+    }
+
   }
 
 }
