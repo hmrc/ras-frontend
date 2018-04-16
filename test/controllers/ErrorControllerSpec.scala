@@ -176,6 +176,11 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc(result).getElementById("back").attr("href") should include("/")
     }
 
+    "contain a choose something else to do button" in {
+      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
   }
 
 }
