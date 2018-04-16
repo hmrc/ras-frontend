@@ -58,6 +58,11 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       status(result.get) should not equal (NOT_FOUND)
     }
 
+    "respond to GET /relief-at-source/file-not-available" in {
+      val result = await(route(fakeApplication, FakeRequest(GET, "/relief-at-source/file-not-available")))
+      status(result.get) should not equal (NOT_FOUND)
+    }
+
     "return error when global error endpoint is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
