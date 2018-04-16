@@ -193,7 +193,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               shortLivedCache.removeFileSessionFromCache(userId)
               getFile(fileName)
             case false =>
-              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+              Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
           }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][getResultsFile] user not authorised")

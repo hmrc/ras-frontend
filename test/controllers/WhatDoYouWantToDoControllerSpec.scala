@@ -366,7 +366,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/global-error")
+      redirectLocation(result).get should include("/file-not-available")
     }
 
     "not be able to download a file containing the results when there is no results file" in {
@@ -375,7 +375,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/global-error")
+      redirectLocation(result).get should include("/file-not-available")
     }
 
     "not be able to download a file containing the results when there is no file session" in {
@@ -383,7 +383,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/global-error")
+      redirectLocation(result).get should include("/file-not-available")
     }
 
     "redirect to error page" when {
