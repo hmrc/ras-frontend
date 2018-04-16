@@ -105,8 +105,11 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }
+  }
 
-    "contain correct title and header when global error" in {
+  "global error page" should {
+
+    "contain correct title and header" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.title shouldBe Messages("global.error.page.title")
@@ -114,7 +117,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.getElementById("message").text shouldBe Messages("global.error.message")
     }
 
-    "contain correct title and header when upload error" in {
+    "contain correct title and header" in {
       val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.title shouldBe Messages("problem.getting.results.title")
@@ -124,12 +127,15 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
-    "contain correct ga events when upload error" in {
+    "contain correct ga events" in {
       val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.getElementById("back").attr("data-journey-click") shouldBe "navigation - link:There has been a problem getting your results:Back"
       doc.getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:There has been a problem getting your results:Choose something else to do"
     }
+  }
+
+  "problem uploading file page" should {
 
     "contain correct title and header when problem uploading file" in {
       val result = TestErrorController.renderProblemUploadingFilePage(fakeRequest)
@@ -148,6 +154,11 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.getElementById("back").attr("data-journey-click") shouldBe "navigation - link:There has been a problem uploading your file:Back"
       doc.getElementById("return-to-upload").attr("data-journey-click") shouldBe "button - click:There has been a problem uploading your file:Return to upload a file"
     }
+  }
+
+  "file not available page" should {
+
+
   }
 
 }
