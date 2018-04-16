@@ -176,16 +176,6 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc(result).getElementById("back").attr("href") shouldBe ("/relief-at-source")
     }
 
-    "contain a choose something else to do button" in {
-      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contain a choose something else to do button that points to /relief-at-source" in {
-      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("href") shouldBe ("/relief-at-source")
-    }
-
     "contain the correct content paragraph" in {
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
       doc(result).getElementById("sub-header").text shouldBe Messages("file.not.available.sub-header", Messages("file.not.available.link"))
@@ -200,7 +190,6 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:File not available:Back"
       doc(result).getElementById("sub-header-link").attr("data-journey-click") shouldBe "link - click:File not available:Choose something else to do"
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:File not available:Choose something else to do"
     }
 
   }
