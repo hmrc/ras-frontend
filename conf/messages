@@ -15,6 +15,7 @@ global.error.page.title = There is a problem with the service - Look up residenc
 problem.uploading.file.title = There has been a problem uploading your file - GOV.UK
 no.results.available.page.title = You have not uploaded a file - GOV.UK
 results.not.available.yet.page.title = The results file is not available yet - GOV.UK
+file.not.available.page.title = This file is not available - GOV.UK
 
 ######  HEADERS ####################################################################################
 
