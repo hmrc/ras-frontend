@@ -53,20 +53,35 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       status(result.get) should not equal (NOT_FOUND)
     }
 
-    "return 200 when global error endpoint is called" in {
+    "respond to GET /relief-at-source/notauthorised" in {
+      val result = await(route(fakeApplication, FakeRequest(GET, "/relief-at-source/notauthorised")))
+      status(result.get) should not equal (NOT_FOUND)
+    }
+
+    "return error when global error endpoint is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 200 when problem getting results in called" in {
+    "return error when problem getting results is called" in {
       val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 200 when problem uploading file results in called" in {
+    "return error when problem uploading file results is called" in {
       val result = TestErrorController.renderProblemUploadingFilePage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
+
+    "return 200 when not authorised file results is called" in {
+      val result = TestErrorController.notAuthorised(fakeRequest)
+      status(result) shouldBe Status.OK
+    }
+
+    /*"return 200 when file not available is called" in {
+      val result = TestErrorController.renderProblemUploadingFilePage(fakeRequest)
+      status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+    }*/
 
     "return HTML when global error is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
