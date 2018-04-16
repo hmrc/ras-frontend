@@ -171,9 +171,9 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc(result).getElementById("header").text shouldBe Messages("file.not.available.page.header")
     }
 
-    "contain a back link pointing to /" in {
+    "contain a back link pointing to /relief-at-source" in {
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
-      doc(result).getElementById("back").attr("href") should include("/")
+      doc(result).getElementById("back").attr("href") shouldBe ("/relief-at-source")
     }
 
     "contain a choose something else to do button" in {
@@ -181,14 +181,19 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
-    "contain a choose something else to do button that points to /" in {
+    "contain a choose something else to do button that points to /relief-at-source" in {
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("href") should include ("/")
+      doc(result).getElementById("choose-something-else").attr("href") shouldBe ("/relief-at-source")
     }
 
     "contain the correct content paragraph" in {
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
       doc(result).getElementById("sub-header").text shouldBe Messages("file.not.available.sub-header", Messages("file.not.available.link"))
+    }
+
+    "contain the correct link in the content paragraph" in {
+      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
+      doc(result).getElementById("sub-header-link").attr("href") shouldBe ("/relief-at-source")
     }
   }
 
