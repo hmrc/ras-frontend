@@ -165,6 +165,12 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
       doc(result).title shouldBe Messages("file.not.available.page.title")
     }
+
+    "contain the correct page header" in {
+      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
+      doc(result).getElementById("header").text shouldBe Messages("file.not.available.page.header")
+    }
+
   }
 
 }
