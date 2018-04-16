@@ -116,6 +116,9 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.getElementById("header").text shouldBe Messages("global.error.header")
       doc.getElementById("message").text shouldBe Messages("global.error.message")
     }
+  }
+
+  "problem getting results page" should {
 
     "contain correct title and header" in {
       val result = TestErrorController.renderProblemGettingResultsPage(fakeRequest)
@@ -158,7 +161,10 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
 
   "file not available page" should {
 
-
+    "contain the correct page title" in {
+      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
+      doc(result).title shouldBe Messages("file.not.available.page.title")
+    }
   }
 
 }
