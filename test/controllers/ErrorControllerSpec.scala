@@ -186,7 +186,10 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc(result).getElementById("choose-something-else").attr("href") should include ("/")
     }
 
-
+    "contain the correct content paragraph" in {
+      val result = await(TestErrorController.fileNotAvailable(fakeRequest))
+      doc(result).getElementById("sub-header").text shouldBe Messages("file.not.available.sub-header", Messages("file.not.available.link"))
+    }
   }
 
 }
