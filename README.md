@@ -41,12 +41,12 @@ To run the test coverage suite `scoverage`
 #### Acceptance Tests
 
 **NOTE:** Cucumber/acceptance tests are available in a separate project at:
-`https://github.com/hmrc/ras-acceptance-tests`
+[https://github.com/hmrc/ras-acceptance-tests](https://github.com/hmrc/ras-acceptance-tests)
 
 #### Performance Tests
 
 **NOTE:** Performance tests are available in a separate project at:
-`https://github.com/hmrc/ras-performance-tests`
+[https://github.com/hmrc/ras-performance-tests](https://github.com/hmrc/ras-performance-tests)
 
 Running Locally
 ------------
