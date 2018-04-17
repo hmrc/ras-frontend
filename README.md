@@ -57,7 +57,7 @@ Install [Service Manager](https://github.com/hmrc/service-manager), then start d
 
 Start the app:
 
-    sbt "run 9669"
+    sbt "run 9673"
     
 Endpoint URL:
 
