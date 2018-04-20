@@ -33,7 +33,14 @@
     <h1 id="header" class="heading-xlarge">@Messages("problem.getting.results.header")</h1>
    </div>
    <div class="row">
-    <p id="try-again">@Messages("upload.file.again")</p>
+    <p id="try-again">
+        @Html(
+        Messages(
+        "check.upload.file.again",
+        "<a id='file-formatting' href='' data-journey-click='link - click:There has been a problem getting your results:Check file format'>" + Messages("file.formatted.correctly") + "</a>"
+        )
+        )
+    </p>
    </div>
    <br>
    <div class="row">
