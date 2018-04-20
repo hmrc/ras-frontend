@@ -349,9 +349,41 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "download a file containing the results" in {
+      val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
+      val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
       contentAsString(result) shouldBe row1
+    }
+
+    "not be able to download a file containing the results when file name is incorrect" in {
+      val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
+      val mockResultsFileMetadata = ResultsFileMetaData("",Some("wrongName.csv"),Some(mockUploadTimeStamp),1,1L)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
+        FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/file-not-available")
+    }
+
+    "not be able to download a file containing the results when there is no results file" in {
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
+        FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/file-not-available")
+    }
+
+    "not be able to download a file containing the results when there is no file session" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
+        FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/file-not-available")
     }
 
     "redirect to error page" when {
