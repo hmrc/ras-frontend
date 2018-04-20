@@ -126,7 +126,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       doc.title shouldBe Messages("problem.getting.results.title")
       doc.getElementById("back").attr("href") should include("/")
       doc.getElementById("header").text shouldBe Messages("problem.getting.results.header")
-      doc.getElementById("try-again").text shouldBe Messages("upload.file.again")
+      doc.getElementById("try-again").text shouldBe Messages("check.upload.file.again", Messages("file.formatted.correctly"))
       doc.getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
@@ -135,6 +135,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
       val doc = Jsoup.parse(contentAsString(result))
       doc.getElementById("back").attr("data-journey-click") shouldBe "navigation - link:There has been a problem getting your results:Back"
       doc.getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:There has been a problem getting your results:Choose something else to do"
+      doc.getElementById("file-formatting").attr("data-journey-click") shouldBe "link - click:There has been a problem getting your results:Check file format"
     }
   }
 
