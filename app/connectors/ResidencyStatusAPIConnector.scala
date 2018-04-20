@@ -46,7 +46,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
 
     val rasUri = s"$serviceUrl/$residencyStatusUrl"
 
-    val headerCarrier = hc.withExtraHeaders("Accept" -> "application/vnd.hmrc.1.0+json", "Content-Type" -> "application/json" )
+    val headerCarrier = hc.withExtraHeaders("Accept" -> "application/vnd.hmrc.2.0+json", "Content-Type" -> "application/json" )
 
     Logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
 

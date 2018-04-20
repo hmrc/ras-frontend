@@ -16,7 +16,6 @@
 
 package controllers
 
-import com.codahale.metrics.Timer
 import connectors.ResidencyStatusAPIConnector
 import metrics.Metrics
 import models._
