@@ -277,7 +277,7 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:Upload a file:Continue"
       doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:Upload a file:Back"
       doc(result).getElementById("choose-file").attr("data-journey-click") shouldBe "button - click:Upload a file:Choose file"
-      doc(result).getElementById("upload-help-link").attr("data-journey-click") shouldBe "link - click:Upload a file:Get help with uploading files"
+      doc(result).getElementById("upload-help-link").attr("data-journey-click") shouldBe "link - click:Upload a file:Get help formatting your file"
     }
 
     "contain empty file error if present in session cache" in {
