@@ -221,5 +221,10 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       val result = await(TestErrorController.notAuthorised(fakeRequest))
       doc(result).title shouldBe Messages("unauthorised.error.page.title")
     }
+
+    "contain the correct page header" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("header").text shouldBe Messages("unauthorised.page.header")
+    }
   }
 }

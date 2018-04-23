@@ -35,6 +35,7 @@ problem.uploading.file.header = There has been a problem uploading your file
 no.results.available.page.header = You have not uploaded a file
 results.not.available.yet.page.header = The results file is not available yet
 file.not.available.page.header = This file is not available
+unauthorised.page.header = There is a problem
 
 ###### SUB-HEADERS #################################################################################
 
