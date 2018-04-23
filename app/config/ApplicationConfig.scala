@@ -34,6 +34,7 @@ trait ApplicationConfig {
   val hoursToWaitForReUpload :Int
   val rasApiResidencyStatusEndpoint: String
   val reportAProblemUrl: String
+  val rasApiVersion: String
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -64,4 +65,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
     .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
 
   override lazy val rasApiResidencyStatusEndpoint: String = getString("residency-status-url")
+
+  override lazy val rasApiVersion: String = getString("ras-api-version")
 }
