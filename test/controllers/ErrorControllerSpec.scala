@@ -214,7 +214,12 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:File not available:Back"
       doc(result).getElementById("sub-header-link").attr("data-journey-click") shouldBe "link - click:File not available:Choose something else to do"
     }
-
   }
 
+  "not authorised page" should {
+    "contain the correct page title" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).title shouldBe Messages("not.authorised.page.title")
+    }
+  }
 }
