@@ -31,12 +31,12 @@
     @Html(
      Messages(
      "unauthorised.list.first",
-     "<a href='' >" + Messages("unauthorised.list.first.link") + "</a>"
+     "<a id='link-sign-in' href='' data-journey-click='link - click:There is a problem:Sign in'>" + Messages("unauthorised.list.first.link") + "</a>"
      )
     )
    </li>
    <li>
-    <a href="">@messages("unauthorised.list.last")</a>
+    <a id="link-register" href="https://online.hmrc.gov.uk/registration/pensions" data-journey-click="link - click:There is a problem:Register">@messages("unauthorised.list.last")</a>
    </li>
   </ul>
  </div>

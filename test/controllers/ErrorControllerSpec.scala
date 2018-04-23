@@ -251,5 +251,15 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       val result = await(TestErrorController.notAuthorised(fakeRequest))
       doc(result).getElementById("action-list").children().last().text shouldBe Messages("unauthorised.list.last")
     }
+
+    "first list item link should have the correct ga event" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-sign-in").attr("data-journey-click") shouldBe "link - click:There is a problem:Sign in"
+    }
+
+    "second list item link should have the correct ga event" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-register").attr("data-journey-click") shouldBe "link - click:There is a problem:Register"
+    }
   }
 }
