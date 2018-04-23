@@ -44,6 +44,6 @@ GET         /notauthorised                          controllers.ErrorController.
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
 
 
-GET        /signed-out                      controllers.QuestionnaireController.showQuestionnaire
-POST       /signed-out                      controllers.QuestionnaireController.submitQuestionnaire
-GET        /thank-you                       controllers.QuestionnaireController.feedbackThankyou
+GET         /signed-out                             controllers.QuestionnaireController.showQuestionnaire
+POST        /signed-out                             controllers.QuestionnaireController.submitQuestionnaire
+GET         /thank-you                              controllers.QuestionnaireController.feedbackThankyou

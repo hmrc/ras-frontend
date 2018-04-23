@@ -24,15 +24,37 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-
+import connectors.UserDetailsConnector
+import models._
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import org.scalatest.mockito.MockitoSugar
+import play.api.{Configuration, Environment}
+import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
 
-class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHelper {
+class ErrorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar with I18nHelper {
 
   val fakeRequest = FakeRequest("GET", "/")
+  val mockAuthConnector = mock[AuthConnector]
+  val mockUserDetailsConnector = mock[UserDetailsConnector]
+  val mockConfig = mock[Configuration]
+  val mockEnvironment = mock[Environment]
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated", ConfidenceLevel.L500)
+  private val enrolments = new Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  object TestErrorController extends ErrorController
+  object TestErrorController extends ErrorController {
+    val authConnector: AuthConnector = mockAuthConnector
+    override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
+    override val config: Configuration = mockConfig
+    override val env: Environment = mockEnvironment
+
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
+    when(mockUserDetailsConnector.getUserDetails(any())(any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
+  }
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
@@ -84,7 +106,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with I18nHel
     }
 
     "return error when file not available is called" in {
-      val result = TestErrorController.renderProblemUploadingFilePage(fakeRequest)
+      val result = TestErrorController.fileNotAvailable(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
