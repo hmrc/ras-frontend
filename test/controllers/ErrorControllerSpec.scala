@@ -226,5 +226,30 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       val result = await(TestErrorController.notAuthorised(fakeRequest))
       doc(result).getElementById("header").text shouldBe Messages("unauthorised.page.header")
     }
+
+    "contain the correct top paragraph" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("paragraph-top").text shouldBe Messages("unauthorised.paragraph.top")
+    }
+
+    "contain the correct bottom paragraph" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("paragraph-bottom").text shouldBe Messages("unauthorised.paragraph.bottom")
+    }
+
+    "contain a list with two items" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("action-list").children().size() shouldBe 2
+    }
+
+    "first list item should contain the correct text" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("action-list").children().first().text shouldBe Messages("unauthorised.list.first", Messages("unauthorised.list.first.link"))
+    }
+
+    "second list item should contain the correct text" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("action-list").children().last().text shouldBe Messages("unauthorised.list.last")
+    }
   }
 }
