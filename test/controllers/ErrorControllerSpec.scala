@@ -75,8 +75,8 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       status(result.get) should not equal (NOT_FOUND)
     }
 
-    "respond to GET /relief-at-source/notauthorised" in {
-      val result = await(route(fakeApplication, FakeRequest(GET, "/relief-at-source/notauthorised")))
+    "respond to GET /relief-at-source/not-authorised" in {
+      val result = await(route(fakeApplication, FakeRequest(GET, "/relief-at-source/not-authorised")))
       status(result.get) should not equal (NOT_FOUND)
     }
 
