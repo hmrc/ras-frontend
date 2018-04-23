@@ -18,6 +18,7 @@
 
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
+@import config.ApplicationConfig
 
 @ras_main(title = Messages("unauthorised.error.page.title")) {
 
@@ -31,7 +32,7 @@
     @Html(
      Messages(
      "unauthorised.list.first",
-     "<a id='link-sign-in' href='' data-journey-click='link - click:There is a problem:Sign in'>" + Messages("unauthorised.list.first.link") + "</a>"
+     "<a id='link-sign-in' href='" + ApplicationConfig.signOutAndContinueUrl + "' data-journey-click='link - click:There is a problem:Sign in'>" + Messages("unauthorised.list.first.link") + "</a>"
      )
     )
    </li>

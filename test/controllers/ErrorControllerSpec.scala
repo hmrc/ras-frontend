@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.ApplicationConfig
 import helpers.helpers.I18nHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -227,9 +228,19 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       doc(result).getElementById("action-list").children().first().text shouldBe Messages("unauthorised.list.first", Messages("unauthorised.list.first.link"))
     }
 
+    "first list item link should have the correct href" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-sign-in").attr("href") shouldBe ApplicationConfig.signOutAndContinueUrl
+    }
+
     "second list item should contain the correct text" in {
       val result = await(TestErrorController.notAuthorised(fakeRequest))
       doc(result).getElementById("action-list").children().last().text shouldBe Messages("unauthorised.list.last")
+    }
+
+    "second list item link should have the correct href" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-register").attr("href") shouldBe "https://online.hmrc.gov.uk/registration/pensions"
     }
 
     "first list item link should have the correct ga event" in {
