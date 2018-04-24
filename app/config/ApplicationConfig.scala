@@ -30,7 +30,6 @@ trait ApplicationConfig {
   val signOutAndContinueUrl: String
   val betaFeedbackUrl: String
   val betaFeedbackUnauthenticatedUrl: String
-  val continueCallback: String
   val loginCallback:String
   val fileUploadCallBack: String
   val hoursToWaitForReUpload :Int
@@ -56,6 +55,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/relief-at-source/")
   private val signOutBaseUrl = s"$caFrontendHost/gg/sign-out?continue="
+  private val continueCallback: String =  configuration.getString("gg-urls.continue-callback.url").getOrElse("/relief-at-source/")
 
   override lazy val reportAProblemUrl = s"$contactHost/contact"
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
@@ -64,7 +64,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val signOutAndContinueUrl = s"$signOutBaseUrl$continueCallback"
   override lazy val betaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
   override lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
-  override lazy val continueCallback: String =  configuration.getString("gg-urls.continue-callback.url").getOrElse("/relief-at-source/")
   override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/relief-at-source/")
   override lazy val fileUploadCallBack: String = configuration.getString("file-upload-ras-callback-url")
     .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
