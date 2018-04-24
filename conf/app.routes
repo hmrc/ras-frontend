@@ -39,7 +39,7 @@ GET         /global-error                           controllers.ErrorController.
 GET         /problem-getting-results                controllers.ErrorController.renderProblemGettingResultsPage
 GET         /file-upload-problem                    controllers.ErrorController.renderProblemUploadingFilePage
 GET         /file-not-available                     controllers.ErrorController.fileNotAvailable
-GET         /notauthorised                          controllers.ErrorController.notAuthorised
+GET         /not-authorised                         controllers.ErrorController.notAuthorised
 
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
 

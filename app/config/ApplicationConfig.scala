@@ -27,6 +27,7 @@ trait ApplicationConfig {
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
   val signOutUrl: String
+  val signOutAndContinueUrl: String
   val betaFeedbackUrl: String
   val betaFeedbackUnauthenticatedUrl: String
   val loginCallback:String
@@ -53,11 +54,14 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
 
   private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/relief-at-source/")
+  private val signOutBaseUrl = s"$caFrontendHost/gg/sign-out?continue="
+  private val continueCallback: String =  configuration.getString("gg-urls.continue-callback.url").getOrElse("/relief-at-source/")
 
   override lazy val reportAProblemUrl = s"$contactHost/contact"
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val signOutUrl = s"$caFrontendHost/gg/sign-out?continue=$logoutCallback"
+  override lazy val signOutUrl = s"$signOutBaseUrl$logoutCallback"
+  override lazy val signOutAndContinueUrl = s"$signOutBaseUrl$continueCallback"
   override lazy val betaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
   override lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
   override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/relief-at-source/")

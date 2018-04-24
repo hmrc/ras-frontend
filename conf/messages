@@ -1,6 +1,6 @@
 ######  TITLES #####################################################################################
 
-unauthorised.error.page.title = Un-Authorised - GOV.UK
+unauthorised.error.page.title = There is a problem - GOV.UK
 file.upload.page.title = Upload a file - GOV.UK
 file.upload.successful.page.title = Your file has been uploaded - GOV.UK
 whatDoYouWantToDo.page.title = What do you want to do? - GOV.UK
@@ -35,6 +35,7 @@ problem.uploading.file.header = There has been a problem uploading your file
 no.results.available.page.header = You have not uploaded a file
 results.not.available.yet.page.header = The results file is not available yet
 file.not.available.page.header = This file is not available
+unauthorised.page.header = There is a problem
 
 ###### SUB-HEADERS #################################################################################
 
@@ -148,6 +149,12 @@ cannot.upload.another.file.page.reason = The last file you uploaded is still bei
 cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.
 
 global.error.message = Try again later.
+
+unauthorised.paragraph.top = You signed in as an individual, organisation or agent.
+unauthorised.paragraph.bottom = To use this service, you must either:
+unauthorised.list.first = {0} if you have one of these accounts
+unauthorised.list.first.link = sign in with your pension scheme administrator or practitioner details
+unauthorised.list.last = register as an administrator or practitioner
 
 ##feedback
 

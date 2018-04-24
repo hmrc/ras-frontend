@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.ApplicationConfig
 import helpers.helpers.I18nHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -60,8 +61,8 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
 
   "ErrorController" should {
 
-    "respond to GET /relief-at-source/notauthorised" in {
-      val result = await(route(fakeApplication, FakeRequest(GET, "/relief-at-source/notauthorised")))
+    "respond to GET /relief-at-source/not-authorised" in {
+      val result = await(route(fakeApplication, FakeRequest(GET, "/relief-at-source/not-authorised")))
       status(result.get) should not equal (NOT_FOUND)
     }
 
@@ -194,7 +195,62 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:File not available:Back"
       doc(result).getElementById("sub-header-link").attr("data-journey-click") shouldBe "link - click:File not available:Choose something else to do"
     }
-
   }
 
+  "not authorised page" should {
+    "contain the correct page title" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).title shouldBe Messages("unauthorised.error.page.title")
+    }
+
+    "contain the correct page header" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("header").text shouldBe Messages("unauthorised.page.header")
+    }
+
+    "contain the correct top paragraph" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("paragraph-top").text shouldBe Messages("unauthorised.paragraph.top")
+    }
+
+    "contain the correct bottom paragraph" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("paragraph-bottom").text shouldBe Messages("unauthorised.paragraph.bottom")
+    }
+
+    "contain a list with two items" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("action-list").children().size() shouldBe 2
+    }
+
+    "first list item should contain the correct text" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("action-list").children().first().text shouldBe Messages("unauthorised.list.first", Messages("unauthorised.list.first.link"))
+    }
+
+    "first list item link should have the correct href" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-sign-in").attr("href") shouldBe ApplicationConfig.signOutAndContinueUrl
+    }
+
+    "second list item should contain the correct text" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("action-list").children().last().text shouldBe Messages("unauthorised.list.last")
+    }
+
+    "second list item link should have the correct href" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-register").attr("href") shouldBe "https://online.hmrc.gov.uk/registration/pensions"
+    }
+
+    "first list item link should have the correct ga event" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-sign-in").attr("data-journey-click") shouldBe "link - click:There is a problem:Sign in"
+    }
+
+    "second list item link should have the correct ga event" in {
+      val result = await(TestErrorController.notAuthorised(fakeRequest))
+      doc(result).getElementById("link-register").attr("data-journey-click") shouldBe "link - click:There is a problem:Register"
+    }
+  }
 }
