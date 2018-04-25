@@ -28,8 +28,6 @@ class MemberNinoFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
 
   val MAX_NAME_LENGTH = 35
 
-  val EXAMPLE_NINO = "QQ 12 34 56 C"
-
   "Find member details form" should {
 
     "return no error when valid data is entered" in {
@@ -62,12 +60,6 @@ class MemberNinoFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
       val formData = Json.obj("nino" -> "AB123456")
       val validatedForm = form.bind(formData)
       assert(validatedForm.errors.isEmpty)
-    }
-
-    "return an error when example nino is passed in" in {
-      val formData = Json.obj("nino" -> EXAMPLE_NINO)
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.invalid")))))
     }
 
   }
