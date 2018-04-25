@@ -20,6 +20,7 @@ import forms.MemberNameForm.Messages
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 trait NinoValidator {
+  val ninoExample = "QQ123456C"
   val validNinoRegex = "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]?$"
   val specialCharacterRegex = "^[a-zA-Z0-9 ]*$"
   def isValid(nino: String): Boolean = nino.replaceAll("\\s", "").toUpperCase.matches(validNinoRegex)
@@ -30,11 +31,11 @@ trait NinoValidator {
       val ninoText = text.replaceAll("\\s", "")
       if (ninoText.length == 0)
         Invalid(Seq(ValidationError(Messages("error.mandatory", Messages("nino")))))
-      else if (ninoText.length < 8 || ninoText.length > 9)
-        Invalid(Seq(ValidationError(Messages("error.nino.length"))))
       else if (!NinoValidator.containsNoSpecialCharacters(ninoText.toUpperCase()))
         Invalid(Seq(ValidationError(Messages("error.nino.special.character"))))
-      else if (!NinoValidator.isValid(ninoText.toUpperCase()))
+      else if (ninoText.length < 8 || ninoText.length > 9)
+        Invalid(Seq(ValidationError(Messages("error.nino.length"))))
+      else if (ninoText.equals(ninoExample) || !NinoValidator.isValid(ninoText.toUpperCase()))
         Invalid(Seq(ValidationError(Messages("error.nino.invalid"))))
       else
         Valid

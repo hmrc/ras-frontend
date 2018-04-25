@@ -64,10 +64,10 @@ class MemberNinoFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
       assert(validatedForm.errors.isEmpty)
     }
 
-    "retrun an error when example nino is passed in" in {
+    "return an error when example nino is passed in" in {
       val formData = Json.obj("nino" -> EXAMPLE_NINO)
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.example")))))
+      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.invalid")))))
     }
 
   }
