@@ -58,7 +58,7 @@ file.not.available.sub-header = You can {0}.
 ###### ERRORS ######################################################################################
 
 error.mandatory = Enter a {0}
-error.nino.invalid = The National Insurance number you have entered does not have the correct number of letters and numbers
+error.nino.invalid = Enter a valid National Insurance number
 error.nino.length = Enter a valid National Insurance number using 8 or 9 characters
 error.nino.special.character = Enter a National Insurance number using only letters and numbers
 error.length = {0} must be {1} characters or less

@@ -30,10 +30,10 @@ trait NinoValidator {
       val ninoText = text.replaceAll("\\s", "")
       if (ninoText.length == 0)
         Invalid(Seq(ValidationError(Messages("error.mandatory", Messages("nino")))))
-      else if (ninoText.length < 8 || ninoText.length > 9)
-        Invalid(Seq(ValidationError(Messages("error.nino.length"))))
       else if (!NinoValidator.containsNoSpecialCharacters(ninoText.toUpperCase()))
         Invalid(Seq(ValidationError(Messages("error.nino.special.character"))))
+      else if (ninoText.length < 8 || ninoText.length > 9)
+        Invalid(Seq(ValidationError(Messages("error.nino.length"))))
       else if (!NinoValidator.isValid(ninoText.toUpperCase()))
         Invalid(Seq(ValidationError(Messages("error.nino.invalid"))))
       else
