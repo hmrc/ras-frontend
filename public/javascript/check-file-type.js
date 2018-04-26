@@ -34,12 +34,12 @@ function checkFileType(form) {
             }
         }
         else {
-            showError('Please upload a .csv file');
+            showError('File must be a CSV');
             return false;
         }
     }
     else {
-        showError('Please select a file');
+        showError('Select a CSV');
         return false;
     }
 }
@@ -78,7 +78,7 @@ $('#choose-file').on('change', function() {
             var pattern = /"/;
             var res = pattern.test(ev.target.result);
             if (res)
-                reportError('File cannot contain quotation marks');
+                reportError('CSV cannot contain quotation marks');
             else
                 cleanError();
         };

@@ -74,9 +74,10 @@ error.dob.invalid.future = Enter a date of birth that is not in the future
 generic.errors_heading = There is a problem
 upload.error.heading = There is a problem
 unauthorised.error = you are not authorised to access this service , you need Pension scheme administrator or pension scheme provider enrolments.
-file.large.error=File size exceeds limit to upload
-file.empty.error=Cannot upload an empty file
-upload.failed.error=There is an unknown problem with the file you are trying to upload
+file.large.error=CSV must be smaller than 2MB
+file.empty.error=This CSV is empty. Upload a CSV with data in it
+upload.failed.error=There was a problem uploading your file. Please try again
+file.not.a.csv=File must be a CSV
 
 ##### OTHER ######################################################################################
 continue = Continue
