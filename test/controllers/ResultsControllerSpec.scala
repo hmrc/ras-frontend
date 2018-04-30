@@ -58,7 +58,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   val mockUserDetailsConnector = mock[UserDetailsConnector]
   val mockSessionService = mock[SessionService]
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated",ConfidenceLevel.L500)
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   private val enrolments = new Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
   val name = MemberName("Jim", "McGill")

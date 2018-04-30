@@ -13,15 +13,15 @@ object FrontendBuild extends Build with MicroService {
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "frontend-bootstrap" % "8.6.0",
+    "uk.gov.hmrc" %% "frontend-bootstrap" % "8.20.0",
     "uk.gov.hmrc" %% "play-partials" % "6.1.0",
-    "uk.gov.hmrc" %% "auth-client" % "1.0.0",
-    "uk.gov.hmrc" %% "http-caching-client" % "7.0.0",
-    "uk.gov.hmrc" %% "play-ui" % "7.13.0"
+    "uk.gov.hmrc" %% "auth-client" % "2.6.0",
+    "uk.gov.hmrc" %% "http-caching-client" % "7.1.0",
+    "uk.gov.hmrc" %% "play-ui" % "7.14.0"
   )
 
   def test(scope: String = "test") = Seq(
-    "uk.gov.hmrc" %% "hmrctest" % "2.3.0" % scope,
+    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % scope,
     "org.scalatest" %% "scalatest" % "2.2.6" % scope,
     "org.pegdown" % "pegdown" % "1.6.0" % scope,
     "org.jsoup" % "jsoup" % "1.8.1" % scope,
