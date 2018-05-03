@@ -48,11 +48,11 @@
         <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
     }
 
-    <p id="@elements.args.get('_id)-error" class="common-error">
-        @if(errors.nonEmpty) {
+    @if(errors.nonEmpty) {
+        <p id="@elements.args.get('_id)-error" class="common-error">
             @commonHelper(field, errors)
-        }
-    </p>
+        </p>
+    }
 
     @if(elements.args.contains('_symbol)) {
         <span class="inline-fields">@elements.args.get('_symbol)</span>
