@@ -40,7 +40,11 @@
 }
 
 @linkElement = {
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/ras.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/ras.css")'/>
+}
+@scriptElement = {
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/ras.js")'></script>
+    @scriptElem
 }
 
 @govuk_wrapper(applicationConfig = config.ApplicationConfig,
@@ -52,7 +56,7 @@
                contentHeader = contentHeader,
                mainContent = layouts.article(mainContent),
                serviceInfoContent = serviceInfoContent,
-               scriptElem = scriptElem,
+               scriptElem = Some(scriptElement),
                signOutEnabled = signOutEnabled,
                linkElement = Some(linkElement)
 )
