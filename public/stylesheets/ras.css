@@ -30,7 +30,7 @@
   font-weight: bold;
 }
 
-.form-group-error {
+/*.form-group-error {
     margin-right: 15px;
     border-left: 4px solid #b10e1e;
     padding-left: 10px;
@@ -49,12 +49,7 @@
    box-sizing: border-box;
    float: left;
    width: 100%;
-}
-
-@media (min-width: 641px)
-.form-group {
-    margin-bottom: 30px;
-}
+}*/
 
 .validation-summary{
   border: 5px solid #b10e1e;
