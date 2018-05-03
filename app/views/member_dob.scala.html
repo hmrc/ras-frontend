@@ -39,7 +39,7 @@
         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
 
         @form(action = routes.MemberDOBController.post(edit)) {
-
+        <div class="form-group">
           <fieldset id="dateOfBirth_label">
 
               <legend class="visually-hidden">@Messages("member.dob.page.header",name)</legend>
@@ -139,11 +139,8 @@
 
               </div>
           </fieldset>
-
-         <br />
-         <div>
-          <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">@Messages("continue")</button>
-         </div>
+        </div>
+        <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">@Messages("continue")</button>
        }
         </div>
       </div>
