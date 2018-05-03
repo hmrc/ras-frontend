@@ -49,9 +49,9 @@
     }
 
     @if(errors.nonEmpty) {
-        <p id="@elements.args.get('_id)-error" class="common-error">
+        <div id="@elements.args.get('_id)-error" class="common-error">
             @commonHelper(field, errors)
-        </p>
+        </div>
     }
 
     @if(elements.args.contains('_symbol)) {
