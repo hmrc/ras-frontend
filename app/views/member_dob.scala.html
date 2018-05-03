@@ -47,9 +47,9 @@
               <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
                   <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
                   @if(memberDobForm.errors.nonEmpty) {
-                      <p class="common-error">
+                      <div class="common-error">
                           @views.html.helpers.groupError(memberDobForm("dateOfBirth"))
-                      </p>
+                      </div>
                   }
 
                @if(!memberDobForm.data.isEmpty &&
