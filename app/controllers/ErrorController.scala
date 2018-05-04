@@ -84,6 +84,30 @@ trait ErrorController extends RasController with I18nHelper {
       }
   }
 
+  def renderNoResultAvailablePage = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>
+          Logger.info("[WhatDoYouWantToDoController][renderNotResultAvailablePage] rendering no result available page")
+          Future.successful(Ok(views.html.no_results_available()))
+        case Left(resp) =>
+          Logger.error("[WhatDoYouWantToDoController][renderNotResultAvailablePage] user not authorised")
+          resp
+      }
+  }
+
+  def renderNoResultsAvailableYetPage = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>
+          Logger.info("[WhatDoYouWantToDoController][renderNotResultAvailableYetPage] rendering results not available page")
+          Future.successful(Ok(views.html.results_not_available_yet()))
+        case Left(resp) =>
+          Logger.error("[WhatDoYouWantToDoController][renderNotResultAvailableYetPage] user not authorised")
+          resp
+      }
+  }
+
   def notAuthorised = Action.async {
     implicit request =>
       Future.successful(Ok(views.html.unauthorised()))
