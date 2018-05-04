@@ -7,8 +7,6 @@ GET         /what-do-you-want-to-do                 controllers.WhatDoYouWantToD
 POST        /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.post
 GET         /residency-status-added                 controllers.WhatDoYouWantToDoController.renderUploadResultsPage
 GET         /whatDoYouWantToDo/results/:fileName    controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
-GET         /no-results-available                   controllers.WhatDoYouWantToDoController.renderNoResultAvailablePage
-GET         /results-not-available                  controllers.WhatDoYouWantToDoController.renderNoResultsAvailableYetPage
 
 GET         /upload-a-file                          controllers.FileUploadController.get
 GET         /upload-a-file/back                     controllers.FileUploadController.back
@@ -40,6 +38,8 @@ GET         /problem-getting-results                controllers.ErrorController.
 GET         /file-upload-problem                    controllers.ErrorController.renderProblemUploadingFilePage
 GET         /file-not-available                     controllers.ErrorController.fileNotAvailable
 GET         /not-authorised                         controllers.ErrorController.notAuthorised
+GET         /no-results-available                   controllers.ErrorController.renderNoResultAvailablePage
+GET         /results-not-available                  controllers.ErrorController.renderNoResultsAvailableYetPage
 
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
 

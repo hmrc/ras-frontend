@@ -91,6 +91,16 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
+    "return 200 when render No Result Available Page is called" in {
+      val result = TestErrorController.renderNoResultAvailablePage(fakeRequest)
+      status(result) shouldBe Status.OK
+    }
+
+    "return 200 when render No Results Available Yet Page is called" in {
+      val result = TestErrorController.renderNoResultsAvailableYetPage(fakeRequest)
+      status(result) shouldBe Status.OK
+    }
+
     "return HTML when global error is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       contentType(result) shouldBe Some("text/html")
@@ -251,6 +261,94 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
     "second list item link should have the correct ga event" in {
       val result = await(TestErrorController.notAuthorised(fakeRequest))
       doc(result).getElementById("link-register").attr("data-journey-click") shouldBe "link - click:There is a problem:Register"
+    }
+  }
+
+  "renderResultsNotAvailableYetPage" should {
+    "contain the correct page title" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).title shouldBe Messages("results.not.available.yet.page.title")
+    }
+
+    "contain the correct page header" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("header").text shouldBe Messages("results.not.available.yet.page.header")
+    }
+
+    "contain the correct sub header 1" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("sub-header1").text shouldBe Messages("results.not.available.yet.sub-header1")
+    }
+
+    "contain the correct sub header 2" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("sub-header2").text shouldBe Messages("results.not.available.yet.sub-header2")
+    }
+
+    "contain a back link pointing to /" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("back").attr("href") should include("/")
+    }
+
+    "contain a choose something else to do button" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
+    "contain a choose something else to do button that points to /" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("choose-something-else").attr("href") should include ("/")
+    }
+
+    "contain the correct ga events" in {
+      val result = await(TestErrorController.renderNoResultsAvailableYetPage(fakeRequest))
+      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Results are still being added:Back"
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Results are still being added:Choose something else to do"
+    }
+
+  }
+
+  "renderNoResultsAvailablePage" should {
+    "contain the correct page title" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).title shouldBe Messages("no.results.available.page.title")
+    }
+
+    "contain the correct page header" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).getElementById("header").text shouldBe Messages("no.results.available.page.header")
+    }
+
+    "contain the correct page content" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).getElementById("sub-header").text shouldBe Messages("no.results.available.sub-header", Messages("no.results.available.link"))
+    }
+
+    "contain a back link pointing to /" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).getElementById("back").attr("href") should include("/")
+    }
+
+    "contain a choose something else to do button" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
+
+    "contain a choose something else to do button that points to /" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).getElementById("choose-something-else").attr("href") should include ("/")
+    }
+
+    "contain a link back to the upload a file page" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
+    }
+
+    "contain the correct ga events" in {
+      val result = await(TestErrorController.renderNoResultAvailablePage(fakeRequest))
+      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You have not uploaded a file:Choose something else to do"
+      doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:You have not uploaded a file:Back"
+      doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:You have not uploaded a file:Upload a file"
     }
   }
 }
