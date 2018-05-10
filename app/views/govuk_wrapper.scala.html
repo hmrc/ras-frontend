@@ -56,13 +56,51 @@
 
 @afterHeader = {}
 
+@analyticsAdditionalJs = {
+    ga(function (tracker) {
+        if (tracker) {
+            ga('set', 'dimension66', tracker.get('clientId'));
+        }
+    });
+
+    ga('set', 'dimension67', getSessionId());
+
+    ga('set', 'dimension68', getHitTimestamp());
+
+    function getSessionId() {
+        return new Date().getTime() + '.' + Math.random().toString(36).substring(5);
+    }
+
+    function getHitTimestamp() {
+        var now = new Date();
+        var tzo = -now.getTimezoneOffset();
+        var dif = tzo >= 0 ? '+' : '-';
+        var pad = function(num) {
+            var norm = Math.abs(Math.floor(num));
+            return (norm < 10 ? '0' : '') + norm;
+        };
+
+        return now.getFullYear()
+            + '-' + pad(now.getMonth()+1)
+            + '-' + pad(now.getDate())
+            + 'T' + pad(now.getHours())
+            + ':' + pad(now.getMinutes())
+            + ':' + pad(now.getSeconds())
+            + '.' + pad(now.getMilliseconds())
+            + dif + pad(tzo / 60)
+            + ':' + pad(tzo % 60);
+    }
+}
+
 @bodyEnd = {
     @uiLayouts.footer(
       analyticsToken = Some(applicationConfig.analyticsToken),
       analyticsHost = applicationConfig.analyticsHost,
       ssoUrl = None,
       scriptElem = scriptElem,
-      gaCalls = None)
+      gaCalls = None,
+      analyticsAdditionalJs = Some(analyticsAdditionalJs)
+    )
 }
 
 @betaBanner = {
