@@ -191,7 +191,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           userCanGetFile(userId, fileName).flatMap {
             case true =>
               shortLivedCache.removeFileSessionFromCache(userId)
-              getFile(fileName)
+              getFile(fileName, userId)
             case false =>
               Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
           }
@@ -223,8 +223,8 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     }
   }
 
-  private def getFile(fileName: String)(implicit hc: HeaderCarrier): Future[play.api.mvc.Result] = {
-    resultsFileConnector.getFile(fileName).map { response =>
+  private def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[play.api.mvc.Result] = {
+    resultsFileConnector.getFile(fileName, userId).map { response =>
       val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
 
       Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
