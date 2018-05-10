@@ -43,41 +43,43 @@ trait FileUploadController extends RasController with PageFlowController {
             case Some(session) =>
               shortLivedCache.isFileInProgress(userId).flatMap {
                 case true =>
-                  Logger.info("[FileUploadController][get] a file is still processing")
+                  Logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
+                    s"so another could not be uploaded")
                   Future.successful(Redirect(routes.FileUploadController.uploadInProgress))
                 case _ =>
                   createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
                     case Some(url) =>
-                      Logger.info("[FileUploadController][get] form url created successfully")
+                      Logger.info(s"[FileUploadController][get] form url created successfully for userId ($userId)")
                       val error = extractErrorReason(session.uploadResponse)
                       if(error == Messages("upload.failed.error")){
                         sessionService.cacheUploadResponse(UploadResponse("",None)).map {
                           case Some(session) =>
                             Redirect(routes.ErrorController.renderProblemUploadingFilePage())
                           case _ =>
-                            Logger.error("[FileUploadController][get] failed to obtain a session")
+                            Logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
                             Redirect(routes.ErrorController.renderGlobalErrorPage())
                         }
                       }
                       else
                         Future.successful(Ok(views.html.file_upload(url,error)))
                     case _ =>
-                      Logger.error("[FileUploadController][get] failed to obtain a form url using existing envelope")
+                      Logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
+                        s"for userId ($userId)")
                       Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
                   }
               }
             case _ =>
               createFileUploadUrl(None, userId)(request, hc).flatMap {
                 case Some(url) =>
-                  Logger.info("[FileUploadController][get] stored new envelope id successfully")
+                  Logger.info(s"[FileUploadController][get] stored new envelope id successfully for userId ($userId)")
                   Future.successful(Ok(views.html.file_upload(url,"")))
                 case _ =>
-                  Logger.error("[FileUploadController][get] failed to obtain a form url using new envelope")
+                  Logger.error(s"[FileUploadController][get] failed to obtain a form url using new envelope for userId ($userId)")
                   Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }
           }.recover {
             case e: Throwable =>
-              Logger.error("[FileUploadController][get] failed to fetch ras session")
+              Logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId)")
               Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(resp) =>
@@ -110,20 +112,20 @@ trait FileUploadController extends RasController with PageFlowController {
                 case envelopeIdPattern(id) =>
                   sessionService.cacheEnvelope(Envelope(id)).map {
                     case Some(session) =>
-                      Logger.info("[UploadService][createFileUploadUrl] Envelope id obtained and cached")
+                      Logger.info(s"[UploadService][createFileUploadUrl] Envelope id obtained and cached for userId ($userId)")
                       val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
                       val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
                       Some(completeFileUploadUrl)
                     case _ =>
-                      Logger.error("[FileUploadController][get] failed to retrieve cache after storing the envelope")
+                      Logger.error(s"[FileUploadController][get] failed to retrieve cache after storing the envelope for userId ($userId)")
                       None
                   }
                 case _ =>
-                  Logger.error("[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header")
+                  Logger.error(s"[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header for userId ($userId)")
                   Future.successful(None)
               }
             case _ =>
-              Logger.error("[UploadService][createFileUploadUrl] Failed to find a location header in the response")
+              Logger.error(s"[UploadService][createFileUploadUrl] Failed to find a location header in the response for userId ($userId)")
               Future.successful(None)
           }
         }.recover {
@@ -151,18 +153,18 @@ trait FileUploadController extends RasController with PageFlowController {
               case Some(envelope) =>
                 shortLivedCache.createFileSession(userId,envelope.id).map {
                   case true =>
-                    Logger.info("[FileUploadController][uploadSuccess] upload has been successful")
+                    Logger.info(s"[FileUploadController][uploadSuccess] upload has been successful for userId ($userId)")
                     Ok(views.html.file_upload_successful())
                   case _ =>
-                    Logger.error("[FileUploadController][uploadSuccess] failed to create file session")
+                    Logger.error(s"[FileUploadController][uploadSuccess] failed to create file session for userId ($userId)")
                     Redirect(routes.ErrorController.renderGlobalErrorPage())
                 }
               case _ =>
-                Logger.error("[FileUploadController][uploadSuccess] no envelope exists in the session")
+                Logger.error(s"[FileUploadController][uploadSuccess] no envelope exists in the session for userId ($userId)")
                 Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
             }
           case _ =>
-            Logger.error("[FileUploadController][uploadSuccess] session could not be retrieved")
+            Logger.error(s"[FileUploadController][uploadSuccess] session could not be retrieved for userId ($userId)")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
       case Left(resp) =>

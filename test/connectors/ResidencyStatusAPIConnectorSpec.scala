@@ -92,7 +92,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with OneAppPerSuite with 
 
       val values = List("Test", "Passed")
 
-      val result = await(TestConnector.getFile("file1"))
+      val result = await(TestConnector.getFile("file1", "A1234567"))
 
       val reader = new BufferedReader(new InputStreamReader(result.get))
 

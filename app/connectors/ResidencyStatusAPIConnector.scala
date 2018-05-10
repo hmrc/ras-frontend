@@ -54,11 +54,11 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     http.POST[JsValue, ResidencyStatus](rasUri, memberDetails.asCustomerDetailsPayload)(implicitly, rds = responseHandler, headerCarrier, MdcLoggingExecutionContext.fromLoggingDetails(hc))
   }
 
-  def getFile(fileName: String)(implicit hc: HeaderCarrier): Future[Option[InputStream]] = {
+  def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[Option[InputStream]] = {
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
 
-    Logger.info(s"Get results file  with URI for " + fileName)
+    Logger.info(s"Get results file  with URI for $fileName by userId ($userId)")
     wsHttp.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/$fileName").map { res =>
       Some(res.body.runWith(StreamConverters.asInputStream()))
     }
