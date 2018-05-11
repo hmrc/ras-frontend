@@ -40,12 +40,15 @@
 
         @form(action = routes.MemberDOBController.post(edit)) {
         <div class="form-group">
-          <fieldset id="dateOfBirth_label">
 
-              <legend class="visually-hidden">@Messages("member.dob.page.header",name)</legend>
+            <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
+             <fieldset id="dateOfBirth_label">
 
-              <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
-                  <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                  <legend>
+                      <span class="visually-hidden">@Messages("dob")</span>
+                      <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                  </legend>
+
                   @if(memberDobForm.errors.nonEmpty) {
                       <div class="common-error">
                           @views.html.helpers.groupError(memberDobForm("dateOfBirth"))
@@ -137,8 +140,8 @@
                       }
                    }
 
-              </div>
-          </fieldset>
+             </fieldset>
+            </div>
         </div>
         <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">@Messages("continue")</button>
        }
