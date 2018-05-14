@@ -39,13 +39,10 @@ unauthorised.page.header = There is a problem
 
 ###### SUB-HEADERS #################################################################################
 
-match.found.what.happens.next = What happens next
-match.found.top.current-year-and-next-year = Use this residency status for the whole tax year in your relief at source claims. You cannot change the residency status in your claims during the tax year.
-match.found.top.current-year.top = This residency status must be used for the full tax year and cannot be changed.
-match.found.top.current-year.bottom = Contact HMRC if you think the results are not correct.
-match.found.bottom.current-year-and-next-year = You must use the {0} to {1} tax year residency status to claim relief at source for {2} from 6 April {0}.
-match.found.bottom.current-year.top = You must use this residency status to claim relief at source for {0}.
-match.found.bottom.current-year.bottom = You should also use this service from January to get {0}’s residency status for the {1} to {2} tax year.
+match.found.what.happens.next = What to do next
+match.found.top = Use this residency status for the whole tax year in your relief at source claims. You cannot change the residency status in your claims during the tax year.
+match.found.bottom.current-year-and-next-year = You must use the {0} to {1} tax year residency status to claim relief at source for {3} from 6 April {2}.
+match.found.bottom.current-year.bottom = You should use this service from January to get {0}’s residency status for the {1} to {2} tax year.
 file.upload.page.sub-header = The file must be in CSV format. It cannot be more than 2MB in size.
 upload.success.first-description = It can take up to 24 hours to get the residency status results for all of the members. You will not be able to upload another file during this time.
 upload.success.second-description = You need to come back to this service to get the results. The results will be available on the uploaded file for 3 calendar days before being deleted.
@@ -131,7 +128,9 @@ service.unavailable = Service unavailable
 technical.difficulty = Sorry, there is a technical problem and you cannot use the service at the moment. Please try again later.
 member.details.not.found = {0}’s residency status cannot be displayed
 try.again = Try again
-tax.year.period = {0} to {1} tax year
+residency.status = Residency status
+tax.year = Tax year
+tax.year.period = {0} to {1}
 change = Change
 match.not.found.what.to.do = If you have checked and everything is correct, {0} {1} to update their personal details.
 contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">must contact HMRC</a>
@@ -139,7 +138,7 @@ get.help.uploading.link = Get help formatting your file.
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
 no.results.available.link = upload a file
-file.not.available.link = upload a new file or download one that''s waiting
+file.not.available.link = upload a new file or download one that’s waiting
 nav.title = Look up residency status for relief at source
 signout = Sign out
 cy.message = You should also use this service from January to get the residency status for these members for the {0} to {1} tax year.
@@ -158,7 +157,7 @@ unauthorised.list.last = register as an administrator or practitioner
 
 ##feedback
 
-label.youre_signed_out=You''re signed out
+label.youre_signed_out=You’re signed out
 label.explore_gov_uk=Explore GOV.UK
 label.satisfaction_survey=Satisfaction survey
 label.how_easy_was_the_service_to_use=How easy was the service to use?

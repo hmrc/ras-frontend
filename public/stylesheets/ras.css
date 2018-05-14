@@ -129,8 +129,8 @@ input:focus {
   padding-left: 20px;
 }
 
-#continue-div{
-  padding-top: 40px;
+.continue-div{
+  padding-top: 20px;
 }
 
 #document-image{

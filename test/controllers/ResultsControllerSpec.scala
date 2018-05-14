@@ -139,10 +139,12 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
 
+      doc(result).getElementById("tax-year-header").text shouldBe Messages("tax.year")
+      doc(result).getElementById("location-header").text shouldBe Messages("residency.status")
       doc(result).getElementById("header").text shouldBe Messages("match.found.header", formattedName)
-      doc(result).getElementById("top-content-cy-1").text shouldBe Messages("match.found.top.current-year-and-next-year")
+      doc(result).getElementById("top-content").text shouldBe Messages("match.found.top")
       doc(result).getElementById("sub-header").text shouldBe Messages("match.found.what.happens.next")
-      doc(result).getElementById("bottom-content-cy-1").text shouldBe Messages("match.found.bottom.current-year-and-next-year", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString, formattedName)
+      doc(result).getElementById("bottom-content-cy-1").text shouldBe Messages("match.found.bottom.current-year-and-next-year", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString, currentTaxYear.toString, formattedName)
       doc(result).getElementById("cy-tax-year-period").text shouldBe Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
       doc(result).getElementById("ny-tax-year-period").text shouldBe Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
@@ -178,12 +180,13 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       ))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
+
+      doc(result).getElementById("tax-year-header").text shouldBe Messages("tax.year")
+      doc(result).getElementById("location-header").text shouldBe Messages("residency.status")
       doc(result).getElementById("header").text shouldBe Messages("match.found.header", formattedName)
-      doc(result).getElementById("top-content-cy").text shouldBe Messages("match.found.top.current-year.top")
-      doc(result).getElementById("top-content-2-cy").text shouldBe Messages("match.found.top.current-year.bottom")
+      doc(result).getElementById("top-content").text shouldBe Messages("match.found.top")
       doc(result).getElementById("sub-header").text shouldBe Messages("match.found.what.happens.next")
-      doc(result).getElementById("bottom-content-cy").text shouldBe Messages("match.found.bottom.current-year.top", formattedName)
-      doc(result).getElementById("bottom-content-2-cy").text shouldBe Messages("match.found.bottom.current-year.bottom", formattedName, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("bottom-content-cy").text shouldBe Messages("match.found.bottom.current-year.bottom", formattedName, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
       doc(result).getElementById("cy-tax-year-period").text shouldBe Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
