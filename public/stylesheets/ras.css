@@ -135,3 +135,7 @@ input:focus {
 .ras-bottom-margin {
     margin-bottom: 2em;
 }
+
+.ras-bottom-margin-big {
+    margin-bottom: 3em;
+}
