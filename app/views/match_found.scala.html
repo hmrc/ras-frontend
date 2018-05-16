@@ -31,59 +31,50 @@
     <div class="grid-layout__column">
         <div class="grid-layout__column--3-4">
 
-      <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
+            <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
 
-      <table>
-        <tbody>
+            <table>
+                <thead>
+                <tr>
+                    <th id="tax-year-header">@Messages("tax.year")</th>
+                    <th id="location-header">@Messages("residency.status")</th>
+                </tr>
+                </thead>
+                <tbody>
 
-        <tr>
-          <th id="tax-year-header"></th>
-          <th id="location-header"></th>
-        </tr>
+                <tr>
+                    <td id="cy-tax-year-period">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)</td>
+                    <td id="cy-residency-status">@Messages(currentYearResidencyStatus)</td>
+                </tr>
 
-        <tr>
-          <td id="cy-tax-year-period">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)</td>
-          <td id="cy-residency-status">@Messages(currentYearResidencyStatus)</td>
-        </tr>
+                @if(nextYearResidencyStatus.nonEmpty) {
+                <tr>
+                    <td id="ny-tax-year-period">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</td>
+                    <td id="ny-residency-status">@Messages(nextYearResidencyStatus.get)</td>
+                </tr>
+                }
 
-        @if(nextYearResidencyStatus.nonEmpty) {
-            <tr>
-                <td id="ny-tax-year-period">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</td>
-                <td id="ny-residency-status">@Messages(nextYearResidencyStatus.get)</td>
-            </tr>
-        }
+                </tbody>
+            </table>
 
-        </tbody>
-      </table>
+            <p id="top-content">@Messages("match.found.top")</p>
 
-        <br />
+            <h2 id="sub-header">@Messages("match.found.what.happens.next")</h2>
 
-        @if(nextYearResidencyStatus.nonEmpty) {
-            <p id="top-content-cy-1">@Messages("match.found.top.current-year-and-next-year")</p>
-        } else {
-            <p id="top-content-cy">@Messages("match.found.top.current-year.top")</p>
-            <p id="top-content-2-cy">@Messages("match.found.top.current-year.bottom")</p>
-        }
+            @if(nextYearResidencyStatus.nonEmpty) {
+                <p id="bottom-content-cy-1">@Messages("match.found.bottom.current-year-and-next-year", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString, currentTaxYear.toString, name)</p>
+            } else {
+                <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+            }
 
-        <h2 id="sub-header">@Messages("match.found.what.happens.next")</h2>
-
-        @if(nextYearResidencyStatus.nonEmpty) {
-            <p id="bottom-content-cy-1">@Messages("match.found.bottom.current-year-and-next-year", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString, name)</p>
-        } else {
-            <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.top", name)</p>
-            <p id="bottom-content-2-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
-        }
-
-        <br>
-
-        <div class="row">
-            <a id="choose-something-else"
-               class="button"
-               href='@routes.SessionController.redirect("whatDoYouWantToDo",true)'
-                data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
-            >@Messages("choose.something.else")</a>
+            <div class="row continue-div">
+                <a id="choose-something-else"
+                   class="button"
+                   href='@routes.SessionController.redirect("whatDoYouWantToDo",true)'
+                    data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
+                >@Messages("choose.something.else")</a>
+            </div>
         </div>
-        </div>
-  </div>
+    </div>
 </div>
 }
