@@ -58,29 +58,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          shortLivedCache.isFileInProgress(userId).flatMap {
-            case true =>
-              shortLivedCache.fetchFileSession(userId).map {
-                case Some(fileSession) =>
-                  fileSession.uploadTimeStamp match {
-                    case Some(timestamp) =>
-                      fileSession.userFile match {
-                        case Some(callbackData) =>
-                          Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, callbackData.fileId, readyForDownload))
-                        case _ =>
-                          Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, "", notReadyForDownload))
-                      }
-                    case _ =>
-                      Logger.error("[WhatDoYouWantToDoController][get] no timestamp retrieved")
-                      Redirect(routes.ErrorController.renderGlobalErrorPage)
-                  }
-                case _ =>
-                  Logger.error("[WhatDoYouWantToDoController][get] failed to retrieve file session")
-                  Redirect(routes.ErrorController.renderGlobalErrorPage)
-              }
-            case _ =>
-              Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,noFileInProgress,"",noFileInProgress)))
-          }
+          Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm)))
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
@@ -94,7 +72,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           whatDoYouWantToDoForm.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[WhatDoYouWantToDoController][post] No option selected")
-              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,noFileInProgress,"",notReadyForDownload)))
+              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors)))
             },
             whatDoYouWantToDo =>
               sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {

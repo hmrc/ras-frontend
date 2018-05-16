@@ -114,34 +114,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("userChoice-bulk-lookup").attr("value") shouldBe Messages("bulk.lookup.radio")
       doc(result).getElementById("userChoice-result").attr("value") shouldBe Messages("result.radio")
     }
-
-    "redirect to global error page" when {
-      "no file session is available" in {
-        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn (Future.successful(None))
-        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("global-error")
-      }
-
-      "no results file is available" in {
-        val fileSession = FileSession(Some(CallbackData("", "someFileId", "", None)), None, "1234", None)
-        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn (Future.successful(Some(fileSession)))
-        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("global-error")
-      }
-
-      "no upload timestamp is available" in {
-        val fileSession = FileSession(Some(CallbackData("", "someFileId", "", None)), None, "1234", None)
-        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn (Future.successful(Some(fileSession)))
-        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("global-error")
-      }
-    }
   }
 
   "post" should {
