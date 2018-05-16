@@ -26,7 +26,7 @@
     scriptElem: Option[Html] = None,
     linkElement : Option[Html] = None,
     getHelpForm: Html  = HtmlFormat.empty,
-    signOutEnabled:Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+    signOutEnabled:Boolean)(implicit request: Request[_], messages: Messages)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
