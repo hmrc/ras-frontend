@@ -414,6 +414,12 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("back").attr("href") should include("/")
     }
 
+    "contains the correct sub header" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("sub-header").text shouldBe Messages("file.ready.sub-header")
+    }
+
   }
 
   "renderResultsNotAvailableYetPage" should {
