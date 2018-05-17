@@ -396,7 +396,11 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       status(result) shouldBe OK
     }
 
-
+    "contain the correct page title" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).title shouldBe Messages("file.ready.page.title")
+    }
 
 
 

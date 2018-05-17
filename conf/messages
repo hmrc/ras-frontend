@@ -16,6 +16,7 @@ problem.uploading.file.title = There has been a problem uploading your file - GO
 no.results.available.page.title = You have not uploaded a file - GOV.UK
 results.not.available.yet.page.title = The results file is not available yet - GOV.UK
 file.not.available.page.title = This file is not available - GOV.UK
+file.ready.page.title = The last file you uploaded is ready - GOV.UK
 
 ######  HEADERS ####################################################################################
 
