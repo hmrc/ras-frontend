@@ -202,6 +202,12 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       status(result) shouldBe OK
     }
 
+    "return global error" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession.copy(userFile = None))))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      status(result) shouldBe OK
+    }
+
     "contain the correct page title" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
