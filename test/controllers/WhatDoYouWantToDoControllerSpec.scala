@@ -408,7 +408,11 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("header").text shouldBe Messages("file.ready.page.header")
     }
 
-
+    "contain a back link pointing to /" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("back").attr("href") should include("/")
+    }
 
   }
 
