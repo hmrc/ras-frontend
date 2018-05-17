@@ -440,6 +440,13 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
       doc(result).getElementById("sub-header-link").attr("href") should include("/residency-status-added")
     }
+
+    "contain the correct ga events" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:File ready:Back"
+      doc(result).getElementById("sub-header-link").attr("data-journey-click") shouldBe "link - click:File ready:Download your file"
+    }
   }
 
   "renderResultsNotAvailableYetPage" should {
