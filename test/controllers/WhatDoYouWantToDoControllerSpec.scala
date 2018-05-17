@@ -132,12 +132,21 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       redirectLocation(result).get should include("/member-name")
     }
 
-    "redirect to file upload page when bulk lookup option is selected" in {
+    "redirect to file upload page when bulk lookup option is selected and there is no file ready" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
       when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/upload-a-file")
+    }
+
+    "redirect to file ready page when bulk lookup option is selected and there is a file ready" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession.copy(userChoice = WhatDoYouWantToDo.BULK))))
+      val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      redirectLocation(result).get should include("/file-ready")
     }
 
     "redirect to file result page when result option is selected and a result is ready" in {
