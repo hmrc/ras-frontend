@@ -79,7 +79,18 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                 case Some(session) =>
                   session.userChoice match {
                     case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get()))
-                    case WhatDoYouWantToDo.BULK => Future.successful(Redirect(routes.FileUploadController.get))
+                    case WhatDoYouWantToDo.BULK =>
+                      shortLivedCache.fetchFileSession(userId).flatMap {
+                        case Some(fileSession) =>
+                          fileSession.resultsFile match {
+                            case Some(_) =>
+                              Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderFileReadyPage()))
+                            case _ =>
+                              Future.successful(Redirect(routes.FileUploadController.get))
+                          }
+                        case _ =>
+                          Future.successful(Redirect(routes.FileUploadController.get))
+                      }
                     case WhatDoYouWantToDo.RESULT =>
                       shortLivedCache.failedProcessingUploadedFile(userId).flatMap {
                         case true =>
@@ -158,6 +169,18 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           Future.successful(Ok(views.html.results_not_available_yet()))
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][renderNotResultAvailableYetPage] user not authorised")
+          resp
+      }
+  }
+
+  def renderFileReadyPage = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(_) =>
+          Logger.info("[WhatDoYouWantToDoController][renderFileReadyPage] rendering file ready page")
+          Future.successful(Ok(views.html.file_ready()))
+        case Left(resp) =>
+          Logger.error("[WhatDoYouWantToDoController][renderFileReadyPage] user not authorised")
           resp
       }
   }

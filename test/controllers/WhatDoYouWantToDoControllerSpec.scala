@@ -132,8 +132,18 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       redirectLocation(result).get should include("/member-name")
     }
 
-    "redirect to file upload page when bulk lookup option is selected and there is no file ready" in {
+    "redirect to file upload page when bulk lookup option is selected and there is no file session" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      redirectLocation(result).get should include("/upload-a-file")
+    }
+
+    "redirect to file upload page when bulk lookup option is selected and file session has no file" in {
+      val fileSession = FileSession(None,None,"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
       when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
@@ -377,6 +387,21 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         redirectLocation(result).get should include("/global-error")
       }
     }
+  }
+
+  "renderFileReadyPage" should {
+    "return ok when called" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      status(result) shouldBe OK
+    }
+
+
+
+
+
+
+
   }
 
   "renderResultsNotAvailableYetPage" should {
