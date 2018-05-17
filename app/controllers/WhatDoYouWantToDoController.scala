@@ -176,9 +176,20 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   def renderFileReadyPage = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>
-          Logger.info("[WhatDoYouWantToDoController][renderFileReadyPage] rendering file ready page")
-          Future.successful(Ok(views.html.file_ready()))
+        case Right(userId) =>
+          shortLivedCache.fetchFileSession(userId).flatMap {
+            case Some(fileSession) =>
+              fileSession.resultsFile match {
+                case Some(resultFile) =>
+                  Future.successful(Ok(views.html.file_ready()))
+                case _ =>
+                  Logger.error("[WhatDoYouWantToDoController][renderFileReadyPage] session has no result file")
+                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+              }
+            case _ =>
+              Logger.error("[WhatDoYouWantToDoController][renderFileReadyPage] failed to retrieve session")
+              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+          }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][renderFileReadyPage] user not authorised")
           resp

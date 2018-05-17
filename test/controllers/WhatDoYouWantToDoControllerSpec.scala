@@ -396,6 +396,21 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       status(result) shouldBe OK
     }
 
+    "return global error page" when {
+      "there is no file session" in {
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+        val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+        redirectLocation(result).get should include("/global-error")
+      }
+
+      "there is a file session but there is no result file ready" in {
+        val fileSession = FileSession(None,None,"1234",None)
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+        val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+        redirectLocation(result).get should include("/global-error")
+      }
+    }
+
     "contain the correct page title" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
@@ -420,6 +435,11 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("sub-header").text shouldBe Messages("file.ready.sub-header")
     }
 
+    "the sub header contains a link that points to download results page" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("sub-header-link").attr("href") should include("/residency-status-added")
+    }
   }
 
   "renderResultsNotAvailableYetPage" should {
