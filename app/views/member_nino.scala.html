@@ -1,27 +1,26 @@
 @*
- * Copyright 2018 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
+* Copyright 2018 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 
 @(memberNinoForm: Form[models.MemberNino], name:String, edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
 @scriptElem = {
-    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
 }
 
 @ras_main(title = Messages("member.nino.page.title"), scriptElem = Some(scriptElem)) {
@@ -30,33 +29,38 @@
     <div class="grid-layout__column">
         <div class="grid-layout__column--3-4">
 
-   <div class="back-arrow">
-    <a class="link-back" href="@routes.MemberNinoController.back(edit)" data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
-   </div>
+            <div class="back-arrow">
+                <a class="link-back" href="@routes.MemberNinoController.back(edit)" data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
+            </div>
 
-      @views.html.helpers.errorSummary(memberNinoForm, "What is their NINO?")
+            @views.html.helpers.errorSummary(memberNinoForm, "What is their NINO?")
 
-     <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
+            @form(action = routes.MemberNinoController.post(edit)) {
 
-     @form(action = routes.MemberNinoController.post(edit)) {
+            <fieldset class="inline">
+                <legend>
+                    <span>
+                        <header class="page-header">
+                            <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
+                        </header>
+                    </span>
+                </legend>
+                <div class="form-group">
 
-       <div class="form-group">
+                    @rasInput(memberNinoForm("nino"),
+                    '_labelClass -> "form-label-bold",
+                    '_id -> "nino",
+                    '_maxLength -> 15,
+                    '_hintText -> Messages("nino.hint"))
 
-         @rasInput(memberNinoForm("nino"),
-         '_labelClass -> "form-label-bold",
-         '_id -> "nino",
-         '_maxLength -> 15,
-         '_hintText -> Messages("nino.hint"))
+                </div>
+            </fieldset>
 
-       </div>
-
-       <div>
-        <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">@Messages("continue")</button>
-       </div>
-     }
+            <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">@Messages("continue")</button>
+            }
 
         </div>
-  </div>
- </div>
+    </div>
+</div>
 
 }
