@@ -159,12 +159,17 @@ input:focus {
     margin-bottom: .5em;
 }
 
-.ras-align-center {
-    text-align: center;
+.ras-align-right {
+    text-align: right;
 }
 
 .ras-div-table-divider {
     border-bottom: 1px solid #bfc1c3;
     padding-bottom: .5em;
     margin-bottom: .5em;
+}
+
+.ras-column-one-sixth {
+    float: left;
+    width: 16.66%;
 }
