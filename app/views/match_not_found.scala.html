@@ -44,17 +44,17 @@
 
           <tr>
             <td id="name">@name</td>
-            <td id="change-name"><a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name">@Messages("change")</a></td>
+            <td id="change-name"><a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name" aria-label='@Messages("change.name")'>@Messages("change")</a></td>
           </tr>
 
           <tr>
             <td id="nino">@nino</td>
-            <td id="change-nino"><a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO">@Messages("change")</a></td>
+            <td id="change-nino"><a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-label='@Messages("change.nino")'>@Messages("change")</a></td>
           </tr>
 
           <tr>
             <td id="dob">@dateOfBirth</td>
-            <td id="change-dob"><a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB">@Messages("change")</a></td>
+            <td id="change-dob"><a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB" aria-label='@Messages("change.dob")'>@Messages("change")</a></td>
           </tr>
 
         </tbody>
@@ -62,7 +62,15 @@
 
        <br />
 
-      <p id="what-to-do">@Html(Messages("match.not.found.what.to.do", name ,Messages("contact.hmrc")))</p>
+      <p id="what-to-do">
+          @Html(
+          Messages(
+          "match.not.found.what.to.do",
+          name,
+          "<a id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers'>" + Messages("contact.hmrc") + "</a>"
+          )
+          )
+      </p>
 
       <br>
       <div class="row">
