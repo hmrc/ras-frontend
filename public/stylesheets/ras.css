@@ -152,3 +152,19 @@ input:focus {
 .no-bottom-margin {
     margin-bottom: 0px;
 }
+
+.ras-div-table-divider {
+    border-bottom: 1px solid #bfc1c3;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+.ras-align-center {
+    text-align: center;
+}
+
+.ras-div-table-divider {
+    border-bottom: 1px solid #bfc1c3;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}

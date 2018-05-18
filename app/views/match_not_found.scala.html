@@ -38,27 +38,32 @@
 
       <p id="subheader">@Messages("match.not.found.subheader", name)</p>
 
+        <div class="grid-row ras-div-table-divider">
+            <div class="column-one-half">
+                @name
+            </div>
+            <div class="column-one-half ras-align-center">
+                <a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name" aria-label='@Messages("change.name")'>@Messages("change")</a>
+            </div>
+        </div>
 
-      <table>
-        <tbody>
+        <div class="grid-row ras-div-table-divider">
+            <div class="column-one-half">
+                @nino
+            </div>
+            <div class="column-one-half ras-align-center">
+                <a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-label='@Messages("change.nino")'>@Messages("change")</a>
+            </div>
+        </div>
 
-          <tr>
-            <td id="name">@name</td>
-            <td id="change-name"><a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name" aria-label='@Messages("change.name")'>@Messages("change")</a></td>
-          </tr>
-
-          <tr>
-            <td id="nino">@nino</td>
-            <td id="change-nino"><a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-label='@Messages("change.nino")'>@Messages("change")</a></td>
-          </tr>
-
-          <tr>
-            <td id="dob">@dateOfBirth</td>
-            <td id="change-dob"><a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB" aria-label='@Messages("change.dob")'>@Messages("change")</a></td>
-          </tr>
-
-        </tbody>
-      </table>
+        <div class="grid-row ras-div-table-divider">
+            <div class="column-one-half">
+                @dateOfBirth
+            </div>
+            <div class="column-one-half ras-align-center">
+                <a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB" aria-label='@Messages("change.dob")'>@Messages("change")</a>
+            </div>
+        </div>
 
        <br />
 
