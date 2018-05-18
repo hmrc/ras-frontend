@@ -42,10 +42,10 @@
             <div class="column-one-half">
                 @Messages("name").capitalize
             </div>
-            <div class="column-one-third">
+            <div id="name" class="column-one-third">
                 @name
             </div>
-            <div class="ras-column-one-sixth ras-align-right">
+            <div id="change-name" class="ras-column-one-sixth ras-align-right">
                 <a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name" aria-label='@Messages("change.name")'>@Messages("change")</a>
             </div>
         </div>
@@ -54,10 +54,10 @@
             <div class="column-one-half">
                 @Messages("nino").capitalize
             </div>
-            <div class="column-one-third">
+            <div id="nino" class="column-one-third">
                 @nino
             </div>
-            <div class="ras-column-one-sixth ras-align-right">
+            <div id="change-nino" class="ras-column-one-sixth ras-align-right">
                 <a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-label='@Messages("change.nino")'>@Messages("change")</a>
             </div>
         </div>
@@ -66,10 +66,10 @@
             <div class="column-one-half">
                 @Messages("dob").capitalize
             </div>
-            <div class="column-one-third">
+            <div id="dob" class="column-one-third">
                 @dateOfBirth
             </div>
-            <div class="ras-column-one-sixth ras-align-right">
+            <div id="change-dob" class="ras-column-one-sixth ras-align-right">
                 <a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB" aria-label='@Messages("change.dob")'>@Messages("change")</a>
             </div>
         </div>
