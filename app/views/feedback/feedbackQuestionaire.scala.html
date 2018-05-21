@@ -28,13 +28,12 @@
 
         <h1 class="heading-xlarge" id="heading">@Messages("label.youre_signed_out")</h1>
 
-        <h2 class="heading-medium" id="satisfaction-survey-heading">@Messages("label.satisfaction_survey")</h2>
-
-        <br /><br />
+        <h2 class="heading-medium ras-bottom-margin-big" id="satisfaction-survey-heading">@Messages("label.satisfaction_survey")</h2>
 
         @helpers.form(action = controllers.routes.QuestionnaireController.submitQuestionnaire, 'class -> "satisfactionSurveyForm") {
 
             <div class="form-group">
+                <div class="ras-bottom-margin-big">
                 @radioGroup(
                     questionnaireForm("easyToUse"),
                     Seq(
@@ -50,9 +49,8 @@
                     '_groupClass -> "inline-block",
                     '_fieldsetAttributes -> "id=easyToUseFieldset"
                 )
-
-                <br /><br /><br />
-
+                </div>
+                <div class="ras-bottom-margin-big">
                 @radioGroup(
                     questionnaireForm("satisfactionLevel"),
                     Seq(
@@ -68,18 +66,18 @@
                     '_groupClass -> "inline-block",
                     '_fieldsetAttributes -> "id=satisfactionLevelFieldset"
                 )
-
-            <br /><br />
+                </div>
 
                 <label class="form-label" for="whyGiveThisRating">
                     <h3 class="heading-large">@Messages("label.why_did_you_give_this_rating")</h3>
                 </label>
+
                 <span class="form-hint">
                     @Messages("label.please_dont_include_any_personal_or_financial_information")
                 </span>
-                <textarea class="form-control form-control-3-4" name="whyGiveThisRating" id="whyGiveThisRating" rows="9"></textarea>
 
-                <br />
+                <textarea class="form-control form-control-3-4 ras-bottom-margin" name="whyGiveThisRating" id="whyGiveThisRating" rows="9"></textarea>
+
                 <button id="submit" type="submit" class="button">@Messages("label.send_feedback")</button>
             </div>
 
