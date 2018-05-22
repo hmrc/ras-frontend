@@ -43,11 +43,17 @@
                 <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
                     <fieldset id="dateOfBirth_label">
                         <legend>
-                            <header class="page-header">
+                            <span>
+                                <header class="page-header">
                                 <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
-                            </header>
-                            <span class="visually-hidden">@Messages("dob")</span>
-                            <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                                </header>
+                            </span>
+                            <span class="visually-hidden">
+                                @Messages("dob")
+                            </span>
+                            <span class="form-hint" id="dob_hint">
+                                @Messages("dob.hint")
+                            </span>
                         </legend>
 
                         @if(memberDobForm.errors.nonEmpty) {
