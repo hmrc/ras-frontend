@@ -16,9 +16,6 @@
 
 @()(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-
 @ras_main(title = Messages("results.not.available.yet.page.title")) {
 
 <div class="grid-layout--no-gutter">
@@ -32,11 +29,12 @@
    <div class="row">
     <h1 id="header" class="heading-xlarge">@Messages("results.not.available.yet.page.header")</h1>
    </div>
-   <div class="row">
+
+   <div class="row ras-bottom-margin">
     <p id="sub-header1">@Messages("results.not.available.yet.sub-header1")</p>
     <p id="sub-header2">@Messages("results.not.available.yet.sub-header2")</p>
    </div>
-   <br>
+
    <div class="row">
     <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="button - click:Results are still being added:Choose something else to do">@Messages("choose.something.else")</a>
    </div>

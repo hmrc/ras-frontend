@@ -44,16 +44,6 @@
 
 <div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error} no-bottom-margin">
 
-    @if(elements.args.contains('_hintText)) {
-        <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
-    }
-
-    @if(errors.nonEmpty) {
-        <div id="@elements.args.get('_id)-error" class="common-error">
-            @commonHelper(field, errors)
-        </div>
-    }
-
     @if(elements.args.contains('_symbol)) {
         <span class="inline-fields">@elements.args.get('_symbol)</span>
     }
@@ -63,7 +53,16 @@
             @if(labelHighlight) {<strong>}
             @if(elements.args.contains('_label)) {@elements.label}
             @if(labelHighlight) {</strong>}
+            @if(elements.args.contains('_hintText)) {
+                <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
+            }
         </label>
+
+        @if(errors.nonEmpty) {
+            <div id="@elements.args.get('_id)-error" class="common-error">
+                @commonHelper(field, errors)
+            </div>
+        }
 
         <input @if(elements.args.contains('_type)){type="@elements.args.get('_type)"}else{type="text"}
         @if(elements.args.contains('_maxLength)){

@@ -15,8 +15,7 @@
  *@
 
 @(memberNameForm: Form[models.MemberName], edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
-
-@import uk.gov.hmrc.play.views.html._
+=
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
@@ -54,7 +53,7 @@
                '_id -> "lastName")
 
             </fieldset>
-            <br />
+
             <div>
              <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their name?:Continue@if(edit){ and submit}">@Messages("continue")</button>
             </div>

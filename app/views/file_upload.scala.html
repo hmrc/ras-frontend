@@ -16,10 +16,6 @@
 
 @(fileUploadUrl: String, error: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-
 @scriptElem = {
     <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/check-file-type.js")'></script>
 }
@@ -66,8 +62,7 @@
             <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>
         </div>
 
-            <p><a href="" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@Messages("get.help.uploading.link")</a></p>
-            <br />
+            <p class="ras-bottom-margin"><a href="" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@Messages("get.help.uploading.link")</a></p>
             <button type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@Messages("continue")</button>
           </form>
 
