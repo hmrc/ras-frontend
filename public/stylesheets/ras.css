@@ -132,6 +132,27 @@ input:focus {
     margin-bottom: 0px;
 }
 
+.ras-div-table-divider {
+    border-bottom: 1px solid #bfc1c3;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+.ras-align-right {
+    text-align: right;
+}
+
+.ras-div-table-divider {
+    border-bottom: 1px solid #bfc1c3;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+.ras-column-one-sixth {
+    float: left;
+    width: 16.66%;
+}
+
 .ras-bottom-margin {
     margin-bottom: 2em;
 }
