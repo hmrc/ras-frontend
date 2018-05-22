@@ -50,7 +50,6 @@
             </div>
         </div>
 
-<<<<<<< HEAD
         <div class="grid-row ras-div-table-divider">
             <div class="column-one-half">
                 @Messages("nino").capitalize
@@ -62,27 +61,7 @@
                 <a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-label='@Messages("change.nino")'>@Messages("change")</a>
             </div>
         </div>
-=======
-      <table class="ras-bottom-margin">
-        <tbody>
-
-          <tr>
-            <td id="name">@name</td>
-            <td id="change-name"><a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name">@Messages("change")</a></td>
-          </tr>
-
-          <tr>
-            <td id="nino">@nino</td>
-            <td id="change-nino"><a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO">@Messages("change")</a></td>
-          </tr>
-
-          <tr>
-            <td id="dob">@dateOfBirth</td>
-            <td id="change-dob"><a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB">@Messages("change")</a></td>
-          </tr>
->>>>>>> master
-
-        <div class="grid-row ras-div-table-divider">
+        <div class="grid-row ras-div-table-divider" class="ras-bottom-margin">
             <div class="column-one-half">
                 @Messages("dob").capitalize
             </div>
