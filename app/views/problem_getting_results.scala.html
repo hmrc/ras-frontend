@@ -29,7 +29,8 @@
    <div class="row">
     <h1 id="header" class="heading-xlarge">@Messages("problem.getting.results.header")</h1>
    </div>
-   <div class="row">
+
+   <div class="row ras-bottom-margin">
     <p id="try-again">
         @Html(
         Messages(
@@ -39,7 +40,7 @@
         )
     </p>
    </div>
-   <br>
+
    <div class="row">
     <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="button - click:There has been a problem getting your results:Choose something else to do">@Messages("choose.something.else")</a>
    </div>

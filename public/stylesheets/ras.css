@@ -30,27 +30,6 @@
   font-weight: bold;
 }
 
-/*.form-group-error {
-    margin-right: 15px;
-    border-left: 4px solid #b10e1e;
-    padding-left: 10px;
-}
-
-@media (min-width: 641px) {
-    .form-group-error {
-        border-left: 5px solid #b10e1e;
-        padding-left: 15px;
-    }
-}
-
-.form-group {
-   -webkit-box-sizing: border-box;
-   -moz-box-sizing: border-box;
-   box-sizing: border-box;
-   float: left;
-   width: 100%;
-}*/
-
 .validation-summary{
   border: 5px solid #b10e1e;
   font-weight: bold;
@@ -151,4 +130,12 @@ input:focus {
 
 .no-bottom-margin {
     margin-bottom: 0px;
+}
+
+.ras-bottom-margin {
+    margin-bottom: 2em;
+}
+
+.ras-bottom-margin-big {
+    margin-bottom: 3em;
 }

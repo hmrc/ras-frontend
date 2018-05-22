@@ -35,7 +35,7 @@
       <p id="subheader">@Messages("match.not.found.subheader", name)</p>
 
 
-      <table>
+      <table class="ras-bottom-margin">
         <tbody>
 
           <tr>
@@ -56,11 +56,8 @@
         </tbody>
       </table>
 
-       <br />
+      <p id="what-to-do" class="ras-bottom-margin">@Html(Messages("match.not.found.what.to.do", name ,Messages("contact.hmrc")))</p>
 
-      <p id="what-to-do">@Html(Messages("match.not.found.what.to.do", name ,Messages("contact.hmrc")))</p>
-
-      <br>
       <div class="row">
         <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("whatDoYouWantToDo",true)' data-journey-click="button - click:User details not found:Choose something else to do">@Messages("choose.something.else")</a>
       </div>
