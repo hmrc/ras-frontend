@@ -22,25 +22,25 @@
 
 @ras_main(title = Messages("unauthorised.error.page.title")) {
 
-<div class="grid-row">
- <div class="column-two-thirds">
-  <h1 class="heading-xlarge" id="header">@messages("unauthorised.page.header")</h1>
-  <p id="paragraph-top">@messages("unauthorised.paragraph.top")</p>
-  <p id="paragraph-bottom">@messages("unauthorised.paragraph.bottom")</p>
-  <ul id="action-list" class="list list-bullet">
-   <li>
+ <div class="grid-row">
+  <div class="column-two-thirds">
+   <h1 class="heading-xlarge" id="header">@messages("unauthorised.page.header")</h1>
+   <p id="paragraph-top">@messages("unauthorised.paragraph.top")</p>
+   <p id="paragraph-bottom">@messages("unauthorised.paragraph.bottom")</p>
+   <ul id="action-list" class="list list-bullet">
+    <li>
     @Html(
      Messages(
-     "unauthorised.list.first",
-     "<a id='link-sign-in' href='" + ApplicationConfig.signOutAndContinueUrl + "' data-journey-click='link - click:There is a problem:Sign in'>" + Messages("unauthorised.list.first.link") + "</a>"
+      "unauthorised.list.first",
+      "<a id='link-sign-in' href='" + ApplicationConfig.signOutAndContinueUrl + "' data-journey-click='link - click:There is a problem:Sign in'>" + Messages("unauthorised.list.first.link") + "</a>"
      )
     )
-   </li>
-   <li>
-    <a id="link-register" href="https://online.hmrc.gov.uk/registration/pensions" data-journey-click="link - click:There is a problem:Register">@messages("unauthorised.list.last")</a>
-   </li>
-  </ul>
+    </li>
+    <li>
+     <a id="link-register" href="https://online.hmrc.gov.uk/registration/pensions" data-journey-click="link - click:There is a problem:Register">@messages("unauthorised.list.last")</a>
+    </li>
+   </ul>
+  </div>
  </div>
-</div>
 
 }

@@ -26,47 +26,45 @@
 
 @ras_main(title = Messages("match.not.found.page.title"), scriptElem = Some(scriptElem)) {
 
-<div class="grid-layout--no-gutter">
-    <div class="grid-layout__column">
-        <div class="grid-layout__column--3-4">
+    <div class="grid-row">
+        <div class="column-two-thirds">
 
-      <div class="back-arrow">
-        <a class="link-back" id="back" href="@routes.ResultsController.back" data-journey-click="navigation - link:Users details not found:Back">@Messages("back")</a>
-      </div>
+            <div class="back-arrow">
+                <a class="link-back" id="back" href="@routes.ResultsController.back" data-journey-click="navigation - link:Users details not found:Back">@Messages("back")</a>
+            </div>
 
-      <h1 id="match-not-found" class="heading-xlarge">@Messages("member.details.not.found",name)</h1>
+                <h1 id="match-not-found" class="heading-xlarge">@Messages("member.details.not.found",name)</h1>
 
-      <p id="subheader">@Messages("match.not.found.subheader", name)</p>
+                <p id="subheader">@Messages("match.not.found.subheader", name)</p>
 
 
-      <table class="ras-bottom-margin">
-        <tbody>
+            <table class="ras-bottom-margin">
+                <tbody>
 
-          <tr>
-            <td id="name">@name</td>
-            <td id="change-name"><a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name">@Messages("change")</a></td>
-          </tr>
+                    <tr>
+                        <td id="name">@name</td>
+                        <td id="change-name"><a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name">@Messages("change")</a></td>
+                    </tr>
 
-          <tr>
-            <td id="nino">@nino</td>
-            <td id="change-nino"><a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO">@Messages("change")</a></td>
-          </tr>
+                    <tr>
+                        <td id="nino">@nino</td>
+                        <td id="change-nino"><a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO">@Messages("change")</a></td>
+                    </tr>
 
-          <tr>
-            <td id="dob">@dateOfBirth</td>
-            <td id="change-dob"><a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB">@Messages("change")</a></td>
-          </tr>
+                    <tr>
+                        <td id="dob">@dateOfBirth</td>
+                        <td id="change-dob"><a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB">@Messages("change")</a></td>
+                    </tr>
 
-        </tbody>
-      </table>
+                </tbody>
+            </table>
 
-      <p id="what-to-do" class="ras-bottom-margin">@Html(Messages("match.not.found.what.to.do", name ,Messages("contact.hmrc")))</p>
+            <p id="what-to-do" class="ras-bottom-margin">@Html(Messages("match.not.found.what.to.do", name ,Messages("contact.hmrc")))</p>
 
-      <div class="row">
-        <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("whatDoYouWantToDo",true)' data-journey-click="button - click:User details not found:Choose something else to do">@Messages("choose.something.else")</a>
-      </div>
+            <div class="row">
+                <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("whatDoYouWantToDo",true)' data-journey-click="button - click:User details not found:Choose something else to do">@Messages("choose.something.else")</a>
+            </div>
 
         </div>
-  </div>
-</div>
+    </div>
 }

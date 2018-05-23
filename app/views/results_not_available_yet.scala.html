@@ -21,9 +21,8 @@
 
 @ras_main(title = Messages("results.not.available.yet.page.title")) {
 
-<div class="grid-layout--no-gutter">
- <div class="grid-layout__column">
-  <div class="grid-layout__column--3-4">
+ <div class="grid-row">
+  <div class="column-two-thirds">
 
    <div class="back-arrow">
     <a class="link-back" id="back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:Results are still being added:Back">@Messages("back")</a>
@@ -44,6 +43,5 @@
 
   </div>
  </div>
-</div>
 
 }

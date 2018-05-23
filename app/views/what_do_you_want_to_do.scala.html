@@ -26,34 +26,33 @@
 
 @ras_main(title = Messages("whatDoYouWantToDo.page.title"), scriptElem = Some(scriptElem)) {
 
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
 
-  <div class="row">
-    <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
-  </div>
+            @form(action = routes.WhatDoYouWantToDoController.post ) {
 
-  @form(action = routes.WhatDoYouWantToDoController.post ) {
+                <div class="form-group">
+                @radioGroup(
+                    whatDoYouWantToDoForm("userChoice"),
+                    Seq(
+                        Messages("single.lookup.radio") -> "single-lookup" -> Messages("single.lookup.radio"),
+                        Messages("bulk.lookup.radio")  ->  "bulk-lookup" -> Messages("bulk.lookup.radio"),
+                        Messages("result.radio")  -> "result" -> Messages("result.radio")
+                    ),
+                    '_fieldsetAttributesLegend -> "userChoice",
+                    '_legend -> Messages("whatDoYouWantToDo.page.header"),
+                    '_legendClass -> "visuallyhidden",
+                    '_labelClass -> "block-label",
+                    '_groupClass -> "inline-block"
+                )
+                </div>
 
-    <div class="form-group">
-      @radioGroup(
-        whatDoYouWantToDoForm("userChoice"),
-          Seq(
-            Messages("single.lookup.radio") -> "single-lookup" -> Messages("single.lookup.radio"),
-            Messages("bulk.lookup.radio")  ->  "bulk-lookup" -> Messages("bulk.lookup.radio"),
-            Messages("result.radio")  -> "result" -> Messages("result.radio")
-          ),
-          '_fieldsetAttributesLegend -> "userChoice",
-          '_legend -> Messages("whatDoYouWantToDo.page.header"),
-          '_legendClass -> "visuallyhidden",
-          '_labelClass -> "block-label",
-          '_groupClass -> "inline-block"
-      )
+                <div>
+                    <button class="button" type="submit" id="continue">@Messages("continue")</button>
+                </div>
+
+            }
+        </div>
     </div>
-
-    <div>
-      <button class="button" type="submit" id="continue">@Messages("continue")</button>
-    </div>
-
-  }
-
-
 }
