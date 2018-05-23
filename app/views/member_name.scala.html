@@ -20,7 +20,7 @@
 @import views.html.helpers._
 
 @scriptElem = {
-    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
 }
 
 @ras_main(title = Messages("member.name.page.title"), scriptElem = Some(scriptElem)) {
@@ -29,35 +29,41 @@
     <div class="grid-layout__column">
         <div class="grid-layout__column--3-4">
 
-      <div class="back-arrow">
-        <a class="link-back" href="@routes.MemberNameController.back(edit)" data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
-      </div>
+            <div class="back-arrow">
+                <a class="link-back" href="@routes.MemberNameController.back(edit)"
+                   data-journey-click="navigation - link:What is their name?:Back">@Messages("back")</a>
+            </div>
 
-        @views.html.helpers.errorSummary(memberNameForm, "What is their name?")
+            @views.html.helpers.errorSummary(memberNameForm, "What is their name?")
 
-        <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>
-
-          @form(action = routes.MemberNameController.post(edit)) {
+            @form(action = routes.MemberNameController.post(edit)) {
 
             <fieldset>
-                <legend class="visually-hidden">@Messages("member.name.page.header")</legend>
+                <legend>
+                    <header class="page-header">
+                        <h1 id="header" class="heading-xlarge">@Messages("member.name.page.header")</h1>
+                    </header>
+                </legend>
 
-               @rasInput(memberNameForm("firstName"),
-               '_label -> Html(Messages("first.name").capitalize),
+                @rasInput(memberNameForm("firstName"),
+                '_label -> Html(Messages("first.name").capitalize),
                 '_labelClass -> "form-label",
-               '_id -> "firstName")
+                '_id -> "firstName")
 
-               @rasInput(memberNameForm("lastName"),
-               '_label -> Html(Messages("last.name").capitalize),
+                @rasInput(memberNameForm("lastName"),
+                '_label -> Html(Messages("last.name").capitalize),
                 '_labelClass -> "form-label",
-               '_id -> "lastName")
+                '_id -> "lastName")
 
             </fieldset>
 
             <div>
-             <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their name?:Continue@if(edit){ and submit}">@Messages("continue")</button>
+                <button class="button" type="submit" id="continue"
+                        data-journey-click="button - click:What is their name?:Continue@if(edit){ and submit}">
+                    @Messages("continue")
+                </button>
             </div>
-          }
+            }
         </div>
     </div>
 </div>
