@@ -49,11 +49,6 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   implicit val context: RasContext = RasContextImpl
   private val _contentType =   "application/csv"
 
-  val fileIsInProgress = true
-  val noFileInProgress = false
-  val readyForDownload = true
-  val notReadyForDownload = false
-
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
