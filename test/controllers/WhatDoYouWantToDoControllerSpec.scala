@@ -114,34 +114,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("userChoice-bulk-lookup").attr("value") shouldBe Messages("bulk.lookup.radio")
       doc(result).getElementById("userChoice-result").attr("value") shouldBe Messages("result.radio")
     }
-
-    "redirect to global error page" when {
-      "no file session is available" in {
-        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn (Future.successful(None))
-        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("global-error")
-      }
-
-      "no results file is available" in {
-        val fileSession = FileSession(Some(CallbackData("", "someFileId", "", None)), None, "1234", None)
-        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn (Future.successful(Some(fileSession)))
-        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("global-error")
-      }
-
-      "no upload timestamp is available" in {
-        val fileSession = FileSession(Some(CallbackData("", "someFileId", "", None)), None, "1234", None)
-        when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn (Future.successful(Some(fileSession)))
-        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include("global-error")
-      }
-    }
   }
 
   "post" should {
@@ -160,12 +132,31 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       redirectLocation(result).get should include("/member-name")
     }
 
-    "redirect to file upload page when bulk lookup option is selected" in {
+    "redirect to file upload page when bulk lookup option is selected and there is no file session" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
       when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/upload-a-file")
+    }
+
+    "redirect to file upload page when bulk lookup option is selected and file session has no file" in {
+      val fileSession = FileSession(None,None,"1234",None)
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      redirectLocation(result).get should include("/upload-a-file")
+    }
+
+    "redirect to file ready page when bulk lookup option is selected and there is a file ready" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession.copy(userChoice = WhatDoYouWantToDo.BULK))))
+      val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
+      val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      redirectLocation(result).get should include("/file-ready")
     }
 
     "redirect to file result page when result option is selected and a result is ready" in {
@@ -209,6 +200,12 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       status(result) shouldBe OK
+    }
+
+    "return global error" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession.copy(userFile = None))))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      redirectLocation(result).get should include("/global-error")
     }
 
     "contain the correct page title" in {
@@ -395,6 +392,66 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/global-error")
       }
+    }
+  }
+
+  "renderFileReadyPage" should {
+    "return ok when called" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      status(result) shouldBe OK
+    }
+
+    "return global error page" when {
+      "there is no file session" in {
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+        val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+        redirectLocation(result).get should include("/global-error")
+      }
+
+      "there is a file session but there is no result file ready" in {
+        val fileSession = FileSession(None,None,"1234",None)
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+        val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+        redirectLocation(result).get should include("/global-error")
+      }
+    }
+
+    "contain the correct page title" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).title shouldBe Messages("file.ready.page.title")
+    }
+
+    "contain the correct page header" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("header").text shouldBe Messages("file.ready.page.header")
+    }
+
+    "contain a back link pointing to /" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("back").attr("href") should include("/")
+    }
+
+    "contains the correct sub header" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("sub-header").text shouldBe Messages("file.ready.sub-header")
+    }
+
+    "the sub header contains a link that points to download results page" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("sub-header-link").attr("href") should include("/residency-status-added")
+    }
+
+    "contain the correct ga events" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
+      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:File ready:Back"
+      doc(result).getElementById("sub-header-link").attr("data-journey-click") shouldBe "link - click:File ready:Download your file"
     }
   }
 
