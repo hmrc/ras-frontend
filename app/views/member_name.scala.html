@@ -20,14 +20,13 @@
 @import views.html.helpers._
 
 @scriptElem = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/error.js")'></script>
 }
 
 @ras_main(title = Messages("member.name.page.title"), scriptElem = Some(scriptElem)) {
 
-<div class="grid-layout--no-gutter">
-    <div class="grid-layout__column">
-        <div class="grid-layout__column--3-4">
+    <div class="grid-row">
+        <div class="column-two-thirds">
 
             <div class="back-arrow">
                 <a class="link-back" href="@routes.MemberNameController.back(edit)"
@@ -66,5 +65,4 @@
             }
         </div>
     </div>
-</div>
 }
