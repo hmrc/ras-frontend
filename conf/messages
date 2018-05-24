@@ -16,6 +16,7 @@ problem.uploading.file.title = There has been a problem uploading your file - GO
 no.results.available.page.title = You have not uploaded a file - GOV.UK
 results.not.available.yet.page.title = The results file is not available yet - GOV.UK
 file.not.available.page.title = This file is not available - GOV.UK
+file.ready.page.title = The last file you uploaded is ready - GOV.UK
 
 ######  HEADERS ####################################################################################
 
@@ -36,6 +37,7 @@ no.results.available.page.header = You have not uploaded a file
 results.not.available.yet.page.header = The results file is not available yet
 file.not.available.page.header = This file is not available
 unauthorised.page.header = There is a problem
+file.ready.page.header = The last file you uploaded is ready
 
 ###### SUB-HEADERS #################################################################################
 
@@ -51,6 +53,7 @@ no.results.available.sub-header = You need to {0} before you can get any results
 results.not.available.yet.sub-header1 = The results are still being added to the file you uploaded.
 results.not.available.yet.sub-header2 = It can take up to 24 hours for the results to be added from when you uploaded the file.
 file.not.available.sub-header = You can {0}.
+file.ready.sub-header = Download your file
 
 ###### ERRORS ######################################################################################
 
@@ -132,8 +135,11 @@ residency.status = Residency status
 tax.year = Tax year
 tax.year.period = {0} to {1}
 change = Change
+change.name = Change name
+change.nino = Change National Insurance number
+change.dob = Change date of birth
 match.not.found.what.to.do = If you have checked and everything is correct, {0} {1} to update their personal details.
-contact.hmrc = <a id="contact-hmrc-link" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers">must contact HMRC</a>
+contact.hmrc = must contact HMRC
 get.help.uploading.link = Get help formatting your file.
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0

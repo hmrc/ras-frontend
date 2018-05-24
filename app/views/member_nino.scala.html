@@ -29,7 +29,8 @@
         <div class="column-two-thirds">
 
             <div class="back-arrow">
-                <a class="link-back" href="@routes.MemberNinoController.back(edit)" data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
+                <a class="link-back" href="@routes.MemberNinoController.back(edit)"
+                   data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
             </div>
 
             @views.html.helpers.errorSummary(memberNinoForm, "What is their NINO?")
@@ -38,11 +39,9 @@
 
             <fieldset class="inline">
                 <legend>
-                    <span>
-                        <header class="page-header">
-                            <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
-                        </header>
-                    </span>
+                    <header class="page-header">
+                        <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
+                    </header>
                 </legend>
                 <div class="form-group">
 
@@ -55,7 +54,10 @@
                 </div>
             </fieldset>
 
-            <button class="button" type="submit" id="continue" data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">@Messages("continue")</button>
+            <button class="button" type="submit" id="continue"
+                    data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">
+                @Messages("continue")
+            </button>
             }
 
         </div>

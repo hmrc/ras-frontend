@@ -16,20 +16,26 @@
 
 @()(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@ras_main(title = Messages("global.error.page.title")) {
+@ras_main(title = Messages("file.ready.page.title")) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
 
-        <div class="row">
-            <h1 id="header" class="heading-xlarge">@Messages("global.error.header")</h1>
-        </div>
-
-        <div class="row">
-            <p id="message">@Messages("global.error.message")</p>
-        </div>
-
+    <div class="back-arrow">
+        <a class="link-back" id="back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:File ready:Back">@Messages("back")</a>
     </div>
+
+    <div class="row">
+        <h1 id="header" class="heading-xlarge">@Messages("file.ready.page.header")</h1>
+    </div>
+
+    <div class="row">
+      <p id="sub-header">
+          <a id="sub-header-link" href="@routes.WhatDoYouWantToDoController.renderUploadResultsPage" data-journey-click="link - click:File ready:Download your file">@Messages("file.ready.sub-header")</a>
+      </p>
+    </div>
+
+ </div>
 </div>
 
 }

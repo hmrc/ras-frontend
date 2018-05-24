@@ -49,38 +49,11 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   implicit val context: RasContext = RasContextImpl
   private val _contentType =   "application/csv"
 
-  val fileIsInProgress = true
-  val noFileInProgress = false
-  val readyForDownload = true
-  val notReadyForDownload = false
-
   def get = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          shortLivedCache.isFileInProgress(userId).flatMap {
-            case true =>
-              shortLivedCache.fetchFileSession(userId).map {
-                case Some(fileSession) =>
-                  fileSession.uploadTimeStamp match {
-                    case Some(timestamp) =>
-                      fileSession.userFile match {
-                        case Some(callbackData) =>
-                          Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, callbackData.fileId, readyForDownload))
-                        case _ =>
-                          Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,fileIsInProgress, "", notReadyForDownload))
-                      }
-                    case _ =>
-                      Logger.error("[WhatDoYouWantToDoController][get] no timestamp retrieved")
-                      Redirect(routes.ErrorController.renderGlobalErrorPage)
-                  }
-                case _ =>
-                  Logger.error("[WhatDoYouWantToDoController][get] failed to retrieve file session")
-                  Redirect(routes.ErrorController.renderGlobalErrorPage)
-              }
-            case _ =>
-              Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm,noFileInProgress,"",noFileInProgress)))
-          }
+          Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm)))
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
@@ -94,14 +67,25 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           whatDoYouWantToDoForm.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[WhatDoYouWantToDoController][post] No option selected")
-              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors,noFileInProgress,"",notReadyForDownload)))
+              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors)))
             },
             whatDoYouWantToDo =>
               sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {
                 case Some(session) =>
                   session.userChoice match {
                     case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get()))
-                    case WhatDoYouWantToDo.BULK => Future.successful(Redirect(routes.FileUploadController.get))
+                    case WhatDoYouWantToDo.BULK =>
+                      shortLivedCache.fetchFileSession(userId).flatMap {
+                        case Some(fileSession) =>
+                          fileSession.resultsFile match {
+                            case Some(_) =>
+                              Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderFileReadyPage()))
+                            case _ =>
+                              Future.successful(Redirect(routes.FileUploadController.get))
+                          }
+                        case _ =>
+                          Future.successful(Redirect(routes.FileUploadController.get))
+                      }
                     case WhatDoYouWantToDo.RESULT =>
                       shortLivedCache.failedProcessingUploadedFile(userId).flatMap {
                         case true =>
@@ -180,6 +164,29 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           Future.successful(Ok(views.html.results_not_available_yet()))
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][renderNotResultAvailableYetPage] user not authorised")
+          resp
+      }
+  }
+
+  def renderFileReadyPage = Action.async {
+    implicit request =>
+      isAuthorised.flatMap {
+        case Right(userId) =>
+          shortLivedCache.fetchFileSession(userId).flatMap {
+            case Some(fileSession) =>
+              fileSession.resultsFile match {
+                case Some(resultFile) =>
+                  Future.successful(Ok(views.html.file_ready()))
+                case _ =>
+                  Logger.error("[WhatDoYouWantToDoController][renderFileReadyPage] session has no result file")
+                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+              }
+            case _ =>
+              Logger.error("[WhatDoYouWantToDoController][renderFileReadyPage] failed to retrieve session")
+              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+          }
+        case Left(resp) =>
+          Logger.error("[WhatDoYouWantToDoController][renderFileReadyPage] user not authorised")
           resp
       }
   }
