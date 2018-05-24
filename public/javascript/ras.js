@@ -21,17 +21,6 @@ $(function() {
 
     helpButton.on('click', function (e) {
         ga('send', 'event', 'link - click', pageTitle, 'get help with this page');
-
-        var checkExist = setInterval(function() {
-            var reportSubmit = $('#report-submit');
-            if (reportSubmit.length) {
-                reportSubmit.click(function(){
-                    ga('send', 'event', 'button - click', pageTitle, 'get help with this page - send');
-                });
-                clearInterval(checkExist);
-            }
-        }, 100);
-
     });
 
 });
