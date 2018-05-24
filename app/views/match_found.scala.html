@@ -63,12 +63,14 @@
                 <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
             }
 
-            <div class="row continue-div">
+            <div class="grid-row">
+                <div class ="column-two-thirds ras-top-margin">
                 <a id="choose-something-else"
                    class="button"
                    href='@routes.SessionController.redirect("whatDoYouWantToDo",true)'
                     data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
                 >@Messages("choose.something.else")</a>
+                </div>
             </div>
         </div>
     </div>
