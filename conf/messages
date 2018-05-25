@@ -1,22 +1,23 @@
 ######  TITLES #####################################################################################
 
-unauthorised.error.page.title = There is a problem - GOV.UK
-file.upload.page.title = Upload a file - GOV.UK
-file.upload.successful.page.title = Your file has been uploaded - GOV.UK
-whatDoYouWantToDo.page.title = What do you want to do? - GOV.UK
-upload.result.page.title = The residency status has been added - GOV.UK
-cannot.upload.another.file.page.title = You cannot upload another file at the moment - GOV.UK
-member.name.page.title = What is the member’s name? - GOV.UK
-member.nino.page.title = What is the member’s National Insurance number? - GOV.UK
-member.dob.page.title = What is the member’s date of birth? - GOV.UK
-match.found.page.title = Member’s residency status - GOV.UK
-match.not.found.page.title = Member’s residency status cannot be displayed - GOV.UK
+unauthorised.error.page.title = There is a problem - Look up residency status for relief at source - GOV.UK
+file.upload.page.title = Upload a file - Look up residency status for relief at source - GOV.UK
+file.upload.successful.page.title = Your file has been uploaded - Look up residency status for relief at source - GOV.UK
+whatDoYouWantToDo.page.title = What do you want to do? - Look up residency status for relief at source - GOV.UK
+upload.result.page.title = The residency status has been added - Look up residency status for relief at source - GOV.UK
+cannot.upload.another.file.page.title = You cannot upload another file at the moment - Look up residency status for relief at source - GOV.UK
+member.name.page.title = What is the member’s name? - Look up residency status for relief at source - GOV.UK
+member.nino.page.title = What is the member’s National Insurance number? - Look up residency status for relief at source - GOV.UK
+member.dob.page.title = What is the member’s date of birth? - Look up residency status for relief at source - GOV.UK
+match.found.page.title = Member’s residency status - Look up residency status for relief at source - GOV.UK
+match.not.found.page.title = Member’s residency status cannot be displayed - Look up residency status for relief at source - GOV.UK
 global.error.page.title = There is a problem with the service - Look up residency status for relief at source - GOV.UK
-problem.uploading.file.title = There has been a problem uploading your file - GOV.UK
-no.results.available.page.title = You have not uploaded a file - GOV.UK
-results.not.available.yet.page.title = The results file is not available yet - GOV.UK
-file.not.available.page.title = This file is not available - GOV.UK
-file.ready.page.title = The last file you uploaded is ready - GOV.UK
+problem.uploading.file.title = There has been a problem uploading your file - Look up residency status for relief at source - GOV.UK
+no.results.available.page.title = You have not uploaded a file - Look up residency status for relief at source - GOV.UK
+results.not.available.yet.page.title = The results file is not available yet - Look up residency status for relief at source - GOV.UK
+file.not.available.page.title = This file is not available - Look up residency status for relief at source - GOV.UK
+file.ready.page.title = The last file you uploaded is ready - Look up residency status for relief at source - GOV.UK
+problem.getting.results.title = There has been a problem getting the results - Look up residency status for relief at source - GOV.UK
 
 ######  HEADERS ####################################################################################
 
@@ -38,6 +39,7 @@ results.not.available.yet.page.header = The results file is not available yet
 file.not.available.page.header = This file is not available
 unauthorised.page.header = There is a problem
 file.ready.page.header = The last file you uploaded is ready
+problem.getting.results.header = There has been a problem getting the results
 
 ###### SUB-HEADERS #################################################################################
 
@@ -100,8 +102,6 @@ expiry.date.message = This file will be deleted on {0} if you do not open it.
 deletion.message = When you have opened this file, you should save a copy of it. The file is automatically deleted from the service when you open it.
 try.uploading.again = Try again and upload your file
 check.file = If this problem continues, you should check the file you are trying to upload. You can also try to create a new file and then upload that new copy.
-problem.getting.results.title = There has been a problem getting the results - GOV.UK
-problem.getting.results.header = There has been a problem getting the results
 check.upload.file.again = Check that your {0} and then try uploading again.
 file.formatted.correctly = file is formatted correctly
 upload.file.again = You should upload your file again.
