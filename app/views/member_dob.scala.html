@@ -37,15 +37,15 @@
 
             @form(action = routes.MemberDOBController.post(edit)) {
 
-            <div class="form-group">
-                <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
-
                     <fieldset class="inline">
                         <legend>
                             <header class="page-header">
                                 <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
                             </header>
                         </legend>
+                        
+                        <div class="form-group">
+                            <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
 
                         <label id="dateOfBirth_label" class="form-label">
                             <span class="visually-hidden">@Messages("dob")</span>
