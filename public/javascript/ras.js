@@ -16,8 +16,13 @@
 
 $(function() {
 
-    $('p[id=what-to-do] a').click(function() {
-        ga('send', 'event', 'link - click', 'User details not found', 'Contact HMRC link');
+    var pageTitle = $('title').text();
+    var helpButton = $("#get-help-action");
+
+    helpButton.on('click', function (e) {
+        ga('send', 'event', 'link - click', pageTitle, 'get help with this page');
     });
 
 });
+
+
