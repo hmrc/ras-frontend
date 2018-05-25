@@ -18,9 +18,8 @@
 
 @ras_main(title = Messages("problem.uploading.file.title")) {
 
-<div class="grid-layout--no-gutter">
- <div class="grid-layout__column">
-  <div class="grid-layout__column--3-4">
+ <div class="grid-row">
+  <div class="column-two-thirds">
 
    <div class="back-arrow">
     <a class="link-back" id="back" href="@routes.FileUploadController.get" data-journey-click="navigation - link:There has been a problem uploading your file:Back">@Messages("back")</a>
@@ -41,6 +40,5 @@
 
   </div>
  </div>
-</div>
 
 }
