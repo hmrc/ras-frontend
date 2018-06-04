@@ -33,14 +33,14 @@
 <div class="grid-row">
     <div class="column-two-thirds" aria-labelledby="document-title">
         <div class="govuk-govspeak direction-ltr">
-            <section class="attatchment embedded">
-                <div class="attatchment--title">
+            <section class="attachment embedded">
+                <div class="attachment--title">
                     <div class="icon--file" id="attachment-1">
                         <a aria-hidden="true" id="document-image-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="image - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">
-                            <img id="document-image" src="@routes.AssetsController.at("images/icon-file-download.png")">
+                            <img id="icon--file img" src="@routes.AssetsController.at("images/icon-file-download.png")">
                         </a>
                     </div>
-                    <div class="attatchment-details">
+                    <div class="attachment-details">
                         <p>
                             <a aria-describedby="attachment-1-accessibility-help" id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="link - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">@Messages("residency.status.result")
                             </a>
@@ -51,7 +51,14 @@
                 <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</p>
             </section>
             <h2 id="whatnext-header" class="heading-medium">@Messages("match.found.what.happens.next")</h2>
-            <p id="whatnext-content">@Messages("upload.result.what.next")</p>
+            <p id="whatnext-content">
+                @Html(
+                Messages(
+                "upload.result.what.next",
+                "<a id='contact-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' data-journey-click='link - click:Residency status upload added:Member must contact HMRC'>" + Messages("upload.result.member.contact") + "</a>"
+                )
+                )
+            </p>
             @if(!isBeforeApr6){
             <p id="cy-message">@Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)</p>
             }
