@@ -16,12 +16,18 @@
 
 @(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
+@year = {@if(isBeforeApr6){CY & CY + 1}else{CY}}
+
 @ras_main(title = Messages("upload.result.page.title")) {
 
   <div class="grid-row">
       <div class="column-two-thirds">
           <div class="back-arrow">
-              <a id="back" class="link-back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:Back">@Messages("back")</a>
+              <a id="back" class="link-back"
+                 href="@routes.WhatDoYouWantToDoController.get"
+                 data-journey-click="navigation - link:Residency status upload added @year:Back">
+                  @Messages("back")
+              </a>
           </div>
           <header class="page-header">
               <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
@@ -29,20 +35,26 @@
       </div>
   </div>
 
-
 <div class="grid-row">
     <div class="column-two-thirds" aria-labelledby="document-title" id="document-title">
         <div class="govuk-govspeak direction-ltr">
             <section class="attachment embedded">
                 <div class="attachment--title">
                     <div class="icon--file" id="attachment-1">
-                        <a aria-hidden="true" id="document-image-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="image - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">
+                        <a aria-hidden="true"
+                           id="document-image-link"
+                           href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)"
+                           data-journey-click="image - click:Residency status upload added @year:ResidencyStatusResults @year CSV">
                             <img id="icon--file img" alt="file icon" src="@routes.AssetsController.at("images/icon-file-download.png")">
                         </a>
                     </div>
                     <div class="attachment-details">
                         <p>
-                            <a aria-describedby="attachment-1-accessibility-help" id="attachment-1-accessibility-help" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="link - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">@Messages("residency.status.result")
+                            <a aria-describedby="attachment-1-accessibility-help"
+                               id="attachment-1-accessibility-help"
+                               href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)"
+                               data-journey-click="link - click:Residency status upload added @year:ResidencyStatusResults @year CSV">
+                                @Messages("residency.status.result")
                             </a>
                         </p>
                     </div>
@@ -52,15 +64,12 @@
             </section>
             <h2 id="whatnext-header" class="heading-medium">@Messages("match.found.what.happens.next")</h2>
             <p id="whatnext-content">
-                @Html(
-                Messages(
-                "upload.result.what.next",
-                "<a id='contact-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' data-journey-click='link - click:Residency status upload added:Member must contact HMRC'>" + Messages("upload.result.member.contact") + "</a>"
-                )
-                )
+                @Html(Messages("upload.result.what.next",
+                "<a id='contact-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' data-journey-click='link - click:Residency status upload added " + year + ":Member must contact HMRC'>" + Messages("upload.result.member.contact") + "</a>"
+                ))
             </p>
             @if(!isBeforeApr6){
-            <p id="cy-message">@Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)</p>
+            <p id="cy-message">@Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
             }
         </div>
     </div>
@@ -68,7 +77,12 @@
 
 
 <div class="continue-div">
-  <a id="choose-something-else" class="button" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="button - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:Choose something else to do">@Messages("choose.something.else")</a>
+  <a id="choose-something-else"
+     class="button"
+     href="@routes.WhatDoYouWantToDoController.get"
+     data-journey-click="button - click:Residency status upload added @year:Choose something else to do">
+      @Messages("choose.something.else")
+  </a>
 </div>
 
 

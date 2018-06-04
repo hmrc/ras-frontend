@@ -295,9 +295,9 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
       doc(result).getElementById("document-image-link").attr("data-journey-click") shouldBe "image - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
-      doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
+      doc(result).getElementById("attachment-1-accessibility-help").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY & CY + 1:Choose something else to do"
-      doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
+      doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
     }
 
     "contain a cy message when upload date is 06/04/2018" in {
@@ -306,7 +306,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
     "contain the correct ga events when upload date is 06/04/2018 (CY only)" in {
@@ -317,9 +317,10 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
       doc(result).getElementById("document-image-link").attr("data-journey-click") shouldBe "image - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
-      doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
+      doc(result).getElementById("attachment-1-accessibility-help").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY:Choose something else to do"
       doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
+
     }
 
     "contain a cy message when upload date is 31/12/2018" in {
@@ -328,7 +329,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
     "contain a button to choose something else to do" in {
