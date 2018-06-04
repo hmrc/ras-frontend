@@ -31,18 +31,18 @@
 
 
 <div class="grid-row">
-    <div class="column-two-thirds" aria-labelledby="document-title">
+    <div class="column-two-thirds" aria-labelledby="document-title" id="document-title">
         <div class="govuk-govspeak direction-ltr">
             <section class="attachment embedded">
                 <div class="attachment--title">
                     <div class="icon--file" id="attachment-1">
                         <a aria-hidden="true" id="document-image-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="image - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">
-                            <img id="icon--file img" src="@routes.AssetsController.at("images/icon-file-download.png")">
+                            <img id="icon--file img" alt="file icon" src="@routes.AssetsController.at("images/icon-file-download.png")">
                         </a>
                     </div>
                     <div class="attachment-details">
                         <p>
-                            <a aria-describedby="attachment-1-accessibility-help" id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="link - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">@Messages("residency.status.result")
+                            <a aria-describedby="attachment-1-accessibility-help" id="attachment-1-accessibility-help" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="link - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">@Messages("residency.status.result")
                             </a>
                         </p>
                     </div>
