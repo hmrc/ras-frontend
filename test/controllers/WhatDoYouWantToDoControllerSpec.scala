@@ -241,13 +241,13 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain a result link with the correct file name" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("result-link").text shouldBe Messages("residency.status.result")
+      doc(result).getElementById("attachment-1-accessibility-help").text shouldBe Messages("residency.status.result")
     }
 
     "contain a result link pointing to the results file" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("result-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
+      doc(result).getElementById("attachment-1-accessibility-help").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
     }
 
     "contain expiry date message" in {
