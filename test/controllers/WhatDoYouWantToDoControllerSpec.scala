@@ -250,12 +250,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("result-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
     }
 
-    "contain type and size of the file" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("file-type-size").text shouldBe Messages("file.type.size")
-    }
-
     "contain expiry date message" in {
       val expiryDate = new DateTime(mockExpiryTimeStamp)
       val formattedDate =  s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("HH:mma").toLowerCase()}"
