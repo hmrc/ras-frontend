@@ -18,36 +18,45 @@
 
 @ras_main(title = Messages("upload.result.page.title")) {
 
-
-<div class="grid-layout--no-gutter">
-  <div class="back-arrow">
-    <a id="back" class="link-back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:Back">@Messages("back")</a>
-  </div>
-  <div class="row">
-      <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
-  </div>
-</div>
-
-
-<div class="row">
-
-  <div id="document-image-div">
-    <a id="document-image-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="image - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV"><img id="document-image" src="@routes.AssetsController.at("images/icon-file-download.png")"></a>
+  <div class="grid-row">
+      <div class="column-two-thirds">
+          <div class="back-arrow">
+              <a id="back" class="link-back" href="@routes.WhatDoYouWantToDoController.get" data-journey-click="navigation - link:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:Back">@Messages("back")</a>
+          </div>
+          <header class="page-header">
+              <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
+          </header>
+      </div>
   </div>
 
-  <div id="result-link-div">
-    <a id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="link - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">@Messages("residency.status.result")</a>
-    <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</p>
-    <p id="deletion-message">@Messages("deletion.message")</p>
 
-      @if(isBeforeApr6){
-        <p id="cy-1-message">@Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
-      }else{
-        <p id="cy-message">@Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)</p>
-      }
-
-  </div>
-
+<div class="grid-row">
+    <div class="column-two-thirds" aria-labelledby="document-title">
+        <div class="govuk-govspeak direction-ltr">
+            <section class="attatchment embedded">
+                <div class="attatchment--title">
+                    <div class="icon--file" id="attachment-1">
+                        <a aria-hidden="true" id="document-image-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="image - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">
+                            <img id="document-image" src="@routes.AssetsController.at("images/icon-file-download.png")">
+                        </a>
+                    </div>
+                    <div class="attatchment-details">
+                        <p>
+                            <a aria-describedby="attachment-1-accessibility-help" id="result-link" href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)" data-journey-click="link - click:Residency status upload added CY@if(isBeforeApr6){ & CY + 1}:ResidencyStatusResults CY@if(isBeforeApr6){ & CY + 1} CSV">@Messages("residency.status.result")
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <p id="deletion-message">@Messages("deletion.message")</p>
+                <p id="expiry-date-message">@Messages("expiry.date.message", expiryDate)</p>
+            </section>
+            <h2 id="whatnext-header" class="heading-medium">@Messages("match.found.what.happens.next")</h2>
+            <p id="whatnext-content">@Messages("upload.result.what.next")</p>
+            @if(!isBeforeApr6){
+            <p id="cy-message">@Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)</p>
+            }
+        </div>
+    </div>
 </div>
 
 

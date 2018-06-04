@@ -22,7 +22,7 @@ problem.getting.results.title = There has been a problem getting the results - L
 ######  HEADERS ####################################################################################
 
 whatDoYouWantToDo.page.header = What do you want to do?
-upload.result.page.header = The residency status has been added
+upload.result.page.header = Download your CSV results
 member.name.page.header = What is the member’s name?
 member.nino.page.header = What is {0}’s National Insurance number?
 member.dob.page.header = What is {0}’s date of birth?
@@ -81,6 +81,7 @@ file.empty.error=This CSV is empty. Upload a CSV with data in it
 upload.failed.error=There was a problem uploading your file. Please try again
 
 ##### OTHER ######################################################################################
+upload.result.what.next = If no residency status is shown, and you have checked that everything is correct, the member must contact HMRC to update their personal details.
 continue = Continue
 member = member
 single.lookup.link = Single look up

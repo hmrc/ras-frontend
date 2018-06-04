@@ -258,29 +258,23 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",formattedDate)
     }
 
+    "contain a what to do next header" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("whatnext-header").text shouldBe Messages("match.found.what.happens.next")
+    }
+
+    "contain what to do next content" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("whatnext-content").text shouldBe Messages("upload.result.what.next")
+    }
+
     "contain a deletion message" in {
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
     }
-
-    "contain a cy+1 message when upload date is 05/04/2018" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-04-05").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-    }
-
-    "contain a cy+1 message when upload date is 01/01/2018" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-    }
-
+    
     "contain the correct ga events when upload date is 01/01/2018 (CY+1)" in {
       val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
