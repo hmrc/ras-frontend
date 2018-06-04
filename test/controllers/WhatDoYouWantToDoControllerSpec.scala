@@ -226,16 +226,10 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("page-header").text shouldBe Messages("upload.result.page.header")
     }
 
-    "contain a document header" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("document").text shouldBe Messages("document")
-    }
-
     "contain a document image" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("document-image").attr("src") should include("download-the-file.png")
+      doc(result).getElementById("document-image").attr("src") should include("icon-file-download.png")
     }
 
     "contain a document image that points to get results file" in {
