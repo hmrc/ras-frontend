@@ -4,7 +4,7 @@ unauthorised.error.page.title = There is a problem - Look up residency status fo
 file.upload.page.title = Upload a file - Look up residency status for relief at source - GOV.UK
 file.upload.successful.page.title = Your file has been uploaded - Look up residency status for relief at source - GOV.UK
 whatDoYouWantToDo.page.title = What do you want to do? - Look up residency status for relief at source - GOV.UK
-upload.result.page.title = Download your CSV results - Look up residency status for relief at source - GOV.UK
+upload.result.page.title = The residency status has been added - Look up residency status for relief at source - GOV.UK
 cannot.upload.another.file.page.title = You cannot upload another file at the moment - Look up residency status for relief at source - GOV.UK
 member.name.page.title = What is the member’s name? - Look up residency status for relief at source - GOV.UK
 member.nino.page.title = What is the member’s National Insurance number? - Look up residency status for relief at source - GOV.UK
@@ -22,7 +22,7 @@ problem.getting.results.title = There has been a problem getting the results - L
 ######  HEADERS ####################################################################################
 
 whatDoYouWantToDo.page.header = What do you want to do?
-upload.result.page.header = Download your CSV results
+upload.result.page.header = The residency status has been added
 member.name.page.header = What is the member’s name?
 member.nino.page.header = What is {0}’s National Insurance number?
 member.dob.page.header = What is {0}’s date of birth?
