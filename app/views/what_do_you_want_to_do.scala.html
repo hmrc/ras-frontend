@@ -26,7 +26,8 @@
 
 @ras_main(title = Messages("whatDoYouWantToDo.page.title"), scriptElem = Some(scriptElem)) {
 
-<div>
+<div class="grid-row">
+    <div class="column-two-thirds">
 
     @views.html.helpers.errorSummary(whatDoYouWantToDoForm, "What Do You Want To Do?")
 
@@ -51,6 +52,6 @@
           <button class="button" type="submit" id="continue">@Messages("continue")</button>
         </div>
     }
-
+    </div>
 </div>
 }
