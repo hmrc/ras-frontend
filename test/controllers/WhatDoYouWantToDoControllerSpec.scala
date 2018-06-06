@@ -226,16 +226,10 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("page-header").text shouldBe Messages("upload.result.page.header")
     }
 
-    "contain a document header" in {
+    "contain a icon file image" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("document").text shouldBe Messages("document")
-    }
-
-    "contain a document image" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("document-image").attr("src") should include("download-the-file.png")
+      doc(result).getElementById("icon--file img").attr("src") should include("icon-file-download.png")
     }
 
     "contain a document image that points to get results file" in {
@@ -256,41 +250,41 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("result-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
     }
 
-    "contain type and size of the file" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("file-type-size").text shouldBe Messages("file.type.size")
-    }
-
     "contain expiry date message" in {
       val expiryDate = new DateTime(mockExpiryTimeStamp)
-      val formattedDate =  s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("HH:mma").toLowerCase()}"
+      val formattedDate =  s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("H:mma").toLowerCase()}"
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",formattedDate)
     }
 
+    "contain a what to do next header" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("whatnext-header").text shouldBe Messages("match.found.what.happens.next")
+    }
+
+    "contain what to do next content" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("whatnext-content").text shouldBe Messages("upload.result.what.next", Messages("upload.result.member.contact"))
+    }
+
+    "contain an contact HMRC link" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("contact-link").text shouldBe Messages("upload.result.member.contact")
+    }
+
+    "contains an HMRC link that points to help page" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
+      doc(result).getElementById("contact-link").attr("href") shouldBe ("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers")
+    }
+
     "contain a deletion message" in {
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
-    }
-
-    "contain a cy+1 message when upload date is 05/04/2018" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-04-05").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-    }
-
-    "contain a cy+1 message when upload date is 01/01/2018" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-1-message").text shouldBe Messages("cy.1.message", currentTaxYear.toString, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
     "contain the correct ga events when upload date is 01/01/2018 (CY+1)" in {
@@ -303,6 +297,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("document-image-link").attr("data-journey-click") shouldBe "image - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
       doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY & CY + 1:Choose something else to do"
+      doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
     }
 
     "contain a cy message when upload date is 06/04/2018" in {
@@ -311,7 +306,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
     "contain the correct ga events when upload date is 06/04/2018 (CY only)" in {
@@ -324,6 +319,8 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("document-image-link").attr("data-journey-click") shouldBe "image - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
       doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY:Choose something else to do"
+      doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
+
     }
 
     "contain a cy message when upload date is 31/12/2018" in {
@@ -332,7 +329,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 2).toString, (currentTaxYear + 3).toString)
+      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
     }
 
     "contain a button to choose something else to do" in {

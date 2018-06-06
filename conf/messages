@@ -81,6 +81,8 @@ file.empty.error=This CSV is empty. Upload a CSV with data in it
 upload.failed.error=There was a problem uploading your file. Please try again
 
 ##### OTHER ######################################################################################
+upload.result.member.contact = member must contact HMRC
+upload.result.what.next = If no residency status is shown, and you have checked that everything is correct, the {0} to update their personal details.
 continue = Continue
 member = member
 single.lookup.link = Single look up
@@ -98,8 +100,8 @@ result = Result
 document = Document
 residency.status.result = Residency-status-results.CSV
 file.type.size = CSV, less than 3MB.
-expiry.date.message = This file will be deleted on {0} if you do not open it.
-deletion.message = When you have opened this file, you should save a copy of it. The file is automatically deleted from the service when you open it.
+expiry.date.message = If you do not open this file, It will be deleted on {0}.
+deletion.message = You should save a copy of it. The file is deleted from the service when you open it.
 try.uploading.again = Try again and upload your file
 check.file = If this problem continues, you should check the file you are trying to upload. You can also try to create a new file and then upload that new copy.
 check.upload.file.again = Check that your {0} and then try uploading again.
