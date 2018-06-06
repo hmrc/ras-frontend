@@ -27,31 +27,21 @@
 
 
   <div>
-      <fieldset>
-          <legend>
-              <header class = "page-header">
-                  <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
-              </header>
-          </legend>
+      <legend>
+          <header class = "page-header">
+              <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
+          </header>
+      </legend>
 
-  @form(action = routes.WhatDoYouWantToDoController.post ) {
-
-    <div class="form-group">
+    @form(action = routes.WhatDoYouWantToDoController.post ) {
       @radioGroup(
         whatDoYouWantToDoForm("userChoice"),
           Seq(
             Messages("single.lookup.radio") -> "single-lookup" -> Messages("single.lookup.radio"),
             Messages("bulk.lookup.radio")  ->  "bulk-lookup" -> Messages("bulk.lookup.radio"),
             Messages("result.radio")  -> "result" -> Messages("result.radio")
-          ),
-          '_fieldsetAttributesLegend -> "userChoice",
-          '_legend -> Messages("whatDoYouWantToDo.page.header"),
-          '_legendClass -> "visuallyhidden",
-          '_labelClass -> "block-label",
-          '_groupClass -> "inline-block"
+          )
       )
-         </div>
-      </fieldset>
   </div>
     <div>
       <button class="button" type="submit" id="continue">@Messages("continue")</button>
