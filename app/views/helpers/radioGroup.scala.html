@@ -43,8 +43,7 @@
     <fieldset @if(elements.args.get('_fieldsetAttributes).isDefined) {
         @elements.args.get('_fieldsetAttributes)
       }>
-
-        <legend>
+        <legend id="@field.id">
             <span id="@(field.name)_label" class="form-label-bold">
                 @elements.args.get('_legend)
             </span>
