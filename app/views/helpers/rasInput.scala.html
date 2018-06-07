@@ -49,20 +49,12 @@
     }
 
     <div class="form-group @if(elements.args.contains('_groupClass)){@elements.args.get('_groupClass)}">
-        <label for="@labelFor" class="form-label" id="@labelId">
-            @if(labelHighlight) {<strong>}
-            @if(elements.args.contains('_label)) {@elements.label}
-            @if(labelHighlight) {</strong>}
-            @if(elements.args.contains('_hintText)) {
-                <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
-            }
-        </label>
 
-        @if(errors.nonEmpty) {
-            <div id="@elements.args.get('_id)-error" class="common-error">
-                @commonHelper(field, errors)
-            </div>
-        }
+        <label id="@field.id">
+            <span id="@(field.name)_label" class="form-label">@if(elements.args.contains('_label)) {@elements.label}</span>
+            <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
+            <span id="@elements.args.get('_id)-error" class="common-error">@commonHelper(field, errors)</span>
+        </label>
 
         <input @if(elements.args.contains('_type)){type="@elements.args.get('_type)"}else{type="text"}
         @if(elements.args.contains('_maxLength)){
