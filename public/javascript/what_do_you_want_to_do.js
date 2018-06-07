@@ -16,6 +16,8 @@
 
 $(function() {
 
+    $('#errors').focus();
+
     $('button[id=continue]').click(function() {
         var label = $('input:radio[name=userChoice]:checked').val();
         if (typeof label !== 'undefined') {
