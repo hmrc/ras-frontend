@@ -38,21 +38,13 @@
     parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )
 }
 
-@value = @{
-    field.value match {
-        case Some(x) => x
-        case None => ""
-        case x => x
-    }
-}
+@value = @{field.value match {case Some(x) => x case None => "" case x => x}}
 
 @labelAfter = @{
     elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean]
 }
 
-@labelFor = @{
-    elements.args.get('_id)
-}
+@labelFor = @{elements.args.get('_id)}
 
 @labelClass = @{
     elements.args.get('_divClass)
@@ -61,25 +53,15 @@
     }
 }
 
-@labelId = {
-    @if(elements.args.get('_id)){
-        @elements.args.get('_id)_label
-    }else{
-        @elements.field.name.replaceAll("""[\.\[\]]""", "-")
-    }
-}
+@labelId = {@if(elements.args.get('_id)){@elements.args.get('_id)_label}else{@elements.field.name.replaceAll("""[\.\[\]]""", "-")}}
 
-@hintId = {
-    @if(elements.args.get('_id)){
-        @elements.args.get('_id)_hint
-    }
-}
+@hintId = {@if(elements.args.get('_id)){@elements.args.get('_id)_hint}}
 
 <div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error} no-bottom-margin">
 
     <div class="form-group @if(elements.args.contains('_groupClass)){@elements.args.get('_groupClass)}">
 
-        <label id="@field.id">
+        <label for="@labelFor" id="@labelId">
             <span id="@(field.name)_label" class="form-label">@elements.label</span>
             <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
             <span id="@elements.args.get('_id)-error" class="common-error">@commonHelper(field, errors)</span>
@@ -105,5 +87,6 @@
             id="@elements.args.get('_id)"
 
             value="@value"/>
+        
     </div>
 </div>
