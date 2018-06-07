@@ -60,8 +60,19 @@
     }
 }
 
-@labelId = {@if(elements.args.get('_id)){@elements.args.get('_id)_label}else{@elements.field.name.replaceAll("""[\.\[\]]""", "-")}}
-@hintId = {@if(elements.args.get('_id)){@elements.args.get('_id)_hint}}
+@labelId = {@
+    if(elements.args.get('_id)){
+        @elements.args.get('_id)_label
+    }else{
+        @elements.field.name.replaceAll("""[\.\[\]]""", "-")
+    }
+}
+
+@hintId = {@
+    if(elements.args.get('_id)){
+        @elements.args.get('_id)_hint
+    }
+}
 
 <div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error} no-bottom-margin">
 
