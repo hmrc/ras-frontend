@@ -42,7 +42,8 @@
     field.value match {
         case Some(x) => x
         case None => ""
-        case x => x }
+        case x => x
+    }
 }
 
 @labelAfter = @{
@@ -60,16 +61,16 @@
     }
 }
 
-@labelId = {@
-    if(elements.args.get('_id)){
+@labelId = {
+    @if(elements.args.get('_id)){
         @elements.args.get('_id)_label
     }else{
         @elements.field.name.replaceAll("""[\.\[\]]""", "-")
     }
 }
 
-@hintId = {@
-    if(elements.args.get('_id)){
+@hintId = {
+    @if(elements.args.get('_id)){
         @elements.args.get('_id)_hint
     }
 }
