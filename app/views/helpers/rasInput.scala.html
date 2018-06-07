@@ -22,21 +22,42 @@
 @import views.helpers.FormHelpers
 
 
-@elements = @{ new FieldElements(field.id, field, null, args.toMap, messages) }
-@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
-@errors = @{ FormHelpers.getErrors(field, parentField) }
-@parentElements = @{parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )}
-@value = @{ field.value match { case Some(x) => x case None => "" case x => x }}
-@labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
-@labelHighlight = @{ elements.args.get('_labelHighlight).getOrElse(false).asInstanceOf[Boolean] }
+@elements = @{
+    new FieldElements(field.id, field, null, args.toMap, messages)
+}
 
-@labelFor = @{elements.args.get('_id)}
+@parentField = @{
+    args.toMap.get('parentField).asInstanceOf[Option[Field]]
+}
+
+@errors = @{
+    FormHelpers.getErrors(field, parentField)
+}
+
+@parentElements = @{
+    parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )
+}
+
+@value = @{
+    field.value match {
+        case Some(x) => x
+        case None => ""
+        case x => x }
+}
+
+@labelAfter = @{
+    elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean]
+}
+
+@labelFor = @{
+    elements.args.get('_id)
+}
 
 @labelClass = @{
-                    elements.args.get('_divClass)
-                    if(elements.args.get('_labelClass)){
-                        elements.args.get('_labelClass)
-                    }
+    elements.args.get('_divClass)
+    if(elements.args.get('_labelClass)){
+    elements.args.get('_labelClass)
+    }
 }
 
 @labelId = {@if(elements.args.get('_id)){@elements.args.get('_id)_label}else{@elements.field.name.replaceAll("""[\.\[\]]""", "-")}}
@@ -44,45 +65,33 @@
 
 <div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error} no-bottom-margin">
 
-    @if(elements.args.contains('_symbol)) {
-        <span class="inline-fields">@elements.args.get('_symbol)</span>
-    }
-
     <div class="form-group @if(elements.args.contains('_groupClass)){@elements.args.get('_groupClass)}">
 
         <label id="@field.id">
-            <span id="@(field.name)_label" class="form-label">@if(elements.args.contains('_label)) {@elements.label}</span>
+            <span id="@(field.name)_label" class="form-label">@elements.label</span>
             <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
             <span id="@elements.args.get('_id)-error" class="common-error">@commonHelper(field, errors)</span>
         </label>
 
-        <input @if(elements.args.contains('_type)){type="@elements.args.get('_type)"}else{type="text"}
-        @if(elements.args.contains('_maxLength)){
-        maxlength="@elements.args.get('_maxLength)"
-        }else{}
+        <input type="text"
+            @if(elements.args.contains('_maxLength)){
+            maxlength="@elements.args.get('_maxLength)"
+            }else{}
 
-        class="@if( elements.args.get('_inputClass)){
-        @elements.args.get('_inputClass)
-        }@if(errors.nonEmpty){
-        form-control form-control-error
-        }else{
-        form-control
-        }"
+            class="@if( elements.args.get('_inputClass)){
+            @elements.args.get('_inputClass)
+            }@if(errors.nonEmpty){
+            form-control form-control-error
+            }else{
+            form-control
+            }"
 
-        @if(elements.args.contains('_dataAttributes) ){
-        @elements.args.get('_dataAttributes)
-        }
+            @if(elements.args.contains('_hintText)) { aria-describedby="@hintId" }
 
-        @if(elements.args.contains('_hintText)) { aria-describedby="@hintId" }
+            name="@elements.field.name"
 
-        name="@elements.field.name"
+            id="@elements.args.get('_id)"
 
-        id="@elements.args.get('_id)"
-
-        value="@value" />
-
-        @if(elements.args.contains('_nested)) {
-        @elements.args.get('_nested)
-        }
+            value="@value"/>
     </div>
 </div>
