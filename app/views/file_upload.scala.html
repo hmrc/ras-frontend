@@ -32,13 +32,18 @@
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h2>
 
             <ul class="error-summary-list">
-                <li role="tooltip"><a id="error" class="error-list" href="#sub-header" data-focuses="choose-file">@error</a></li>
+                <li role="tooltip"><a id="error" class="error-list" href="#sub-header" data-focuses="upload-label">@error</a></li>
             </ul>
         </div>
 
         <input type="hidden" id="temp-error" />
-
-        <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
+        <legend>
+            <span>
+                <header class ="page-header">
+                    <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
+                </header>
+            </span>
+        </legend>
 
         <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
 
@@ -48,8 +53,9 @@
             }else{
             <div id="file-upload-with-error" class="form-group form-field--error">
                 }
-
-                <p id="upload-error" class="error-list">@error</p>
+                <label id="upload-label">
+                    <span id="upload-error" class="error-message">@error</span>
+                </label>
 
                 <form
                         id = "upload-form"
