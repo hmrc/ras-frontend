@@ -32,7 +32,7 @@
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h2>
 
             <ul class="error-summary-list">
-                <li role="tooltip"><a id="error" class="error-list" href="#sub-header" data-focuses="choose-file">@error</a></li>
+                <li role="tooltip"><a id="error" class="error-list" href="#sub-header" data-focuses="upload-label">@error</a></li>
             </ul>
         </div>
 
@@ -53,8 +53,9 @@
             }else{
             <div id="file-upload-with-error" class="form-group form-field--error">
                 }
-
-                <span id="upload-error" class="error-message">@error</span>
+                <label id="upload-label">
+                    <span id="upload-error" class="error-message">@error</span>
+                </label>
 
                 <form
                         id = "upload-form"
