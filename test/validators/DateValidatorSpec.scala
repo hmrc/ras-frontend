@@ -40,6 +40,18 @@ class DateValidatorSpec extends UnitSpec with Matchers {
       DateValidator.checkDayRange(RasDate(Some("1"),Some("1"),Some("C"))) shouldBe false
     }
 
+    "return false when year is less than 1900" in {
+      DateValidator.isAfter1900("1899") shouldBe false
+    }
+
+    "return true when year is more than 1899" in {
+      DateValidator.isAfter1900("1900") shouldBe true
+    }
+
+    "return false when year contains a character" in {
+      DateValidator.isAfter1900("19C") shouldBe false
+    }
+
   }
 
 }

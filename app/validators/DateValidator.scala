@@ -139,6 +139,13 @@ trait DateValidator {
     else
       false
   }
+
+  def isAfter1900(year: String): Boolean = {
+    if (year forall Character.isDigit)
+      year.toInt >= 1900
+    else
+      false
+  }
 }
 
 object DateValidator extends DateValidator
