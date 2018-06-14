@@ -44,7 +44,7 @@ class DateValidatorSpec extends UnitSpec with Matchers {
       DateValidator.isAfter1900("1899") shouldBe false
     }
 
-    "return true when year is more than 1899" in {
+    "return true when year is more than 1900" in {
       DateValidator.isAfter1900("1900") shouldBe true
     }
 
