@@ -15,8 +15,14 @@
 */
 
 $.timeoutDialog({
-   timeout:720,
+   timeout: 780,
    countdown: 120,
    keepAliveUrl: '/keep-alive',
-   signOutUrl: '/signed-out',
+   logout_url: '/relief-at-source/signed-out',
+   title: 'You’re about to be signed out',
+   message: 'For security reasons, you will be signed out of this service in',
+   close_on_escape: true,
+   background_no_scroll: true,
+   keep_alive_button_text: 'Stay signed in',
+   sign_out_button_text: 'Sign out'
 });
