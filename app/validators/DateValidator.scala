@@ -82,6 +82,9 @@ trait DateValidator {
         try {
           if (date.isInFuture)
             Invalid(Seq(ValidationError(Messages("error.dob.invalid.future"), day)))
+
+          else if (!DateValidator.isAfter1900(date.year.getOrElse("0")))
+            Invalid(Seq(ValidationError(Messages("error.dob.before.1900"), year)))
           else
             Valid
         }
@@ -136,6 +139,13 @@ trait DateValidator {
   def checkYearLength(year: String): Boolean = {
     if (year forall Character.isDigit)
       year.length == YEAR_FIELD_LENGTH
+    else
+      false
+  }
+
+  def isAfter1900(year: String): Boolean = {
+    if (year forall Character.isDigit)
+      year.toInt >= 1900
     else
       false
   }

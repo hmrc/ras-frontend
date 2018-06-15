@@ -73,6 +73,7 @@ error.day.invalid.thirty = Enter a day between 1 and 30
 error.month.invalid = Enter a month between 1 and 12
 error.year.invalid.format = Enter a year in full using 4 numbers
 error.dob.invalid.future = Enter a date of birth that is not in the future
+error.dob.before.1900 = Enter a date of birth that is after 1900
 generic.errors_heading = There is a problem
 upload.error.heading = There is a problem
 unauthorised.error = you are not authorised to access this service , you need Pension scheme administrator or pension scheme provider enrolments.
