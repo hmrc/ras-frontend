@@ -30,35 +30,35 @@
                 <p id="subheader">@Messages("match.not.found.subheader", name)</p>
 
                 <div class="grid-row ras-div-table-divider">
-                    <span class="column-one-half">
+                    <div class="column-one-half">
                         @Messages("name").capitalize
-                    </span>
-                    <span id="name" class="column-one-third">
+                    </div>
+                    <div id="name" class="column-one-third">
                         @name
-                    </span>
+                    </div>
                     <span id="change-name" class="ras-column-one-sixth ras-align-right">
-                       <a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name"  aria-label='@Messages("change.name")'>@Messages("change")</a>
+                        <a id="change-name-link" href='@routes.SessionController.redirect("member-name",false,true)' data-journey-click="link - click:User details not found:Change Name" aria-labelledBy='@Messages("change.name")'>@Messages("change")</a>
                     </span>
                 </div>
 
                 <div class="grid-row ras-div-table-divider">
-                    <span class="column-one-half">
+                    <div class="column-one-half">
                         @Messages("nino").capitalize
-                    </span>
-                    <span id="nino" class="column-one-third">
+                    </div>
+                    <div id="nino" class="column-one-third">
                         @nino
-                    </span>
+                    </div>
                     <span id="change-nino" class="ras-column-one-sixth ras-align-right">
-                        <a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-label='@Messages("change.nino")'>@Messages("change")</a>
+                        <a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-labelledby='@Messages("change.nino")'>@Messages("change")</a>
                     </span>
                 </div>
                 <div class="grid-row ras-div-table-divider">
-                    <span class="column-one-half">
+                    <div class="column-one-half">
                         @Messages("dob").capitalize
-                    </span>
-                    <span id="dob" class="column-one-third">
+                    </div>
+                    <div id="dob" class="column-one-third">
                         @dateOfBirth
-                    </span>
+                    </div>
                     <span id="change-dob" class="ras-column-one-sixth ras-align-right">
                         <a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB" aria-label='@Messages("change.dob")'>@Messages("change")</a>
                     </span>
