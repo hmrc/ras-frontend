@@ -36,6 +36,10 @@ trait ApplicationConfig {
   val rasApiResidencyStatusEndpoint: String
   val reportAProblemUrl: String
   val rasApiVersion: String
+  val timeOutSeconds: Int
+  val timeOutCountDownSeconds: Int
+  val refreshInterval: Int
+  val enableRefresh : Boolean
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -51,7 +55,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   override lazy val hoursToWaitForReUpload = configuration.getInt(s"re-upload.wait.time.hours").getOrElse(
     throw new Exception("Missing configuration key: re-upload.wait.time.hours "))
-
 
   private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/relief-at-source/")
   private val signOutBaseUrl = s"$caFrontendHost/gg/sign-out?continue="
@@ -71,4 +74,9 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val rasApiResidencyStatusEndpoint: String = getString("residency-status-url")
 
   override lazy val rasApiVersion: String = getString("ras-api-version")
+
+  override lazy val timeOutSeconds : Int = configuration.getString("session.timeoutSeconds").getOrElse("780").toInt
+  override lazy val timeOutCountDownSeconds: Int = configuration.getString("session.time-out-countdown-seconds").getOrElse("120").toInt
+  override lazy val refreshInterval: Int = timeOutSeconds + 10
+  override lazy val enableRefresh: Boolean= configuration.getBoolean("session.enableRefresh").getOrElse(true)
 }

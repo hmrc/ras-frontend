@@ -71,8 +71,8 @@ trait SessionController extends RasController {
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
       }
-
   }
-
-
+  def keepAlive() = Action.async {
+    implicit request => Future.successful(Ok("OK"))
+  }
 }

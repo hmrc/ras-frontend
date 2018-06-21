@@ -43,6 +43,7 @@ GET         /file-not-available                     controllers.ErrorController.
 GET         /not-authorised                         controllers.ErrorController.notAuthorised
 
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
+GET         /keep-alive                             controllers.SessionController.keepAlive
 
 
 GET         /signed-out                             controllers.QuestionnaireController.showQuestionnaire

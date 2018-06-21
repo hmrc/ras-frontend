@@ -185,3 +185,12 @@ label.limit_is_1200_characters=(Limit is 1200 characters)
 label.please_dont_include_any_personal_or_financial_information=Do not include any personal or financial information like your National Insurance number or bank details.
 label.send_feedback=Send feedback
 label.thanks_for_your_feedback=Thanks for your feedback
+
+##timeoutDialog
+
+ras.timeoutDialog.title= You are about to be signed out
+ras.timeoutDialog.seconds= seconds
+ras.timeoutDialog.minutes= minutes
+ras.timeoutDialog.minute= minute
+ras.timeoutDialog.button= Stay signed in
+ras.timeoutDialog.p1 = For security reasons, you will be signed out of this service in:
