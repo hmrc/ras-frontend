@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models.WhatDoYouWantToDo
+import services.ShortLivedCache
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -121,7 +122,8 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                       fileSession.userFile match {
                         case Some(callbackData) =>
                           val currentTaxYear = TaxYearResolver.currentTaxYear
-                          Ok(views.html.upload_result(callbackData.fileId, expiry, isBeforeApr6(timestamp), currentTaxYear))
+                          val filename = ShortLivedCache.getDownloadFileName(fileSession)
+                          Ok(views.html.upload_result(callbackData.fileId, expiry, isBeforeApr6(timestamp), currentTaxYear, filename))
                         case _ =>
                           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.ErrorController.renderGlobalErrorPage)

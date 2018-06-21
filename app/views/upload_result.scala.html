@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int, filename: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @year = {@if(isBeforeApr6){CY & CY + 1}else{CY}}
 
@@ -54,7 +54,7 @@
                                id="result-link"
                                href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)"
                                data-journey-click="link - click:Residency status upload added @year:ResidencyStatusResults @year CSV">
-                                @Messages("residency.status.result")
+                                @Messages("residency.status.result", filename)
                             </a>
                         </p>
                     </div>
