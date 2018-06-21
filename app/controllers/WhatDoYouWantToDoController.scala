@@ -191,15 +191,28 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
       }
   }
 
-  def getResultsFile(fileName:String):  Action[AnyContent] = Action.async {
+  def getResultsFile(fileName:String) = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          userCanGetFile(userId, fileName).flatMap {
-            case true =>
-              shortLivedCache.removeFileSessionFromCache(userId)
-              getFile(fileName, userId)
-            case false =>
+          shortLivedCache.fetchFileSession(userId).flatMap {
+            case Some(fileSession) =>
+              fileSession.resultsFile match {
+                case Some(resultFile) =>
+                  resultFile.filename match {
+                    case Some(name) if name == fileName =>
+                      shortLivedCache.removeFileSessionFromCache(userId)
+                      getFile(fileName, userId, shortLivedCache.getDownloadFileName(fileSession))
+                    case _ =>
+                      Logger.error("[WhatDoYouWantToDoController][getResultsFile] filename empty")
+                      Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
+                  }
+                case _ =>
+                  Logger.error("[WhatDoYouWantToDoController][getResultsFile] no result file found")
+                  Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
+              }
+            case _ =>
+              Logger.error("[WhatDoYouWantToDoController][getResultsFile] no file session for User Id")
               Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
           }
         case Left(resp) =>
@@ -208,34 +221,12 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
       }
   }
 
-  private def userCanGetFile(userId: String, fileName: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
-    shortLivedCache.fetchFileSession(userId).map {
-      case Some(fileSession) =>
-        fileSession.resultsFile match {
-          case Some(resultFile) =>
-            resultFile.filename match {
-              case Some(name) if name == fileName =>
-                true
-              case _ =>
-                Logger.error("[WhatDoYouWantToDoController][getResultsFile] filename empty")
-                false
-            }
-          case _ =>
-            Logger.error("[WhatDoYouWantToDoController][getResultsFile] no result file found")
-            false
-        }
-      case _ =>
-        Logger.error("[WhatDoYouWantToDoController][getResultsFile] no file session for User Id")
-        false
-    }
-  }
-
-  private def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[play.api.mvc.Result] = {
+  private def getFile(fileName: String, userId: String, downloadFileName: String)(implicit hc: HeaderCarrier): Future[play.api.mvc.Result] = {
     resultsFileConnector.getFile(fileName, userId).map { response =>
       val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
 
       Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
-        .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${fileName}.csv"""",
+        .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${downloadFileName}-results.csv"""",
           // CONTENT_LENGTH -> s"${fileData.get.length}",
           CONTENT_TYPE -> _contentType)
 

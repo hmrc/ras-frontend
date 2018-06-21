@@ -66,8 +66,8 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
   val mockRasConnector = mock[ResidencyStatusAPIConnector]
   val mockUploadTimeStamp = new DateTime().minusDays(10).getMillis
   val mockExpiryTimeStamp = new DateTime().minusDays(7).getMillis
-  val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+  val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
+  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
   val userChoice = ""
   val rasSession = RasSession(userChoice ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
 
@@ -142,7 +142,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "redirect to file upload page when bulk lookup option is selected and file session has no file" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
       when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
@@ -290,7 +290,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain the correct ga events when upload date is 01/01/2018 (CY+1)" in {
       val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
@@ -303,7 +303,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain a cy message when upload date is 06/04/2018" in {
       val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
@@ -312,7 +312,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain the correct ga events when upload date is 06/04/2018 (CY only)" in {
       val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
@@ -326,7 +326,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain a cy message when upload date is 31/12/2018" in {
       val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
@@ -345,7 +345,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "download a file containing the results" in {
       val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
@@ -355,7 +355,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "not be able to download a file containing the results when file name is incorrect" in {
       val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",Some("wrongName.csv"),Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
@@ -364,7 +364,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "not be able to download a file containing the results when there is no results file" in {
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None)
+      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
@@ -383,7 +383,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "redirect to error page" when {
 
       "render upload result page is called but there is no callback data in the retrieved file session" in {
-        val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(new DateTime().plusDays(10).getMillis))
+        val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(new DateTime().plusDays(10).getMillis),None)
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
         val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
         status(result) shouldBe SEE_OTHER
@@ -407,7 +407,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       }
 
       "there is a file session but there is no result file ready" in {
-        val fileSession = FileSession(None,None,"1234",None)
+        val fileSession = FileSession(None,None,"1234",None,None)
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
         val result = await(TestWhatDoYouWantToDoController.renderFileReadyPage(fakeRequest))
         redirectLocation(result).get should include("/global-error")
@@ -454,7 +454,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
   "renderResultsNotAvailableYetPage" should {
     "return ok when called" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       status(result) shouldBe SEE_OTHER
@@ -462,56 +462,56 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "contain the correct page title" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).title shouldBe Messages("results.not.available.yet.page.title")
     }
 
     "contain the correct page header" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("header").text shouldBe Messages("results.not.available.yet.page.header")
     }
 
     "contain the correct sub header 1" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("sub-header1").text shouldBe Messages("results.not.available.yet.sub-header1")
     }
 
     "contain the correct sub header 2" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("sub-header2").text shouldBe Messages("results.not.available.yet.sub-header2")
     }
 
     "contain a back link pointing to /" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("back").attr("href") should include("/")
     }
 
     "contain a choose something else to do button" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
     "contain a choose something else to do button that points to /" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("choose-something-else").attr("href") should include ("/")
     }
 
     "contain the correct ga events" in {
-      val fileSession = FileSession(None,None,"1234",None)
+      val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderNoResultsAvailableYetPage(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Results are still being added:Back"

@@ -203,21 +203,32 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
   "ShortLivedCache" should {
     "return error in file upload" when {
       "Status is not equal to Available" in {
-        val fileSession = FileSession(Some(CallbackData("","someFileId","ERROR",None)),None,"1234",None)
+        val fileSession = FileSession(Some(CallbackData("","someFileId","ERROR",None)),None,"1234",None,None)
         ShortLivedCache.errorInFileUpload(fileSession) shouldBe true
+      }
+    }
+
+    "return the correct filename from getDownloadFileName" when {
+      "there is no name in session" in {
+        val fileSession = FileSession(Some(CallbackData("","someFileId","ERROR",None)),None,"1234",None,None)
+        ShortLivedCache.getDownloadFileName(fileSession) shouldBe "Residency-status"
+      }
+
+      "there is a name and extension in session" in {
+        val fileSession = FileSession(Some(CallbackData("", "someFileId", "ERROR", None)), None, "1234", None, Some(FileMetadata("", "originalName.csv", "")))
+        ShortLivedCache.getDownloadFileName(fileSession) shouldBe "originalName"
       }
     }
 
     "not return error in file upload" when {
       "Status is equal to Available" in {
-        val fileSession = FileSession(Some(CallbackData("","someFileId","AVAILABLE",None)),None,"1234",None)
+        val fileSession = FileSession(Some(CallbackData("","someFileId","AVAILABLE",None)),None,"1234",None,None)
         ShortLivedCache.errorInFileUpload(fileSession) shouldBe false
       }
       "File Session is empty" in {
-        val fileSession = FileSession(None,None,"1234",None)
+        val fileSession = FileSession(None,None,"1234",None,None)
         ShortLivedCache.errorInFileUpload(fileSession) shouldBe false
       }
     }
   }
-
 }
