@@ -240,7 +240,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "contain a result link with the correct file name" in {
       val fileName = "originalFileName"
-      val fileMetadata = FileMetadata("", fileName, "")
+      val fileMetadata = FileMetadata("", Some(fileName), None)
       val fs = fileSession.copy(fileMetadata = Some(fileMetadata))
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fs)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))

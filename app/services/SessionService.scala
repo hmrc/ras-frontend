@@ -228,7 +228,7 @@ trait ShortLivedCache  {
   }
 
   def getDownloadFileName(fileSession: FileSession)(implicit hc: HeaderCarrier): String = {
-    val name = fileSession.fileMetadata.map(_.name).getOrElse(defaultDownloadName)
+    val name = fileSession.fileMetadata.flatMap(_.name).getOrElse(defaultDownloadName)
     if (name.indexOf(".") > 0)
       name.take(name.lastIndexOf("."))
     else

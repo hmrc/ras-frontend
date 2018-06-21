@@ -203,19 +203,27 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
   "ShortLivedCache" should {
     "return error in file upload" when {
       "Status is not equal to Available" in {
-        val fileSession = FileSession(Some(CallbackData("","someFileId","ERROR",None)),None,"1234",None,None)
+        val fileSession = FileSession(Some(CallbackData("", "someFileId", "ERROR", None)), None, "1234", None, None)
         ShortLivedCache.errorInFileUpload(fileSession) shouldBe true
       }
     }
 
     "return the correct filename from getDownloadFileName" when {
-      "there is no name in session" in {
-        val fileSession = FileSession(Some(CallbackData("","someFileId","ERROR",None)),None,"1234",None,None)
+      "there is no metadata in session" in {
+        val fileSession = FileSession(
+          Some(CallbackData("", "someFileId", "ERROR", None)), None, "1234", None, None)
         ShortLivedCache.getDownloadFileName(fileSession) shouldBe "Residency-status"
       }
 
-      "there is a name and extension in session" in {
-        val fileSession = FileSession(Some(CallbackData("", "someFileId", "ERROR", None)), None, "1234", None, Some(FileMetadata("", "originalName.csv", "")))
+      "there is metadata in session but there is no name in metadata" in {
+        val fileSession = FileSession(Some(CallbackData("", "someFileId", "ERROR", None)), None, "1234", None,
+          Some(FileMetadata("", None, None)))
+        ShortLivedCache.getDownloadFileName(fileSession) shouldBe "Residency-status"
+      }
+
+      "there is metadata in session and there is a name and extension in session" in {
+        val fileSession = FileSession(Some(CallbackData("", "someFileId", "ERROR", None)), None, "1234", None,
+          Some(FileMetadata("", Some("originalName.csv"), None)))
         ShortLivedCache.getDownloadFileName(fileSession) shouldBe "originalName"
       }
     }
