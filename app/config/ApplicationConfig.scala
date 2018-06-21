@@ -75,8 +75,8 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   override lazy val rasApiVersion: String = getString("ras-api-version")
 
-  override lazy val timeOutSeconds : Int = configuration.getString("session.timeoutSeconds").getOrElse("780").toInt
-  override lazy val timeOutCountDownSeconds: Int = configuration.getString("session.time-out-countdown-seconds").getOrElse("120").toInt
+  override lazy val timeOutSeconds : Int = configuration.getString("sessionTimeout.timeoutSeconds").getOrElse("780").toInt
+  override lazy val timeOutCountDownSeconds: Int = configuration.getString("sessionTimeout.time-out-countdown-seconds").getOrElse("120").toInt
   override lazy val refreshInterval: Int = timeOutSeconds + 10
-  override lazy val enableRefresh: Boolean= configuration.getBoolean("session.enableRefresh").getOrElse(true)
+  override lazy val enableRefresh: Boolean= configuration.getBoolean("sessionTimeout.enableRefresh").getOrElse(true)
 }
