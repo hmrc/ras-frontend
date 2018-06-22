@@ -161,9 +161,16 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
         val result = await(TestSessionController.redirect("blah blah", true)(FakeRequest()))
         redirectLocation(result).get should include("global-error")
       }
+    }
 
+    "keep a session alive" when {
+      "keep alive action is called" in {
+        val result = await(TestSessionController.keepAlive()(FakeRequest()))
+        status(result) shouldBe OK
+      }
     }
   }
+
 
 
 }
