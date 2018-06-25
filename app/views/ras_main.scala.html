@@ -48,6 +48,7 @@ supportLinkEnabled: Boolean = true)(mainContent: Html)(implicit request : Reques
 
 @scriptElement = {
     <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/ras.js")'></script>
+    @scriptElem
     <script>
         @if(hasTimeOut && ApplicationConfig.enableRefresh) {
         $.timeoutDialog({
