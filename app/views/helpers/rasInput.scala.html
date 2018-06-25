@@ -61,7 +61,7 @@
 
     <div class="form-group @if(elements.args.contains('_groupClass)){@elements.args.get('_groupClass)}">
 
-        <label id="@labelId">
+        <label for="@labelFor" id="@labelId">
             <span class="form-label">@elements.label</span>
             <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
             <span id="@elements.args.get('_id)-error" class="common-error">@commonHelper(field, errors)</span>
