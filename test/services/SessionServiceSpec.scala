@@ -16,6 +16,7 @@
 
 package services
 
+import config.ApplicationConfig
 import helpers.RandomNino
 import models._
 import org.scalatest.concurrent.ScalaFutures
@@ -36,6 +37,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutures with MockitoSugar {
 
   val mockSessionCache = mock[SessionCache]
+  val mockConfig = mock[ApplicationConfig]
 
   val name = MemberName("John", "Johnson")
   val nino = MemberNino(RandomNino.generate)
@@ -50,6 +52,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
 
   object TestSessionService extends SessionService {
     override def sessionCache: SessionCache = mockSessionCache
+    override val config: ApplicationConfig = mockConfig
   }
 
   "Session service" should {
@@ -200,21 +203,33 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
     }
 
-    "haUserDismissedUrBanner" should {
-      "return rasSession value" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession.copy(urBannerDismissed = Some(true)))))
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
-        result shouldBe true
+    "haUserDismissedUrBanner" when {
+      "showUrBanner is true" should {
+        "return rasSession value" in {
+          when(mockConfig.showUrBanner).thenReturn(true)
+          when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession.copy(urBannerDismissed = Some(true)))))
+          val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
+          result shouldBe true
+        }
+        "return false when no cached value" in {
+          when(mockConfig.showUrBanner).thenReturn(true)
+          when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
+          val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
+          result shouldBe false
+        }
+        "return false when no rasSession value" in {
+          when(mockConfig.showUrBanner).thenReturn(true)
+          when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
+          val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
+          result shouldBe false
+        }
       }
-      "return false when no cached value" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
-        result shouldBe false
-      }
-      "return false when no rasSession value" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
-        result shouldBe false
+      "showUrBanner is false" should {
+        "always return false" in {
+          when(mockConfig.showUrBanner).thenReturn(false)
+          val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
+          result shouldBe false
+        }
       }
     }
 

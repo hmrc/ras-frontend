@@ -27,11 +27,14 @@ import uk.gov.hmrc.http.cache.client.ShortLivedHttpCaching
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object SessionService extends SessionService
+object SessionService extends SessionService {
+  override val config: ApplicationConfig = ApplicationConfig
+}
 
 
 trait SessionService extends SessionCacheWiring {
 
+  val config: ApplicationConfig
   val RAS_SESSION_KEY = "ras_session"
   val cleanSession = RasSession(
     "",
@@ -178,8 +181,12 @@ trait SessionService extends SessionCacheWiring {
   }
 
   def hasUserDimissedUrBanner()(implicit request: Request[_], hc: HeaderCarrier): Future[Boolean] = {
-    sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      Future.successful(currentSession.flatMap(_.urBannerDismissed).getOrElse(false))
+    println("@@@showUrlBanner=" + config.showUrBanner)
+    config.showUrBanner match {
+      case true => sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+        Future.successful(currentSession.flatMap(_.urBannerDismissed).getOrElse(false))
+      }
+      case false => Future.successful(false)
     }
   }
 }
