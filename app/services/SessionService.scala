@@ -161,6 +161,22 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
+  def cacheUrBannerDismissed(urBannerDismissed: Boolean)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+
+    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+      sessionCache.cache[RasSession](RAS_SESSION_KEY,
+        currentSession match {
+          case Some(returnedSession) => returnedSession.copy(urBannerDismissed = Some(urBannerDismissed))
+          case None => cleanSession.copy(urBannerDismissed = Some(urBannerDismissed))
+        }
+      )
+    }
+
+    result.map(cacheMap => {
+      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
+    })
+  }
+
 }
 
 trait ShortLivedCache  {

@@ -183,6 +183,25 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
     }
 
+    "cache Ur dismissal" when {
+      "no session is available" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
+        val json = Json.toJson[RasSession](rasSession.copy(urBannerDismissed = Some(true)))
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
+        val result = Await.result(TestSessionService.cacheUrBannerDismissed(true)(FakeRequest(), headerCarrier), 10 seconds)
+
+        println(result)
+        result shouldBe Some(rasSession.copy(urBannerDismissed = Some(true)))
+      }
+      "a session is available" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
+        val json = Json.toJson[RasSession](rasSession.copy(urBannerDismissed = Some(false)))
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
+        val result = Await.result(TestSessionService.cacheUrBannerDismissed(false)(FakeRequest(), headerCarrier), 10 seconds)
+        result shouldBe Some(rasSession.copy(urBannerDismissed = Some(false)))
+      }
+    }
+
     "fetch ras session" when {
       "requested" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
