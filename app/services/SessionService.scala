@@ -177,6 +177,13 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
+  def hasUserDimissedUrBanner(rasSession: RasSession): Boolean = {
+    rasSession.urBannerDismissed match {
+      case Some(urBannerDismissed) => urBannerDismissed
+      case None => false
+    }
+  }
+
 }
 
 trait ShortLivedCache  {

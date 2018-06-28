@@ -202,6 +202,17 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
     }
 
+    "haUserDismissedUrBanner" should {
+      "return rasSession value" in {
+        val result = Await.result(TestSessionService.hasUserDimissedUrBanner(rasSession.copy(urBannerDismissed = Some(true))), 10 seconds)
+        result shouldBe true
+      }
+      "return false when no cached value" in {
+        val result = Await.result(TestSessionService.hasUserDimissedUrBanner(rasSession), 10 seconds)
+        result shouldBe false
+      }
+    }
+
     "fetch ras session" when {
       "requested" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
