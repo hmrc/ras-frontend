@@ -27,7 +27,8 @@
   signOutEnabled: Boolean = true,
   hasTimeOut:Boolean = true,
   signOutText: String = "",
-supportLinkEnabled: Boolean = true)(mainContent: Html)(implicit request : Request[_], context: config.RasContext, messages: Messages)
+  supportLinkEnabled: Boolean = true,
+  showUrBanner: Boolean = false)(mainContent: Html)(implicit request : Request[_], context: config.RasContext, messages: Messages)
 
 
 @getHelpForm = {
