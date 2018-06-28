@@ -193,7 +193,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
       "a session is available" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(urBannerDismissed = Some(false)))
+        val json = Json.toJson[RasSession](rasSession.copy(urBannerDismissed = Some(true)))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.cacheUrBannerDismissed()(FakeRequest(), headerCarrier), 10 seconds)
         result shouldBe Some(rasSession.copy(urBannerDismissed = Some(true)))
@@ -202,11 +202,18 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
 
     "haUserDismissedUrBanner" should {
       "return rasSession value" in {
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner(rasSession.copy(urBannerDismissed = Some(true))), 10 seconds)
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession.copy(urBannerDismissed = Some(true)))))
+        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
         result shouldBe true
       }
       "return false when no cached value" in {
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner(rasSession), 10 seconds)
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
+        result shouldBe false
+      }
+      "return false when no rasSession value" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
+        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
         result shouldBe false
       }
     }

@@ -177,13 +177,11 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
-  def hasUserDimissedUrBanner(rasSession: RasSession): Boolean = {
-    rasSession.urBannerDismissed match {
-      case Some(urBannerDismissed) => urBannerDismissed
-      case None => false
+  def hasUserDimissedUrBanner()(implicit request: Request[_], hc: HeaderCarrier): Future[Boolean] = {
+    sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+      Future.successful(currentSession.flatMap(_.urBannerDismissed).getOrElse(false))
     }
   }
-
 }
 
 trait ShortLivedCache  {
