@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(whatDoYouWantToDoForm: Form[models.WhatDoYouWantToDo], urBannerDismissed: Boolean = false)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(whatDoYouWantToDoForm: Form[models.WhatDoYouWantToDo], showUrBanner: Boolean = false)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
