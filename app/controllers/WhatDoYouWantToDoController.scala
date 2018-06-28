@@ -54,7 +54,9 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm)))
+          sessionService.hasUserDimissedUrBanner().flatMap { urBannerDismissed =>
+            Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm, urBannerDismissed)))
+          }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
@@ -68,7 +70,9 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
           whatDoYouWantToDoForm.bindFromRequest.fold(
             formWithErrors => {
               Logger.error("[WhatDoYouWantToDoController][post] No option selected")
-              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors)))
+              sessionService.hasUserDimissedUrBanner().flatMap { urBannerDismissed =>
+                Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors, urBannerDismissed)))
+              }
             },
             whatDoYouWantToDo =>
               sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {

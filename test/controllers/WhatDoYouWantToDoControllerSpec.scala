@@ -86,6 +86,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+    when(mockSessionService.hasUserDimissedUrBanner()(any(), any())).thenReturn(Future.successful(false))
     when(mockRasConnector.getFile(any(), any())(any())).thenReturn(Future.successful(Some(inputStream)))
     when(mockUserDetailsConnector.getUserDetails(any())(any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
