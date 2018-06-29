@@ -45,7 +45,7 @@ GET         /not-authorised                         controllers.ErrorController.
 GET         /check-another-member/:target           controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
 GET         /keep-alive                             controllers.SessionController.keepAlive
 
-GET         /relief-at-source/dismiss-ur-banner     controllers.UrDismissalController.dismissUrBanner
+GET         /dismiss-ur-banner                      controllers.UrDismissalController.dismissUrBanner
 
 GET         /signed-out                             controllers.QuestionnaireController.showQuestionnaire
 POST        /signed-out                             controllers.QuestionnaireController.submitQuestionnaire
