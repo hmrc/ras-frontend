@@ -36,9 +36,20 @@
                       }
                   ) { anchor =>
                     <li role="tooltip" data-journey='There is a problem - view:@gaActionPage:@error.message'>
+
+                        @if(href == "#dateOfBirth.day") {
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key-day"  >
+                            @Messages(error.message)
+                        </a>
+                        } else { @if(href == "#dateOfBirth.month") {
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key-month"  >
+                            @Messages(error.message)
+                        </a>
+                        } else {
                         <a href="#@anchor" class="error-list" data-focuses="@error.key"  >
                             @Messages(error.message)
                         </a>
+                        }}
                     </li>
                   }
               }
