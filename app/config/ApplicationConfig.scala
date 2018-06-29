@@ -40,7 +40,7 @@ trait ApplicationConfig {
   val timeOutCountDownSeconds: Int
   val refreshInterval: Int
   val enableRefresh: Boolean
-  val showUrBanner: Boolean
+  val enableUrBanner: Boolean
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -74,7 +74,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
 
   override lazy val rasApiResidencyStatusEndpoint: String = getString("residency-status-url")
 
-  override lazy val showUrBanner: Boolean = configuration.getBoolean("show-ur-banner").getOrElse(false)
+  override lazy val enableUrBanner: Boolean = configuration.getBoolean("enable-ur-banner").getOrElse(false)
 
   override lazy val rasApiVersion: String = getString("ras-api-version")
 
