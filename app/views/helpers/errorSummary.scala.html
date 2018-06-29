@@ -37,20 +37,20 @@
                   ) { anchor =>
                     <li role="tooltip" data-journey='There is a problem - view:@gaActionPage:@error.message'>
 
-                        @if(error.message.contains("day") || error.message == "Enter a date of birth that is not in the future"){
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key-day"  >
+                        @if(error.message.contains("day") || error.message == "Enter a date of birth that is not in the future" || error.message == "Enter a date of birth"){
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key-day">
                             @Messages(error.message)
                         </a>
                         } else { @if(error.message.contains("month")) {
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key-month"  >
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key-month">
                             @Messages(error.message)
                         </a>
                         } else { @if(error.message.contains("year") || error.message == "Enter a date of birth that is after 1900"){
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key-year"  >
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key-year">
                             @Messages(error.message)
                         </a>
                         } else {
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key"  >
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key">
                             @Messages(error.message)
                         </a>
                         }}}
