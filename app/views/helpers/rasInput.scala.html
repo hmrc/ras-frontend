@@ -67,7 +67,7 @@
             <span id="@elements.args.get('_id)-error" class="common-error">@commonHelper(field, errors)</span>
         </label>
 
-        <input type="text"
+        <input type="@if(elements.args.get('_type)){@elements.args.get('_type)}else{text}"
             @if(elements.args.contains('_maxLength)){
             maxlength="@elements.args.get('_maxLength)"
             }else{}

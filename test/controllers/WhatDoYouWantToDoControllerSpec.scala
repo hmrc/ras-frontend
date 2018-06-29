@@ -233,12 +233,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementById("icon--file img").attr("src") should include("icon-file-download.png")
     }
 
-    "contain a document image that points to get results file" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("document-image-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
-    }
-
     "contain a result link with the correct file name" in {
       val fileName = "originalFileName"
       val fileMetadata = FileMetadata("", Some(fileName), None)
@@ -298,7 +292,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
-      doc(result).getElementById("document-image-link").attr("data-journey-click") shouldBe "image - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
       doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY & CY + 1:Choose something else to do"
       doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
@@ -320,7 +313,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestWhatDoYouWantToDoController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
-      doc(result).getElementById("document-image-link").attr("data-journey-click") shouldBe "image - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
       doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY:Choose something else to do"
       doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
