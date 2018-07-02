@@ -111,34 +111,36 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          shortLivedCache.fetchFileSession(userId).map {
-            case Some(fileSession) =>
-              fileSession.resultsFile match {
-                case Some(resultFile) =>
-                  resultFile.uploadDate match {
-                    case Some(timestamp) =>
-                      val expiryDate = new DateTime(timestamp).plusDays(3)
-                      val expiry = s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("H:mma").toLowerCase()}"
-                      fileSession.userFile match {
-                        case Some(callbackData) =>
-                          val currentTaxYear = TaxYearResolver.currentTaxYear
-                          val filename = ShortLivedCache.getDownloadFileName(fileSession)
-                          Ok(views.html.upload_result(callbackData.fileId, expiry, isBeforeApr6(timestamp), currentTaxYear, filename))
-                        case _ =>
-                          Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
-                          Redirect(routes.ErrorController.renderGlobalErrorPage)
-                      }
-                    case _ =>
-                      Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload timestamp")
-                      Redirect(routes.ErrorController.renderGlobalErrorPage)
-                  }
-                case _ =>
-                  Logger.info("[WhatDoYouWantToDoController][renderUploadResultsPage] file upload in progress")
-                  Redirect(routes.WhatDoYouWantToDoController.renderNoResultsAvailableYetPage)
-              }
-            case _ =>
-              Logger.info("[WhatDoYouWantToDoController][renderUploadResultsPage] no results available")
-              Redirect(routes.WhatDoYouWantToDoController.renderNoResultAvailablePage)
+          sessionService.hasUserDimissedUrBanner().flatMap { urBannerDismissed =>
+            shortLivedCache.fetchFileSession(userId).map {
+              case Some(fileSession) =>
+                fileSession.resultsFile match {
+                  case Some(resultFile) =>
+                    resultFile.uploadDate match {
+                      case Some(timestamp) =>
+                        val expiryDate = new DateTime(timestamp).plusDays(3)
+                        val expiry = s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("H:mma").toLowerCase()}"
+                        fileSession.userFile match {
+                          case Some(callbackData) =>
+                            val currentTaxYear = TaxYearResolver.currentTaxYear
+                            val filename = ShortLivedCache.getDownloadFileName(fileSession)
+                            Ok(views.html.upload_result(callbackData.fileId, expiry, isBeforeApr6(timestamp), currentTaxYear, filename, !urBannerDismissed))
+                          case _ =>
+                            Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve callback data")
+                            Redirect(routes.ErrorController.renderGlobalErrorPage)
+                        }
+                      case _ =>
+                        Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] failed to retrieve upload timestamp")
+                        Redirect(routes.ErrorController.renderGlobalErrorPage)
+                    }
+                  case _ =>
+                    Logger.info("[WhatDoYouWantToDoController][renderUploadResultsPage] file upload in progress")
+                    Redirect(routes.WhatDoYouWantToDoController.renderNoResultsAvailableYetPage)
+                }
+              case _ =>
+                Logger.info("[WhatDoYouWantToDoController][renderUploadResultsPage] no results available")
+                Redirect(routes.WhatDoYouWantToDoController.renderNoResultAvailablePage)
+            }
           }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][renderUploadResultsPage] user not authorised")

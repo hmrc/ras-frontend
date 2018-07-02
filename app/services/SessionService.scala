@@ -52,6 +52,25 @@ trait SessionService extends SessionCacheWiring {
     sessionCache.cache[RasSession](RAS_SESSION_KEY, cleanSession) map (cacheMap => Some(cleanSession))
   }
 
+  /*def resetRasSession(mode: String = "")(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+      sessionCache.cache[RasSession](RAS_SESSION_KEY,
+        currentSession match {
+          case Some(returnedSession) => cleanSession.copy(urBannerDismissed = returnedSession.urBannerDismissed)
+           /* mode match {
+              case "bulkOnly" => returnedSession.copy(uploadResponse = None)
+              case _ => cleanSession.copy(urBannerDismissed = returnedSession.urBannerDismissed)
+            }*/
+          case None => cleanSession
+        }
+      )
+    }
+
+    result.map(cacheMap => {
+      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
+    })
+  }*/
+
   def cacheWhatDoYouWantToDo(userChoice: String)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
 
     val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
