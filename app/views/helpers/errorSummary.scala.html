@@ -37,7 +37,7 @@
                   ) { anchor =>
                     <li role="tooltip" data-journey='There is a problem - view:@gaActionPage:@error.message'>
 
-                        @if(error.message.contains("day") || error.message == "Enter a date of birth that is not in the future" || error.message == "Enter a date of birth"){
+                        @if(anchor.toString.contains("day")){
                         <a href="#@anchor" class="error-list" data-focuses="@error.key-day">
                             @Messages(error.message)
                         </a>
