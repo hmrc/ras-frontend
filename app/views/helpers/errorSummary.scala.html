@@ -41,11 +41,11 @@
                         <a href="#@anchor" class="error-list" data-focuses="@error.key-day">
                             @Messages(error.message)
                         </a>
-                        } else { @if(error.message.contains("month")) {
+                        } else { @if(anchor.toString.contains("month")) {
                         <a href="#@anchor" class="error-list" data-focuses="@error.key-month">
                             @Messages(error.message)
                         </a>
-                        } else { @if(error.message.contains("year") || error.message == "Enter a date of birth that is after 1900"){
+                        } else { @if(anchor.toString.contains("year")){
                         <a href="#@anchor" class="error-list" data-focuses="@error.key-year">
                             @Messages(error.message)
                         </a>
