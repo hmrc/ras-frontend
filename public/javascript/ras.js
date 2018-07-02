@@ -17,10 +17,19 @@
 $(function() {
 
     var pageTitle = $('title').text();
-    var helpButton = $("#get-help-action");
 
-    helpButton.on('click', function (e) {
+    $("#get-help-action").on('click', function (e) {
         ga('send', 'event', 'link - click', pageTitle, 'get help with this page');
+    });
+
+
+    $(".full-width-banner__close").click(function(){
+      $.ajax({
+        url: "/relief-at-source/dismiss-ur-banner",
+        success: function(){
+          $('.full-width-banner').fadeOut('slow')
+        }
+      })
     });
 
 });

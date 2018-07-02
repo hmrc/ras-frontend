@@ -32,7 +32,7 @@
 
 
 @getHelpForm = {
-@{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
+    @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
 }
 
 @serviceInfoContent = {}
@@ -69,11 +69,6 @@
 
 }
 
-@urBanner = {
-    @if(showUrBanner) {
-    }
-}
-
 @govuk_wrapper(applicationConfig = config.ApplicationConfig,
                title = title,
                mainClass = mainClass,
@@ -86,5 +81,5 @@
                scriptElem = Some(scriptElement),
                signOutEnabled = signOutEnabled,
                linkElement = Some(linkElement),
-               urBanner = urBanner
+               showUrBanner = showUrBanner
 )
