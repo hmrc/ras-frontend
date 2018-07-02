@@ -181,7 +181,7 @@ trait SessionService extends SessionCacheWiring {
   }
 
   def hasUserDimissedUrBanner()(implicit request: Request[_], hc: HeaderCarrier): Future[Boolean] = {
-    config.enableUrBanner match {
+    config.urBannerEnabled match {
       case true => sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
         Future.successful(currentSession.flatMap(_.urBannerDismissed).getOrElse(false))
       }

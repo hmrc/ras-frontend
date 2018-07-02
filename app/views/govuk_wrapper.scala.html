@@ -135,7 +135,7 @@
     @if(showUrBanner) {
         @views.html.helpers.urBanner(title = Messages("ur.banner.title"),
             text = Messages("ur.banner.text"),
-            link = "https://signup.take-part-in-research.service.gov.uk/?utm_campaign=RASbanner&utm_source=Other&utm_medium=other&t=HMRC&id=160",
+            link = applicationConfig.urBannerUrl,
             showLink = true,
             dismissText = Messages("ur.banner.dismiss.text"),
             dismissUrl = "#",

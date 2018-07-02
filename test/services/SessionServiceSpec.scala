@@ -205,7 +205,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
 
     "return rasSession value" when {
       "calling hasUserDismissedUrBanner and showUrBanner is true" in {
-        when(mockConfig.enableUrBanner).thenReturn(true)
+        when(mockConfig.urBannerEnabled).thenReturn(true)
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession.copy(urBannerDismissed = Some(true)))))
         val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
         result shouldBe true
@@ -214,13 +214,13 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
 
     "return false" when {
       "there is no value in the cache" in {
-        when(mockConfig.enableUrBanner).thenReturn(true)
+        when(mockConfig.urBannerEnabled).thenReturn(true)
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
         val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
         result shouldBe false
       }
       "there is no rasSession value" in {
-        when(mockConfig.enableUrBanner).thenReturn(true)
+        when(mockConfig.urBannerEnabled).thenReturn(true)
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
         val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
         result shouldBe false
@@ -229,7 +229,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
 
     "return true" when {
       "enable-ur-banner is false" in {
-        when(mockConfig.enableUrBanner).thenReturn(false)
+        when(mockConfig.urBannerEnabled).thenReturn(false)
         val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(FakeRequest(), headerCarrier), 10 seconds)
         result shouldBe true
       }
