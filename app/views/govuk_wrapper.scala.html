@@ -135,12 +135,11 @@
     @if(showUrBanner) {
         @views.html.helpers.urBanner(title = Messages("ur.banner.title"),
             text = Messages("ur.banner.text"),
-            showLink = true,
-            link = applicationConfig.urBannerUrl,
+            linkUrl = applicationConfig.urBannerLinkUrl,
             linkGaAction = title,
             linkGaLabel = "Get involved in making government services better",
             dismissText = Messages("ur.banner.dismiss.text"),
-            dismissUrl = "#",
+            dismissUrl = routes.UrDismissalController.dismissUrBanner.toString,
             dismissGaAction = title,
             dismissGaLabel = "Dismiss UR banner"
         )

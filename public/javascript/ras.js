@@ -24,12 +24,8 @@ $(function() {
 
 
     $(".full-width-banner__close").click(function(){
-      $.ajax({
-        url: "/relief-at-source/dismiss-ur-banner",
-        success: function(){
-          $('.full-width-banner').fadeOut('slow')
-        }
-      })
+        $('.full-width-banner').fadeOut('slow');
+        return true;
     });
 
 });

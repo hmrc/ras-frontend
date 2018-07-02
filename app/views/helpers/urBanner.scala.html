@@ -16,8 +16,7 @@
 
 @(title: String,
     text: String,
-    showLink: Boolean = false,
-    link: String = "",
+    linkUrl: String = "",
     linkGaAction: String = "",
     linkGaLabel: String = "",
     dismissText: String = "",
@@ -32,9 +31,9 @@
             @title
         </div>
 
-        @if(showLink){
+        @if(!linkUrl.isEmpty){
             <a id="full-width-banner-link"
-               href="@link"
+               href="@linkUrl"
                @if(!linkGaAction.isEmpty) { data-journey-click="link - click:@linkGaAction:@linkGaLabel" }
                target="_blank">
                 @text
@@ -43,7 +42,7 @@
             <p>@text</p>
         }
 
-        @if(!dismissText.isEmpty){
+        @if(!dismissText.isEmpty && !dismissUrl.isEmpty){
             <a class="full-width-banner__close"
                href="@dismissUrl"
                @if(!dismissGaAction.isEmpty) { data-journey-click="link - click:@dismissGaAction:@dismissGaLabel" }
