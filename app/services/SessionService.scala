@@ -47,12 +47,8 @@ trait SessionService extends SessionCacheWiring {
   def fetchRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) map (rasSession => rasSession)
   }
-
-  def resetRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-    sessionCache.cache[RasSession](RAS_SESSION_KEY, cleanSession) map (cacheMap => Some(cleanSession))
-  }
-
-  /*def resetRasSession(mode: String = "")(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+  
+  def resetRasSession(/*mode: String = ""*/)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
     val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
       sessionCache.cache[RasSession](RAS_SESSION_KEY,
         currentSession match {
@@ -69,7 +65,7 @@ trait SessionService extends SessionCacheWiring {
     result.map(cacheMap => {
       cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
     })
-  }*/
+  }
 
   def cacheWhatDoYouWantToDo(userChoice: String)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
 

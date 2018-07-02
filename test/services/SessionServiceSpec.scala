@@ -243,10 +243,21 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
     }
 
-    "reset ras session" when {
-      "requested" in {
+    "return a clean session" when {
+      "reset ras session is called and there was no previous session" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
+        val json = Json.toJson[RasSession](SessionService.cleanSession)
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetRasSession()(FakeRequest(), headerCarrier), 10 seconds)
-        result  shouldBe Some(SessionService.cleanSession)
+        result shouldBe Some(SessionService.cleanSession)
+      }
+      "reset ras session is called and there was a previous session" in {
+        val session = rasSession.copy(urBannerDismissed = Some(true))
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(session)))
+        val json = Json.toJson[RasSession](SessionService.cleanSession.copy(urBannerDismissed = session.urBannerDismissed))
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
+        val result = Await.result(TestSessionService.resetRasSession()(FakeRequest(), headerCarrier), 10 seconds)
+        result shouldBe Some(SessionService.cleanSession.copy(urBannerDismissed = session.urBannerDismissed))
       }
     }
 
