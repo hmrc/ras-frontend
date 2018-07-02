@@ -14,12 +14,12 @@
  * limitations under the License.
  *@
 
-@(whatDoYouWantToDoForm: Form[models.WhatDoYouWantToDo], showUrBanner: Boolean = false)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(whatDoYouWantToDoForm: Form[models.WhatDoYouWantToDo])(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@ras_main(title = Messages("whatDoYouWantToDo.page.title"), showUrBanner = showUrBanner) {
+@ras_main(title = Messages("whatDoYouWantToDo.page.title")) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
