@@ -19,12 +19,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-
-@scriptElem = {
-    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/what_do_you_want_to_do.js")'></script>
-}
-
-@ras_main(title = Messages("whatDoYouWantToDo.page.title"), scriptElem = Some(scriptElem), showUrBanner = showUrBanner) {
+@ras_main(title = Messages("whatDoYouWantToDo.page.title"), showUrBanner = showUrBanner) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
