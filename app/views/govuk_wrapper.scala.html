@@ -26,7 +26,8 @@
     scriptElem: Option[Html] = None,
     linkElement : Option[Html] = None,
     getHelpForm: Html  = HtmlFormat.empty,
-    signOutEnabled:Boolean)(implicit request: Request[_], messages: Messages)
+    signOutEnabled:Boolean,
+    urBanner: Html = HtmlFormat.empty)(implicit request: Request[_], messages: Messages)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
@@ -132,6 +133,7 @@
 
 
 @content = {
+    @urBanner
     @uiLayouts.main_content(
       article = mainContent,
       mainClass = mainClass,

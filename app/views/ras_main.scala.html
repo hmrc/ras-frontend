@@ -69,6 +69,11 @@
 
 }
 
+@urBanner = {
+    @if(showUrBanner) {
+    }
+}
+
 @govuk_wrapper(applicationConfig = config.ApplicationConfig,
                title = title,
                mainClass = mainClass,
@@ -80,5 +85,6 @@
                serviceInfoContent = serviceInfoContent,
                scriptElem = Some(scriptElement),
                signOutEnabled = signOutEnabled,
-               linkElement = Some(linkElement)
+               linkElement = Some(linkElement),
+               urBanner = urBanner
 )
