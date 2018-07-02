@@ -135,12 +135,15 @@
     @if(showUrBanner) {
         @views.html.helpers.urBanner(title = Messages("ur.banner.title"),
             text = Messages("ur.banner.text"),
-            link = applicationConfig.urBannerUrl,
             showLink = true,
+            link = applicationConfig.urBannerUrl,
+            linkGaAction = title,
+            linkGaLabel = "Get involved in making government services better",
             dismissText = Messages("ur.banner.dismiss.text"),
             dismissUrl = "#",
-            showDismissText = true,
-            gaAction = title)
+            dismissGaAction = title,
+            dismissGaLabel = "Dismiss UR banner"
+        )
     }
 }
 
