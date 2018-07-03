@@ -39,9 +39,9 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
   val reason: Option[String] = None
   val callbackData = CallbackData("1234", fileId, fileStatus, reason)
   val resultsFile = ResultsFileMetaData(fileId,Some("fileName.csv"),Some(1234L),123,1234L)
-  val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", Some(DateTime.now().getMillis))
-  val fileSession1 = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis))
-  val fileSession2 = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis))
+  val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", Some(DateTime.now().getMillis), None)
+  val fileSession1 = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis), None)
+  val fileSession2 = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis), None)
 
 
   val json = Json.toJson(fileSession)
@@ -141,21 +141,21 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
   "failedProcessingUploadedFile" should {
 
     "return true if it has been 24 hours since upload and no results file exists" in {
-      val fileSession = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis))
+      val fileSession = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis), None)
       when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
       val res = await(SUT.failedProcessingUploadedFile("userId"))
       res shouldBe true
     }
 
     "return false if it hasn't been 24 hours since upload and no results file exists" in {
-      val fileSession = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis))
+      val fileSession = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis), None)
       when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
       val res = await(SUT.failedProcessingUploadedFile("userId"))
       res shouldBe false
     }
 
     "return false if no upload timestamp has been found" in {
-      val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", None)
+      val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", None, None)
       when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
       val res = await(SUT.failedProcessingUploadedFile("userId"))
       res shouldBe false

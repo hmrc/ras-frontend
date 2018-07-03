@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.play.views.html.layouts
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
+@import config.ApplicationConfig
 @(appConfig: config.ApplicationConfig = config.ApplicationConfig,
   title: String,
   sidebarLinks: Option[Html] = None,
@@ -24,7 +25,9 @@
   mainClass: Option[String] = None,
   scriptElem: Option[Html] = None,
   signOutEnabled: Boolean = true,
-  supportLinkEnabled: Boolean = true)(mainContent: Html)(implicit request : Request[_], context: config.RasContext, messages: Messages)
+  hasTimeOut:Boolean = true,
+  signOutText: String = "",
+supportLinkEnabled: Boolean = true)(mainContent: Html)(implicit request : Request[_], context: config.RasContext, messages: Messages)
 
 
 @getHelpForm = {
@@ -46,6 +49,23 @@
 @scriptElement = {
     <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/ras.js")'></script>
     @scriptElem
+    <script>
+        @if(hasTimeOut && ApplicationConfig.enableRefresh) {
+        $.timeoutDialog({
+                timeout: @ApplicationConfig.timeOutSeconds,
+                countdown: @ApplicationConfig.timeOutCountDownSeconds,
+                keep_alive_url: '@controllers.routes.SessionController.keepAlive',
+                title: "@Messages("ras.timeoutDialog.title")",
+                messageSeconds: "@Messages("ras.timeoutDialog.seconds")",
+                messageMinutes: "@Messages("ras.timeoutDialog.minutes")",
+                messageMinute: "@Messages("ras.timeoutDialog.minute")",
+                logout_url: "@ApplicationConfig.signOutUrl",
+                message: "@Messages("ras.timeoutDialog.p1")",
+                keep_alive_button_text: "@Messages("ras.timeoutDialog.button")",
+      });
+    }
+    </script>
+
 }
 
 @govuk_wrapper(applicationConfig = config.ApplicationConfig,

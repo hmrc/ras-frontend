@@ -73,6 +73,7 @@ error.day.invalid.thirty = Enter a day between 1 and 30
 error.month.invalid = Enter a month between 1 and 12
 error.year.invalid.format = Enter a year in full using 4 numbers
 error.dob.invalid.future = Enter a date of birth that is not in the future
+error.dob.before.1900 = Enter a date of birth that is after 1900
 generic.errors_heading = There is a problem
 upload.error.heading = There is a problem
 unauthorised.error = you are not authorised to access this service , you need Pension scheme administrator or pension scheme provider enrolments.
@@ -98,7 +99,7 @@ select.an.answer = Select what you want to do
 choose.something.else = Choose something else to do
 result = Result
 document = Document
-residency.status.result = Residency-status-results.CSV
+residency.status.result = {0}-results.CSV
 file.type.size = CSV, less than 3MB.
 expiry.date.message = If you do not open this file, It will be deleted on {0}.
 deletion.message = You should save a copy of it. The file is deleted from the service when you open it.
@@ -185,3 +186,12 @@ label.limit_is_1200_characters=(Limit is 1200 characters)
 label.please_dont_include_any_personal_or_financial_information=Do not include any personal or financial information like your National Insurance number or bank details.
 label.send_feedback=Send feedback
 label.thanks_for_your_feedback=Thanks for your feedback
+
+##timeoutDialog
+
+ras.timeoutDialog.title= You are about to be signed out
+ras.timeoutDialog.seconds= seconds
+ras.timeoutDialog.minutes= minutes
+ras.timeoutDialog.minute= minute
+ras.timeoutDialog.button= Stay signed in
+ras.timeoutDialog.p1 = For security reasons, you will be signed out of this service in:

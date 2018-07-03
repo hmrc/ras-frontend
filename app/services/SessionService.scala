@@ -188,10 +188,12 @@ trait ShortLivedCache  {
 
   val STATUS_AVAILABLE: String = "AVAILABLE"
 
+  val defaultDownloadName = "Residency-status"
+
   def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier):Future[Boolean] = {
 
     shortLivedCache.cache[FileSession](source, userId, "fileSession",
-      FileSession(None, None, userId, Some(DateTime.now().getMillis))).map(res => true) recover {
+      FileSession(None, None, userId, Some(DateTime.now().getMillis), None)).map(res => true) recover {
       case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
         s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
         false
@@ -239,6 +241,14 @@ trait ShortLivedCache  {
         }
       case _ => false
     }
+  }
+
+  def getDownloadFileName(fileSession: FileSession)(implicit hc: HeaderCarrier): String = {
+    val name = fileSession.fileMetadata.flatMap(_.name).getOrElse(defaultDownloadName)
+    if (name.indexOf(".") > 0)
+      name.take(name.lastIndexOf("."))
+    else
+      name
   }
 
   def isFileInProgress(userId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {

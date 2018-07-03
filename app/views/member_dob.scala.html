@@ -61,21 +61,22 @@
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
-                            '_id -> "dateOfBirth.day",
+                            '_id -> "dateOfBirth-day",
                             '_inputClass -> "form-control form-control-error",
                             '_maxLength -> 2)
+
                         </div>
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
-                            '_id -> "dateOfBirth.month",
+                            '_id -> "dateOfBirth-month",
                             '_inputClass -> "form-control form-control-error",
                             '_maxLength -> 2)
                         </div>
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
-                            '_id -> "dateOfBirth.year",
+                            '_id -> "dateOfBirth-year",
                             '_groupClass -> "form-group-year",
                             '_inputClass -> "form-control form-control-error",
                             '_maxLength ->4)
@@ -86,7 +87,7 @@
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
-                            '_id -> "dateOfBirth.day",
+                            '_id -> "dateOfBirth-day",
                             '_inputClass -> "form-control form-control-error",
                             '_maxLength -> 2)
                         </div>
@@ -94,7 +95,7 @@
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
-                            '_id -> "dateOfBirth.day",
+                            '_id -> "dateOfBirth-day",
                             '_maxLength -> 2)
                         </div>
                         }
@@ -103,7 +104,7 @@
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
-                            '_id -> "dateOfBirth.month",
+                            '_id -> "dateOfBirth-month",
                             '_inputClass -> "form-control form-control-error",
                             '_maxLength -> 2)
                         </div>
@@ -111,7 +112,7 @@
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
-                            '_id -> "dateOfBirth.month",
+                            '_id -> "dateOfBirth-month",
                             '_maxLength -> 2)
                         </div>
                         }
@@ -120,7 +121,7 @@
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
-                            '_id -> "dateOfBirth.year",
+                            '_id -> "dateOfBirth-year",
                             '_groupClass -> "form-group-year",
                             '_inputClass -> "form-control form-control-error",
                             '_maxLength ->4)
@@ -129,8 +130,8 @@
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
-                            '_id -> "dateOfBirth.year",
-                            '_maxLength ->4,
+                            '_id -> "dateOfBirth-year",
+                            '_maxLength -> 4,
                             '_groupClass -> "form-group-year",
                             '_inputClass -> " form-control year-input")
                         </div>
