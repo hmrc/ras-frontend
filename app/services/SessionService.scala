@@ -64,21 +64,9 @@ trait SessionService extends SessionCacheWiring {
           case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
           case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth) .asInstanceOf[MemberDateOfBirth])
           case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.getOrElse(cleanResidencyStatusResult).asInstanceOf[ResidencyStatusResult])
-          case CacheKeys.UploadResponse => session.copy(
-            uploadResponse = value match {
-              case Some(v) => Some(v.asInstanceOf[UploadResponse])
-              case _ => None
-            })
-          case CacheKeys.Envelope => session.copy(
-            envelope = value match {
-              case Some(v) => Some(v.asInstanceOf[Envelope])
-              case _ => None
-            })
-          case CacheKeys.UrBannerDismissed => session.copy(
-            urBannerDismissed = value match {
-              case Some(v) => Some(v.asInstanceOf[Boolean])
-              case _ => None
-            })
+          case CacheKeys.UploadResponse => session.copy(uploadResponse = value.asInstanceOf[Option[UploadResponse]])
+          case CacheKeys.Envelope => session.copy(envelope = value.asInstanceOf[Option[Envelope]])
+          case CacheKeys.UrBannerDismissed => session.copy(urBannerDismissed = value.asInstanceOf[Option[Boolean]])
           case _ => cleanSession.copy(urBannerDismissed = session.urBannerDismissed)
         }
       )
