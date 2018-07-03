@@ -21,6 +21,7 @@ import connectors.UserDetailsConnector
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
+import services.CacheKeys
 
 import scala.concurrent.Future
 
@@ -41,7 +42,7 @@ trait UrDismissalController extends RasController {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          sessionService.cacheUrBannerDismissed()
+          sessionService.cache(CacheKeys.UrBannerDismissed, Some(true))
           Future.successful(NoContent)
         case Left(resp) =>
           Logger.error("[UrDismissalController][dismissUrBanner] user not authorised")

@@ -21,6 +21,7 @@ import connectors.UserDetailsConnector
 import play.api.{Configuration, Environment, Logger, Play}
 import play.api.mvc.Action
 import uk.gov.hmrc.auth.core.AuthConnector
+import services.CacheKeys
 
 import scala.concurrent.Future
 
@@ -45,7 +46,7 @@ trait SessionController extends RasController {
   def redirect(target:String, cleanSession:Boolean, edit: Boolean = false) = Action.async {
     implicit request =>
       if(cleanSession){
-        sessionService.resetRasSession() map {
+        sessionService.resetCache(CacheKeys.All) map {
           case Some(session) =>
             target match {
               case WHAT_DO_YOU_WANT_TO_DO => Redirect(routes.WhatDoYouWantToDoController.get())

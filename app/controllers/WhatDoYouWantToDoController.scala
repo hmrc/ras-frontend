@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models.WhatDoYouWantToDo
-import services.ShortLivedCache
+import services.{ShortLivedCache, CacheKeys}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -71,7 +71,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
               Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors)))
             },
             whatDoYouWantToDo =>
-              sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {
+              sessionService.cache(CacheKeys.UserChoice, whatDoYouWantToDo.userChoice).flatMap {
                 case Some(session) =>
                   session.userChoice match {
                     case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get()))

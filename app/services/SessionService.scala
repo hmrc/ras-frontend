@@ -31,161 +31,55 @@ object SessionService extends SessionService {
   override val config: ApplicationConfig = ApplicationConfig
 }
 
+object CacheKeys extends Enumeration {
+  val All, UserChoice, Name, Nino, Dob, StatusResult, UploadResponse, Envelope, UrBannerDismissed = Value
+}
 
 trait SessionService extends SessionCacheWiring {
 
   val config: ApplicationConfig
   val RAS_SESSION_KEY = "ras_session"
-  val cleanSession = RasSession(
-    "",
-    MemberName("", ""),
-    MemberNino(""),
-    MemberDateOfBirth(RasDate(None, None, None)),
-    ResidencyStatusResult("", None, "", "", "", "", ""),
-    None)
+  val cleanMemberName = MemberName("", "")
+  val cleanMemberNino = MemberNino("")
+  val cleanMemberDateOfBirth = MemberDateOfBirth(RasDate(None, None, None))
+  val cleanResidencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
+  val cleanSession = RasSession("", cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, cleanResidencyStatusResult, None)
 
   def fetchRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) map (rasSession => rasSession)
   }
-  
-  def resetRasSession(/*mode: String = ""*/)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => cleanSession.copy(urBannerDismissed = returnedSession.urBannerDismissed)
-           /* mode match {
-              case "bulkOnly" => returnedSession.copy(uploadResponse = None)
-              case _ => cleanSession.copy(urBannerDismissed = returnedSession.urBannerDismissed)
-            }*/
-          case None => cleanSession
-        }
-      )
-    }
 
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
+  def resetCache(key: CacheKeys.Value)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = cache(key)
 
-  def cacheWhatDoYouWantToDo(userChoice: String)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+  def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
 
     val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+
+      def session = currentSession.getOrElse(cleanSession)
+
       sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(userChoice = userChoice)
-          case None => cleanSession.copy(userChoice = userChoice)
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
-  def cacheName(name: MemberName)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(name = name)
-          case None => cleanSession.copy(name = name)
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
-  def cacheNino(nino: MemberNino)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(nino = nino)
-          case None => cleanSession.copy(nino = nino)
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
-  def cacheDob(dob: MemberDateOfBirth)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(dateOfBirth = dob)
-          case None => cleanSession.copy(dateOfBirth = dob)
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
-  def cacheResidencyStatusResult(residencyStatusResult: ResidencyStatusResult)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(residencyStatusResult = residencyStatusResult)
-          case None => cleanSession.copy(residencyStatusResult = residencyStatusResult)
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
-  def cacheUploadResponse(uploadResponse: UploadResponse)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(uploadResponse = Some(uploadResponse))
-          case None => cleanSession.copy(uploadResponse = Some(uploadResponse))
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
-  def cacheEnvelope(envelope: Envelope)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(envelope = Some(envelope))
-          case None => cleanSession.copy(envelope = Some(envelope))
-        }
-      )
-    }
-
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
-  }
-
-  def cacheUrBannerDismissed()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        currentSession match {
-          case Some(returnedSession) => returnedSession.copy(urBannerDismissed = Some(true))
-          case None => cleanSession.copy(urBannerDismissed = Some(true))
+        key match {
+          case CacheKeys.UserChoice => session.copy(userChoice = value.getOrElse("").toString)
+          case CacheKeys.Name => session.copy(name = value.getOrElse(cleanMemberName).asInstanceOf[MemberName])
+          case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
+          case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth) .asInstanceOf[MemberDateOfBirth])
+          case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.getOrElse(cleanResidencyStatusResult).asInstanceOf[ResidencyStatusResult])
+          case CacheKeys.UploadResponse => session.copy(
+            uploadResponse = value match {
+              case Some(v) => Some(v.asInstanceOf[UploadResponse])
+              case _ => None
+            })
+          case CacheKeys.Envelope => session.copy(
+            envelope = value match {
+              case Some(v) => Some(v.asInstanceOf[Envelope])
+              case _ => None
+            })
+          case CacheKeys.UrBannerDismissed => session.copy(
+            urBannerDismissed = value match {
+              case Some(v) => Some(v.asInstanceOf[Boolean])
+              case _ => None
+            })
+          case _ => cleanSession.copy(urBannerDismissed = session.urBannerDismissed)
         }
       )
     }

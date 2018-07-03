@@ -75,7 +75,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockRasConnector
     override val auditService: AuditService = mockAuditService
 
-    when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockSessionService.cache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
@@ -172,12 +172,12 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
 
     "save details to cache" in {
       val result = await(TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any(), Matchers.any())
+      verify(mockSessionService, atLeastOnce()).cache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
     }
 
     "redirect to nino page when name cached and edit mode is false" in {
       val session = RasSession(userChoice, memberName, MemberNino(""), MemberDateOfBirth(RasDate(None,None,None)), ResidencyStatusResult("",None,"","","","",""),None)
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(session)))
+      when(mockSessionService.cache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(session)))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result).get should include("/member-national-insurance-number")
@@ -185,14 +185,14 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
 
     "redirect to match found page when edit mode is true and matching successful" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("/member-residency-status")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any(), Matchers.any())
+      verify(mockSessionService, atLeastOnce()).cache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
@@ -202,11 +202,11 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("/no-residency-status-displayed")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any(), Matchers.any())
+      verify(mockSessionService, atLeastOnce()).cache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
     }
 
     "redirect to technical error page if name is not cached" in {
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.cache(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")

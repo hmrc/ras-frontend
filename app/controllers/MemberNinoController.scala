@@ -21,7 +21,7 @@ import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import forms.MemberNinoForm.form
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
-import services.AuditService
+import services.{AuditService, CacheKeys}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
@@ -72,7 +72,7 @@ trait MemberNinoController extends RasResidencyCheckerController with PageFlowCo
               }
             },
             memberNino => {
-              sessionService.cacheNino(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", ""))) flatMap {
+              sessionService.cache(CacheKeys.Nino, Some(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", "")))) flatMap {
                 case Some(session) => {
                   edit match {
                     case true => submitResidencyStatus(session, userId)

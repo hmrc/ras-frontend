@@ -26,6 +26,7 @@ import play.api.mvc.{Action, Request}
 import play.api.{Configuration, Environment, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
+import services.CacheKeys
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -52,7 +53,7 @@ trait FileUploadController extends RasController with PageFlowController {
                       Logger.info(s"[FileUploadController][get] form url created successfully for userId ($userId)")
                       val error = extractErrorReason(session.uploadResponse)
                       if(error == Messages("upload.failed.error")){
-                        sessionService.cacheUploadResponse(UploadResponse("",None)).map {
+                        sessionService.cache(CacheKeys.UploadResponse, Some(UploadResponse("",None))).map {
                           case Some(session) =>
                             Redirect(routes.ErrorController.renderProblemUploadingFilePage())
                           case _ =>
@@ -110,7 +111,7 @@ trait FileUploadController extends RasController with PageFlowController {
             case Some(locationHeader) =>
               locationHeader match {
                 case envelopeIdPattern(id) =>
-                  sessionService.cacheEnvelope(Envelope(id)).map {
+                  sessionService.cache(CacheKeys.Envelope, Some(Envelope(id))).map {
                     case Some(session) =>
                       Logger.info(s"[UploadService][createFileUploadUrl] Envelope id obtained and cached for userId ($userId)")
                       val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
@@ -181,7 +182,7 @@ trait FileUploadController extends RasController with PageFlowController {
         val errorReason = request.getQueryString("reason").getOrElse("")
         val errorResponse = UploadResponse(errorCode, Some(errorReason))
 
-        sessionService.cacheUploadResponse(errorResponse).flatMap {
+        sessionService.cache(CacheKeys.UploadResponse, Some(errorResponse)).flatMap {
           case Some(session) =>
             Future.successful(Redirect(routes.FileUploadController.get()))
           case _ =>
