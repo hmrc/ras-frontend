@@ -205,6 +205,16 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
     }
 
+    "return file upload session without upload response" when {
+      "an error occurs on the file upload page" in {
+        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
+        val json = Json.toJson[RasSession](rasSession.copy(uploadResponse = None))
+        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
+        val result = Await.result(TestSessionService.cache(CacheKeys.UploadResponse, Some(uploadResponse))(FakeRequest(), headerCarrier), 10 seconds)
+        result shouldBe Some(rasSession.copy(uploadResponse = None))
+      }
+    }
+
     "cache envelope" when {
       "no session is available" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))

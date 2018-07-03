@@ -61,8 +61,10 @@ trait FileUploadController extends RasController with PageFlowController {
                             Redirect(routes.ErrorController.renderGlobalErrorPage())
                         }
                       }
-                      else
+                      else {
+                        sessionService.resetCache(CacheKeys.UploadResponse)
                         Future.successful(Ok(views.html.file_upload(url,error)))
+                      }
                     case _ =>
                       Logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
                         s"for userId ($userId)")
