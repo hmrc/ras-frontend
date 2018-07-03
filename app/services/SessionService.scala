@@ -46,16 +46,16 @@ trait SessionService extends SessionCacheWiring {
   val cleanSession = RasSession("", cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, cleanResidencyStatusResult, None)
 
   def fetchRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
-    sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) map (rasSession => rasSession)
+    sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
   }
 
   def resetCache(key: CacheKeys.Value)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = cache(key)
 
   def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
 
-    val result = sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+    val result = fetchRasSession flatMap { currentSession =>
 
-      def session = currentSession.getOrElse(cleanSession)
+      val session = currentSession.getOrElse(cleanSession)
 
       sessionCache.cache[RasSession](RAS_SESSION_KEY,
         key match {
@@ -91,7 +91,7 @@ trait SessionService extends SessionCacheWiring {
 
   def hasUserDimissedUrBanner()(implicit request: Request[_], hc: HeaderCarrier): Future[Boolean] = {
     config.urBannerEnabled match {
-      case true => sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY) flatMap { currentSession =>
+      case true => fetchRasSession flatMap { currentSession =>
         Future.successful(currentSession.flatMap(_.urBannerDismissed).getOrElse(false))
       }
       case false => Future.successful(true)
