@@ -37,7 +37,11 @@
                   ) { anchor =>
                     <li role="tooltip" data-journey='There is a problem - view:@gaActionPage:@error.message'>
 
-                        @if(anchor.toString.contains("day")){
+                        @if(anchor.toString.contains("userChoice")){
+                        <a href="#@anchor" class="error-list" data-focuses="@error.key-error-0">
+                            @Messages(error.message)
+                        </a>
+                        } else { @if(anchor.toString.contains("day")){
                         <a href="#@anchor" class="error-list" data-focuses="@error.key-day">
                             @Messages(error.message)
                         </a>
@@ -53,7 +57,7 @@
                         <a href="#@anchor" class="error-list" data-focuses="@error.key">
                             @Messages(error.message)
                         </a>
-                        }}}
+                        }}}}
                     </li>
                   }
               }
