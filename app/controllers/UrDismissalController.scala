@@ -21,7 +21,6 @@ import connectors.UserDetailsConnector
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
-
 import scala.concurrent.Future
 
 object UrDismissalController extends UrDismissalController {
