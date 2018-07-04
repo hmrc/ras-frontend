@@ -24,12 +24,10 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import scala.concurrent.Future
 
 object UrDismissalController extends UrDismissalController {
-  // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
   val authConnector: AuthConnector = FrontendAuthConnector
   override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
   val config: Configuration = Play.current.configuration
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  // $COVERAGE-ON$
 }
 
 trait UrDismissalController extends RasController {
