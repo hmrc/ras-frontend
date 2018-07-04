@@ -31,11 +31,11 @@ object SessionService extends SessionService {
   override val config: ApplicationConfig = ApplicationConfig
 }
 
-object CacheKeys extends Enumeration {
-  val All, UserChoice, Name, Nino, Dob, StatusResult, UploadResponse, Envelope, UrBannerDismissed = Value
-}
-
 trait SessionService extends SessionCacheWiring {
+
+  private object CacheKeys extends Enumeration {
+    val All, UserChoice, Name, Nino, Dob, StatusResult, UploadResponse, Envelope, UrBannerDismissed = Value
+  }
 
   val config: ApplicationConfig
   val RAS_SESSION_KEY = "ras_session"
@@ -49,9 +49,26 @@ trait SessionService extends SessionCacheWiring {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
   }
 
-  def resetCache(key: CacheKeys.Value)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = cache(key)
+  def cacheWhatDoYouWantToDo(value: String)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UserChoice, Some(value))
+  def cacheName(value: MemberName)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Name, Some(value))
+  def cacheNino(value: MemberNino)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Nino, Some(value))
+  def cacheDob(value: MemberDateOfBirth)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Dob, Some(value))
+  def cacheUploadResponse(value: UploadResponse)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UploadResponse, Some(value))
+  def cacheEnvelope(value: Envelope)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Envelope, Some(value))
+  def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.StatusResult, Some(value))
+  def cacheUrBannerDismissed(value: Boolean)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed, Some(value))
 
-  def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+  def resetCacheName()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Name)
+  def resetCacheNino()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Nino)
+  def resetCacheDob()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Dob)
+  def resetCacheUploadResponse()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UploadResponse)
+  def resetCacheEnvelope()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Envelope)
+  def resetCacheResidencyStatusResult()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.StatusResult)
+  def resetCacheUrBannerDismissed()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed)
+
+  def resetRasSession()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.All)
+
+  private def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
 
     val result = fetchRasSession flatMap { currentSession =>
 

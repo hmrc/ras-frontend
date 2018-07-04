@@ -23,7 +23,7 @@ import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import forms.MemberDateOfBirthForm.form
 import metrics.Metrics
-import services.{AuditService, CacheKeys}
+import services.AuditService
 
 import scala.concurrent.Future
 
@@ -74,7 +74,7 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
               }
             },
             dateOfBirth => {
-              sessionService.cache(CacheKeys.Dob, Some(dateOfBirth)) flatMap {
+              sessionService.cacheDob(dateOfBirth) flatMap {
                 case Some(session) => submitResidencyStatus(session, userId)
                 case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }

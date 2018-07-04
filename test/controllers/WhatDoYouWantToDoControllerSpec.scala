@@ -127,7 +127,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "redirect to member name page when single lookup option is selected" in {
       val rasSession = RasSession(WhatDoYouWantToDo.SINGLE ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
-      when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.SINGLE)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/member-name")
@@ -136,7 +136,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "redirect to file upload page when bulk lookup option is selected and there is no file session" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
-      when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/upload-a-file")
@@ -146,7 +146,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val fileSession = FileSession(None,None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val rasSession = RasSession(WhatDoYouWantToDo.BULK ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
-      when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/upload-a-file")
@@ -154,7 +154,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "redirect to file ready page when bulk lookup option is selected and there is a file ready" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-      when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(Some(rasSession.copy(userChoice = WhatDoYouWantToDo.BULK))))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession.copy(userChoice = WhatDoYouWantToDo.BULK))))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.BULK)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       redirectLocation(result).get should include("/file-ready")
@@ -162,7 +162,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "redirect to file result page when result option is selected and a result is ready" in {
       val rasSession = RasSession(WhatDoYouWantToDo.RESULT ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
-      when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.failedProcessingUploadedFile(any())(any())).thenReturn(Future.successful(false))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
@@ -171,7 +171,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "redirect to file failed processing if it has been over 24 hours and no results file has been generated" in {
       val rasSession = RasSession(WhatDoYouWantToDo.RESULT ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
-      when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.failedProcessingUploadedFile(any())(any())).thenReturn(Future.successful(true))
       val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
       val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
@@ -180,14 +180,14 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "redirect to global error page" when {
       "no option is selected" in {
-        when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(Some(rasSession)))
         val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
         val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         redirectLocation(result).get should include("/global-error")
       }
 
       "no session has been retrieved" in {
-        when(mockSessionService.cache(any(), any())(any(),any())).thenReturn(Future.successful(None))
+        when(mockSessionService.cacheWhatDoYouWantToDo(any())(any(),any())).thenReturn(Future.successful(None))
         val postData = Json.obj("userChoice" -> WhatDoYouWantToDo.RESULT)
         val result = TestWhatDoYouWantToDoController.post.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         redirectLocation(result).get should include("/global-error")

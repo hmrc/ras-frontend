@@ -21,7 +21,7 @@ import metrics.Metrics
 import models._
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request}
-import services.{AuditService, CacheKeys}
+import services.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -64,7 +64,7 @@ trait RasResidencyCheckerController extends RasController {
             (TaxYearResolver.currentTaxYear + 1).toString,
             formattedName, formattedDob, memberDetails.nino)
 
-        sessionService.cache(CacheKeys.StatusResult, Some(residencyStatusResult))
+        sessionService.cacheResidencyStatusResult(residencyStatusResult)
 
         auditResponse(failureReason = None, nino = Some(memberDetails.nino),
           residencyStatus = Some(rasResponse),

@@ -21,7 +21,7 @@ import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import forms.MemberNameForm._
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
-import services.{AuditService, CacheKeys}
+import services.AuditService
 import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
@@ -62,7 +62,7 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
           Future.successful(BadRequest(views.html.member_name(formWithErrors, edit)))
         },
         memberName => {
-          sessionService.cache(CacheKeys.Name, Some(memberName)) flatMap {
+          sessionService.cacheName(memberName) flatMap {
             case Some(session) => {
               edit match {
                 case true => submitResidencyStatus(session, userId)
