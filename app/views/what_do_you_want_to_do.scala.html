@@ -33,11 +33,11 @@
 
     @form(action = routes.WhatDoYouWantToDoController.post ) {
 
-        <legend>
+
             <header class = "page-header">
-                <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
+                <h1 id="header" class="heading-xlarge" aria-hiddien="true">@Messages("whatDoYouWantToDo.page.header")</h1>
             </header>
-        </legend>
+
 
         @radioGroup(
             whatDoYouWantToDoForm("userChoice"),
@@ -45,7 +45,8 @@
                 Messages("single.lookup.radio") -> "single-lookup" -> Messages("single.lookup.radio"),
                 Messages("bulk.lookup.radio")  ->  "bulk-lookup" -> Messages("bulk.lookup.radio"),
                 Messages("result.radio")  -> "result" -> Messages("result.radio")
-              )
+              ),
+        '_h1 -> Messages("whatDoYouWantToDo.page.header")
         )
 
         <div>
