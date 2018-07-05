@@ -104,7 +104,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
       }
 
       "rendered but no cached data exists" in {
-        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
         val result = TestMemberNinoController.get()(fakeRequest)
         doc(result).title shouldBe Messages("member.nino.page.title")
         doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header",Messages("member"))

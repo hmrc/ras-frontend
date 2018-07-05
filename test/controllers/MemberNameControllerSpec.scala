@@ -76,7 +76,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     override val auditService: AuditService = mockAuditService
 
     when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-    when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
@@ -135,21 +135,21 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "present empty form when no cached data exists" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
       val result = await(TestMemberNameController.get()(fakeRequest))
       assert(doc(result).getElementById("firstName").attr("value").equals(""))
       assert(doc(result).getElementById("lastName").attr("value").equals(""))
     }
 
     "contain the correct ga data when edit mode is false" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
       val result = await(TestMemberNameController.get()(fakeRequest))
       assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue"))
       assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their name?:Back"))
     }
 
     "contain the correct ga data when edit mode is true" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
       val result = await(TestMemberNameController.get(true)(fakeRequest))
       assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue and submit"))
     }
@@ -206,7 +206,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "redirect to technical error page if name is not cached" in {
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")

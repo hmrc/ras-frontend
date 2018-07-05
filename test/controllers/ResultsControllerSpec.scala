@@ -80,8 +80,8 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     override val sessionService = mockSessionService
 
-    when(mockSessionService.hasUserDimissedUrBanner()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(false))
-    when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockSessionService.hasUserDimissedUrBanner()(Matchers.any())).thenReturn(Future.successful(false))
+    when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
@@ -127,7 +127,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain customer details and residency status when match found and CY and CY+1 is present" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -154,7 +154,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain correct ga events when match found and CY and CY+1 is present" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -169,7 +169,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain customer details and residency status when match found and only CY is present" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -194,7 +194,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain correct ga event when match found and only CY is present" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -209,7 +209,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "display correct residency status for UK UK" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -226,7 +226,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain customer details and residency status when match not found" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -249,7 +249,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain ga event data when match not found " in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -268,21 +268,21 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "redirect to global error page when no session data is returned on match found" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("global-error")
     }
 
     "redirect to global error page when no session data is returned on match not found" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("global-error")
     }
 
     "return to member dob page when back link is clicked" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
@@ -298,7 +298,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "redirect to global error when no sessino and back link is clicked" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.back.apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/global-error")

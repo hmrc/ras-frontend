@@ -78,7 +78,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     override val auditService: AuditService = mockAuditService
 
     when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-    when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   before {
@@ -136,7 +136,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
 
     "present empty form" when {
       "no details returned from session cache" in {
-        when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
         val result = TestMemberDobController.get()(fakeRequest)
         assert(doc(result).getElementById("dateOfBirth-year").attr("value").isEmpty)
         assert(doc(result).getElementById("dateOfBirth-month").attr("value").isEmpty)
@@ -161,7 +161,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "return bad request with member as name when form error present and session has no name" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"),Some("1"),Some("1111")))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
@@ -237,7 +237,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       "a request is made during the february 2018" in {
 
         when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
-        when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
@@ -261,7 +261,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       "a request is made during the June 2018" in {
 
         when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, None)))
-        when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
