@@ -77,7 +77,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockRasConnector
     override val auditService: AuditService = mockAuditService
 
-    when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
@@ -153,7 +153,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "return bad request with session name when form error present and session has a name" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"),Some("1"),Some("1111")))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
@@ -187,8 +187,8 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
 
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      when(mockSessionService.cacheDob(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any(), Matchers.any())
+      when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any())
     }
 
     "redirect if unknown current year residency status is returned" in {
@@ -213,21 +213,21 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "return to member nino page when back link is clicked and edit is false" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestMemberDobController.back().apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/member-national-insurance-number")
     }
 
     "return to not found page when back link is clicked and edit is true" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestMemberDobController.back(true).apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/no-residency-status-displayed")
     }
 
     "redirect to global error page navigating back with no session" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
       val result = TestMemberDobController.back().apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("global-error")
@@ -244,7 +244,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         status(result) should equal(SEE_OTHER)
         redirectLocation(result).get should include("/member-residency-status")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any())
 
         verify(mockAuditService).audit(
           auditType = Meq("ReliefAtSourceResidency"),
@@ -268,7 +268,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         status(result) should equal(SEE_OTHER)
         redirectLocation(result).get should include("/member-residency-status")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any())
 
         verify(mockAuditService).audit(
           auditType = Meq("ReliefAtSourceResidency"),
@@ -291,7 +291,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         status(result) should equal(SEE_OTHER)
         redirectLocation(result).get should include("/no-residency-status-displayed")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any())
 
         verify(mockAuditService).audit(
           auditType = Meq("ReliefAtSourceResidency"),
@@ -313,7 +313,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         status(result) should equal(SEE_OTHER)
         redirectLocation(result).get should include("/global-error")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockSessionService, atLeastOnce()).cacheDob(Matchers.any())(Matchers.any())
 
         verify(mockAuditService).audit(
           auditType = Meq("ReliefAtSourceResidency"),

@@ -45,30 +45,30 @@ trait SessionService extends SessionCacheWiring {
   val cleanResidencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
   val cleanSession = RasSession("", cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, cleanResidencyStatusResult, None)
 
-  def fetchRasSession()(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+  def fetchRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
   }
 
-  def cacheWhatDoYouWantToDo(value: String)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UserChoice, Some(value))
-  def cacheName(value: MemberName)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Name, Some(value))
-  def cacheNino(value: MemberNino)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Nino, Some(value))
-  def cacheDob(value: MemberDateOfBirth)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Dob, Some(value))
-  def cacheUploadResponse(value: UploadResponse)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UploadResponse, Some(value))
-  def cacheEnvelope(value: Envelope)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Envelope, Some(value))
-  def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.StatusResult, Some(value))
-  def cacheUrBannerDismissed(value: Boolean)(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed, Some(value))
+  def cacheWhatDoYouWantToDo(value: String)(implicit hc: HeaderCarrier) = cache(CacheKeys.UserChoice, Some(value))
+  def cacheName(value: MemberName)(implicit hc: HeaderCarrier) = cache(CacheKeys.Name, Some(value))
+  def cacheNino(value: MemberNino)(implicit hc: HeaderCarrier) = cache(CacheKeys.Nino, Some(value))
+  def cacheDob(value: MemberDateOfBirth)(implicit hc: HeaderCarrier) = cache(CacheKeys.Dob, Some(value))
+  def cacheUploadResponse(value: UploadResponse)(implicit hc: HeaderCarrier) = cache(CacheKeys.UploadResponse, Some(value))
+  def cacheEnvelope(value: Envelope)(implicit hc: HeaderCarrier) = cache(CacheKeys.Envelope, Some(value))
+  def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit hc: HeaderCarrier) = cache(CacheKeys.StatusResult, Some(value))
+  def cacheUrBannerDismissed(value: Boolean)(implicit hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed, Some(value))
 
-  def resetCacheName()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Name)
-  def resetCacheNino()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Nino)
-  def resetCacheDob()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Dob)
-  def resetCacheUploadResponse()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UploadResponse)
-  def resetCacheEnvelope()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.Envelope)
-  def resetCacheResidencyStatusResult()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.StatusResult)
-  def resetCacheUrBannerDismissed()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed)
+  def resetCacheName()(implicit hc: HeaderCarrier) = cache(CacheKeys.Name)
+  def resetCacheNino()(implicit hc: HeaderCarrier) = cache(CacheKeys.Nino)
+  def resetCacheDob()(implicit hc: HeaderCarrier) = cache(CacheKeys.Dob)
+  def resetCacheUploadResponse()(implicit hc: HeaderCarrier) = cache(CacheKeys.UploadResponse)
+  def resetCacheEnvelope()(implicit hc: HeaderCarrier) = cache(CacheKeys.Envelope)
+  def resetCacheResidencyStatusResult()(implicit hc: HeaderCarrier) = cache(CacheKeys.StatusResult)
+  def resetCacheUrBannerDismissed()(implicit hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed)
 
-  def resetRasSession()(implicit request: Request[_], hc: HeaderCarrier) = cache(CacheKeys.All)
+  def resetRasSession()(implicit hc: HeaderCarrier) = cache(CacheKeys.All)
 
-  private def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit request: Request[_], hc: HeaderCarrier): Future[Option[RasSession]] = {
+  private def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
 
     val result = fetchRasSession flatMap { currentSession =>
 
@@ -79,7 +79,7 @@ trait SessionService extends SessionCacheWiring {
           case CacheKeys.UserChoice => session.copy(userChoice = value.getOrElse("").toString)
           case CacheKeys.Name => session.copy(name = value.getOrElse(cleanMemberName).asInstanceOf[MemberName])
           case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
-          case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth) .asInstanceOf[MemberDateOfBirth])
+          case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth).asInstanceOf[MemberDateOfBirth])
           case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.getOrElse(cleanResidencyStatusResult).asInstanceOf[ResidencyStatusResult])
           case CacheKeys.UploadResponse => session.copy(uploadResponse = value.asInstanceOf[Option[UploadResponse]])
           case CacheKeys.Envelope => session.copy(envelope = value.asInstanceOf[Option[Envelope]])
@@ -94,7 +94,7 @@ trait SessionService extends SessionCacheWiring {
     })
   }
 
-  def hasUserDimissedUrBanner()(implicit request: Request[_], hc: HeaderCarrier): Future[Boolean] = {
+  def hasUserDimissedUrBanner()(implicit hc: HeaderCarrier): Future[Boolean] = {
     config.urBannerEnabled match {
       case true => fetchRasSession flatMap { currentSession =>
         Future.successful(currentSession.flatMap(_.urBannerDismissed).getOrElse(false))
