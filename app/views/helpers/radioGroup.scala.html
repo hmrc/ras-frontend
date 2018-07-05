@@ -45,7 +45,6 @@
 <div class="form-group @fieldsetClass">
 
     <legend id="@field.id">
-
             @if(elements.args.get('_legend).isDefined) {
             <span id="@(field.name)_label" class="form-label-bold">
                 @elements.args.get('_legend)
@@ -54,11 +53,9 @@
             <span class="visually hidden">
                 @Messages("whatDoYouWantToDo.page.header")
             </span>}
-
             <span id="radio-group-error" class="common-error">
                 @commonHelper(field,errors)
             </span>
-
         </legend>
 
         @radioOptions.map { case ((value, id), label) =>
