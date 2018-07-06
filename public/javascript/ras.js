@@ -24,7 +24,7 @@ $(function() {
         ga('send', 'event', 'link - click', pageTitle, 'get help with this page');
     });
 
-    $(".full-width-banner__close").click(function(){
+    $("#full-width-banner-no-thanks").click(function(){
         $('.full-width-banner').fadeOut('slow');
         return true;
     });

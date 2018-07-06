@@ -45,6 +45,7 @@
         @if(!dismissText.isEmpty && !dismissUrl.isEmpty){
             <a class="full-width-banner__close"
                href="@dismissUrl"
+               id="full-width-banner-no-thanks"
                @if(!dismissGaAction.isEmpty) { data-journey-click="link - click:@dismissGaAction:@dismissGaLabel" }
                role="button">
                 <span aria-hidden="true">
