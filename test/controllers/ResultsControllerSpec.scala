@@ -247,6 +247,21 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
+    "contain what to do next section when match not found" in {
+      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+        Some(
+          RasSession(userChoice, name, nino, memberDob,
+            ResidencyStatusResult(
+              "", None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("what-to-do").text shouldBe Messages("match.not.found.what.to.do", Messages("contact.hmrc", "Jim McGill"))
+    }
+
     "contain ga event data when match not found " in {
       when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
         Some(
