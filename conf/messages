@@ -22,7 +22,7 @@ problem.getting.results.title = There has been a problem getting the results - L
 ######  HEADERS ####################################################################################
 
 whatDoYouWantToDo.page.header = What do you want to do?
-upload.result.page.header = The residency status has been added
+upload.result.page.header = Download your CSV results
 member.name.page.header = What is the member’s name?
 member.nino.page.header = What is {0}’s National Insurance number?
 member.dob.page.header = What is {0}’s date of birth?
