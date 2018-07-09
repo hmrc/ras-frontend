@@ -187,3 +187,13 @@ input:focus {
 .ras-bottom-margin-big {
     margin-bottom: 3em;
 }
+
+@media (min-width: 641px)
+.ras-form-group {
+    margin-bottom: 15px;
+}
+
+.ras-form-group {
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}

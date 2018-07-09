@@ -39,10 +39,11 @@
     }
 }
 
+<div class="form-group ras-form-group">
+
 <fieldset @if(elements.args.get('_fieldsetAttributes).isDefined) {
         @elements.args.get('_fieldsetAttributes)
       }>
-<div class="form-group @fieldsetClass">
 
     <legend id="@field.id">
             @if(elements.args.get('_legend).isDefined) {
@@ -53,10 +54,13 @@
             <h1 class="heading-xlarge">
                 @Messages("whatDoYouWantToDo.page.header")
             </h1>}
-            <div id="radio-group-error" class="common-error">
+            @if(errors.nonEmpty) {
+            <div class="form-group-error common-error">
                 @commonHelper(field,errors)
-            </div>
+            </div>}
         </legend>
+
+    <div class="ras-form-group form-group @fieldsetClass">
 
         @radioOptions.map { case ((value, id), label) =>
             @defining(s"${elements.field.name}-${id.toLowerCase.replace(" ","_")}")  { inputId =>
@@ -66,6 +70,7 @@
                 </div>
             }
         }
+    </div>
 </div>
 </fieldset>
 
