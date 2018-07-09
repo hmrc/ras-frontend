@@ -105,7 +105,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).title shouldBe Messages("whatDoYouWantToDo.page.title")
-      doc(result).getElementById("header").text shouldBe Messages("whatDoYouWantToDo.page.header")
+      doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("whatDoYouWantToDo.page.header")
     }
 
     "contain three options as radio buttons when no file is in progress" in {
