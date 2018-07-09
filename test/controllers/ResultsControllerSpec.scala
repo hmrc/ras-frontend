@@ -249,7 +249,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain what to do next section when match not found" in {
-      when(mockSessionService.fetchRasSession()(any(), any())).thenReturn(Future.successful(
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
           RasSession(userChoice, name, nino, memberDob,
             ResidencyStatusResult(
