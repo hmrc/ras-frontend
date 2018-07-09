@@ -50,17 +50,17 @@
                 @elements.args.get('_legend)
             </span>}
             @if(elements.args.get('_h1).isDefined) {
-            <span class="visually-hidden">
+            <h1 class="heading-xlarge">
                 @Messages("whatDoYouWantToDo.page.header")
-            </span>}
-            <span id="radio-group-error" class="common-error">
+            </h1>}
+            <div id="radio-group-error" class="common-error">
                 @commonHelper(field,errors)
-            </span>
+            </div>
         </legend>
 
         @radioOptions.map { case ((value, id), label) =>
             @defining(s"${elements.field.name}-${id.toLowerCase.replace(" ","_")}")  { inputId =>
-                <div class="multiple-choice">
+                <div class="multiple-choice" id="choose-option">
                     <input id="@inputId" type="radio" name="@elements.field.name" value="@value" />
                     <label for="@inputId">@label</label>
                 </div>

@@ -33,10 +33,6 @@
 
     @form(action = routes.WhatDoYouWantToDoController.post ) {
 
-        <header class="page-header">
-            <h1 id="header" class="heading-xlarge" aria-hidden="true">@Messages("whatDoYouWantToDo.page.header")</h1>
-        </header>
-
         @radioGroup(
             whatDoYouWantToDoForm("userChoice"),
               Seq(
