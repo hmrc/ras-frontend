@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@(name: String, dateOfBirth:String, nino:String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(name: String, dateOfBirth: String, nino: String, showUrBanner: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@ras_main(title = Messages("match.not.found.page.title"), scriptElem = None) {
+@ras_main(title = Messages("match.not.found.page.title"), scriptElem = None, showUrBanner = showUrBanner) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
