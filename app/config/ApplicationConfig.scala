@@ -39,7 +39,9 @@ trait ApplicationConfig {
   val timeOutSeconds: Int
   val timeOutCountDownSeconds: Int
   val refreshInterval: Int
-  val enableRefresh : Boolean
+  val enableRefresh: Boolean
+  val urBannerEnabled: Boolean
+  val urBannerLinkUrl: String
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
@@ -72,6 +74,9 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
     .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
 
   override lazy val rasApiResidencyStatusEndpoint: String = getString("residency-status-url")
+
+  override lazy val urBannerEnabled: Boolean = configuration.getBoolean("ur-banner.enabled").getOrElse(false)
+  override lazy val urBannerLinkUrl: String = configuration.getString("ur-banner.link-url").getOrElse("")
 
   override lazy val rasApiVersion: String = getString("ras-api-version")
 

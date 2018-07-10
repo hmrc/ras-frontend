@@ -16,11 +16,24 @@
 
 $(function() {
 
-    var pageTitle = $('title').text();
-    var helpButton = $("#get-help-action");
+    $('#errors').focus();
 
-    helpButton.on('click', function (e) {
+    var pageTitle = $('title').text();
+
+    $("#get-help-action").click(function() {
         ga('send', 'event', 'link - click', pageTitle, 'get help with this page');
+    });
+
+    $("#full-width-banner-no-thanks").click(function(){
+        $('.full-width-banner').fadeOut('slow');
+        return true;
+    });
+
+    $('button[id=continue]').click(function() {
+        var label = $('input:radio[name=userChoice]:checked').val();
+        if (typeof label !== 'undefined') {
+            ga('send', 'event', 'button - click', 'What do you want to do', 'Continue - ' + label);
+        }
     });
 
 });

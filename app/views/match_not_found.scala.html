@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@(name: String, dateOfBirth:String, nino:String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(name: String, dateOfBirth: String, nino: String, showUrBanner: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@ras_main(title = Messages("match.not.found.page.title"), scriptElem = None) {
+@ras_main(title = Messages("match.not.found.page.title"), scriptElem = None, showUrBanner = showUrBanner) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -68,8 +68,7 @@
                   @Html(
                   Messages(
                   "match.not.found.what.to.do",
-                  name,
-                  "<a id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' data-journey-click='link - click:User details not found:Contact HMRC link'>" + Messages("contact.hmrc") + "</a>"
+                  "<a id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' data-journey-click='link - click:User details not found:Contact HMRC link'>" + Messages("contact.hmrc", name) + "</a>"
                   )
                   )
               </p>

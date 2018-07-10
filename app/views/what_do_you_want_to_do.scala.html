@@ -19,12 +19,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-
-@scriptElem = {
-    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/what_do_you_want_to_do.js")'></script>
-}
-
-@ras_main(title = Messages("whatDoYouWantToDo.page.title"), scriptElem = Some(scriptElem)) {
+@ras_main(title = Messages("whatDoYouWantToDo.page.title")) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
@@ -33,19 +28,14 @@
 
     @form(action = routes.WhatDoYouWantToDoController.post ) {
 
-        <legend>
-            <header class = "page-header">
-                <h1 id="header" class="heading-xlarge">@Messages("whatDoYouWantToDo.page.header")</h1>
-            </header>
-        </legend>
-
         @radioGroup(
             whatDoYouWantToDoForm("userChoice"),
               Seq(
                 Messages("single.lookup.radio") -> "single-lookup" -> Messages("single.lookup.radio"),
                 Messages("bulk.lookup.radio")  ->  "bulk-lookup" -> Messages("bulk.lookup.radio"),
                 Messages("result.radio")  -> "result" -> Messages("result.radio")
-              )
+              ),
+        '_h1 -> Messages("whatDoYouWantToDo.page.header")
         )
 
         <div>

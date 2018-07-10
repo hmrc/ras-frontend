@@ -26,7 +26,8 @@
     scriptElem: Option[Html] = None,
     linkElement : Option[Html] = None,
     getHelpForm: Html  = HtmlFormat.empty,
-    signOutEnabled:Boolean)(implicit request: Request[_], messages: Messages)
+    signOutEnabled:Boolean,
+    showUrBanner: Boolean = false)(implicit request: Request[_], messages: Messages)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
@@ -130,8 +131,23 @@
     }
 }
 
+@urBanner = {
+    @if(showUrBanner) {
+        @views.html.helpers.urBanner(title = Messages("ur.banner.title"),
+            text = Messages("ur.banner.text"),
+            linkUrl = applicationConfig.urBannerLinkUrl,
+            linkGaAction = title,
+            linkGaLabel = "Get involved in making government services better",
+            dismissText = Messages("ur.banner.dismiss.text"),
+            dismissUrl = routes.UrDismissalController.dismissUrBanner.toString,
+            dismissGaAction = title,
+            dismissGaLabel = "Dismiss UR banner"
+        )
+    }
+}
 
 @content = {
+    @urBanner
     @uiLayouts.main_content(
       article = mainContent,
       mainClass = mainClass,

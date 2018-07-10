@@ -61,7 +61,7 @@ trait FileUploadController extends RasController with PageFlowController {
                         }
                       }
                       else {
-                        sessionService.resetRasSessionUploadError()
+                        sessionService.resetCacheUploadResponse()
                         Future.successful(Ok(views.html.file_upload(url,error)))
                       }
                     case _ =>
