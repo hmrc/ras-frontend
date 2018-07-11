@@ -162,7 +162,15 @@ input:focus {
 .ras-div-table-divider {
     border-bottom: 1px solid #bfc1c3;
     padding-bottom: .5em;
-    margin-bottom: .5em;
+    margin-bottom:  .5em;
+}
+
+.grid-row {
+    margin: 0 0px;
+}
+
+.column-one-half {
+    padding: 0 0px;
 }
 
 .ras-align-right {
