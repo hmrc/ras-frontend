@@ -29,8 +29,8 @@
 
                 <p id="subheader">@Messages("match.not.found.subheader", name)</p>
 
-                <div class="grid-row ras-div-table-divider">
-                    <div class="column-one-half">
+                <div class="grid-row ras-remove-left-grid ras-div-table-divider">
+                    <div class="column-one-half ras-align-text-left ">
                         @Messages("name").capitalize
                     </div>
                     <div id="name" class="column-one-third">
@@ -41,8 +41,8 @@
                     </span>
                 </div>
 
-                <div class="grid-row ras-div-table-divider">
-                    <div class="column-one-half">
+                <div class="grid-row ras-remove-left-grid ras-div-table-divider">
+                    <div class="column-one-half ras-align-text-left">
                         @Messages("nino").capitalize
                     </div>
                     <div id="nino" class="column-one-third">
@@ -52,8 +52,8 @@
                         <a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO" aria-labelledBy='@Messages("change.nino")'>@Messages("change")</a>
                     </span>
                 </div>
-                <div class="grid-row ras-div-table-divider">
-                    <div class="column-one-half">
+                <div class="grid-row ras-remove-left-grid ras-div-table-divider">
+                    <div class="column-one-half ras-align-text-left">
                         @Messages("dob").capitalize
                     </div>
                     <div id="dob" class="column-one-third">

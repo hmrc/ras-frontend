@@ -165,11 +165,11 @@ input:focus {
     margin-bottom:  .5em;
 }
 
-.grid-row {
+.ras-remove-left-grid {
     margin: 0 0px;
 }
 
-.column-one-half {
+.ras-align-text-left {
     padding: 0 0px;
 }
 
