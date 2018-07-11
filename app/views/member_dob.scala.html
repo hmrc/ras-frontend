@@ -38,15 +38,15 @@
                     <header class="page-header">
                         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
                     </header>
+                        <span class="visually-hidden">@Messages("dob")</span>
+                        <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                    @if(!memberDobForm.data.isEmpty) {
+                        <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
+                    }
                 </legend>
 
                 <div class="form-group">
                     <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
-                        <label id="dateOfBirth" class="form-label">
-                            <span class="visually-hidden">@Messages("dob")</span>
-                            <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
-                            <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
-                        </label>
 
                         @if(!memberDobForm.data.isEmpty &&
                         !memberDobForm.data.exists(_ == ("nino","")) &&
