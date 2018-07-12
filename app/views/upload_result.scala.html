@@ -41,12 +41,11 @@
             <section class="attachment embedded">
                 <div class="attachment--title">
                     <div class="icon--file" id="attachment-1">
-                        <img id="icon--file img" alt="file icon" tabindex="-1" src="@routes.AssetsController.at("images/icon-file-download.png")">
+                        <img id="icon--file img" alt="" src="@routes.AssetsController.at("images/icon-file-download.png")">
                     </div>
                     <div class="attachment-details">
                         <p>
-                            <a aria-describedby="result-link"
-                               id="result-link"
+                            <a id="result-link"
                                href="@routes.WhatDoYouWantToDoController.getResultsFile(fileId)"
                                data-journey-click="link - click:Residency status upload added @year:ResidencyStatusResults @year CSV">
                                 @Messages("residency.status.result", filename)
