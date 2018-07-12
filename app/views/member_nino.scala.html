@@ -33,7 +33,6 @@
 
             @form(action = routes.MemberNinoController.post(edit)) {
 
-            <fieldset class="inline">
                 <legend>
                     <header class="page-header">
                         <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
@@ -43,11 +42,9 @@
 
                     @rasInput(memberNinoForm("nino"),
                     '_id -> "nino",
-                    '_maxLength -> 15,
                     '_hintText -> Messages("nino.hint"))
 
                 </div>
-            </fieldset>
 
             <button class="button" type="submit" id="continue"
                     data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">
