@@ -39,9 +39,10 @@
                 </div>
             </div>
 
+            <h2 class="heading-medium" id="sub-header">@Messages("match.found.what.happens.next")</h2>
+
             <p id="top-content">@Messages("match.found.top")</p>
 
-            <h2 class="heading-medium" id="sub-header">@Messages("match.found.what.happens.next")</h2>
 
             @if(nextYearResidencyStatus.nonEmpty) {
                 <p id="bottom-content-cy-1">@Messages("match.found.bottom.current-year-and-next-year", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString, currentTaxYear.toString, name)</p>

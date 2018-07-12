@@ -43,7 +43,7 @@ problem.getting.results.header = There has been a problem getting the results
 
 ###### SUB-HEADERS #################################################################################
 
-match.found.what.happens.next = What to do next
+match.found.what.happens.next = What you must do next
 match.found.top = Use this residency status for the whole tax year in your relief at source claims. You cannot change the residency status in your claims during the tax year.
 match.found.bottom.current-year-and-next-year = You must use the {0} to {1} tax year residency status to claim relief at source for {3} from 6 April {2}.
 match.found.bottom.current-year.bottom = You should use this service from January to get {0}’s residency status for the {1} to {2} tax year.
