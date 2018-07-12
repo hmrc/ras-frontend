@@ -37,13 +37,10 @@
         </div>
 
         <input type="hidden" id="temp-error" />
-        <legend>
-            <span>
-                <header class ="page-header">
-                    <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
-                </header>
-            </span>
-        </legend>
+
+        <header class="page-header">
+            <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
+        </header>
 
         <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
 
@@ -53,20 +50,20 @@
             }else{
             <div id="file-upload-with-error" class="form-group form-field--error">
                 }
-
-                <label for="choose-file" id="upload-label">
-                    <span class="form-label visually-hidden">Upload a file</span>
-                    <span id="upload-error" class="error-message">@error</span>
-                </label>
-
                 <form
-                        id = "upload-form"
+                        id="upload-form"
                         action="@fileUploadUrl"
                         enctype="multipart/form-data"
                         method="post"
                         onsubmit="return checkFileType(this)">
+
+                    <label for="choose-file" id="upload-label">
+                        <span class="form-label visually-hidden">Upload a file</span>
+                        <span id="upload-error" class="error-message">@error</span>
+                    </label>
+
                     <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>
-                </div>
+            </div>
                     <p class="ras-bottom-margin"><a href="http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@Messages("get.help.uploading.link")</a></p>
                     <button class="button" type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@Messages("continue")</button>
                 </form>

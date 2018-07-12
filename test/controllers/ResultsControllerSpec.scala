@@ -241,11 +241,11 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("match-not-found").text shouldBe Messages("member.details.not.found", "Jim McGill")
       doc(result).getElementById("subheader").text shouldBe Messages("match.not.found.subheader","Jim McGill")
-      doc(result).getElementById("change-name").text shouldBe Messages("change")
+      doc(result).getElementById("change-name").text shouldBe Messages("change.name") + " " + Messages("change")
       doc(result).getElementById("name").text shouldBe "Jim McGill"
-      doc(result).getElementById("change-nino").text shouldBe Messages("change")
+      doc(result).getElementById("change-nino").text shouldBe Messages("change.nino") + " " + Messages("change")
       doc(result).getElementById("nino").text shouldBe nino.nino
-      doc(result).getElementById("change-dob").text shouldBe Messages("change")
+      doc(result).getElementById("change-dob").text shouldBe Messages("change.dob") + " " + Messages("change")
       doc(result).getElementById("dob").text shouldBe memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }

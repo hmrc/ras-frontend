@@ -24,6 +24,10 @@
     margin-top: 1.1em;
 }
 
+.ras-top-margin-big {
+    margin-top: 1.5em;
+}
+
 #wrapper{
   text-align:left;
 }
@@ -162,7 +166,15 @@ input:focus {
 .ras-div-table-divider {
     border-bottom: 1px solid #bfc1c3;
     padding-bottom: .5em;
-    margin-bottom: .5em;
+    margin-bottom:  .5em;
+}
+
+.ras-remove-left-grid {
+    margin: 0 0px;
+}
+
+.ras-align-text-left {
+    padding: 0 0px;
 }
 
 .ras-align-right {

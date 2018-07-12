@@ -8,7 +8,7 @@ import scoverage.ScoverageKeys
 trait MicroService {
 
   import uk.gov.hmrc._
-  import DefaultBuildSettings._
+  import DefaultBuildSettings.{defaultSettings, scalaSettings, addTestReportOption}
   import uk.gov.hmrc.{SbtBuildInfo, ShellPrompt, SbtAutoBuildPlugin}
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
   import uk.gov.hmrc.versioning.SbtGitVersioning

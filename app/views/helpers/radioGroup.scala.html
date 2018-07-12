@@ -40,12 +40,11 @@
 }
 
 <div class="form-group ras-form-group">
+    <fieldset @if(elements.args.get('_fieldsetAttributes).isDefined) {
+            @elements.args.get('_fieldsetAttributes)
+          }>
 
-<fieldset @if(elements.args.get('_fieldsetAttributes).isDefined) {
-        @elements.args.get('_fieldsetAttributes)
-      }>
-
-    <legend id="@field.id">
+        <legend id="@field.id">
             @if(elements.args.get('_legend).isDefined) {
             <span id="@(field.name)_label" class="form-label-bold">
                 @elements.args.get('_legend)
@@ -60,17 +59,17 @@
             </div>}
         </legend>
 
-    <div class="ras-form-group form-group @fieldsetClass">
+        <div class="ras-form-group form-group @fieldsetClass">
 
-        @radioOptions.map { case ((value, id), label) =>
-            @defining(s"${elements.field.name}-${id.toLowerCase.replace(" ","_")}")  { inputId =>
-                <div class="multiple-choice" id="choose-option">
-                    <input id="@inputId" type="radio" name="@elements.field.name" value="@value" />
-                    <label for="@inputId">@label</label>
-                </div>
+            @radioOptions.map { case ((value, id), label) =>
+                @defining(s"${elements.field.name}-${id.toLowerCase.replace(" ","_")}")  { inputId =>
+                    <div class="multiple-choice">
+                        <input id="@inputId" type="radio" name="@elements.field.name" value="@value" />
+                        <label for="@inputId">@label</label>
+                    </div>
+                }
             }
-        }
-    </div>
+        </div>
+    </fieldset>
 </div>
-</fieldset>
 

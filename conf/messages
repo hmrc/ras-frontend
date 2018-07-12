@@ -88,8 +88,8 @@ ur.banner.text = Get involved in making government services better (opens in a n
 ur.banner.dismiss.text = No thanks
 
 ##### OTHER ######################################################################################
-upload.result.member.contact = member must contact HMRC
-upload.result.what.next = If no residency status is shown, and you have checked that everything is correct, the {0} to update their personal details.
+upload.result.member.contact = the member must contact HMRC to update their personal details
+upload.result.what.next = If no residency status is shown, and you have checked that everything is correct, {0}.
 continue = Continue
 member = member
 single.lookup.link = Single look up
@@ -105,7 +105,7 @@ select.an.answer = Select what you want to do
 choose.something.else = Choose something else to do
 result = Result
 document = Document
-residency.status.result = {0}-results.CSV
+residency.status.result = Download {0}-results.CSV
 file.type.size = CSV, less than 3MB.
 expiry.date.message = If you do not open this file, It will be deleted on {0}.
 deletion.message = You should save a copy of it. The file is deleted from the service when you open it.

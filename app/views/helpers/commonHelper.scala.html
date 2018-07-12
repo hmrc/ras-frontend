@@ -17,8 +17,7 @@
 @(field: Field,errors: Seq[FormError])(implicit messages: Messages)
 
 @errors.zipWithIndex.map { case (error, index) =>
-<span role="tooltip"
-      data-journey="ras:error:@field.name"
+<span data-journey="ras:error:@field.name"
       id="@(field.name)-error-@index">
                     @Messages(error.message)
                 </span>
