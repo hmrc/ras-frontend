@@ -63,8 +63,11 @@
 
         <label for="@labelFor" id="@labelId">
             <span class="form-label">@elements.label</span>
-            <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>
+            @if(elements.args.contains('_hintText)) {
+            <span class="form-hint" id="@hintId">@elements.args.get('_hintText)</span>}
+            @if(errors.nonEmpty) {
             <span id="@elements.args.get('_id)-error" class="common-error">@commonHelper(field, errors)</span>
+            }
         </label>
 
         <input type="@if(elements.args.get('_type)){@elements.args.get('_type)}else{text}"
@@ -79,9 +82,7 @@
             }else{
             form-control
             }"
-
-            @if(elements.args.contains('_hintText)) { aria-describedby="@hintId" }
-
+        
             name="@elements.field.name"
 
             id="@elements.args.get('_id)"
