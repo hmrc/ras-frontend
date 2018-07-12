@@ -28,36 +28,16 @@
     <div class="grid-row">
         <div class="column-two-thirds">
             <div class="govuk-box-highlight">
-
-            <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
-                <p class="lede" role="text">
-
-                </p>
+                <h1 id="header" class="heading-xlarge">@Messages("match.found.header",name)</h1>
+                <div class="lede" role="text">
+                    <p id="cy-tax-year-period">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)</p>
+                    <span class="bold body-text" id="cy-residency-status">@Messages(currentYearResidencyStatus)</span>
+                    @if(nextYearResidencyStatus.nonEmpty) {
+                    <p id="ny-tax-year-period">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+                    <span class="bold body-text" id="ny-residency-status">@Messages(nextYearResidencyStatus.get)</span>
+                    }
+                </div>
             </div>
-
-            <table class ="spacelarge">
-                <thead>
-                <tr>
-                    <th id="tax-year-header">@Messages("tax.year")</th>
-                    <th id="location-header">@Messages("residency.status")</th>
-                </tr>
-                </thead>
-                <tbody>
-
-                <tr>
-                    <td id="cy-tax-year-period">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)</td>
-                    <td id="cy-residency-status">@Messages(currentYearResidencyStatus)</td>
-                </tr>
-
-                @if(nextYearResidencyStatus.nonEmpty) {
-                <tr>
-                    <td id="ny-tax-year-period">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</td>
-                    <td id="ny-residency-status">@Messages(nextYearResidencyStatus.get)</td>
-                </tr>
-                }
-
-                </tbody>
-            </table>
 
             <p id="top-content">@Messages("match.found.top")</p>
 
