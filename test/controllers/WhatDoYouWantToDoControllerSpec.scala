@@ -113,6 +113,14 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementsByClass("task-list-section").text shouldBe Messages("single.member.subheading")
 
     }
+
+    "contain the enter a members detail link" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+      doc(result).getElementsByClass("task-name").text shouldBe Messages("enter.members.details")
+
+
+    }
   }
 
 //  "post" should {

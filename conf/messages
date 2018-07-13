@@ -203,3 +203,7 @@ ras.timeoutDialog.minutes= minutes
 ras.timeoutDialog.minute= minute
 ras.timeoutDialog.button= Stay signed in
 ras.timeoutDialog.p1 = For security reasons, you will be signed out of this service in:
+
+###### WDYWTDP ######################################################################################
+
+enter.members.details = Enter a member's details
