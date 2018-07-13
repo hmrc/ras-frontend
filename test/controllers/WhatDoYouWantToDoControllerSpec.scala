@@ -107,6 +107,15 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("whatDoYouWantToDo.page.header")
     }
 
+    "contain the single member h2" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+      doc(result).getElementsByClass("task-list-section").text shouldBe Messages("single.member.subheading")
+
+    }
+
+
+
 
 
   }

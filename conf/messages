@@ -56,6 +56,7 @@ results.not.available.yet.sub-header1 = The results are still being added to the
 results.not.available.yet.sub-header2 = It can take up to 24 hours for the results to be added from when you uploaded the file.
 file.not.available.sub-header = You can {0}.
 file.ready.sub-header = Download your file
+single.member.subheading = Single member
 
 ###### ERRORS ######################################################################################
 
