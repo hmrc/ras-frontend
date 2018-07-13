@@ -117,7 +117,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain the enter a members detail link" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementsByClass("task-name").text shouldBe Messages("enter.members.details")
+      doc(result).getElementsByClass("task-name").get(0).html() shouldBe Messages("enter.members.details")
 
     }
 
@@ -131,7 +131,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain an Upload a file link" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("Upload.file")
+      doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("upload.file")
 
     }
 
