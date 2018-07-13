@@ -26,7 +26,6 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import helpers.helpers.I18nHelper
-import models.WhatDoYouWantToDo
 import services.ShortLivedCache
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYearResolver
