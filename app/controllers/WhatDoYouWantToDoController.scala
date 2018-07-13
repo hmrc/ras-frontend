@@ -54,7 +54,7 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          Future.successful(Ok(views.html.what_do_you_want_to_do(whatDoYouWantToDoForm)))
+          Future.successful(Ok(views.html.what_do_you_want_to_do()))
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
