@@ -28,7 +28,7 @@
     <div class="grid-row">
         <div class="column-two-thirds">
             <div class="govuk-box-highlight">
-                <h1 class="heading-large" id="header">@Messages("match.found.header",name)</h1>
+                <h1 class="heading-large">@Messages("match.found.header",name)</h1>
                     <p class="lede" role="text">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
                         <span class="bold body-text" id="cy-residency-status">@Messages(currentYearResidencyStatus)</span></p>
                     @if(nextYearResidencyStatus.nonEmpty) {
