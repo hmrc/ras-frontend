@@ -113,11 +113,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementsByClass("task-list-section").text shouldBe Messages("single.member.subheading")
 
     }
-
-
-
-
-
   }
 
 //  "post" should {
