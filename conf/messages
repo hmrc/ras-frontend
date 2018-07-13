@@ -175,6 +175,7 @@ unauthorised.list.last = register as an administrator or practitioner
 label.youre_signed_out=You’re signed out
 label.explore_gov_uk=Explore GOV.UK
 label.satisfaction_survey=Satisfaction survey
+label.feedback.use = We use your feedback to make our services better.
 label.how_easy_was_the_service_to_use=How easy was the service to use?
 label.very_easy=Very easy
 label.easy=Easy
