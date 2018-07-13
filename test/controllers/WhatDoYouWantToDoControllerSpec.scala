@@ -108,13 +108,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("whatDoYouWantToDo.page.header")
     }
 
-    "contain three options as radio buttons when no file is in progress" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementById("userChoice-single-lookup").attr("value") shouldBe Messages("single.lookup.radio")
-      doc(result).getElementById("userChoice-bulk-lookup").attr("value") shouldBe Messages("bulk.lookup.radio")
-      doc(result).getElementById("userChoice-result").attr("value") shouldBe Messages("result.radio")
-    }
   }
 
   "post" should {

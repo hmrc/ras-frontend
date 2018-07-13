@@ -28,15 +28,6 @@
 
     @form(action = routes.WhatDoYouWantToDoController.post ) {
 
-        @radioGroup(
-            whatDoYouWantToDoForm("userChoice"),
-              Seq(
-                Messages("single.lookup.radio") -> "single-lookup" -> Messages("single.lookup.radio"),
-                Messages("bulk.lookup.radio")  ->  "bulk-lookup" -> Messages("bulk.lookup.radio"),
-                Messages("result.radio")  -> "result" -> Messages("result.radio")
-              ),
-        '_h1 -> Messages("whatDoYouWantToDo.page.header")
-        )
 
         <div>
           <button class="button" type="submit" id="continue">@Messages("continue")</button>
