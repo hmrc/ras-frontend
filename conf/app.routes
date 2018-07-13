@@ -4,7 +4,6 @@ GET         /assets/*file                           @controllers.AssetsControlle
 
 GET         /                                       controllers.WhatDoYouWantToDoController.get
 GET         /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.get
-POST        /what-do-you-want-to-do                 controllers.WhatDoYouWantToDoController.post
 GET         /residency-status-added                 controllers.WhatDoYouWantToDoController.renderUploadResultsPage
 GET         /whatDoYouWantToDo/results/:fileName    controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
 GET         /no-results-available                   controllers.WhatDoYouWantToDoController.renderNoResultAvailablePage
