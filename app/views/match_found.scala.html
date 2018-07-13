@@ -50,7 +50,11 @@
 
             <div class="grid-row">
                 <div class ="column-two-thirds ras-top-margin">
-                <a id="choose-something-else"
+                    <div class="ras-bottom-margin">
+                        <a id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name",true)' data-journey-click="link - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Look up another member">@Messages("look.up.another.member")</a>
+                    </div>
+
+                    <a id="choose-something-else"
                    class="button"
                    href='@routes.SessionController.redirect("whatDoYouWantToDo",true)'
                     data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
