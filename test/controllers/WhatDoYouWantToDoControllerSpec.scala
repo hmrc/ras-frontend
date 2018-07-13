@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import forms.WhatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models._
 import org.joda.time.DateTime

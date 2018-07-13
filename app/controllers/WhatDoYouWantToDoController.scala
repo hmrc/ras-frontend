@@ -25,7 +25,6 @@ import play.api.http.HttpEntity
 import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
-import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models.WhatDoYouWantToDo
 import services.ShortLivedCache
