@@ -42,9 +42,7 @@
             <p id="top-content">@Messages("match.found.top")</p>
 
 
-            @if(nextYearResidencyStatus.nonEmpty) {
-                <p id="bottom-content-cy-1">@Messages("match.found.bottom.current-year-and-next-year", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString, currentTaxYear.toString, name)</p>
-            } else {
+            @if(!nextYearResidencyStatus.nonEmpty) {
                 <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
             }
 
