@@ -110,7 +110,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "contain the single member h2" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementsByClass("task-list-section").text shouldBe Messages("single.member.subheading")
+      doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
 
     }
 
@@ -119,6 +119,12 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-name").text shouldBe Messages("enter.members.details")
 
+    }
+
+    "contain the Multiple members h2" in {
+      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
+      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+      doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
 
     }
   }

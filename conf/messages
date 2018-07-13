@@ -57,6 +57,7 @@ results.not.available.yet.sub-header2 = It can take up to 24 hours for the resul
 file.not.available.sub-header = You can {0}.
 file.ready.sub-header = Download your file
 single.member.subheading = Single member
+multiple.members.subheading = Multiple members
 
 ###### ERRORS ######################################################################################
 
