@@ -224,6 +224,8 @@ input:focus {
     font-size: 24px;
     line-height: 1.25;
     padding-bottom: 5px;
+    margin-bottom: 0px
+
 }
 
 .task-list-item:first-child {
@@ -243,6 +245,7 @@ input:focus {
     border-bottom: 1px solid #bfc1c3;
     padding-top: 10px;
     padding-bottom: 10px;
+    margin-top: 0px;
 }
 
 .task-name {
@@ -254,6 +257,3 @@ input:focus {
 .column-minimum {
     min-width: 600px;
 }
-
-
-
