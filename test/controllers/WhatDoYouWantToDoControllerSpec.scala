@@ -118,6 +118,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-name").get(0).html() shouldBe Messages("enter.members.details")
+      doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
 
     }
 
@@ -127,15 +128,13 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
 
     }
-
     "contain an Upload a file link" in {
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("upload.file")
+      doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
 
     }
-
-
   }
 
 //  "post" should {
