@@ -151,9 +151,26 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementById("file-ready").text shouldBe ("FILE READY")
-        
+        doc(result).getElementById("time-scale").text should include("Your results are available to download")
       }
     }
+
+    "for Processing Only" should {
+
+      "contain a download your results link" in {
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+
+      }
+
+      "contain a label for File Ready" in {
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+
+      }
+    }
+
+
   }
 
 
