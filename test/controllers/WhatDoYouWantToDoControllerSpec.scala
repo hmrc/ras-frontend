@@ -95,42 +95,34 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
   "get" should {
 
     "respond to GET /what-do-you-want-to-do" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       status(result) shouldBe OK
     }
 
     "contain the correct title and header" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).title shouldBe Messages("whatDoYouWantToDo.page.title")
       doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("whatDoYouWantToDo.page.header")
     }
 
     "contain the single member h2" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
-
     }
 
     "contain the enter a members detail link" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-name").get(0).html() shouldBe Messages("enter.members.details")
       doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
       doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Enter a members details"
-
     }
 
     "contain the Multiple members h2" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
-
     }
+    
     "contain an Upload a file link" in {
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("upload.file")
       doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
