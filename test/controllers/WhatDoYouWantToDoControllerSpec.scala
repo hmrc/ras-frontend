@@ -172,7 +172,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "for UploadError Only" should {
-      "contain a upload your file again link" in {
+      "contain an upload your file again link" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
