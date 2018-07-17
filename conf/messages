@@ -214,5 +214,11 @@ upload.file = Upload a file
 download.results = Download your results
 file.ready = FILE READY
 result.timescale = Your results are available to download until {0} at {1}.
+problem.getting.result = There has been a problem getting your results.
+file.problem = FILE PROBLEM
+file.problem.paragraph.start = You should
+upload.file.again = try uploading your file again.
+file.problem.paragraph.end = If this problem continues, check the file you are trying to upload. You can also try to create a new file and then upload that new copy.
+
 
 

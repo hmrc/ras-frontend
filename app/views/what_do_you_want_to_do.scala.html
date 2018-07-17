@@ -48,12 +48,25 @@
 
                             @if(fileStatus==Ready){
                             <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderFileReadyPage" aria-describedby="eligibility-completed">@Messages("download.results")</a>
-                            <strong class="task-completed" id="file-ready">@Messages("file.ready")</strong>
+                            <strong class="task-completed">@Messages("file.ready")</strong>
                         </li>
                         <li class="task-list-item">
                             <p id="time-scale" style="margin-top: .2em; margin-bottom: 0;">@Messages("result.timescale")</p>
                             }
 
+                            @if(fileStatus==UploadError){
+                            <p style="margin: 0;">
+                                @Messages("problem.getting.result")
+                                <strong class="task-completed">@Messages("file.problem")</strong>
+                            </p>
+                        </li>
+                        <li class="task-list-item">
+                            <p id="check-your-file" style="margin-top: .2em; margin-bottom: 0;">
+                                @Messages("file.problem.paragraph.start")
+                                <a class="file-problem-link" href="/relief-at-source/upload-a-file" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("upload.file.again")</a>
+                                @Messages("file.problem.paragraph.end")
+                            </p>
+                            }
 
                         </li>
                     </ul>
