@@ -23,13 +23,13 @@ import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import helpers.helpers.I18nHelper
 import models._
+import models.FileUploadStatus._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
 import play.api.test.{FakeRequest, Helpers}
@@ -41,6 +41,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
+import scala.reflect.internal.util.NoFile
 
 
 class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I18nHelper with WithFakeApplication {
@@ -83,6 +84,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     override val config: Configuration = mockConfig
     override val env: Environment = mockEnvironment
 
+    when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.NoFile))
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
     when(mockSessionService.hasUserDimissedUrBanner()(any())).thenReturn(Future.successful(false))
@@ -92,43 +94,56 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
-  "get" should {
+  "get" when {
 
-    "respond to GET /what-do-you-want-to-do" in {
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      status(result) shouldBe OK
+    "for any status" should {
+      "respond to GET /what-do-you-want-to-do" in {
+        val result = TestWhatDoYouWantToDoController
+                     .get(fakeRequest)
+        status(result) shouldBe OK
+      }
+
+      "contain the correct title and header" in {
+        val result = TestWhatDoYouWantToDoController
+                     .get(fakeRequest)
+        doc(result).title shouldBe Messages("whatDoYouWantToDo.page.title")
+        doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("whatDoYouWantToDo.page.header")
+      }
+
+      "contain the single member h2" in {
+        val result = TestWhatDoYouWantToDoController
+                     .get(fakeRequest)
+        doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
+      }
+
+      "contain the enter a members detail link" in {
+        val result = TestWhatDoYouWantToDoController
+                     .get(fakeRequest)
+        doc(result).getElementsByClass("task-name").get(0).html() shouldBe Messages("enter.members.details")
+        doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
+        doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Enter a members details"
+      }
+
+      "contain the Multiple members h2" in {
+        val result = TestWhatDoYouWantToDoController
+                     .get(fakeRequest)
+        doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
+      }
     }
 
-    "contain the correct title and header" in {
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).title shouldBe Messages("whatDoYouWantToDo.page.title")
-      doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("whatDoYouWantToDo.page.header")
+    "for NoFile only" should {
+
+      "contain an Upload a file link" in {
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+        doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("upload.file")
+        doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
+        doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Upload a file"
+
+      }
     }
 
-    "contain the single member h2" in {
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
-    }
 
-    "contain the enter a members detail link" in {
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementsByClass("task-name").get(0).html() shouldBe Messages("enter.members.details")
-      doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
-      doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Enter a members details"
-    }
-
-    "contain the Multiple members h2" in {
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
-    }
-
-    "contain an Upload a file link" in {
-      val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-      doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("upload.file")
-      doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
-      doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Upload a file"
-
-    }
+    
   }
 
 //  "post" should {

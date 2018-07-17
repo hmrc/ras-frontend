@@ -18,7 +18,7 @@
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import models.FileUploadStatus
+@import models.FileUploadStatus._
 
 @ras_main(title = Messages("whatDoYouWantToDo.page.title")) {
 
@@ -41,7 +41,9 @@
                 <h2 class="task-list-section">@Messages("multiple.members.subheading")</h2>
                     <ul class="task-list-items">
                         <li class="task-list-item">
+                            @if(fileStatus==NoFile){
                             <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("Upload a file")</a>
+                            }
                         </li>
                     </ul>
             </li>
