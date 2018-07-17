@@ -23,6 +23,7 @@ import play.api.Logger
 import play.api.mvc.Request
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.ShortLivedHttpCaching
+import models.FileUploadStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -191,22 +192,22 @@ trait ShortLivedCache  {
     }
   }
 
-  def determineFileStatus(userId: String)(implicit hc: HeaderCarrier): Future[String] = {
+  def determineFileStatus(userId: String)(implicit hc: HeaderCarrier): Future[FileUploadStatus.Value] = {
     fetchFileSession(userId).flatMap {
       case Some(fileSession) =>
         fileSession.resultsFile match {
-          case Some(resultFile) => Future.successful("file ready")
+          case Some(resultFile) => Future.successful(Ready)
           case _ => isFileInProgress(userId).flatMap {
             case true =>
               failedProcessingUploadedFile(userId).flatMap {
-                case true => Future.successful("file problem2")
-                case _ => Future.successful("file in progress")
+                case true => Future.successful(UploadError)
+                case _ => Future.successful(InProgress)
               }
 
-            case _ => Future.successful("file problem1")
+            case _ => Future.successful(TimeError)
           }
         }
-      case _ => Future.successful("no file")
+      case _ => Future.successful(NoFile)
     }
   }
   

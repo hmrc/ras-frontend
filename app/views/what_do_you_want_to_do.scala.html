@@ -14,10 +14,11 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileStatus: FileUploadStatus.Value)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+@import models.FileUploadStatus
 
 @ras_main(title = Messages("whatDoYouWantToDo.page.title")) {
 

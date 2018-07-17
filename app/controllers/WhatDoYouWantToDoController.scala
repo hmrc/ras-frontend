@@ -29,6 +29,7 @@ import helpers.helpers.I18nHelper
 import services.ShortLivedCache
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYearResolver
+import models.FileUploadStatus._
 
 import scala.concurrent.Future
 
@@ -52,10 +53,13 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          Future.successful(Ok(views.html.what_do_you_want_to_do()))
+          shortLivedCache.determineFileStatus(userId).flatMap {
+            fileStatus => Future.successful(Ok(views.html.what_do_you_want_to_do(fileStatus)))
+          }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
+
       }
   }
 

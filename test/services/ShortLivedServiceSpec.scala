@@ -28,9 +28,11 @@ import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+import models.FileUploadStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.reflect.internal.util.NoFile
 
 class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutures with MockitoSugar with BeforeAndAfter {
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -146,7 +148,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(None))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe "no file"
+        res shouldBe NoFile
       }
 
       "file session exists and file is ready" in {
@@ -155,7 +157,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(Some(fileSession)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe "file ready"
+        res shouldBe Ready
       }
 
       "file session exists and file is in progress" in {
@@ -164,7 +166,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(Some(fileSession2)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe "file in progress"
+        res shouldBe InProgress
 
       }
       "file session exists and more then 24 hours has passed" in {
@@ -173,7 +175,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(Some(fileSession1)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe "file problem1"
+        res shouldBe TimeError
 
       }
 
@@ -183,7 +185,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe "file problem2"
+        res shouldBe UploadError
       }
 
     }
