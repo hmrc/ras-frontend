@@ -191,22 +191,22 @@ trait ShortLivedCache  {
     }
   }
 
-  def determineFileStatus(userId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def determineFileStatus(userId: String)(implicit hc: HeaderCarrier): Future[String] = {
     fetchFileSession(userId).flatMap {
       case Some(fileSession) =>
         fileSession.resultsFile match {
-          case Some(resultFile) => Future.successful(Some("file ready"))
+          case Some(resultFile) => Future.successful("file ready")
           case _ => isFileInProgress(userId).flatMap {
             case true =>
               failedProcessingUploadedFile(userId).flatMap {
-                case true => Future.successful(Some("file problem2"))
-                case _ => Future.successful(Some("file in progress"))
+                case true => Future.successful("file problem2")
+                case _ => Future.successful("file in progress")
               }
 
-            case _ => Future.successful(Some("file problem1"))
+            case _ => Future.successful("file problem1")
           }
         }
-      case _ => Future.successful(None)
+      case _ => Future.successful("no file")
     }
   }
   

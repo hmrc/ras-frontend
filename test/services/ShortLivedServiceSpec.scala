@@ -146,7 +146,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(None))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe None
+        res shouldBe "no file"
       }
 
       "file session exists and file is ready" in {
@@ -155,7 +155,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(Some(fileSession)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe Some("file ready")
+        res shouldBe "file ready"
       }
 
       "file session exists and file is in progress" in {
@@ -164,7 +164,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(Some(fileSession2)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe Some("file in progress")
+        res shouldBe "file in progress"
 
       }
       "file session exists and more then 24 hours has passed" in {
@@ -173,7 +173,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(Some(fileSession1)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe Some("file problem1")
+        res shouldBe "file problem1"
 
       }
 
@@ -183,7 +183,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe Some("file problem2")
+        res shouldBe "file problem2"
       }
 
     }
