@@ -98,8 +98,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
     "for any status" should {
       "respond to GET /what-do-you-want-to-do" in {
-        val result = TestWhatDoYouWantToDoController
-                     .get(fakeRequest)
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         status(result) shouldBe OK
       }
 
@@ -111,22 +110,19 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       }
 
       "contain the single member h2" in {
-        val result = TestWhatDoYouWantToDoController
-                     .get(fakeRequest)
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
       }
 
       "contain the enter a members detail link" in {
-        val result = TestWhatDoYouWantToDoController
-                     .get(fakeRequest)
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-name").get(0).html() shouldBe Messages("enter.members.details")
         doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
         doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Enter a members details"
       }
 
       "contain the Multiple members h2" in {
-        val result = TestWhatDoYouWantToDoController
-                     .get(fakeRequest)
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
       }
     }
@@ -142,9 +138,24 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       }
     }
 
+    "for Ready Only" should {
 
-    
+      "contain a download your results link" in {
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+        doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("Download your results")
+        doc(result).getElementById("download-result-link").attr("href") should include("/file-ready")
+      }
+
+      "contain a label for File Ready" in {
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+        doc(result).getElementById("file-ready").text shouldBe ("FILE READY")
+        
+      }
+    }
   }
+
 
 //  "post" should {
 //
