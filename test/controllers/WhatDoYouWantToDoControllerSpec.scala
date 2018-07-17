@@ -141,6 +141,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     "for Ready Only" should {
 
       "contain a download your results link" in {
+
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("Download your results")
@@ -148,9 +149,16 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       }
 
       "contain a label for File Ready" in {
+
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementById("file-ready").text shouldBe ("FILE READY")
+        doc(result).getElementById("file-ready").text shouldBe "FILE READY"
+      }
+
+      "contain a paragraph with file availability date" in {
+
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementById("time-scale").text should include("Your results are available to download")
       }
     }
@@ -162,15 +170,20 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
 
       }
+    }
 
-      "contain a label for File Ready" in {
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
+    "for UploadError Only" should {
+
+      "contain a upload your file again link" in {
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+        doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
+        doc(result).getElementById("try-again").attr("href") should include("/upload-a-file")
+        doc(result).getElementById("try-again").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Upload a file"
+
 
       }
     }
-
-
   }
 
 
