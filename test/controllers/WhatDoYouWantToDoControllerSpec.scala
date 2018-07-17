@@ -139,7 +139,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "for Ready Only" should {
-
       "contain a download your results link" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
@@ -164,9 +163,8 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "for Processing Only" should {
-
       "contain a download your results link" in {
-        
+
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
 
@@ -174,7 +172,6 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "for UploadError Only" should {
-
       "contain a upload your file again link" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
@@ -191,6 +188,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROBLEM"
 
       }
+
       "contain a paragraph advising to check file" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
