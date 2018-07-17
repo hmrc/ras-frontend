@@ -190,6 +190,25 @@ trait ShortLivedCache  {
         false
     }
   }
+
+  def determineFileStatus(userId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    fetchFileSession(userId).flatMap {
+      case Some(fileSession) =>
+        fileSession.resultsFile match {
+          case Some(resultFile) => Future.successful(Some("file ready"))
+          case _ => isFileInProgress(userId).flatMap {
+            case true =>
+              failedProcessingUploadedFile(userId).flatMap {
+                case true => Future.successful(Some("file problem2"))
+                case _ => Future.successful(Some("file in progress"))
+              }
+
+            case _ => Future.successful(Some("file problem1"))
+          }
+        }
+      case _ => Future.successful(None)
+    }
+  }
   
   def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier) = {
     shortLivedCache.remove(userId).map(_.status).recover {

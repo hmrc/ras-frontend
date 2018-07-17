@@ -121,7 +121,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
     }
-    
+
     "contain an Upload a file link" in {
       val result = TestWhatDoYouWantToDoController.get(fakeRequest)
       doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("upload.file")

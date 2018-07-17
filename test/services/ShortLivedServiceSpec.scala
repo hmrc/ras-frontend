@@ -40,8 +40,8 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
   val callbackData = CallbackData("1234", fileId, fileStatus, reason)
   val resultsFile = ResultsFileMetaData(fileId,Some("fileName.csv"),Some(1234L),123,1234L)
   val fileSession = FileSession(Some(callbackData), Some(resultsFile), "userId", Some(DateTime.now().getMillis), None)
-  val fileSession1 = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis), None)
-  val fileSession2 = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2)getMillis), None)
+  val fileSession1 = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2).getMillis), None)
+  val fileSession2 = FileSession(Some(callbackData), None, "userId2", Some(DateTime.now().minusHours(2).getMillis), None)
 
 
   val json = Json.toJson(fileSession)
@@ -49,6 +49,8 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
   val mockSessionCache = mock[ShortLivedHttpCaching]
   val SUT = new ShortLivedCache {
     override val shortLivedCache: ShortLivedHttpCaching = mockSessionCache
+
+    when(shortLivedCache.remove(any())(any(), any())).thenReturn(Future.successful(Future.successful(HttpResponse(200))))
 
     when(shortLivedCache.fetchAndGetEntry[FileSession] (any(), any(),any())
       (any(),any(), any()))
@@ -135,6 +137,56 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
       when(mockSessionCache.remove ("56789")).thenReturn(Future.successful(HttpResponse(202)))
       val res = await(SUT.removeFileSessionFromCache("56789"))
       res shouldBe 202
+    }
+
+    "return the correct file status" when {
+      "file session does not exist" in {
+        when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())
+          (any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+        val res = await(SUT.determineFileStatus("userId"))
+        res shouldBe None
+      }
+
+      "file session exists and file is ready" in {
+        when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())
+          (any(), any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
+
+        val res = await(SUT.determineFileStatus("userId"))
+        res shouldBe Some("file ready")
+      }
+
+      "file session exists and file is in progress" in {
+        when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())
+          (any(), any(), any()))
+        .thenReturn(Future.successful(Some(fileSession2)))
+
+        val res = await(SUT.determineFileStatus("userId"))
+        res shouldBe Some("file in progress")
+
+      }
+      "file session exists and more then 24 hours has passed" in {
+        when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())
+          (any(), any(), any()))
+        .thenReturn(Future.successful(Some(fileSession1)))
+
+        val res = await(SUT.determineFileStatus("userId"))
+        res shouldBe Some("file problem1")
+
+      }
+
+      "file session exists and there is a problem with the file upload process" in {
+        val cd = callbackData.copy(status = "ERROR")
+        val fileSession = FileSession(Some(cd), None, "userId", Some(DateTime.now().minusHours(2)getMillis), None)
+        when(mockSessionCache.fetchAndGetEntry[FileSession] (any(), any(),any())(any(),any(), any())).thenReturn(Future.successful(Some(fileSession)))
+
+        val res = await(SUT.determineFileStatus("userId"))
+        res shouldBe Some("file problem2")
+      }
+
+
     }
   }
 
