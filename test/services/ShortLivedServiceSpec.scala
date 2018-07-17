@@ -186,7 +186,6 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         res shouldBe Some("file problem2")
       }
 
-
     }
   }
 
