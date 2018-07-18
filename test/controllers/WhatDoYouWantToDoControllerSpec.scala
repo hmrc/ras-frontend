@@ -160,7 +160,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").text should include("Your results are available to download")
+        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale")
       }
     }
 
@@ -177,9 +177,9 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() should include("File uploaded today")
-        doc(result).getElementsByClass("paragraph-info").get(1).text() should include("less than 1 MB")
-        doc(result).getElementsByClass("paragraph-info").get(2).text() should include("cannot upload another file")
+        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time") + Messages("processing")
+        doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
+        doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
       }
     }
