@@ -133,7 +133,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementById("upload-link").text() shouldBe Messages("upload.file")
         doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
-        doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Upload a file"
+        doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:What do you want to do:Upload a file"
 
       }
     }
@@ -145,6 +145,8 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("download.results")
         doc(result).getElementById("download-result-link").attr("href") should include("/residency-status-added")
+        doc(result).getElementById("download-result-link").attr("data-journey-click") shouldBe "link - click:What do you want to do:Download your results"
+
       }
 
       "contain a File ready Icon" in {
@@ -189,7 +191,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
         doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
-        doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Upload a file"
+        doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:What do you want to do:Upload a file"
       }
 
       "contain a File problem icon" in {
