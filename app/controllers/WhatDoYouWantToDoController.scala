@@ -55,14 +55,10 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
       isAuthorised.flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap { fileSession =>
-            shortLivedCache
-            .determineFileStatus(userId)
-            .flatMap {
+            shortLivedCache.determineFileStatus(userId).flatMap {
               fileStatus =>
-                Logger
-                .info(s"[WhatDoYouWantToDoController][get] determine file status returned $fileStatus")
-                Future
-                .successful(Ok(views.html.what_do_you_want_to_do(fileStatus, getHelpDate(fileStatus, fileSession))))
+                Logger.info(s"[WhatDoYouWantToDoController][get] determine file status returned $fileStatus")
+                Future.successful(Ok(views.html.what_do_you_want_to_do(fileStatus, getHelpDate(fileStatus, fileSession))))
             }
           }
         case Left(resp) =>
