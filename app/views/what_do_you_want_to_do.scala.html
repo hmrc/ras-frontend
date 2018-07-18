@@ -40,43 +40,49 @@
             <li>
                 <h2 class="task-list-section">@Messages("multiple.members.subheading")</h2>
                     <ul class="task-list-items">
-                        <li class="task-list-item">
 
-                            @if(fileStatus==NoFile){
-                            <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("Upload a file")</a>
-                            }
+                        @if(fileStatus==NoFile){
+                            <li class="task-list-item">
+                                <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("Upload a file")</a>
+                            </li>
+                         }
 
-                            @if(fileStatus==InProgress){
-                            <p class="paragraph-info no-margin">@Messages("file.upload.time")<strong class="task-completed">@Messages("processing")</strong></p>
-                        </li>
-                        <li class="task-list-item">
-                            <p class="paragraph-info small-margin-top">@Messages("file.size.info")</p>
-                            <p class="paragraph-info no-bottom-margin">@Messages("processing.file")</p>
-                            }
+                        @if(fileStatus==InProgress){
+                            <li class="task-list-item">
+                                <p class="paragraph-info no-margin">@Messages("file.upload.time")<strong class="task-completed">@Messages("processing")</strong></p>
+                            </li>
+                            <li class="task-list-item">
+                                <p class="paragraph-info small-margin-top">@Messages("file.size.info")</p>
+                                <p class="paragraph-info no-bottom-margin">@Messages("processing.file")</p>
+                            </li>
+                        }
 
-                            @if(fileStatus==Ready){
-                            <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderFileReadyPage" aria-describedby="eligibility-completed">@Messages("download.results")</a>
-                            <strong class="task-completed">@Messages("file.ready")</strong>
-                        </li>
-                        <li class="task-list-item">
-                            <p class="paragraph-info no-bottom-margin" style="margin-top: .2em;">@Messages("result.timescale")</p>
-                            }
+                        @if(fileStatus==Ready){
+                            <li class="task-list-item">
+                                <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderFileReadyPage" aria-describedby="eligibility-completed">@Messages("download.results")</a>
+                                <strong class="task-completed">@Messages("file.ready")</strong>
+                            </li>
+                            <li class="task-list-item">
+                                <p class="paragraph-info no-bottom-margin" style="margin-top: .2em;">@Messages("result.timescale")</p>
+                            </li>
+                        }
 
-                            @if(fileStatus==UploadError){
-                            <p class="no-bottom-margin">
-                                @Messages("problem.getting.result")
-                                <strong class="task-completed">@Messages("file.problem")</strong>
-                            </p>
-                        </li>
-                        <li class="task-list-item">
-                            <p class="paragraph-info no-bottom-margin small-margin-top">
-                                @Messages("file.problem.paragraph.start")
-                                <a class="file-problem-link" href="/relief-at-source/upload-a-file" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("upload.file.again")</a>
-                                @Messages("file.problem.paragraph.end")
-                            </p>
-                            }
+                        @if(fileStatus==UploadError){
+                            <li class="task-list-item">
+                                <p class="no-bottom-margin">
+                                    @Messages("problem.getting.result")
+                                    <strong class="task-completed">@Messages("file.problem")</strong>
+                                </p>
+                            </li>
+                            <li class="task-list-item">
+                                <p class="paragraph-info no-bottom-margin small-margin-top">
+                                    @Messages("file.problem.paragraph.start")
+                                    <a class="file-problem-link" href="/relief-at-source/upload-a-file" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("upload.file.again")</a>
+                                    @Messages("file.problem.paragraph.end")
+                                </p>
+                            </li>
+                        }
 
-                        </li>
                     </ul>
             </li>
         </ul>
