@@ -32,7 +32,6 @@ import models.FileUploadStatus._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.reflect.internal.util.NoFile
 
 class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutures with MockitoSugar with BeforeAndAfter {
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -148,7 +147,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(None))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe NoFile
+        res shouldBe NoFileSession
       }
 
       "file session exists and file is ready" in {

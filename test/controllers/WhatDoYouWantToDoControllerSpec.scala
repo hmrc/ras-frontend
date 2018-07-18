@@ -84,7 +84,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     override val config: Configuration = mockConfig
     override val env: Environment = mockEnvironment
 
-    when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.NoFile))
+    when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.NoFileSession))
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
     when(mockSessionService.hasUserDimissedUrBanner()(any())).thenReturn(Future.successful(false))
@@ -127,7 +127,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       }
     }
 
-    "for NoFile only" should {
+    "for NoFileSession only" should {
 
       "contain an Upload a file link" in {
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
