@@ -47,11 +47,11 @@
                             }
 
                             @if(fileStatus==InProgress){
-                            <p class="processing-info">@Messages("file.upload.time")<strong class="task-completed">@Messages("processing")</strong></p>
+                            <p class="paragraph-info" style="margin: 0;">@Messages("file.upload.time")<strong class="task-completed">@Messages("processing")</strong></p>
                         </li>
                         <li class="task-list-item">
-                            <p class="processing-info">@Messages("file.size.info")</p>
-                            <p class="processing-info">@Messages("processing.file")</p>
+                            <p class="paragraph-info" style="margin-top: .2em;">@Messages("file.size.info")</p>
+                            <p class="paragraph-info">@Messages("processing.file")</p>
                             }
 
                             @if(fileStatus==Ready){
@@ -59,7 +59,7 @@
                             <strong class="task-completed">@Messages("file.ready")</strong>
                         </li>
                         <li class="task-list-item">
-                            <p id="time-scale" style="margin-top: .2em; margin-bottom: 0;">@Messages("result.timescale")</p>
+                            <p class="paragraph-info" style="margin-top: .2em; margin-bottom: 0;">@Messages("result.timescale")</p>
                             }
 
                             @if(fileStatus==UploadError){
@@ -69,7 +69,7 @@
                             </p>
                         </li>
                         <li class="task-list-item">
-                            <p id="check-your-file" style="margin-top: .2em; margin-bottom: 0;">
+                            <p class="paragraph-info" style="margin-top: .2em; margin-bottom: 0;">
                                 @Messages("file.problem.paragraph.start")
                                 <a class="file-problem-link" href="/relief-at-source/upload-a-file" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("upload.file.again")</a>
                                 @Messages("file.problem.paragraph.end")

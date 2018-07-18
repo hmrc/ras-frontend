@@ -143,7 +143,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("Download your results")
+        doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("download.results")
         doc(result).getElementById("download-result-link").attr("href") should include("/file-ready")
       }
 
@@ -158,7 +158,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementById("time-scale").text should include("Your results are available to download")
+        doc(result).getElementsByClass("paragraph-info").text should include("Your results are available to download")
       }
     }
 
@@ -175,9 +175,9 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("processing-info").get(0).text() should include("File uploaded")
-        doc(result).getElementsByClass("processing-info").get(1).text() should include("less than 1 MB")
-        doc(result).getElementsByClass("processing-info").get(2).text() should include("cannot upload another file")
+        doc(result).getElementsByClass("paragraph-info").get(0).text() should include("File uploaded today")
+        doc(result).getElementsByClass("paragraph-info").get(1).text() should include("less than 1 MB")
+        doc(result).getElementsByClass("paragraph-info").get(2).text() should include("cannot upload another file")
 
       }
     }
@@ -204,7 +204,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementById("check-your-file").text should include("check the file you are trying to upload")
+        doc(result).getElementsByClass("paragraph-info").text should include("check the file you are trying to upload")
       }
     }
   }
