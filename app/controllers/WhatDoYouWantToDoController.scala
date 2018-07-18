@@ -105,7 +105,6 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
                   case Some(resultFile) =>
                     resultFile.uploadDate match {
                       case Some(timestamp) =>
-                        formattedExpiryDate(timestamp)
                         fileSession.userFile match {
                           case Some(callbackData) =>
                             val currentTaxYear = TaxYearResolver.currentTaxYear
