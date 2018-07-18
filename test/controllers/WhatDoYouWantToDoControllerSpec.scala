@@ -118,7 +118,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementById("single-member-link").text shouldBe Messages("enter.members.details")
         doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
-        doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Enter a members details"
+        doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "link - click:What do you want to do:Enter a members details"
       }
 
       "contain the Multiple members h2" in {

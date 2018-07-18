@@ -33,7 +33,7 @@
                 <h2 class="task-list-section">@Messages("single.member.subheading")</h2>
                     <ul class="task-list-items">
                         <li class="task-list-item">
-                            <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="navigation - link:What do you want to do:Enter a members details" aria-describedBy="eligibility-completed">@Messages("enter.members.details")</a>
+                            <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:What do you want to do:Enter a members details" aria-describedBy="eligibility-completed">@Messages("enter.members.details")</a>
                         </li>
                     </ul>
             </li>
@@ -43,7 +43,7 @@
 
                         @if(fileStatus==NoFile){
                             <li class="task-list-item">
-                                <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("Upload a file")</a>
+                                <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:What do you want to do:Upload a file">@Messages("Upload a file")</a>
                             </li>
                          }
 
@@ -59,7 +59,7 @@
 
                         @if(fileStatus==Ready){
                             <li class="task-list-item">
-                                <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderUploadResultsPage" aria-describedby="eligibility-completed">@Messages("download.results")</a>
+                                <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderUploadResultsPage" aria-describedby="eligibility-completed" data-journey-click="link - click:What do you want to do:Download your results">@Messages("download.results")</a>
                                 <strong class="task-completed">@Messages("file.ready")</strong>
                             </li>
                             <li class="task-list-item">
@@ -77,7 +77,7 @@
                             <li class="task-list-item">
                                 <p class="paragraph-info no-bottom-margin small-margin-top">
                                     @Messages("file.problem.paragraph.start")
-                                    <a class="file-problem-link" href="@routes.FileUploadController.get()" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("upload.file.again")</a>
+                                    <a class="file-problem-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:What do you want to do:Upload a file">@Messages("upload.file.again")</a>
                                     @Messages("file.problem.paragraph.end")
                                 </p>
                             </li>
