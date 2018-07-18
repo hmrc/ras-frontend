@@ -17,6 +17,6 @@
 package models
 
 object FileUploadStatus extends Enumeration {
-  val NoFileSession, Ready, InProgress, UploadError, TimeError = Value
+  val NoFileSession, Ready, InProgress, UploadError, TimeExpiryError = Value
 
 }

@@ -204,7 +204,7 @@ trait ShortLivedCache  {
                 case _ => Future.successful(InProgress)
               }
 
-            case _ => Future.successful(TimeError)
+            case _ => Future.successful(TimeExpiryError)
           }
         }
       case _ => Future.successful(NoFileSession)

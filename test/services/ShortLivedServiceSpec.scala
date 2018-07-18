@@ -174,7 +174,7 @@ class ShortLivedServiceSpec extends UnitSpec with OneAppPerSuite with ScalaFutur
         .thenReturn(Future.successful(Some(fileSession1)))
 
         val res = await(SUT.determineFileStatus("userId"))
-        res shouldBe TimeError
+        res shouldBe TimeExpiryError
 
       }
 
