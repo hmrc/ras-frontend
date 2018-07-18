@@ -147,14 +147,14 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         doc(result).getElementById("download-result-link").attr("href") should include("/file-ready")
       }
 
-      "contain a File Ready Icon" in {
+      "contain a File ready Icon" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-completed").text shouldBe "FILE READY"
       }
 
-      "contain file ready paragraph" in {
+      "contain File ready paragraph" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
@@ -171,7 +171,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
       }
 
-      "contain file processing paragraphs" in {
+      "contain File processing paragraphs" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
@@ -192,7 +192,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Upload a file"
       }
 
-      "contain a File Problem icon" in {
+      "contain a File problem icon" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
@@ -200,7 +200,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
       }
 
-      "contain file problem paragraphs" in {
+      "contain File problem paragraphs" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)

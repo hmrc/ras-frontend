@@ -290,3 +290,10 @@ input:focus {
     font-size: 16px;
     line-height: 1.25;
 }
+
+.processing-info{
+    margin: 0;
+    margin-top: .2em;
+    margin-bottom: 0;
+
+}
