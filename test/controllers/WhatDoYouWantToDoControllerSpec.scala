@@ -144,7 +144,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("download.results")
-        doc(result).getElementById("download-result-link").attr("href") should include("/file-ready")
+        doc(result).getElementById("download-result-link").attr("href") should include("/residency-status-added")
       }
 
       "contain a File ready Icon" in {
