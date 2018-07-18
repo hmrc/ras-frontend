@@ -175,9 +175,9 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("file-processing-paragraph").text should include("File uploaded at")
-        doc(result).getElementsByClass("file-processing-paragraph").text should include("Files less than 1 MB should be ready")
-        doc(result).getElementsByClass("file-processing-paragraph").text should include("cannot upload another file")
+        doc(result).getElementsByClass("processing-info").get(0).text() should include("File uploaded")
+        doc(result).getElementsByClass("processing-info").get(1).text() should include("less than 1 MB")
+        doc(result).getElementsByClass("processing-info").get(2).text() should include("cannot upload another file")
 
       }
     }
