@@ -54,12 +54,13 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
       isAuthorised.flatMap {
         case Right(userId) =>
           shortLivedCache.determineFileStatus(userId).flatMap {
-            fileStatus => Future.successful(Ok(views.html.what_do_you_want_to_do(fileStatus)))
+            fileStatus =>
+              Logger.info(s"[WhatDoYouWantToDoController][get] determine file status returned $fileStatus")
+              Future.successful(Ok(views.html.what_do_you_want_to_do(fileStatus)))
           }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
           resp
-
       }
   }
 

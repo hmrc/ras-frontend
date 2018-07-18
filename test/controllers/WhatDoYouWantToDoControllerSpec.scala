@@ -209,6 +209,32 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         doc(result).getElementsByClass("paragraph-info").text should include("check the file you are trying to upload")
       }
     }
+
+      "for TimeExpiryError Only" should {
+        "contain an upload your file again link" in {
+
+          when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.TimeExpiryError))
+          val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+          doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
+          doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
+          doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:What do you want to do:Upload a file"
+        }
+
+        "contain a File problem icon" in {
+
+          when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.TimeExpiryError))
+          val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+          doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROBLEM"
+
+        }
+
+        "contain File problem paragraphs" in {
+
+          when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.TimeExpiryError))
+          val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+          doc(result).getElementsByClass("paragraph-info").text should include("check the file you are trying to upload")
+        }
+    }
   }
 
   "renderUploadResultsPage" should {
