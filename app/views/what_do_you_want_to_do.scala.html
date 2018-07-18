@@ -76,9 +76,13 @@
                             </li>
                             <li class="task-list-item">
                                 <p class="paragraph-info no-bottom-margin small-margin-top">
-                                    @Messages("file.problem.paragraph.start")
-                                    <a class="file-problem-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:What do you want to do:Upload a file">@Messages("upload.file.again")</a>
-                                    @Messages("file.problem.paragraph.end")
+                                    @Html(
+                                    Messages(
+                                    "file.problem.paragraph",
+                                    "<a class='file-problem-link' href='" + routes.FileUploadController.get() + "' data-journey-click='link - click:What do you want to do:Upload a file'>" + Messages("upload.file.again") + "</a>"
+                                    )
+                                    )
+
                                 </p>
                             </li>
                         }
