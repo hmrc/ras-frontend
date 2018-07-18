@@ -67,7 +67,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
   val mockUploadTimeStamp = new DateTime().minusDays(10).getMillis
   val mockExpiryTimeStamp = new DateTime().minusDays(7).getMillis
   val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
+  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(DateTime.now().getMillis()),None)
   val userChoice = ""
   val rasSession = RasSession(userChoice ,MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
 
@@ -157,10 +157,10 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       }
 
       "contain File ready paragraph" in {
-
+        val date = new DateTime(mockExpiryTimeStamp)
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale")
+        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("EEEE d MMMM yyyy")} at ${date.toString("H:mma").toLowerCase()}")
       }
     }
 
@@ -173,11 +173,25 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
       }
 
-      "contain File processing paragraphs" in {
-
+      "contain File processing paragraphs with today date" in {
+        val date = new DateTime(fileSession.uploadTimeStamp.get)
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time") + Messages("processing")
+        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
+          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm"))) + Messages("processing")
+        doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
+        doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
+
+      }
+
+      "contain File processing paragraphs with yesterday date" in {
+        val date = DateTime.now().minusDays(1).getMillis()
+        val fs = fileSession.copy(uploadTimeStamp = Some(date))
+        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fs)))
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
+          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm"))) + Messages("processing")
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(fileStatus: FileUploadStatus.Value)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileStatus: FileUploadStatus.Value, formattedDate: Option[String])(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -49,7 +49,7 @@
 
                         @if(fileStatus==InProgress){
                             <li class="task-list-item">
-                                <p class="paragraph-info no-margin">@Messages("file.upload.time")<strong class="task-completed">@Messages("processing")</strong></p>
+                                <p class="paragraph-info no-margin">@Messages("file.upload.time", formattedDate.get)<strong class="task-completed">@Messages("processing")</strong></p>
                             </li>
                             <li class="task-list-item">
                                 <p class="paragraph-info small-margin-top">@Messages("file.size.info")</p>
@@ -63,7 +63,7 @@
                                 <strong class="task-completed">@Messages("file.ready")</strong>
                             </li>
                             <li class="task-list-item">
-                                <p class="paragraph-info no-bottom-margin small-margin-top">@Messages("result.timescale")</p>
+                                <p class="paragraph-info no-bottom-margin small-margin-top">@Messages("result.timescale", formattedDate.get)</p>
                             </li>
                         }
 

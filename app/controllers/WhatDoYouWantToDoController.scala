@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import helpers.helpers.I18nHelper
+import models.{FileSession, FileUploadStatus}
 import services.ShortLivedCache
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYearResolver
@@ -53,10 +54,16 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          shortLivedCache.determineFileStatus(userId).flatMap {
-            fileStatus =>
-              Logger.info(s"[WhatDoYouWantToDoController][get] determine file status returned $fileStatus")
-              Future.successful(Ok(views.html.what_do_you_want_to_do(fileStatus)))
+          shortLivedCache.fetchFileSession(userId).flatMap { fileSession =>
+            shortLivedCache
+            .determineFileStatus(userId)
+            .flatMap {
+              fileStatus =>
+                Logger
+                .info(s"[WhatDoYouWantToDoController][get] determine file status returned $fileStatus")
+                Future
+                .successful(Ok(views.html.what_do_you_want_to_do(fileStatus, getHelpDate(fileStatus, fileSession))))
+            }
           }
         case Left(resp) =>
           Logger.error("[WhatDoYouWantToDoController][get] user not authorised")
@@ -64,9 +71,31 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
       }
   }
 
+  private def getHelpDate(fileStatus: FileUploadStatus.Value, fileSession: Option[FileSession]): Option[String] = {
+    fileSession match {
+      case Some(fileSession) =>
+        fileStatus match {
+          case Ready => Some(formattedExpiryDate(fileSession.resultsFile.get.uploadDate.get)) // will always have a resultsfile and date if ready
+          case InProgress => Some(formattedUploadDate(fileSession.uploadTimeStamp.get)) // will always have an upload date time if in progress
+          case _ => None
+        }
+      case _ => None
+    }
+  }
+
   private def formattedExpiryDate(timestamp: Long): String = {
     val expiryDate = new DateTime(timestamp).plusDays(3)
     s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("H:mma").toLowerCase()}"
+  }
+
+  private def formattedUploadDate(timestamp: Long): String = {
+    val uploadDate = new DateTime(timestamp)
+    val todayOrYesterday = DateTime.now().dayOfWeek() == uploadDate.dayOfWeek() match {
+      case true => Messages("today")
+      case _ => Messages("yesterday") // upload could only take place up to 24 hours ago without being ready for downloading.
+    }
+    //s"${todayOrYesterday} at ${uploadDate.toString("H:mm")}"
+    Messages("formatted.upload.timestamp", todayOrYesterday, uploadDate.toString("H:mm"))
   }
 
   def renderUploadResultsPage = Action.async {
