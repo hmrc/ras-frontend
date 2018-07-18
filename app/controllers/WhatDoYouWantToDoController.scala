@@ -90,11 +90,11 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
 
   private def formattedUploadDate(timestamp: Long): String = {
     val uploadDate = new DateTime(timestamp)
-    val todayOrYesterday = DateTime.now().dayOfWeek() == uploadDate.dayOfWeek() match {
+
+    val todayOrYesterday = uploadDate.toLocalDate().isEqual(DateTime.now.toLocalDate) match {
       case true => Messages("today")
-      case _ => Messages("yesterday") // upload could only take place up to 24 hours ago without being ready for downloading.
+      case _ => Messages("yesterday")
     }
-    //s"${todayOrYesterday} at ${uploadDate.toString("H:mm")}"
     Messages("formatted.upload.timestamp", todayOrYesterday, uploadDate.toString("H:mm"))
   }
 
