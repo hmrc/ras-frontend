@@ -67,7 +67,7 @@
                             </li>
                         }
 
-                        @if(fileStatus==UploadError){
+                        @if(fileStatus==UploadError || fileStatus==TimeExpiryError ){
                             <li class="task-list-item">
                                 <p class="no-bottom-margin">
                                     @Messages("problem.getting.result")
