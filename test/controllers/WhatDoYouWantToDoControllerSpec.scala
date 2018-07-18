@@ -163,11 +163,11 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "for Processing Only" should {
-      "contain a File processing icon" in {
+      "contain a Processing icon" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROCESSING"
+        doc(result).getElementsByClass("task-completed").text shouldBe "PROCESSING"
 
       }
 
