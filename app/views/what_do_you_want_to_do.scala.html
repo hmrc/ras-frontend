@@ -46,6 +46,14 @@
                             <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="navigation - link:What do you want to do:Upload a file">@Messages("Upload a file")</a>
                             }
 
+                            @if(fileStatus==InProgress){
+                            <p style="margin: 0;"><strong class="task-completed">@Messages("processing")</strong></p>
+                        </li>
+                        <li class="task-list-item">
+                            <p style="margin-top: .2em;"></p>
+                            <p style="margin-bottom: 0;"></p>
+                            }
+
                             @if(fileStatus==Ready){
                             <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderFileReadyPage" aria-describedby="eligibility-completed">@Messages("download.results")</a>
                             <strong class="task-completed">@Messages("file.ready")</strong>

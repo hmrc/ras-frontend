@@ -147,14 +147,14 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         doc(result).getElementById("download-result-link").attr("href") should include("/file-ready")
       }
 
-      "contain a label for File Ready" in {
+      "contain a File Ready Icon" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("task-completed").text shouldBe "FILE READY"
       }
 
-      "contain a paragraph with file availability date" in {
+      "contain file ready paragraph" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
@@ -163,10 +163,21 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
     }
 
     "for Processing Only" should {
-      "contain a download your results link" in {
+      "contain a File processing icon" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+        doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROCESSING"
+
+      }
+
+      "contain file processing paragraphs" in {
+
+        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
+        val result = TestWhatDoYouWantToDoController.get(fakeRequest)
+        doc(result).getElementsByClass("file-processing-paragraph").text should include("File uploaded at")
+        doc(result).getElementsByClass("file-processing-paragraph").text should include("Files less than 1 MB should be ready")
+        doc(result).getElementsByClass("file-processing-paragraph").text should include("cannot upload another file")
 
       }
     }
@@ -181,7 +192,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "navigation - link:What do you want to do:Upload a file"
       }
 
-      "contain a label for File Problem" in {
+      "contain a File Problem icon" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
@@ -189,7 +200,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
       }
 
-      "contain a paragraph advising to check file" in {
+      "contain file problem paragraphs" in {
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
