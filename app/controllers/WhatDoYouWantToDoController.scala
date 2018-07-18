@@ -63,52 +63,6 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
       }
   }
 
-//  def post = Action.async {
-//    implicit request =>
-//      isAuthorised.flatMap {
-//        case Right(userId) =>
-//          whatDoYouWantToDoForm.bindFromRequest.fold(
-//            formWithErrors => {
-//              Logger.error("[WhatDoYouWantToDoController][post] No option selected")
-//              Future.successful(BadRequest(views.html.what_do_you_want_to_do(formWithErrors)))
-//            },
-//            whatDoYouWantToDo =>
-//              sessionService.cacheWhatDoYouWantToDo(whatDoYouWantToDo.userChoice.get).flatMap {
-//                case Some(session) =>
-//                  session.userChoice match {
-//                    case WhatDoYouWantToDo.SINGLE => Future.successful(Redirect(routes.MemberNameController.get()))
-//                    case WhatDoYouWantToDo.BULK =>
-//                      shortLivedCache.fetchFileSession(userId).flatMap {
-//                        case Some(fileSession) =>
-//                          fileSession.resultsFile match {
-//                            case Some(_) =>
-//                              Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderFileReadyPage()))
-//                            case _ =>
-//                              Future.successful(Redirect(routes.FileUploadController.get))
-//                          }
-//                        case _ =>
-//                          Future.successful(Redirect(routes.FileUploadController.get))
-//                      }
-//                    case WhatDoYouWantToDo.RESULT =>
-//                      shortLivedCache.failedProcessingUploadedFile(userId).flatMap {
-//                        case true =>
-//                          Future.successful(Redirect(routes.ErrorController.renderProblemGettingResultsPage()))
-//                        case _ =>
-//                          Future.successful(Redirect(routes.WhatDoYouWantToDoController.renderUploadResultsPage()))
-//                      }
-//                    case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
-//                  }
-//                case _ =>
-//                  Logger.error("[WhatDoYouWantToDoController][post] failed to retrieve session")
-//                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
-//              }
-//          )
-//        case Left(resp) =>
-//          Logger.error("[WhatDoYouWantToDoController][post] user mot authorised")
-//          resp
-//      }
-//  }
-
   def renderUploadResultsPage = Action.async {
     implicit request =>
       isAuthorised.flatMap {
