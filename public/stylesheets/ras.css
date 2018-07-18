@@ -291,6 +291,10 @@ input:focus {
     line-height: 1.25;
 }
 
-small-margin-top {
+.small-margin-top {
     margin-top: .2em;
+}
+
+.no-margin {
+    margin: 0;
 }
