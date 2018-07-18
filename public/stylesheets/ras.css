@@ -210,6 +210,18 @@ input:focus {
     box-sizing: border-box;
 }
 
+.small-margin-top {
+    margin-top: .2em;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+
+
+
+
 @media (min-width: 641px)
 .task-list-section {
     font-size: 24px;
@@ -224,7 +236,8 @@ input:focus {
     font-size: 24px;
     line-height: 1.25;
     padding-bottom: 5px;
-    margin-bottom: 0px
+    margin-bottom: 0px;
+    margin-top: 2.5em;
 
 }
 
@@ -294,11 +307,4 @@ input:focus {
     line-height: 1.25;
 }
 
-.small-margin-top {
-    margin-top: .2em;
-}
-
-.no-margin {
-    margin: 0;
-}
 

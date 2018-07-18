@@ -31,7 +31,7 @@
         <ul class="task-list">
             <li>
                 <h2 class="task-list-section">@Messages("single.member.subheading")</h2>
-                    <ul class="task-list-items">
+                    <ul class="task-list-items no-margin">
                         <li class="task-list-item">
                             <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:What do you want to do:Enter a members details" aria-describedBy="eligibility-completed">@Messages("enter.members.details")</a>
                         </li>
@@ -39,7 +39,7 @@
             </li>
             <li>
                 <h2 class="task-list-section">@Messages("multiple.members.subheading")</h2>
-                    <ul class="task-list-items">
+                    <ul class="task-list-items no-margin">
 
                         @if(fileStatus==NoFileSession){
                             <li class="task-list-item">
