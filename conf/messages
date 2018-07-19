@@ -209,7 +209,7 @@ ras.timeoutDialog.p1 = For security reasons, you will be signed out of this serv
 
 ###### WDYWTDP ######################################################################################
 
-enter.members.details = Enter a member's details
+enter.members.details = Enter a member’s details
 upload.file = Upload a file
 download.results = Download your results
 file.ready = FILE READY
