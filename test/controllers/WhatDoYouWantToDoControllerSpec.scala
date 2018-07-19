@@ -169,7 +169,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
 
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
-        doc(result).getElementsByClass("task-completed").text shouldBe "PROCESSING"
+        doc(result).getElementsByClass("task-completed").text shouldBe Messages("file.processing")
 
       }
 
@@ -178,7 +178,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm"))) + Messages("processing")
+          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm"))) + Messages("file.processing")
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
@@ -191,7 +191,7 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestWhatDoYouWantToDoController.get(fakeRequest)
         doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm"))) + Messages("processing")
+          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm"))) + Messages("file.processing")
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 

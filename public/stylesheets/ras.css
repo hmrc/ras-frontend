@@ -223,10 +223,6 @@ input:focus {
     margin: 0;
 }
 
-
-
-
-
 @media (min-width: 641px)
 .task-list-section {
     font-size: 24px;
@@ -243,7 +239,6 @@ input:focus {
     padding-bottom: 5px;
     margin-bottom: 0px;
     margin-top: 2.5em;
-
 }
 
 .task-list-item:first-child {
@@ -284,7 +279,6 @@ input:focus {
    font-size: 24px;
    line-height: 1.25;
 }
-
 
 .task-completed {
     display: -moz-inline-stack;

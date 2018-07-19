@@ -33,7 +33,7 @@
                 <h2 class="task-list-section">@Messages("single.member.subheading")</h2>
                     <ul class="task-list-items no-margin">
                         <li class="task-list-item">
-                            <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:What do you want to do:Enter a members details" aria-describedBy="eligibility-completed">@Messages("enter.members.details")</a>
+                            <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:What do you want to do:Enter a members details">@Messages("enter.members.details")</a>
                         </li>
                     </ul>
             </li>
@@ -49,7 +49,7 @@
 
                         @if(fileStatus==InProgress){
                             <li class="task-list-item">
-                                <p class="paragraph-info no-margin">@Messages("file.upload.time", formattedDate.get)<strong class="task-completed">@Messages("processing")</strong></p>
+                                <p class="paragraph-info no-margin">@Messages("file.upload.time", formattedDate.get)<strong class="task-completed">@Messages("file.processing")</strong></p>
                             </li>
                             <li class="task-list-item">
                                 <p class="paragraph-info small-margin-top">@Messages("file.size.info")</p>
@@ -59,7 +59,7 @@
 
                         @if(fileStatus==Ready){
                             <li class="task-list-item">
-                                <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderUploadResultsPage" aria-describedby="eligibility-completed" data-journey-click="link - click:What do you want to do:Download your results">@Messages("download.results")</a>
+                                <a class="task-name" id="download-result-link" href="@routes.WhatDoYouWantToDoController.renderUploadResultsPage" data-journey-click="link - click:What do you want to do:Download your results">@Messages("download.results")</a>
                                 <strong class="task-completed">@Messages("file.ready")</strong>
                             </li>
                             <li class="task-list-item">
