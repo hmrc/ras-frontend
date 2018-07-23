@@ -49,7 +49,7 @@
 
                         @if(fileStatus==InProgress){
                             <li class="task-list-item">
-                                <p class="paragraph-info no-margin" id="file-processing">@Messages("file.upload.time", formattedDate.get)<strong class="task-completed">@Messages("file.processing")</strong></p>
+                                <p class="paragraph-info no-margin">@Messages("file.upload.time", formattedDate.get)<strong class="task-completed" id="file-processing">@Messages("file.processing")</strong></p>
                             </li>
                             <li class="task-list-item">
                                 <p class="paragraph-info small-margin-top">@Messages("file.size.info")</p>
