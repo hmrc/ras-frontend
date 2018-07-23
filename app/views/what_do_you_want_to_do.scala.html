@@ -33,7 +33,7 @@
                 <h2 class="task-list-section">@Messages("single.member.subheading")</h2>
                     <ul class="task-list-items no-margin">
                         <li class="task-list-item">
-                            <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:What do you want to do:Enter a members details">@Messages("enter.members.details")</a>
+                            <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:Choose an option:Enter a members details">@Messages("enter.members.details")</a>
                         </li>
                     </ul>
             </li>
@@ -43,7 +43,7 @@
 
                         @if(fileStatus==NoFileSession){
                             <li class="task-list-item">
-                                <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:What do you want to do:Upload a file">@Messages("Upload a file")</a>
+                                <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:Choose an option:Upload a file">@Messages("Upload a file")</a>
                             </li>
                          }
 
@@ -59,7 +59,7 @@
 
                         @if(fileStatus==Ready){
                             <li class="task-list-item">
-                                <a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:What do you want to do:Download your results">@Messages("download.results")</a>
+                                <a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose an option:Download your results">@Messages("download.results")</a>
                                 <strong class="task-completed" id="download-result">@Messages("file.ready")</strong>
                             </li>
                             <li class="task-list-item">
@@ -79,7 +79,7 @@
                                     @Html(
                                     Messages(
                                     "file.problem.paragraph",
-                                    "<a id='file-problem-link' class='file-problem-link' href='" + routes.FileUploadController.get() + "' data-journey-click='link - click:What do you want to do:Upload a file'>" + Messages("upload.file.again") + "</a>"
+                                    "<a id='file-problem-link' class='file-problem-link' href='" + routes.FileUploadController.get() + "' data-journey-click='link - click:Choose an option:Upload a file'>" + Messages("upload.file.again") + "</a>"
                                     )
                                     )
 
