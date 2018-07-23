@@ -118,7 +118,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
         val result = TestChooseAnOptionController.get(fakeRequest)
         doc(result).getElementById("single-member-link").text shouldBe Messages("enter.members.details")
         doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
-        doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "link - click:Choose an option:Enter a members details"
+        doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Enter a members details"
       }
 
       "contain the Multiple members h2" in {
@@ -133,7 +133,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
         val result = TestChooseAnOptionController.get(fakeRequest)
         doc(result).getElementById("upload-link").text() shouldBe Messages("upload.file")
         doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
-        doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:Choose an option:Upload a file"
+        doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
 
       }
     }
@@ -145,7 +145,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
         val result = TestChooseAnOptionController.get(fakeRequest)
         doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("download.results")
         doc(result).getElementById("download-result-link").attr("href") should include("/residency-status-added")
-        doc(result).getElementById("download-result-link").attr("data-journey-click") shouldBe "link - click:Choose an option:Download your results"
+        doc(result).getElementById("download-result-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Download your results"
 
       }
 
@@ -205,7 +205,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
         val result = TestChooseAnOptionController.get(fakeRequest)
         doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
         doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
-        doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose an option:Upload a file"
+        doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
       }
 
       "contain a File problem icon" in {
@@ -231,7 +231,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
           val result = TestChooseAnOptionController.get(fakeRequest)
           doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
           doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
-          doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose an option:Upload a file"
+          doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
         }
 
         "contain a File problem icon" in {
