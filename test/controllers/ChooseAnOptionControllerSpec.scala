@@ -97,7 +97,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
   "get" when {
 
     "for any status" should {
-      "respond to GET /choose-an-option" in {
+      "respond to GET /choose-an-option-to-get-residency-status" in {
         val result = TestChooseAnOptionController.get(fakeRequest)
         status(result) shouldBe OK
       }

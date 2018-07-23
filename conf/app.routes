@@ -18,34 +18,34 @@ GET         /file-upload-failed                                                 
 
 GET         /cannot-upload-another-file                                         controllers.FileUploadController.uploadInProgress
 
-GET         /member-name                                controllers.MemberNameController.get(edit: Boolean ?= false)
-POST        /member-name                                controllers.MemberNameController.post(edit: Boolean ?= false)
-GET         /member-name/back                           controllers.MemberNameController.back(edit: Boolean ?= false)
+GET         /member-name                                                        controllers.MemberNameController.get(edit: Boolean ?= false)
+POST        /member-name                                                        controllers.MemberNameController.post(edit: Boolean ?= false)
+GET         /member-name/back                                                   controllers.MemberNameController.back(edit: Boolean ?= false)
 
-GET         /member-national-insurance-number           controllers.MemberNinoController.get(edit: Boolean ?= false)
-POST        /member-national-insurance-number           controllers.MemberNinoController.post(edit: Boolean ?= false)
-GET         /member-national-insurance-number/back      controllers.MemberNinoController.back(edit: Boolean ?= false)
+GET         /member-national-insurance-number                                   controllers.MemberNinoController.get(edit: Boolean ?= false)
+POST        /member-national-insurance-number                                   controllers.MemberNinoController.post(edit: Boolean ?= false)
+GET         /member-national-insurance-number/back                              controllers.MemberNinoController.back(edit: Boolean ?= false)
 
-GET         /member-date-of-birth                       controllers.MemberDOBController.get(edit: Boolean ?= false)
-POST        /member-date-of-birth                       controllers.MemberDOBController.post(edit: Boolean ?= false)
-GET         /member-date-of-birth/back                  controllers.MemberDOBController.back(edit: Boolean ?= false)
+GET         /member-date-of-birth                                               controllers.MemberDOBController.get(edit: Boolean ?= false)
+POST        /member-date-of-birth                                               controllers.MemberDOBController.post(edit: Boolean ?= false)
+GET         /member-date-of-birth/back                                          controllers.MemberDOBController.back(edit: Boolean ?= false)
 
-GET         /member-residency-status                    controllers.ResultsController.matchFound
+GET         /member-residency-status                                            controllers.ResultsController.matchFound
 
-GET         /no-residency-status-displayed              controllers.ResultsController.noMatchFound
-GET         /no-residency-status-displayed/back         controllers.ResultsController.back
+GET         /no-residency-status-displayed                                      controllers.ResultsController.noMatchFound
+GET         /no-residency-status-displayed/back                                 controllers.ResultsController.back
 
-GET         /global-error                               controllers.ErrorController.renderGlobalErrorPage
-GET         /problem-getting-results                    controllers.ErrorController.renderProblemGettingResultsPage
-GET         /file-upload-problem                        controllers.ErrorController.renderProblemUploadingFilePage
-GET         /file-not-available                         controllers.ErrorController.fileNotAvailable
-GET         /not-authorised                             controllers.ErrorController.notAuthorised
+GET         /global-error                                                       controllers.ErrorController.renderGlobalErrorPage
+GET         /problem-getting-results                                            controllers.ErrorController.renderProblemGettingResultsPage
+GET         /file-upload-problem                                                controllers.ErrorController.renderProblemUploadingFilePage
+GET         /file-not-available                                                 controllers.ErrorController.fileNotAvailable
+GET         /not-authorised                                                     controllers.ErrorController.notAuthorised
 
-GET         /check-another-member/:target               controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
-GET         /keep-alive                                 controllers.SessionController.keepAlive
+GET         /check-another-member/:target                                       controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
+GET         /keep-alive                                                         controllers.SessionController.keepAlive
 
-GET         /dismiss-ur-banner                          controllers.UrDismissalController.dismissUrBanner
+GET         /dismiss-ur-banner                                                  controllers.UrDismissalController.dismissUrBanner
 
-GET         /signed-out                                 controllers.QuestionnaireController.showQuestionnaire
-POST        /signed-out                                 controllers.QuestionnaireController.submitQuestionnaire
-GET         /thank-you                                  controllers.QuestionnaireController.feedbackThankyou
+GET         /signed-out                                                         controllers.QuestionnaireController.showQuestionnaire
+POST        /signed-out                                                         controllers.QuestionnaireController.submitQuestionnaire
+GET         /thank-you                                                          controllers.QuestionnaireController.feedbackThankyou
