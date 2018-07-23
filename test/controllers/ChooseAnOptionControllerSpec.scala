@@ -105,8 +105,8 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       "contain the correct title and header" in {
         val result = TestChooseAnOptionController
                      .get(fakeRequest)
-        doc(result).title shouldBe Messages("whatDoYouWantToDo.page.title")
-        doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("whatDoYouWantToDo.page.header")
+        doc(result).title shouldBe Messages("chooseAnOption.page.title")
+        doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("chooseAnOption.page.header")
       }
 
       "contain the single member h2" in {
@@ -400,7 +400,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-        FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+        FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv")))
       contentAsString(result) shouldBe row1
     }
 
@@ -410,7 +410,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-        FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+        FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv")))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/file-not-available")
     }
@@ -419,7 +419,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-        FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+        FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv")))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/file-not-available")
     }
@@ -427,7 +427,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
     "not be able to download a file containing the results when there is no file session" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val result = await(TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-        FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+        FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv")))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/file-not-available")
     }

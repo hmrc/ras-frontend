@@ -50,7 +50,7 @@ trait SessionService extends SessionCacheWiring {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
   }
 
-  def cacheWhatDoYouWantToDo(value: String)(implicit hc: HeaderCarrier) = cache(CacheKeys.UserChoice, Some(value))
+  def cacheChooseAnOption(value: String)(implicit hc: HeaderCarrier) = cache(CacheKeys.UserChoice, Some(value))
   def cacheName(value: MemberName)(implicit hc: HeaderCarrier) = cache(CacheKeys.Name, Some(value))
   def cacheNino(value: MemberNino)(implicit hc: HeaderCarrier) = cache(CacheKeys.Nino, Some(value))
   def cacheDob(value: MemberDateOfBirth)(implicit hc: HeaderCarrier) = cache(CacheKeys.Dob, Some(value))
