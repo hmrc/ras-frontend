@@ -3,9 +3,9 @@
 GET         /assets/*file                                                       @controllers.AssetsController.at(path="/public", file)
 
 GET         /                                                                   controllers.ChooseAnOptionController.get
-GET         /choose-an-option-to-get-residency-status                           controllers.ChooseAnOptionController.get
+GET         /choose-option-to-get-residency-status                              controllers.ChooseAnOptionController.get
 GET         /residency-status-added                                             controllers.ChooseAnOptionController.renderUploadResultsPage
-GET         /choose-an-option-to-get-residency-status/results/:fileName         controllers.ChooseAnOptionController.getResultsFile(fileName:String)
+GET         /choose-option-to-get-residency-status/results/:fileName            controllers.ChooseAnOptionController.getResultsFile(fileName:String)
 GET         /no-results-available                                               controllers.ChooseAnOptionController.renderNoResultAvailablePage
 GET         /results-not-available                                              controllers.ChooseAnOptionController.renderNoResultsAvailableYetPage
 GET         /file-ready                                                         controllers.ChooseAnOptionController.renderFileReadyPage
