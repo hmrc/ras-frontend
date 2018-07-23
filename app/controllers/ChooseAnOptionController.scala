@@ -58,7 +58,7 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
             shortLivedCache.determineFileStatus(userId).flatMap {
               fileStatus =>
                 Logger.info(s"[ChooseAnOptionController][get] determine file status returned $fileStatus")
-                Future.successful(Ok(views.html.what_do_you_want_to_do(fileStatus, getHelpDate(fileStatus, fileSession))))
+                Future.successful(Ok(views.html.choose_an_option(fileStatus, getHelpDate(fileStatus, fileSession))))
             }
           }
         case Left(resp) =>
