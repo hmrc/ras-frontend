@@ -2,13 +2,13 @@
 
 GET         /assets/*file                           @controllers.AssetsController.at(path="/public", file)
 
-GET         /                                       controllers.WhatDoYouWantToDoController.get
-GET         /choose-an-option                       controllers.WhatDoYouWantToDoController.get
-GET         /residency-status-added                 controllers.WhatDoYouWantToDoController.renderUploadResultsPage
-GET         /choose-an-option/results/:fileName    controllers.WhatDoYouWantToDoController.getResultsFile(fileName:String)
-GET         /no-results-available                   controllers.WhatDoYouWantToDoController.renderNoResultAvailablePage
-GET         /results-not-available                  controllers.WhatDoYouWantToDoController.renderNoResultsAvailableYetPage
-GET         /file-ready                             controllers.WhatDoYouWantToDoController.renderFileReadyPage
+GET         /                                       controllers.ChooseAnOptionController.get
+GET         /choose-an-option                       controllers.ChooseAnOptionController.get
+GET         /residency-status-added                 controllers.ChooseAnOptionController.renderUploadResultsPage
+GET         /choose-an-option/results/:fileName    controllers.ChooseAnOptionController.getResultsFile(fileName:String)
+GET         /no-results-available                   controllers.ChooseAnOptionController.renderNoResultAvailablePage
+GET         /results-not-available                  controllers.ChooseAnOptionController.renderNoResultsAvailableYetPage
+GET         /file-ready                             controllers.ChooseAnOptionController.renderFileReadyPage
 
 GET         /upload-a-file                          controllers.FileUploadController.get
 GET         /upload-a-file/back                     controllers.FileUploadController.back
