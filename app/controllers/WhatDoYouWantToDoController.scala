@@ -22,7 +22,7 @@ import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import org.joda.time.DateTime
 import play.api.http.HttpEntity
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc._
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import forms.WhatDoYouWantToDoForm.whatDoYouWantToDoForm
@@ -46,7 +46,7 @@ object WhatDoYouWantToDoController extends WhatDoYouWantToDoController {
 
 trait WhatDoYouWantToDoController extends RasController with PageFlowController with I18nHelper {
 
-  val resultsFileConnector:ResidencyStatusAPIConnector
+  val resultsFileConnector: ResidencyStatusAPIConnector
   implicit val context: RasContext = RasContextImpl
   private val _contentType =   "application/csv"
 
@@ -228,6 +228,8 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   private def getFile(fileName: String, userId: String, downloadFileName: String)(implicit hc: HeaderCarrier): Future[play.api.mvc.Result] = {
     resultsFileConnector.getFile(fileName, userId).map { response =>
       val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
+
+      resultsFileConnector.deleteFile(fileName, userId)
 
       Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
         .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${downloadFileName}-results.csv"""",

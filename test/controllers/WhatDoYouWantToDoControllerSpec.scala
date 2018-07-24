@@ -21,14 +21,13 @@ import java.io.ByteArrayInputStream
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import forms.WhatDoYouWantToDoForm
 import helpers.helpers.I18nHelper
 import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.Result
@@ -343,9 +342,12 @@ class WhatDoYouWantToDoControllerSpec extends UnitSpec with MockitoSugar with I1
       val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+
       val result = await(TestWhatDoYouWantToDoController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/whatDoYouWantToDo/results/:testFile.csv")))
+
       contentAsString(result) shouldBe row1
+      verify(mockRasConnector).deleteFile(any(), any())(any())
     }
 
     "not be able to download a file containing the results when file name is incorrect" in {
