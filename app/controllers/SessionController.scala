@@ -37,7 +37,7 @@ trait SessionController extends RasController {
 
   implicit val context: RasContext = RasContextImpl
 
-  val CHOOSE_AN_OPTION = "ChooseAnOption"
+  val CHOOSE_AN_OPTION = "choose-an-option"
   val MEMBER_NAME = "member-name"
   val MEMBER_NINO = "member-nino"
   val MEMBER_DOB = "member-dob"
