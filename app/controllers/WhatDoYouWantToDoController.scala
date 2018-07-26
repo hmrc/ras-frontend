@@ -33,6 +33,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 object WhatDoYouWantToDoController extends WhatDoYouWantToDoController {
   // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
@@ -228,8 +229,13 @@ trait WhatDoYouWantToDoController extends RasController with PageFlowController 
   private def getFile(fileName: String, userId: String, downloadFileName: String)(implicit hc: HeaderCarrier): Future[play.api.mvc.Result] = {
     resultsFileConnector.getFile(fileName, userId).map { response =>
       val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
-
-      resultsFileConnector.deleteFile(fileName, userId)
+        .watchTermination()((_, futDone) => futDone.onComplete {
+          case Success(_) =>
+            Logger.info(s"File with name $fileName has started to delete")
+            resultsFileConnector.deleteFile(fileName, userId)
+          case Failure(t) =>
+            Logger.warn(s"File with name $fileName was not deleted")
+        })
 
       Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
         .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${downloadFileName}-results.csv"""",

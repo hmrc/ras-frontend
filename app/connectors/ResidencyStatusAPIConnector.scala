@@ -68,7 +68,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
 
   def deleteFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
-    wsHttp.DELETE[HttpResponse](s"$fileDeletionUrl/$fileName/$userId")(implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails)
+    wsHttp.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl/$fileName/$userId")(implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails)
   }
 
   private val responseHandler = new HttpReads[ResidencyStatus] {
