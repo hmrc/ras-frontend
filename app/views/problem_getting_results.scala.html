@@ -16,8 +16,6 @@
 
 @()(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@ras_main(title = Messages("")) {
-
     <div class="grid-row">
         <div class="column-two-thirds">
 
@@ -26,17 +24,10 @@
             </div>
 
             <div class="row">
-                <h1 id="header" class="heading-xlarge">@Messages("problem.getting.results.header")</h1>
             </div>
 
             <div class="row ras-bottom-margin">
                 <p id="try-again">
-                @Html(
-                    Messages(
-                        "check.upload.file.again",
-                        "<a id='file-formatting' href='' data-journey-click='link - click:There has been a problem getting your results:Check file format'>" + Messages("file.formatted.correctly") + "</a>"
-                    )
-                )
                 </p>
             </div>
 
@@ -47,4 +38,4 @@
         </div>
     </div>
 
-}
+
