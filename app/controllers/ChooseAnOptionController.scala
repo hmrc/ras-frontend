@@ -168,7 +168,7 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
                   Future.successful(Ok(views.html.file_ready()))
                 case _ =>
                   Logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
-                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
               }
             case _ =>
               Logger.error("[ChooseAnOptionController][renderFileReadyPage] failed to retrieve session")
