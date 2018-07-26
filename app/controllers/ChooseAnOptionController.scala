@@ -136,9 +136,15 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
   def renderNoResultAvailablePage = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>
-          Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] rendering no result available page")
-          Future.successful(Ok(views.html.no_results_available()))
+        case Right(userId) =>
+          shortLivedCache.fetchFileSession(userId).flatMap {
+            case Some(_) =>
+              Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] there is a file session, rendering error page")
+              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+            case _ =>
+              Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] rendering no result available page")
+              Future.successful(Ok(views.html.no_results_available()))
+          }
         case Left(resp) =>
           Logger.error("[ChooseAnOptionController][renderNotResultAvailablePage] user not authorised")
           resp
