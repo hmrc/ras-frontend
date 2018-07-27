@@ -27,8 +27,8 @@ import models.FileUploadStatus._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
@@ -402,6 +402,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       val result = await(TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv")))
       contentAsString(result) shouldBe row1
+//      verify(mockRasConnector).deleteFile(any(), any())(any())
     }
 
     "not be able to download a file containing the results when file name is incorrect" in {
