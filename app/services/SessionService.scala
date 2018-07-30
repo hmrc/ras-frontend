@@ -44,7 +44,7 @@ trait SessionService extends SessionCacheWiring {
   val cleanMemberNino = MemberNino("")
   val cleanMemberDateOfBirth = MemberDateOfBirth(RasDate(None, None, None))
   val cleanResidencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
-  val cleanSession = RasSession("", cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, cleanResidencyStatusResult, None)
+  val cleanSession = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, cleanResidencyStatusResult, None)
 
   def fetchRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
