@@ -56,24 +56,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
   }
 
   "Session service" should {
-
-    "cache userChoice" when {
-      "no session is retrieved" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(),any())).thenReturn(Future.successful(None))
-        val json = Json.toJson[RasSession](rasSession.copy(userChoice = userChoice))
-        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
-        val result = Await.result(TestSessionService.cacheChooseAnOption(userChoice)(HeaderCarrier()), 10 seconds)
-        result shouldBe Some(rasSession.copy(userChoice = userChoice))
-      }
-      "some session is retrieved" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(userChoice = userChoice))
-        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
-        val result = Await.result(TestSessionService.cacheChooseAnOption(userChoice)(HeaderCarrier()), 10 seconds)
-        result shouldBe Some(rasSession.copy(userChoice = userChoice))
-      }
-    }
-
+    
     "cache Name" when {
       "no session is retrieved" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(),any())).thenReturn(Future.successful(None))

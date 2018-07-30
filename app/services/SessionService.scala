@@ -35,7 +35,7 @@ object SessionService extends SessionService {
 trait SessionService extends SessionCacheWiring {
 
   private object CacheKeys extends Enumeration {
-    val All, UserChoice, Name, Nino, Dob, StatusResult, UploadResponse, Envelope, UrBannerDismissed = Value
+    val All, Name, Nino, Dob, StatusResult, UploadResponse, Envelope, UrBannerDismissed = Value
   }
 
   val config: ApplicationConfig
@@ -50,7 +50,6 @@ trait SessionService extends SessionCacheWiring {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
   }
 
-  def cacheChooseAnOption(value: String)(implicit hc: HeaderCarrier) = cache(CacheKeys.UserChoice, Some(value))
   def cacheName(value: MemberName)(implicit hc: HeaderCarrier) = cache(CacheKeys.Name, Some(value))
   def cacheNino(value: MemberNino)(implicit hc: HeaderCarrier) = cache(CacheKeys.Nino, Some(value))
   def cacheDob(value: MemberDateOfBirth)(implicit hc: HeaderCarrier) = cache(CacheKeys.Dob, Some(value))
@@ -77,7 +76,6 @@ trait SessionService extends SessionCacheWiring {
 
       sessionCache.cache[RasSession](RAS_SESSION_KEY,
         key match {
-          case CacheKeys.UserChoice => session.copy(userChoice = value.getOrElse("").toString)
           case CacheKeys.Name => session.copy(name = value.getOrElse(cleanMemberName).asInstanceOf[MemberName])
           case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
           case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth).asInstanceOf[MemberDateOfBirth])
