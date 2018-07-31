@@ -149,9 +149,21 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
   def renderNoResultsAvailableYetPage = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(_) =>
-          Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] rendering results not available page")
-          Future.successful(Ok(views.html.results_not_available_yet()))
+        case Right(userId) =>
+          shortLivedCache.fetchFileSession(userId).flatMap {
+            case Some(fileSession) =>
+              fileSession.resultsFile match {
+                case Some(_) =>
+                  Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to global error page")
+                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                case _ =>
+                  Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] rendering results not available page")
+                  Future.successful(Ok(views.html.results_not_available_yet()))
+              }
+            case _ =>
+              Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to global error page")
+              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+          }
         case Left(resp) =>
           Logger.error("[ChooseAnOptionController][renderNotResultAvailableYetPage] user not authorised")
           resp
@@ -169,7 +181,7 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
                   Future.successful(Ok(views.html.file_ready()))
                 case _ =>
                   Logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
-                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
               }
             case _ =>
               Logger.error("[ChooseAnOptionController][renderFileReadyPage] failed to retrieve session")
