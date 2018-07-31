@@ -61,27 +61,24 @@
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
                             '_id -> "dateOfBirth-day",
-                            '_type -> "number",
-                            '_inputClass -> "form-control form-control-error",
-                            '_maxLength -> 2)
+                            '_type -> "tel",
+                            '_inputClass -> "form-control form-control-error")
 
                         </div>
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
                             '_id -> "dateOfBirth-month",
-                            '_type -> "number",
-                            '_inputClass -> "form-control form-control-error",
-                            '_maxLength -> 2)
+                            '_type -> "tel",
+                            '_inputClass -> "form-control form-control-error")
                         </div>
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
                             '_id -> "dateOfBirth-year",
-                            '_type -> "number",
+                            '_type -> "tel",
                             '_groupClass -> "form-group-year",
-                            '_inputClass -> "form-control form-control-error",
-                            '_maxLength ->4)
+                            '_inputClass -> "form-control form-control-error")
                         </div>
 
                         } else {
@@ -90,17 +87,15 @@
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
                             '_id -> "dateOfBirth-day",
-                            '_type -> "number",
-                            '_inputClass -> "form-control form-control-error",
-                            '_maxLength -> 2)
+                            '_type -> "tel",
+                            '_inputClass -> "form-control form-control-error")
                         </div>
                         } else {
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
                             '_id -> "dateOfBirth-day",
-                            '_type -> "number",
-                            '_maxLength -> 2)
+                            '_type -> "tel")
                         </div>
                         }
 
@@ -109,17 +104,15 @@
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
                             '_id -> "dateOfBirth-month",
-                            '_type -> "number",
-                            '_inputClass -> "form-control form-control-error",
-                            '_maxLength -> 2)
+                            '_type -> "tel",
+                            '_inputClass -> "form-control form-control-error")
                         </div>
                         } else {
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
                             '_id -> "dateOfBirth-month",
-                            '_type -> "number",
-                            '_maxLength -> 2)
+                            '_type -> "tel")
                         </div>
                         }
 
@@ -128,18 +121,16 @@
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
                             '_id -> "dateOfBirth-year",
-                            '_type -> "number",
+                            '_type -> "tel",
                             '_groupClass -> "form-group-year",
-                            '_inputClass -> "form-control form-control-error",
-                            '_maxLength ->4)
+                            '_inputClass -> "form-control form-control-error")
                         </div>
                         } else {
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
                             '_id -> "dateOfBirth-year",
-                            '_type -> "number",
-                            '_maxLength -> 4,
+                            '_type -> "tel",
                             '_groupClass -> "form-group-year",
                             '_inputClass -> " form-control year-input")
                         </div>
