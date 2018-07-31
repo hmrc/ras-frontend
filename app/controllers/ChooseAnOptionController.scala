@@ -154,15 +154,15 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
             case Some(fileSession) =>
               fileSession.resultsFile match {
                 case Some(_) =>
-                  Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to global error page")
-                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                  Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to results page")
+                  Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage()))
                 case _ =>
                   Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] rendering results not available page")
                   Future.successful(Ok(views.html.results_not_available_yet()))
               }
             case _ =>
-              Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to global error page")
-              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+              Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to results not available")
+              Future.successful(Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage()))
           }
         case Left(resp) =>
           Logger.error("[ChooseAnOptionController][renderNotResultAvailableYetPage] user not authorised")
