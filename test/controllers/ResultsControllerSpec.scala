@@ -22,24 +22,20 @@ import connectors.UserDetailsConnector
 import helpers.RandomNino
 import helpers.helpers.I18nHelper
 import models._
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneAppPerSuite
 import play.api.{Configuration, Environment, Mode}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, status, _}
-import play.twirl.api.Html
+import play.api.test.Helpers.{contentAsString, _}
 import services.SessionService
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.TaxYearResolver
 
