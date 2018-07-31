@@ -515,14 +515,14 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/global-error")
+      redirectLocation(result).get should include("/residency-status-added")
     }
 
     "return error when there is no file session" in {
       when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(None))
       val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/global-error")
+      redirectLocation(result).get should include("/no-results-available")
     }
 
     "contain the correct page title" in {
