@@ -506,10 +506,24 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
   "renderResultsNotAvailableYetPage" should {
     "return ok when called" in {
       val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
+      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/results-not-available")
+    }
+
+    "return error when there is a result file in file session" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
+      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/global-error")
+    }
+
+    "return error when there is no file session" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(None))
+      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result).get should include("/global-error")
     }
 
     "contain the correct page title" in {
