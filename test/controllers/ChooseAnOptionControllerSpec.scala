@@ -452,19 +452,17 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       status(result) shouldBe OK
     }
 
-    "return global error page" when {
-      "there is no file session" in {
-        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
-        val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-        redirectLocation(result).get should include("/global-error")
-      }
+    "return global error page when there is no file session" in {
+      when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
+      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
+      redirectLocation(result).get should include("/global-error")
+    }
 
-      "there is a file session but there is no result file ready" in {
-        val fileSession = FileSession(None,None,"1234",None,None)
-        when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-        val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-        redirectLocation(result).get should include("/global-error")
-      }
+    "redirect to cannot upload another file there is no result file ready" in {
+      val fileSession = FileSession(None, None, "1234", None, None)
+      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn (Future.successful(Some(fileSession)))
+      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
+      redirectLocation(result).get should include("/cannot-upload-another-file")
     }
 
     "contain the correct page title" in {
