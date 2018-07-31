@@ -139,9 +139,15 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
       isAuthorised.flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap {
-            case Some(_) =>
-              Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] there is a file session, rendering error page")
-              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+            case Some(fileSession) =>
+              fileSession.resultsFile match {
+                case Some(resultFile) =>
+                  Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] there is a file ready, rendering results page")
+                  Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage()))
+                case _ =>
+                  Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] there is a file in progress, rendering results-not-available page")
+                  Future.successful(Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage()))
+              }
             case _ =>
               Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] rendering no result available page")
               Future.successful(Ok(views.html.no_results_available()))
