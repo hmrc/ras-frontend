@@ -53,7 +53,7 @@ function hasErrors() {
 }
 
 function showError(message){
-    $('#upload-error').removeClass("visually-hidden")
+    $('#error').removeClass("visually-hidden")
     $('.validation-summary').show();
     $('#error').html(message);
     $('#file-upload').addClass("form-field--error");
