@@ -329,10 +329,11 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       doc(result).getElementById("contact-link").text shouldBe Messages("upload.result.member.contact")
     }
 
-    "contains an HMRC link that points to help page" in {
+    "contains an HMRC link that opens help page in new tab" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("contact-link").attr("href") shouldBe ("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers")
+      doc(result).getElementById("contact-link")attr("target") shouldBe Messages("open.tab")
     }
 
     "contain a deletion message" in {
