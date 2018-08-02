@@ -59,7 +59,7 @@
 
                     <label for="choose-file" id="upload-label">
                         <span class="form-label visually-hidden">Upload a file</span>
-                        <span id="upload-error" class="error-message">@error</span>
+                        <span id="upload-error" class="error-message visually-hidden">@if(error==""){@Messages("error.select.csv")}else{@error}</span>
                     </label>
 
                     <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>

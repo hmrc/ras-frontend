@@ -81,6 +81,7 @@ unauthorised.error = you are not authorised to access this service , you need Pe
 file.large.error=CSV must be smaller than 2MB
 file.empty.error=This CSV is empty. Upload a CSV with data in it
 upload.failed.error=There was a problem uploading your file. Please try again
+error.select.csv = Select a CSV
 
 ###### UR BANNER ######################################################################################
 
