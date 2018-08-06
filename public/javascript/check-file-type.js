@@ -48,19 +48,12 @@ function reportedError() {
     return $('#temp-error').val();
 }
 
-function reportError(message) {
-    $('#temp-error').val(message);
-}
-
-function cleanError() {
-    $('#temp-error').val("");
-}
-
 function hasErrors() {
     return $('#temp-error').val() != "";
 }
 
 function showError(message){
+    $('#error').removeClass("visually-hidden")
     $('.validation-summary').show();
     $('#error').html(message);
     $('#file-upload').addClass("form-field--error");

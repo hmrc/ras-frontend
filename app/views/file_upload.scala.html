@@ -32,7 +32,7 @@
             <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h2>
 
             <ul class="error-summary-list">
-                <li><a id="error" class="error-list" href="#choose-file" data-focuses="choose-file">@error</a></li>
+                <li><a id="error" class="error-list visually-hidden" href="#choose-file" data-focuses="choose-file">@if(error==""){@Messages("error.select.csv")}else{@error}</a></li>
             </ul>
         </div>
 
