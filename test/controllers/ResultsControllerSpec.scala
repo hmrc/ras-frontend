@@ -212,6 +212,22 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("ny-residency-status").text shouldBe Messages("non.scottish.taxpayer")
     }
 
+    "contain a look up another member link when match found" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
+        Some(
+          RasSession(name, nino, memberDob,
+            ResidencyStatusResult(
+              SCOTTISH, None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
+      doc(result).getElementById("look-up-another-member-link").attr("href") shouldBe "/relief-at-source/check-another-member/member-name?cleanSession=true"
+    }
+
     "contain customer details and residency status when match not found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
@@ -250,6 +266,21 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("what-to-do").text shouldBe Messages("match.not.found.what.to.do", Messages("contact.hmrc", "Jim McGill"))
     }
 
+    "contain a look up another member link when match not found" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
+        Some(
+          RasSession(name, nino, memberDob,
+            ResidencyStatusResult(
+              "", None,
+              currentTaxYear.toString, (currentTaxYear + 1).toString,
+              name.firstName + " " + name.lastName,
+              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              ""),None))
+      ))
+      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("look-up-another-member-link").attr("href") shouldBe "/relief-at-source/check-another-member/member-name?cleanSession=true"
+    }
+
     "contain ga event data when match not found " in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
@@ -267,6 +298,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("change-nino-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change NINO"
       doc(result).getElementById("change-dob-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change DOB"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:User details not found:Choose something else to do"
+      doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:User details not found:Look up another member"
     }
 
     "redirect to global error page when no session data is returned on match found" in {
