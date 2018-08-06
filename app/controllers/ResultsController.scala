@@ -46,23 +46,29 @@ trait ResultsController extends RasController with PageFlowController{
             sessionService.fetchRasSession() map { session =>
               session match {
                 case Some(session) =>
+                  session.residencyStatusResult match {
+                    case Some(residencyStatusResult) =>
 
-                  val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-                  val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
-                  val nino = session.nino.nino
-                  val currentTaxYear = TaxYearResolver.currentTaxYear
-                  val nextTaxYear = TaxYearResolver.currentTaxYear + 1
-                  val currentYearResidencyStatus = session.residencyStatusResult.get.currentYearResidencyStatus
-                  val nextYearResidencyStatus = session.residencyStatusResult.get.nextYearResidencyStatus
+                      val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+                      val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+                      val nino = session.nino.nino
+                      val currentTaxYear = TaxYearResolver.currentTaxYear
+                      val nextTaxYear = TaxYearResolver.currentTaxYear + 1
+                      val currentYearResidencyStatus = residencyStatusResult.currentYearResidencyStatus
+                      val nextYearResidencyStatus = residencyStatusResult.nextYearResidencyStatus
 
-                  Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
-                  Ok(views.html.match_found(
-                    name, dateOfBirth, nino,
-                    currentYearResidencyStatus,
-                    nextYearResidencyStatus,
-                    currentTaxYear, nextTaxYear,
-                    !urBannerDismissed))
+                      Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
+                      Ok(views.html.match_found(
+                        name, dateOfBirth, nino,
+                        currentYearResidencyStatus,
+                        nextYearResidencyStatus,
+                        currentTaxYear, nextTaxYear,
+                        !urBannerDismissed))
 
+                    case _ =>
+                      Logger.info("[ResultsController][matchFound] Session does not contain residency status result")
+                      Redirect(routes.ChooseAnOptionController.get())
+                  }
                 case _ =>
                   Logger.error("[ResultsController][matchFound] failed to retrieve ras session")
                   Redirect(routes.ErrorController.renderGlobalErrorPage())
