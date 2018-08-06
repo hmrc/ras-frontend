@@ -45,7 +45,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
   val memberDetails = MemberDetails(name,RandomNino.generate,RasDate(Some("1"),Some("1"),Some("1999")))
   val uploadResponse = UploadResponse("111",Some("error error"))
   val envelope = Envelope("someEnvelopeId1234")
-  val rasSession = RasSession(name,nino,memberDob,Some(ResidencyStatusResult("", None, "", "", "", "", "")))
+  val rasSession = RasSession(name,nino,memberDob,None)
 
   implicit val headerCarrier = HeaderCarrier()
 
@@ -107,10 +107,10 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
       "set to an empty value" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = TestSessionService.cleanResidencyStatusResult))
+        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = None))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetCacheResidencyStatusResult()(HeaderCarrier()), 10 seconds)
-        result shouldBe Some(rasSession.copy(residencyStatusResult = TestSessionService.cleanResidencyStatusResult))
+        result shouldBe Some(rasSession.copy(residencyStatusResult = None))
       }
     }
 
