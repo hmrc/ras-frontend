@@ -52,8 +52,8 @@ trait ResultsController extends RasController with PageFlowController{
                   val nino = session.nino.nino
                   val currentTaxYear = TaxYearResolver.currentTaxYear
                   val nextTaxYear = TaxYearResolver.currentTaxYear + 1
-                  val currentYearResidencyStatus = session.residencyStatusResult.currentYearResidencyStatus
-                  val nextYearResidencyStatus = session.residencyStatusResult.nextYearResidencyStatus
+                  val currentYearResidencyStatus = session.residencyStatusResult.get.currentYearResidencyStatus
+                  val nextYearResidencyStatus = session.residencyStatusResult.get.nextYearResidencyStatus
 
                   Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
                   Ok(views.html.match_found(
