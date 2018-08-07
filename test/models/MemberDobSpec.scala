@@ -16,13 +16,22 @@
 
 package models
 
-import play.api.libs.json.Json
+import helpers.helpers.I18nHelper
+import org.scalatestplus.play.OneAppPerSuite
+import uk.gov.hmrc.play.test.UnitSpec
 
-case class MemberDateOfBirth(dateOfBirth: RasDate) extends ContainsInputs {
+class MemberDobSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
 
-  def hasAValue(): Boolean = dateOfBirth.day.isDefined && dateOfBirth.month.isDefined && dateOfBirth.year.isDefined
+  "hasValue" should {
 
-}
-  object MemberDateOfBirth {
-    implicit val formats = Json.format[MemberDateOfBirth]
+    "return false if dateOfBirth is empty" in {
+        val dob = MemberDateOfBirth(RasDate(None, None, None))
+        assert(dob.hasAValue() == false)
+    }
+
+    "return true if dateOfBirth contains values" in {
+      val dob = MemberDateOfBirth(RasDate(Some("1"), Some("1"), Some("1990")))
+      assert(dob.hasAValue() == true)
+    }
+  }
 }
