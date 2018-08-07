@@ -290,18 +290,17 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       redirectLocation(result).get should include("global-error")
     }
 
-    "redirect to homepage when session data is returned with no result for match non found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
+    "redirect to homepage when session data is returned with no result for match not found" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe "/relief-at-source"
+      status(result) shouldBe 303
+      redirectLocation(result).get should include("/relief-at-source")
     }
     
     "return to member dob page when back link is clicked" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
+        Some(RasSession(name, nino, memberDob,
+          Some(ResidencyStatusResult(
               NON_SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
@@ -319,6 +318,5 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/global-error")
     }
-
   }
 }
