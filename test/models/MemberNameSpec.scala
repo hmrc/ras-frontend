@@ -17,16 +17,26 @@
 package models
 
 import helpers.helpers.I18nHelper
-import models.MemberName
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 
 class MemberNameSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
 
   "hasValue" should {
+
     "return false if first name is empty" in {
       val name = MemberName("", "last name")
       assert(name.hasAValue() == false)
+    }
+
+    "return false if firstName & lastName are empty" in {
+      val name = MemberName ("", "")
+      assert(name.hasAValue() == false)
+    }
+
+    "return true if firstName & lastName contain values" in {
+      val name = MemberName ("Jim", "Jimson")
+      assert(name.hasAValue() == true)
     }
 
   }

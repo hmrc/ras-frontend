@@ -18,7 +18,10 @@ package models
 
 import play.api.libs.json.Json
 
-case class MemberName(firstName: String, lastName: String)
+case class MemberName(firstName: String, lastName: String) extends ContainsInputs {
+
+  override def hasAValue(): Boolean = firstName != "" && lastName != ""
+}
 
 object MemberName {
   implicit val format = Json.format[MemberName]
