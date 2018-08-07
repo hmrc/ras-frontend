@@ -18,7 +18,10 @@ package models
 
 import play.api.libs.json.Json
 
-case class MemberNino(nino :String)
+case class MemberNino(nino :String) {
+
+  def hasAValue() : Boolean = nino != ""
+}
 
 object MemberNino {
   implicit val formats = Json.format[MemberNino]
