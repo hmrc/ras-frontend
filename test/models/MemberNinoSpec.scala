@@ -34,5 +34,4 @@ class MemberNinoSpec extends UnitSpec with I18nHelper with OneAppPerSuite  {
       assert(nino.hasAValue() == true)
     }
   }
-
 }

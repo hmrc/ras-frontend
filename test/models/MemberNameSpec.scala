@@ -38,7 +38,5 @@ class MemberNameSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
       val name = MemberName ("Jim", "Jimson")
       assert(name.hasAValue() == true)
     }
-
   }
-
 }
