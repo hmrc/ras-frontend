@@ -87,7 +87,7 @@ trait ResultsController extends RasController with PageFlowController{
             sessionService.fetchRasSession() map { session =>
               session match {
                 case Some(session) =>
-                  session.name.hasAValue() && session.nino.hasAValue() && session.dateOfBirth.hasAValue() match {
+                  session.name.hasAValue() && session.nino.hasAValue() && session.dateOfBirth.hasAValue() && session.residencyStatusResult.isEmpty match {
                     case true =>
                       val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
                       val nino = session.nino.nino
@@ -96,7 +96,7 @@ trait ResultsController extends RasController with PageFlowController{
                       Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
                       Ok(views.html.match_not_found(name, dateOfBirth, nino, !urBannerDismissed))
 
-                    case _ if session.residencyStatusResult.isEmpty =>
+                    case _ =>
                       Logger.error("[ResultsController][noMatchFound] Session does not contain residency status result")
                       Redirect(routes.ChooseAnOptionController.get())
                   }
