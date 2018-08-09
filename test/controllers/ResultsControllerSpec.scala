@@ -248,7 +248,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       ))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("contact-hmrc-link").attr("href") shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers"
-      doc(result).getElementById("contact-hmrc-link").attr("target") shouldBe Messages("open.tab")
+      doc(result).getElementById("contact-hmrc-link").attr("target") shouldBe "_blank"
     }
 
     "contain what to do next section when match not found" in {

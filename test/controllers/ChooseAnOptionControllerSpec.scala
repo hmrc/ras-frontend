@@ -333,7 +333,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("contact-hmrc-link").attr("href") shouldBe ("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers")
-      doc(result).getElementById("contact-hmrc-link")attr("target") shouldBe Messages("open.tab")
+      doc(result).getElementById("contact-hmrc-link")attr("target") shouldBe "_blank"
     }
 
     "contain a deletion message" in {

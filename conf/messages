@@ -170,8 +170,6 @@ unauthorised.list.first = {0} if you have one of these accounts
 unauthorised.list.first.link = sign in with your pension scheme administrator or practitioner details
 unauthorised.list.last = register as an administrator or practitioner
 
-open.tab = _blank
-
 ##feedback
 
 label.youre_signed_out=You’re signed out
