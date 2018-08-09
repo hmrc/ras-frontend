@@ -31,50 +31,50 @@
         <ul class="task-list">
             <li>
                 <h2 class="task-list-section">@Messages("single.member.subheading")</h2>
-                    <ul class="task-list-items no-margin">
-                        <li class="task-list-item">
+                    <div class="task-list-items no-margin">
+                        <div class="task-list-item">
                             <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:Choose option to get residency status:Enter a members details">@Messages("enter.members.details")</a>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
             </li>
             <li>
                 <h2 class="task-list-section">@Messages("multiple.members.subheading")</h2>
-                    <ul class="task-list-items no-margin">
+                    <div class="task-list-items no-margin">
 
                         @if(fileStatus==NoFileSession){
-                            <li class="task-list-item">
+                            <div class="task-list-item">
                                 <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:Choose option to get residency status:Upload a file">@Messages("Upload a file")</a>
-                            </li>
+                            </div>
                          }
 
                         @if(fileStatus==InProgress){
-                            <li class="task-list-item">
+                            <div class="task-list-item">
                                 <p class="paragraph-info no-margin">@Messages("file.upload.time", formattedDate.get)<strong class="task-completed" id="file-processing">@Messages("file.processing")</strong></p>
-                            </li>
-                            <li class="task-list-item">
+                            </div>
+                            <div class="task-list-item">
                                 <p class="paragraph-info small-margin-top">@Messages("file.size.info")</p>
                                 <p class="paragraph-info no-bottom-margin">@Messages("processing.file")</p>
-                            </li>
+                            </div>
                         }
 
                         @if(fileStatus==Ready){
-                            <li class="task-list-item">
+                            <div class="task-list-item">
                                 <a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@Messages("download.results")</a>
                                 <strong class="task-completed" id="download-result">@Messages("file.ready")</strong>
-                            </li>
-                            <li class="task-list-item">
+                            </div>
+                            <div class="task-list-item">
                                 <p class="paragraph-info no-bottom-margin small-margin-top">@Messages("result.timescale", formattedDate.get)</p>
-                            </li>
+                            </div>
                         }
 
                         @if(fileStatus==UploadError || fileStatus==TimeExpiryError ){
-                            <li class="task-list-item">
+                            <div class="task-list-item">
                                 <p class="no-bottom-margin">
-                                    @Messages("problem.getting.result")
                                     <strong class="task-completed" id="file-problem">@Messages("file.problem")</strong>
+                                    @Messages("problem.getting.result")
                                 </p>
-                            </li>
-                            <li class="task-list-item">
+                            </div>
+                            <div class="task-list-item">
                                 <p class="paragraph-info no-bottom-margin small-margin-top">
                                     @Html(
                                     Messages(
@@ -84,9 +84,9 @@
                                     )
 
                                 </p>
-                            </li>
+                            </div>
                         }
-                    </ul>
+                    </div>
             </li>
         </ul>
 
