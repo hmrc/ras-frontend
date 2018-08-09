@@ -57,6 +57,8 @@ trait ResultsController extends RasController with PageFlowController{
                       val currentYearResidencyStatus = residencyStatusResult.currentYearResidencyStatus
                       val nextYearResidencyStatus = residencyStatusResult.nextYearResidencyStatus
 
+                      sessionService.resetRasSession()
+
                       Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
                       Ok(views.html.match_found(
                         name, dateOfBirth, nino,
@@ -87,17 +89,24 @@ trait ResultsController extends RasController with PageFlowController{
             sessionService.fetchRasSession() map { session =>
               session match {
                 case Some(session) =>
-                  session.name.hasAValue() && session.nino.hasAValue() && session.dateOfBirth.hasAValue() && session.residencyStatusResult.isEmpty match {
+                  session.name.hasAValue() && session.nino.hasAValue() && session.dateOfBirth.hasAValue() match {
                     case true =>
-                      val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-                      val nino = session.nino.nino
-                      val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+                      session.residencyStatusResult match {
+                        case None =>
+                          val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+                          val nino = session.nino.nino
+                          val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
 
-                      Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
-                      Ok(views.html.match_not_found(name, dateOfBirth, nino, !urBannerDismissed))
+                          Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
+                          Ok(views.html.match_not_found(name, dateOfBirth, nino, !urBannerDismissed))
 
-                    case _ =>
-                      Logger.error("[ResultsController][noMatchFound] Session does not contain residency status result")
+                        case Some(_) =>
+                          Logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
+                          Redirect(routes.ChooseAnOptionController.get())
+                      }
+
+                    case false =>
+                      Logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
                       Redirect(routes.ChooseAnOptionController.get())
                   }
                 case _ =>

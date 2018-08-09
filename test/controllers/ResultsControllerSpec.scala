@@ -92,9 +92,9 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       status(result) shouldBe Status.OK
     }
 
-    "return 200 when match not found" in {
+    "return 303 when match not found" in {
       val result = TestResultsController.noMatchFound(fakeRequest)
-      status(result) shouldBe Status.OK
+      status(result) shouldBe 303
     }
 
     "return HTML when match found" in {
@@ -104,6 +104,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "return HTML when match not found" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
       val result = TestResultsController.noMatchFound(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
@@ -214,14 +215,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     "contain customer details and residency status when match not found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              "", None,
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
+        Some(RasSession(name, nino, memberDob, None ,None))
       ))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("match-not-found").text shouldBe Messages("member.details.not.found", "Jim McGill")
@@ -236,31 +230,13 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain what to do next section when match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              "", None,
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
-      ))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(RasSession(name, nino, memberDob, None, None))))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("what-to-do").text shouldBe Messages("match.not.found.what.to.do", Messages("contact.hmrc", "Jim McGill"))
     }
 
     "contain ga event data when match not found " in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              "", None,
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
-      ))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(RasSession(name, nino, memberDob, None, None))))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Users details not found:Back"
       doc(result).getElementById("change-name-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change Name"
