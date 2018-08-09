@@ -59,8 +59,8 @@
 
                         @if(fileStatus==Ready){
                             <div class="task-list-item">
-                                <a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@Messages("download.results")</a>
                                 <strong class="task-completed" id="download-result">@Messages("file.ready")</strong>
+                                <a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@Messages("download.results")</a>
                             </div>
                             <div class="task-list-item">
                                 <p class="paragraph-info no-bottom-margin small-margin-top">@Messages("result.timescale", formattedDate.get)</p>
