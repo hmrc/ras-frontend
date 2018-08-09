@@ -68,7 +68,7 @@ trait ResultsController extends RasController with PageFlowController{
                         !urBannerDismissed))
 
                     case _ =>
-                      Logger.info("[ResultsController][matchFound] Session does not contain residency status result")
+                      Logger.info("[ResultsController][matchFound] Session does not contain residency status result - wrong result")
                       Redirect(routes.ChooseAnOptionController.get())
                   }
                 case _ =>
@@ -93,6 +93,7 @@ trait ResultsController extends RasController with PageFlowController{
                     case true =>
                       session.residencyStatusResult match {
                         case None =>
+
                           val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
                           val nino = session.nino.nino
                           val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
@@ -101,10 +102,9 @@ trait ResultsController extends RasController with PageFlowController{
                           Ok(views.html.match_not_found(name, dateOfBirth, nino, !urBannerDismissed))
 
                         case Some(_) =>
-                          Logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
+                          Logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
                           Redirect(routes.ChooseAnOptionController.get())
                       }
-
                     case false =>
                       Logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
                       Redirect(routes.ChooseAnOptionController.get())
