@@ -49,8 +49,7 @@
 
                         @if(fileStatus==InProgress){
                             <div class="task-list-item">
-                                <strong class="task-completed" id="file-processing">@Messages("file.processing")</strong>
-                                <p class="paragraph-info ">@Messages("file.upload.time", formattedDate.get)</p>
+                                <p class="paragraph-info "><strong class="task-completed" id="file-processing">@Messages("file.processing")</strong>@Messages("file.upload.time", formattedDate.get)</p>
                                 <p class="paragraph-info ">@Messages("file.size.info")</p>
                                 <p class="paragraph-info no-bottom-margin">@Messages("processing.file")</p>
                             </div>
@@ -58,16 +57,15 @@
 
                         @if(fileStatus==Ready){
                             <div class="task-list-item">
-                                <strong class="task-completed" id="download-result">@Messages("file.ready")</strong>
-                                <p><a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@Messages("download.results")</a></p>
+                                <p><strong class="task-completed" id="download-result">@Messages("file.ready")</strong>
+                                    <a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@Messages("download.results")</a></p>
                                 <p class="paragraph-info no-bottom-margin small-margin-top">@Messages("result.timescale", formattedDate.get)</p>
                             </div>
                         }
 
                         @if(fileStatus==UploadError || fileStatus==TimeExpiryError ){
                             <div class="task-list-item">
-                                <strong class="task-completed" id="file-problem">@Messages("file.problem")</strong>
-                                <p>@Messages("problem.getting.result")</p>
+                                <p class="paragraph info"><strong class="task-completed" id="file-problem">@Messages("file.problem")</strong>@Messages("problem.getting.result")</p>
                                 <p class="paragraph-info no-bottom-margin small-margin-top">
                                     @Html(
                                     Messages(
