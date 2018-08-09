@@ -111,12 +111,22 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     }
 
     "contain correct title when match found" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
+        Some(RasSession(name, nino, memberDob,
+          Some(ResidencyStatusResult(
+            NON_SCOTTISH, Some(NON_SCOTTISH),
+            currentTaxYear.toString, (currentTaxYear + 1).toString,
+            name.firstName + " " + name.lastName,
+            memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+            "")),None))
+      ))
       val result = TestResultsController.matchFound(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.title shouldBe Messages("match.found.page.title")
     }
 
     "contain correct title when match not found" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
       val result = TestResultsController.noMatchFound(fakeRequest)
       val doc = Jsoup.parse(contentAsString(result))
       doc.title shouldBe Messages("match.not.found.page.title")
@@ -124,8 +134,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     "contain customer details and residency status when match found and CY and CY+1 is present" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
+        Some(RasSession(name, nino, memberDob,
             Some(ResidencyStatusResult(
               SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
@@ -145,8 +154,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     "contain correct ga events when match found and CY and CY+1 is present" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
+        Some(RasSession(name, nino, memberDob,
             Some(ResidencyStatusResult(
               SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
@@ -161,8 +169,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     "contain customer details and residency status when match found and only CY is present" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
+        Some(RasSession(name, nino, memberDob,
             Some(ResidencyStatusResult(
               SCOTTISH, None,
               currentTaxYear.toString, (currentTaxYear + 1).toString,
@@ -182,8 +189,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     "contain correct ga event when match found and only CY is present" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
+        Some(RasSession(name, nino, memberDob,
             Some(ResidencyStatusResult(
               SCOTTISH, None,
               currentTaxYear.toString, (currentTaxYear + 1).toString,
@@ -198,8 +204,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     "display correct residency status for UK UK" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
+        Some(RasSession(name, nino, memberDob,
             Some(ResidencyStatusResult(
               NON_SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
