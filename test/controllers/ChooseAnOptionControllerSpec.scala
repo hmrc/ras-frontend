@@ -172,12 +172,12 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
 
       }
 
-      "contain File processing paragraphs with today date" in {
+      "contain File processing paragraphs with todays date" in {
         val date = new DateTime(fileSession.uploadTimeStamp.get)
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm"))) + Messages("file.processing")
+        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
+          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm")))
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
@@ -189,8 +189,8 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fs)))
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm"))) + Messages("file.processing")
+        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
+          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm")))
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
