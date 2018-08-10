@@ -28,19 +28,16 @@
             <h1 class="heading-xlarge">@Messages("chooseAnOption.page.header")</h1>
         </header>
 
-        <ul class="task-list">
-            <li>
                 <h2 class="task-list-section">@Messages("single.member.subheading")</h2>
-                    <div class="task-list-items no-margin">
+                    <div class="no-margin">
                         <div class="task-list-item">
                             <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:Choose option to get residency status:Enter a members details">@Messages("enter.members.details")</a>
                         </div>
                     </div>
-            </li>
-            <li>
-                <h2 class="task-list-section">@Messages("multiple.members.subheading")</h2>
-                    <div class="task-list-items no-margin">
 
+
+                <h2 class="task-list-section">@Messages("multiple.members.subheading")</h2>
+                    <div class="no-margin">
                         @if(fileStatus==NoFileSession){
                             <div class="task-list-item">
                                 <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:Choose option to get residency status:Upload a file">@Messages("Upload a file")</a>
@@ -76,8 +73,6 @@
                             </div>
                         }
                     </div>
-            </li>
-        </ul>
 
     </div>
 </div>
