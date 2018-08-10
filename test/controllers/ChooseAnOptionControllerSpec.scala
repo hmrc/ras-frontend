@@ -104,7 +104,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       "contain the correct title and header" in {
         val result = TestChooseAnOptionController
                      .get(fakeRequest)
-        doc(result).title shouldBe Messages("chooseAnOption.page.title")
+        doc(result).title shouldBe Messages("chooseAnOption.page.title", Messages("filestatus.NoFileSession"))
         doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("chooseAnOption.page.header")
       }
 
@@ -610,7 +610,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
     "contain the correct page title" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).title shouldBe Messages("no.results.available.page.title")
+      doc(result).title shouldBe Messages("no.results.available.page.title", Messages("filestatus.NoFileSession"))
     }
 
     "contain the correct page header" in {

@@ -3,7 +3,7 @@
 unauthorised.error.page.title = There is a problem - Look up residency status for relief at source - GOV.UK
 file.upload.page.title = Upload a file - Look up residency status for relief at source - GOV.UK
 file.upload.successful.page.title = Your file has been uploaded - Look up residency status for relief at source - GOV.UK
-chooseAnOption.page.title = Choose an option to get a residency status - Look up residency status for relief at source - GOV.UK
+chooseAnOption.page.title = Choose an option to get a residency status - Look up residency status for relief at source - GOV.UK{0}
 upload.result.page.title = The residency status has been added - Look up residency status for relief at source - GOV.UK
 cannot.upload.another.file.page.title = You cannot upload another file at the moment - Look up residency status for relief at source - GOV.UK
 member.name.page.title = What is the member’s name? - Look up residency status for relief at source - GOV.UK
@@ -222,5 +222,10 @@ processing.file = You cannot upload another file while this one is processing.
 today = today
 yesterday = yesterday
 formatted.upload.timestamp = {0} at {1}
+filestatus.NoFileSession =
+filestatus.Ready = ' - File ready'
+filestatus.InProgress = ' - File in progress'
+filestatus.UploadError = ' - File problem'
+filestatus.TimeExpiryError = ' - File problem'
 
 
