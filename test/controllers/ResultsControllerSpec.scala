@@ -234,6 +234,17 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
 
+    "contain a member must contact HMRC to update their personal details link which opens a new tab when clicked" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
+        Some(
+          RasSession(name, nino, memberDob,
+            None,None))
+      ))
+      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      doc(result).getElementById("contact-hmrc-link").attr("href") shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers"
+      doc(result).getElementById("contact-hmrc-link").attr("target") shouldBe "_blank"
+    }
+
     "contain what to do next section when match not found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(RasSession(name, nino, memberDob, None, None))))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
