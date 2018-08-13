@@ -20,12 +20,10 @@ import play.api.libs.json.Json
 
 case class MemberNino(nino :String) extends UserInput {
 
-  override def hasAValue() : Boolean = nino != ""
+  def hasAValue() : Boolean = nino != ""
 
 }
 
 object MemberNino {
-
   implicit val formats = Json.format[MemberNino]
-
 }

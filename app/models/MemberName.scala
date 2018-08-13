@@ -20,7 +20,8 @@ import play.api.libs.json.Json
 
 case class MemberName(firstName: String, lastName: String) extends UserInput {
 
-  override def hasAValue(): Boolean = firstName != "" && lastName != ""
+  def hasAValue(): Boolean = firstName != "" && lastName != ""
+
 }
 
 object MemberName {
