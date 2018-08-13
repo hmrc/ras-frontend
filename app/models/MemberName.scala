@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.Json
 
-case class MemberName(firstName: String, lastName: String) extends ContainsInputs {
+case class MemberName(firstName: String, lastName: String) extends UserInput {
 
   override def hasAValue(): Boolean = firstName != "" && lastName != ""
 }

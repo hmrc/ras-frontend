@@ -16,7 +16,7 @@
 
 package models
 
-trait ContainsInputs {
+trait UserInput {
 
   def hasAValue() : Boolean
 
