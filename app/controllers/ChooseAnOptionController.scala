@@ -99,34 +99,32 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          sessionService.hasUserDimissedUrBanner().flatMap { urBannerDismissed =>
-            shortLivedCache.fetchFileSession(userId).map {
-              case Some(fileSession) =>
-                fileSession.resultsFile match {
-                  case Some(resultFile) =>
-                    resultFile.uploadDate match {
-                      case Some(timestamp) =>
-                        fileSession.userFile match {
-                          case Some(callbackData) =>
-                            val currentTaxYear = TaxYearResolver.currentTaxYear
-                            val filename = ShortLivedCache.getDownloadFileName(fileSession)
-                            Ok(views.html.upload_result(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename, !urBannerDismissed))
-                          case _ =>
-                            Logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
-                            Redirect(routes.ErrorController.renderGlobalErrorPage)
-                        }
-                      case _ =>
-                        Logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve upload timestamp")
-                        Redirect(routes.ErrorController.renderGlobalErrorPage)
-                    }
-                  case _ =>
-                    Logger.info("[ChooseAnOptionController][renderUploadResultsPage] file upload in progress")
-                    Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage)
-                }
-              case _ =>
-                Logger.info("[ChooseAnOptionController][renderUploadResultsPage] no results available")
-                Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage)
-            }
+          shortLivedCache.fetchFileSession(userId).map {
+            case Some(fileSession) =>
+              fileSession.resultsFile match {
+                case Some(resultFile) =>
+                  resultFile.uploadDate match {
+                    case Some(timestamp) =>
+                      fileSession.userFile match {
+                        case Some(callbackData) =>
+                          val currentTaxYear = TaxYearResolver.currentTaxYear
+                          val filename = ShortLivedCache.getDownloadFileName(fileSession)
+                          Ok(views.html.upload_result(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
+                        case _ =>
+                          Logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
+                          Redirect(routes.ErrorController.renderGlobalErrorPage)
+                      }
+                    case _ =>
+                      Logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve upload timestamp")
+                      Redirect(routes.ErrorController.renderGlobalErrorPage)
+                  }
+                case _ =>
+                  Logger.info("[ChooseAnOptionController][renderUploadResultsPage] file upload in progress")
+                  Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage)
+              }
+            case _ =>
+              Logger.info("[ChooseAnOptionController][renderUploadResultsPage] no results available")
+              Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage)
           }
         case Left(resp) =>
           Logger.error("[ChooseAnOptionController][renderUploadResultsPage] user not authorised")

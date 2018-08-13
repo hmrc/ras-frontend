@@ -220,62 +220,6 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       }
     }
 
-    "cache Ur dismissal" when {
-      "no session is available" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
-        val json = Json.toJson[RasSession](rasSession.copy(urBannerDismissed = Some(true)))
-        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
-        val result = Await.result(TestSessionService.cacheUrBannerDismissed(true)(headerCarrier), 10 seconds)
-        result shouldBe Some(rasSession.copy(urBannerDismissed = Some(true)))
-      }
-      "a session is available" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(urBannerDismissed = Some(true)))
-        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
-        val result = Await.result(TestSessionService.cacheUrBannerDismissed(true)(headerCarrier), 10 seconds)
-        result shouldBe Some(rasSession.copy(urBannerDismissed = Some(true)))
-      }
-      "set to an empty value" in {
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(urBannerDismissed = None))
-        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
-        val result = Await.result(TestSessionService.resetCacheUrBannerDismissed()(headerCarrier), 10 seconds)
-        result shouldBe Some(rasSession.copy(urBannerDismissed = None))
-      }
-    }
-
-    "return rasSession value" when {
-      "calling hasUserDismissedUrBanner and showUrBanner is true" in {
-        when(mockConfig.urBannerEnabled).thenReturn(true)
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession.copy(urBannerDismissed = Some(true)))))
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(headerCarrier), 10 seconds)
-        result shouldBe true
-      }
-    }
-
-    "return false" when {
-      "there is no value in the cache" in {
-        when(mockConfig.urBannerEnabled).thenReturn(true)
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(headerCarrier), 10 seconds)
-        result shouldBe false
-      }
-      "there is no rasSession value" in {
-        when(mockConfig.urBannerEnabled).thenReturn(true)
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(headerCarrier), 10 seconds)
-        result shouldBe false
-      }
-    }
-
-    "return true" when {
-      "enable-ur-banner is false" in {
-        when(mockConfig.urBannerEnabled).thenReturn(false)
-        val result = Await.result(TestSessionService.hasUserDimissedUrBanner()(headerCarrier), 10 seconds)
-        result shouldBe true
-      }
-    }
-
     "fetch ras session" when {
       "requested" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
@@ -285,23 +229,14 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
     }
 
     "return a clean session" when {
-      "reset cache with key all is called and there was no previous session" in {
+      "reset cache with key all is called" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
         val json = Json.toJson[RasSession](SessionService.cleanSession)
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetRasSession()(headerCarrier), 10 seconds)
         result shouldBe Some(SessionService.cleanSession)
       }
-      "reset cache with key all is called and there was a previous session" in {
-        val session = rasSession.copy(urBannerDismissed = Some(true))
-        when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(session)))
-        val json = Json.toJson[RasSession](SessionService.cleanSession.copy(urBannerDismissed = session.urBannerDismissed))
-        when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
-        val result = Await.result(TestSessionService.resetRasSession()(headerCarrier), 10 seconds)
-        result shouldBe Some(SessionService.cleanSession.copy(urBannerDismissed = session.urBannerDismissed))
-      }
     }
-
   }
 
   "ShortLivedCache" should {
