@@ -220,14 +220,13 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     "contain a look up another member link when match found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
-            ResidencyStatusResult(
+        Some(RasSession(name, nino, memberDob,
+            Some(ResidencyStatusResult(
               SCOTTISH, None,
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
               memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              ""),None))
+              ""))))
       ))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
@@ -270,13 +269,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
     "contain a look up another member link when match not found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(
-          RasSession(name, nino, memberDob,
-            ResidencyStatusResult(
-              "", None,
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              ""),None))
+          RasSession(name, nino, memberDob, None, None))
       ))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       doc(result).getElementById("look-up-another-member-link").attr("href") shouldBe "/relief-at-source/check-another-member/member-name?cleanSession=true"
