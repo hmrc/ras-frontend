@@ -20,7 +20,7 @@ import helpers.helpers.I18nHelper
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 
-class MemberDobSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
+class MemberDobSpec extends UnitSpec {
 
   "hasValue" should {
 
