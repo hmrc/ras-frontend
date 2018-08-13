@@ -68,7 +68,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
   val mockExpiryTimeStamp = new DateTime().minusDays(7).getMillis
   val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
   val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(DateTime.now().getMillis()),None)
-  val rasSession = RasSession(MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),ResidencyStatusResult("",None,"","","","",""))
+  val rasSession = RasSession(MemberName("",""),MemberNino(""),MemberDateOfBirth(RasDate(None,None,None)),None)
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)

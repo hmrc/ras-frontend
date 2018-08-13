@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 case class RasSession(name:MemberName,
                       nino:MemberNino,
                       dateOfBirth:MemberDateOfBirth,
-                      residencyStatusResult: ResidencyStatusResult,
+                      residencyStatusResult: Option[ResidencyStatusResult] = None,
                       uploadResponse: Option[UploadResponse] = None,
                       envelope: Option[Envelope] = None,
                       aFileIsInProcess: Option[Boolean] = None,

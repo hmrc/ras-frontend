@@ -16,14 +16,8 @@
 
 package models
 
-import play.api.libs.json.Json
+trait UserInput {
 
-case class MemberName(firstName: String, lastName: String) extends UserInput {
+  def hasAValue() : Boolean
 
-  def hasAValue(): Boolean = firstName != "" && lastName != ""
-
-}
-
-object MemberName {
-  implicit val format = Json.format[MemberName]
 }

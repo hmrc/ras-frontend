@@ -18,8 +18,11 @@ package models
 
 import play.api.libs.json.Json
 
-case class MemberDateOfBirth(dateOfBirth: RasDate)
+case class MemberDateOfBirth(dateOfBirth: RasDate) extends UserInput {
 
-object MemberDateOfBirth {
-  implicit val formats = Json.format[MemberDateOfBirth]
+  def hasAValue(): Boolean = dateOfBirth.day.isDefined && dateOfBirth.month.isDefined && dateOfBirth.year.isDefined
+
+}
+  object MemberDateOfBirth {
+    implicit val formats = Json.format[MemberDateOfBirth]
 }
