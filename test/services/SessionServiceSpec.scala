@@ -45,7 +45,7 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
   val memberDetails = MemberDetails(name,RandomNino.generate,RasDate(Some("1"),Some("1"),Some("1999")))
   val uploadResponse = UploadResponse("111",Some("error error"))
   val envelope = Envelope("someEnvelopeId1234")
-  val rasSession = RasSession(name,nino,memberDob,ResidencyStatusResult("",None,"","","","",""))
+  val rasSession = RasSession(name,nino,memberDob,None)
 
   implicit val headerCarrier = HeaderCarrier()
 
@@ -84,33 +84,33 @@ class SessionServiceSpec extends UnitSpec with OneServerPerSuite with ScalaFutur
       "member details is submitted via the form when no returned session" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
         val rd = ResidencyStatusResult("uk",Some("uk"),"2000","2001","Jack","1-1-1999",RandomNino.generate)
-        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = rd))
+        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = Some(rd)))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.cacheResidencyStatusResult(rd)(HeaderCarrier()), 10 seconds)
-        result shouldBe Some(rasSession.copy(residencyStatusResult = rd))
+        result shouldBe Some(rasSession.copy(residencyStatusResult = Some(rd)))
       }
       "member details is submitted via the form when some returned session" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
         val rd = ResidencyStatusResult("uk",Some("uk"),"2000","2001","Jack","1-1-1999",RandomNino.generate)
-        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = rd))
+        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = Some(rd)))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.cacheResidencyStatusResult(rd)(HeaderCarrier()), 10 seconds)
-        result shouldBe Some(rasSession.copy(residencyStatusResult = rd))
+        result shouldBe Some(rasSession.copy(residencyStatusResult = Some(rd)))
       }
       "member details is submitted via the form and the date is in the period where only CY is returned" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
         val rd = ResidencyStatusResult("uk",None,"2000","2001","Jack","1-1-1999",RandomNino.generate)
-        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = rd))
+        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = Some(rd)))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.cacheResidencyStatusResult(rd)(HeaderCarrier()), 10 seconds)
-        result shouldBe Some(rasSession.copy(residencyStatusResult = rd))
+        result shouldBe Some(rasSession.copy(residencyStatusResult = Some(rd)))
       }
       "set to an empty value" in {
         when(mockSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = TestSessionService.cleanResidencyStatusResult))
+        val json = Json.toJson[RasSession](rasSession.copy(residencyStatusResult = None))
         when(mockSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetCacheResidencyStatusResult()(HeaderCarrier()), 10 seconds)
-        result shouldBe Some(rasSession.copy(residencyStatusResult = TestSessionService.cleanResidencyStatusResult))
+        result shouldBe Some(rasSession.copy(residencyStatusResult = None))
       }
     }
 

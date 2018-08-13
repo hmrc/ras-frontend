@@ -43,8 +43,7 @@ trait SessionService extends SessionCacheWiring {
   val cleanMemberName = MemberName("", "")
   val cleanMemberNino = MemberNino("")
   val cleanMemberDateOfBirth = MemberDateOfBirth(RasDate(None, None, None))
-  val cleanResidencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
-  val cleanSession = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, cleanResidencyStatusResult, None)
+  val cleanSession = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, None, None)
 
   def fetchRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
@@ -77,7 +76,7 @@ trait SessionService extends SessionCacheWiring {
           case CacheKeys.Name => session.copy(name = value.getOrElse(cleanMemberName).asInstanceOf[MemberName])
           case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
           case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth).asInstanceOf[MemberDateOfBirth])
-          case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.getOrElse(cleanResidencyStatusResult).asInstanceOf[ResidencyStatusResult])
+          case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.asInstanceOf[Option[ResidencyStatusResult]])
           case CacheKeys.UploadResponse => session.copy(uploadResponse = value.asInstanceOf[Option[UploadResponse]])
           case CacheKeys.Envelope => session.copy(envelope = value.asInstanceOf[Option[Envelope]])
           case _ => cleanSession

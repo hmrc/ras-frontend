@@ -16,14 +16,22 @@
 
 package models
 
-import play.api.libs.json.Json
+import helpers.helpers.I18nHelper
+import org.scalatestplus.play.OneAppPerSuite
+import uk.gov.hmrc.play.test.UnitSpec
 
-case class MemberName(firstName: String, lastName: String) extends UserInput {
+class MemberNinoSpec extends UnitSpec {
 
-  def hasAValue(): Boolean = firstName != "" && lastName != ""
+  "hasValue" should {
 
-}
+    "return false if nino is empty" in {
+        val nino = MemberNino("")
+        assert(nino.hasAValue() == false)
+    }
 
-object MemberName {
-  implicit val format = Json.format[MemberName]
+    "return true if nino has a value" in {
+      val nino = MemberNino("LE241311C")
+      assert(nino.hasAValue() == true)
+    }
+  }
 }

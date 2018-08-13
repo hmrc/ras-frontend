@@ -16,14 +16,27 @@
 
 package models
 
-import play.api.libs.json.Json
+import helpers.helpers.I18nHelper
+import org.scalatestplus.play.OneAppPerSuite
+import uk.gov.hmrc.play.test.UnitSpec
 
-case class MemberName(firstName: String, lastName: String) extends UserInput {
+class MemberNameSpec extends UnitSpec {
 
-  def hasAValue(): Boolean = firstName != "" && lastName != ""
+  "hasValue" should {
 
-}
+    "return false if first name is empty" in {
+      val name = MemberName("", "last name")
+      assert(name.hasAValue() == false)
+    }
 
-object MemberName {
-  implicit val format = Json.format[MemberName]
+    "return false if firstName & lastName are empty" in {
+      val name = MemberName ("", "")
+      assert(name.hasAValue() == false)
+    }
+
+    "return true if firstName & lastName contain values" in {
+      val name = MemberName ("Jim", "Jimson")
+      assert(name.hasAValue() == true)
+    }
+  }
 }
