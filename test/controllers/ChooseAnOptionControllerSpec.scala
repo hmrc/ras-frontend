@@ -103,7 +103,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       "contain the correct title and header" in {
         val result = TestChooseAnOptionController
                      .get(fakeRequest)
-        doc(result).title shouldBe Messages("chooseAnOption.page.title")
+        doc(result).title shouldBe Messages("chooseAnOption.page.title", Messages("filestatus.NoFileSession"))
         doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("chooseAnOption.page.header")
       }
 
@@ -171,12 +171,12 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
 
       }
 
-      "contain File processing paragraphs with today date" in {
+      "contain File processing paragraphs with todays date" in {
         val date = new DateTime(fileSession.uploadTimeStamp.get)
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm"))) + Messages("file.processing")
+        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
+          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm")))
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
@@ -188,8 +188,8 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
         when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fs)))
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm"))) + Messages("file.processing")
+        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
+          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm")))
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
@@ -325,13 +325,14 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
     "contain an contact HMRC link" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("contact-link").text shouldBe Messages("upload.result.member.contact")
+      doc(result).getElementById("contact-hmrc-link").text shouldBe Messages("upload.result.member.contact")
     }
 
-    "contains an HMRC link that points to help page" in {
+    "contains an HMRC link that opens help page in new tab" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("contact-link").attr("href") shouldBe ("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers")
+      doc(result).getElementById("contact-hmrc-link").attr("href") shouldBe ("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers")
+      doc(result).getElementById("contact-hmrc-link")attr("target") shouldBe "_blank"
     }
 
     "contain a deletion message" in {
@@ -348,7 +349,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
       doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY & CY + 1:Choose something else to do"
-      doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
+      doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
     }
 
     "contain a cy message when upload date is 06/04/2018" in {
@@ -369,7 +370,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
       doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
       doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY:Choose something else to do"
-      doc(result).getElementById("contact-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
+      doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
 
     }
 
@@ -609,7 +610,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
     "contain the correct page title" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(None))
       val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).title shouldBe Messages("no.results.available.page.title")
+      doc(result).title shouldBe Messages("no.results.available.page.title", Messages("filestatus.NoFileSession"))
     }
 
     "contain the correct page header" in {

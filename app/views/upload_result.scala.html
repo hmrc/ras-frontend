@@ -59,7 +59,7 @@
             <h2 id="whatnext-header" class="heading-medium">@Messages("match.found.what.happens.next")</h2>
             <p id="whatnext-content">
                 @Html(Messages("upload.result.what.next",
-                "<a id='contact-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' data-journey-click='link - click:Residency status upload added " + year + ":Member must contact HMRC'>" + Messages("upload.result.member.contact") + "</a>"
+                "<a id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target='_blank' data-journey-click='link - click:Residency status upload added " + year + ":Member must contact HMRC'>" + Messages("upload.result.member.contact") + "</a>"
                 ))
             </p>
             @if(!isBeforeApr6){

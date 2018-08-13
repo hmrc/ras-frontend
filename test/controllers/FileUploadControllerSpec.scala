@@ -266,11 +266,12 @@ class FileUploadControllerSpec extends UnitSpec with WithFakeApplication with I1
       doc(result).getElementById("continue").text shouldBe Messages("continue")
     }
 
-    "contain an uploading help link" in {
+    "contain an uploading help link that opens new window when clicked" in {
       val rasSession = RasSession(memberName, memberNino, memberDob, ResidencyStatusResult("", None, "", "", "", "", ""), None, Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestFileUploadController.get().apply(fakeRequest)
       doc(result).getElementById("upload-help-link").text shouldBe Messages("get.help.uploading.link")
+      doc(result).getElementById("upload-help-link").attr("target") shouldBe "_blank"
     }
 
     "contains the correct ga events" in {
