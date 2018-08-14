@@ -45,9 +45,12 @@ input:focus {
     outline-offset: 0;
 }
 
-
 .continue-div{
   padding-top: 20px;
+}
+
+.content__body{
+  width: 100%;
 }
 
 .common-error {
