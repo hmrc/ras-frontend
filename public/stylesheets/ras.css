@@ -50,10 +50,6 @@ input:focus {
   padding-top: 20px;
 }
 
-.content__body {
-    width: 100%;
-}
-
 .common-error {
     color: #A80F1C;
     font-weight: bold;
