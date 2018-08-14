@@ -50,8 +50,7 @@ class SessionControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   val nino = MemberNino(RandomNino.generate)
   val dob = RasDate(Some("1"), Some("1"), Some("1999"))
   val memberDob = MemberDateOfBirth(dob)
-  val residencyStatusResult = ResidencyStatusResult("",None,"","","","","")
-  val rasSession = RasSession(MemberName("Jim", "McGill"),nino, memberDob,residencyStatusResult,None)
+  val rasSession = RasSession(MemberName("Jim", "McGill"),nino, memberDob,None,None)
 
   object TestSessionController extends SessionController{
     val authConnector: AuthConnector = mockAuthConnector

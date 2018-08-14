@@ -73,7 +73,7 @@
                     </span>
                 </div>
 
-              <p id="what-to-do" class="ras-bottom-margin ras-top-margin-big">
+            <p id="what-to-do" class="ras-bottom-margin ras-top-margin-big">
                   @Html(
                   Messages(
                   "match.not.found.what.to.do",
@@ -81,8 +81,11 @@
                   )
                   )
               </p>
+            <div class="ras-bottom-margin">
+                <a id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name",true)' data-journey-click="link - click:User details not found:Look up another member">@Messages("look.up.another.member")</a>
+            </div>
 
-              <div class="row">
+            <div class="row">
                 <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("choose-an-option",true)' data-journey-click="button - click:User details not found:Choose something else to do">@Messages("choose.something.else")</a>
               </div>
 
