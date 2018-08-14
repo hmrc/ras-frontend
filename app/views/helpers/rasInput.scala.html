@@ -57,7 +57,7 @@
 
 @hintId = {@if(elements.args.get('_id)){@elements.args.get('_id)_hint}}
 
-<div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error} no-bottom-margin">
+<div id="@elements.args.get('_id)-input" class="form-group @if(errors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error}">
 
     <div class="form-group @if(elements.args.contains('_groupClass)){@elements.args.get('_groupClass)}">
 
