@@ -46,12 +46,20 @@
 
 @labelFor = @{elements.args.get('_id)}
 
+@inputClass = {
+        @if(parentElements.isDefined && parentElements.get.hasErrors || (errors.nonEmpty)){
+        form-control-error
+        }else{
+        form-control
+        }}
+
 @labelClass = @{
     elements.args.get('_divClass)
     if(elements.args.get('_labelClass)){
     elements.args.get('_labelClass)
     }
 }
+
 
 @labelId = {@if(elements.args.get('_id)){@elements.args.get('_id)_label}else{@elements.field.name.replaceAll("""[\.\[\]]""", "-")}}
 
@@ -76,12 +84,7 @@
             }else{}
 
             class="@if( elements.args.get('_inputClass)){
-            @elements.args.get('_inputClass)
-            }@if(errors.nonEmpty){
-            form-control form-control-error
-            }else{
-            form-control
-            }"
+            @inputClass"}
         
             name="@elements.field.name"
 

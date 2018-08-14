@@ -50,18 +50,12 @@
                 <div class="form-group">
                     <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
 
-                        @if(!memberDobForm.data.isEmpty &&
-                        !memberDobForm.data.exists(_ == ("nino","")) &&
-                        memberDobForm.data("dateOfBirth.day") == "" &&
-                        memberDobForm.data("dateOfBirth.month") == "" &&
-                        memberDobForm.data("dateOfBirth.year") == ""){
-
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
                             '_id -> "dateOfBirth-day",
                             '_type -> "tel",
-                            '_inputClass -> "form-control form-control-error")
+                            '_inputClass -> "form-control")
 
                         </div>
                         <div class="dob-field">
@@ -69,7 +63,7 @@
                             '_label -> Html(Messages("month").capitalize),
                             '_id -> "dateOfBirth-month",
                             '_type -> "tel",
-                            '_inputClass -> "form-control form-control-error")
+                            '_inputClass -> "form-control")
                         </div>
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
@@ -77,64 +71,9 @@
                             '_id -> "dateOfBirth-year",
                             '_type -> "tel",
                             '_groupClass -> "form-group-year",
-                            '_inputClass -> "form-control form-control-error")
+                            '_inputClass -> "form-control")
                         </div>
 
-                        } else {
-                        @if(memberDobForm.errors.toString.contains("day")){
-                        <div class="dob-field">
-                            @rasInput(memberDobForm("dateOfBirth.day"),
-                            '_label -> Html(Messages("day").capitalize),
-                            '_id -> "dateOfBirth-day",
-                            '_type -> "tel",
-                            '_inputClass -> "form-control form-control-error")
-                        </div>
-                        } else {
-                        <div class="dob-field">
-                            @rasInput(memberDobForm("dateOfBirth.day"),
-                            '_label -> Html(Messages("day").capitalize),
-                            '_id -> "dateOfBirth-day",
-                            '_type -> "tel")
-                        </div>
-                        }
-
-                        @if(memberDobForm.errors.toString.contains("month")){
-                        <div class="dob-field">
-                            @rasInput(memberDobForm("dateOfBirth.month"),
-                            '_label -> Html(Messages("month").capitalize),
-                            '_id -> "dateOfBirth-month",
-                            '_type -> "tel",
-                            '_inputClass -> "form-control form-control-error")
-                        </div>
-                        } else {
-                        <div class="dob-field">
-                            @rasInput(memberDobForm("dateOfBirth.month"),
-                            '_label -> Html(Messages("month").capitalize),
-                            '_id -> "dateOfBirth-month",
-                            '_type -> "tel")
-                        </div>
-                        }
-
-                        @if(memberDobForm.errors.toString.contains("year")){
-                        <div class="dob-field">
-                            @rasInput(memberDobForm("dateOfBirth.year"),
-                            '_label -> Html(Messages("year").capitalize),
-                            '_id -> "dateOfBirth-year",
-                            '_type -> "tel",
-                            '_groupClass -> "form-group-year",
-                            '_inputClass -> "form-control form-control-error")
-                        </div>
-                        } else {
-                        <div class="dob-field">
-                            @rasInput(memberDobForm("dateOfBirth.year"),
-                            '_label -> Html(Messages("year").capitalize),
-                            '_id -> "dateOfBirth-year",
-                            '_type -> "tel",
-                            '_groupClass -> "form-group-year",
-                            '_inputClass -> " form-control year-input")
-                        </div>
-                        }
-                        }
                     </div>
                 </div>
             </fieldset>

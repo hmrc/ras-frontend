@@ -42,11 +42,13 @@
 
                 @rasInput(memberNameForm("firstName"),
                 '_label -> Html(Messages("first.name").capitalize),
-                '_id -> "firstName")
+                '_id -> "firstName",
+                '_inputClass -> "form-control")
 
                 @rasInput(memberNameForm("lastName"),
                 '_label -> Html(Messages("last.name").capitalize),
-                '_id -> "lastName")
+                '_id -> "lastName",
+                '_inputClass -> "form-control")
 
             </fieldset>
 
