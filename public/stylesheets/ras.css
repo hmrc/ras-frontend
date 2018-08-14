@@ -45,10 +45,6 @@ input:focus {
     outline-offset: 0;
 }
 
-.error-list{
-  font-weight: bold;
-  color: #b10e1e;
-}
 
 .continue-div{
   padding-top: 20px;
