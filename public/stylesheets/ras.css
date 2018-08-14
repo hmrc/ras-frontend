@@ -45,11 +45,6 @@ input:focus {
     outline-offset: 0;
 }
 
-#choose-file {
-  display: block;
-  border: 0px;
-}
-
 .error-list{
   font-weight: bold;
   color: #b10e1e;
