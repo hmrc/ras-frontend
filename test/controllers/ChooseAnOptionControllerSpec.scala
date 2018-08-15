@@ -86,7 +86,6 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
     when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.NoFileSession))
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
-    when(mockSessionService.hasUserDimissedUrBanner()(any())).thenReturn(Future.successful(false))
     when(mockRasConnector.getFile(any(), any())(any())).thenReturn(Future.successful(Some(inputStream)))
     when(mockUserDetailsConnector.getUserDetails(any())(any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
@@ -285,7 +284,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
     "contain a icon file image" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("icon--file img").attr("src") should include("icon-file-download.png")
+      doc(result).getElementById("attachment-1").children().first().attr("src") should include("icon-file-download.png")
     }
 
     "contain a result link with the correct file name" in {

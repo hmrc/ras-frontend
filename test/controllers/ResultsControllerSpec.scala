@@ -75,7 +75,6 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
     override val sessionService = mockSessionService
 
-    when(mockSessionService.hasUserDimissedUrBanner()(Matchers.any())).thenReturn(Future.successful(false))
     when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
   }
 

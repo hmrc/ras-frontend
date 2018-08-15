@@ -38,19 +38,19 @@
                     <li data-journey='There is a problem - view:@gaActionPage:@error.message'>
 
                         @if(anchor.toString.contains("day")){
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key-day">
+                        <a href="#@anchor" data-focuses="@error.key-day">
                             @Messages(error.message)
                         </a>
                         } else { @if(anchor.toString.contains("month")) {
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key-month">
+                        <a href="#@anchor" data-focuses="@error.key-month">
                             @Messages(error.message)
                         </a>
                         } else { @if(anchor.toString.contains("year")){
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key-year">
+                        <a href="#@anchor" data-focuses="@error.key-year">
                             @Messages(error.message)
                         </a>
                         } else {
-                        <a href="#@anchor" class="error-list" data-focuses="@error.key">
+                        <a href="#@anchor" data-focuses="@error.key">
                             @Messages(error.message)
                         </a>
                         }}}

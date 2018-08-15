@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int, filename: String, showUrBanner: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int, filename: String)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
 @year = {@if(isBeforeApr6){CY & CY + 1}else{CY}}
 
-@ras_main(title = Messages("upload.result.page.title"), showUrBanner = showUrBanner) {
+@ras_main(title = Messages("upload.result.page.title"), showUrBanner = true) {
 
   <div class="grid-row">
       <div class="column-two-thirds">
@@ -41,7 +41,7 @@
             <section class="attachment embedded">
                 <div class="attachment--title">
                     <div class="icon--file" id="attachment-1">
-                        <img id="icon--file img" alt="" src="@routes.AssetsController.at("images/icon-file-download.png")">
+                        <img alt="" src="@routes.AssetsController.at("images/icon-file-download.png")">
                     </div>
                     <div class="attachment-details">
                         <p>
