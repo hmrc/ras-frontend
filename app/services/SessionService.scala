@@ -35,7 +35,7 @@ object SessionService extends SessionService {
 trait SessionService extends SessionCacheWiring {
 
   private object CacheKeys extends Enumeration {
-    val All, Name, Nino, Dob, StatusResult, UploadResponse, Envelope, UrBannerDismissed = Value
+    val All, Name, Nino, Dob, StatusResult, UploadResponse, Envelope = Value
   }
 
   val config: ApplicationConfig
@@ -55,7 +55,6 @@ trait SessionService extends SessionCacheWiring {
   def cacheUploadResponse(value: UploadResponse)(implicit hc: HeaderCarrier) = cache(CacheKeys.UploadResponse, Some(value))
   def cacheEnvelope(value: Envelope)(implicit hc: HeaderCarrier) = cache(CacheKeys.Envelope, Some(value))
   def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit hc: HeaderCarrier) = cache(CacheKeys.StatusResult, Some(value))
-  def cacheUrBannerDismissed(value: Boolean)(implicit hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed, Some(value))
 
   def resetCacheName()(implicit hc: HeaderCarrier) = cache(CacheKeys.Name)
   def resetCacheNino()(implicit hc: HeaderCarrier) = cache(CacheKeys.Nino)
@@ -63,7 +62,6 @@ trait SessionService extends SessionCacheWiring {
   def resetCacheUploadResponse()(implicit hc: HeaderCarrier) = cache(CacheKeys.UploadResponse)
   def resetCacheEnvelope()(implicit hc: HeaderCarrier) = cache(CacheKeys.Envelope)
   def resetCacheResidencyStatusResult()(implicit hc: HeaderCarrier) = cache(CacheKeys.StatusResult)
-  def resetCacheUrBannerDismissed()(implicit hc: HeaderCarrier) = cache(CacheKeys.UrBannerDismissed)
 
   def resetRasSession()(implicit hc: HeaderCarrier) = cache(CacheKeys.All)
 
@@ -81,8 +79,7 @@ trait SessionService extends SessionCacheWiring {
           case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.asInstanceOf[Option[ResidencyStatusResult]])
           case CacheKeys.UploadResponse => session.copy(uploadResponse = value.asInstanceOf[Option[UploadResponse]])
           case CacheKeys.Envelope => session.copy(envelope = value.asInstanceOf[Option[Envelope]])
-          case CacheKeys.UrBannerDismissed => session.copy(urBannerDismissed = value.asInstanceOf[Option[Boolean]])
-          case _ => cleanSession.copy(urBannerDismissed = session.urBannerDismissed)
+          case _ => cleanSession
         }
       )
     }
@@ -90,15 +87,6 @@ trait SessionService extends SessionCacheWiring {
     result.map(cacheMap => {
       cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
     })
-  }
-
-  def hasUserDimissedUrBanner()(implicit hc: HeaderCarrier): Future[Boolean] = {
-    config.urBannerEnabled match {
-      case true => fetchRasSession flatMap { currentSession =>
-        Future.successful(currentSession.flatMap(_.urBannerDismissed).getOrElse(false))
-      }
-      case false => Future.successful(true)
-    }
   }
 }
 

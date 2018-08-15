@@ -24,9 +24,10 @@ $(function() {
         ga('send', 'event', 'link - click', pageTitle, 'get help with this page');
     });
 
-    $("#full-width-banner-no-thanks").click(function(){
+    $("#full-width-banner-no-thanks").click(function(e){
+        e.preventDefault();
         $('.full-width-banner').fadeOut('slow');
-        return true;
+        GOVUK.setCookie("rasUrBannerHide", 1, 99999999999);
     });
 
 });
