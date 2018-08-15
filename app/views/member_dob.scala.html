@@ -43,35 +43,26 @@
                 <div class="form-group">
                     <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
 
-                        <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                        <div class="form-hint" id="dob_hint">@Messages("dob.hint")</div>
                         @if(memberDobForm.errors.nonEmpty) {
-                        <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
+                        <div class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</div>
                         }
 
-                        <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
                             '_id -> "dateOfBirth-day",
-                            '_type -> "tel",
-                            '_inputClass -> "form-control-error")
-                        </div>
+                            '_type -> "tel")
 
-                        <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
                             '_id -> "dateOfBirth-month",
-                            '_type -> "tel",
-                            '_inputClass -> "form-control-error")
-                        </div>
+                            '_type -> "tel")
 
-                        <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
                             '_id -> "dateOfBirth-year",
                             '_type -> "tel",
-                            '_groupClass -> "form-group-year",
-                            '_inputClass -> "form-control-error")
-                        </div>
+                            '_groupClass -> "form-group-year")
 
                     </div>
                 </div>

@@ -34,6 +34,8 @@
     FormHelpers.getErrors(field, parentField)
 }
 
+<h1>here:@field.hasErrors @errors</h1>
+
 @parentElements = @{
     parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )
 }
@@ -46,12 +48,7 @@
 
 @labelFor = @{elements.args.get('_id)}
 
-@inputClass = {
-        @if(parentElements.isDefined && parentElements.get.hasErrors || (errors.nonEmpty) ){
-        form-control-error
-        }else{
-        form-control
-        }}
+
 
 @labelClass = @{
     elements.args.get('_divClass)
@@ -80,8 +77,11 @@
 
         <input type="@if(elements.args.get('_type)){@elements.args.get('_type)}else{text}"
 
-            class="@if(elements.args.get('_inputClass)){
-            @inputClass"}
+            class="@if(errors.nonEmpty){
+            form-control-error
+            }else{
+            form-control
+            }"
 
             name="@elements.field.name"
 
