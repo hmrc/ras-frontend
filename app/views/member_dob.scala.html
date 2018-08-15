@@ -14,10 +14,12 @@
  * limitations under the License.
  *@
 
-@(memberDobForm: Form[models.MemberDateOfBirth], name:String, edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@(memberDobForm: Form[models.MemberDateOfBirth], name:String, edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages, formInstance: Option[Form[models.MemberDateOfBirth]] = None)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+
+
 
 @ras_main(title = Messages("member.dob.page.title")) {
 

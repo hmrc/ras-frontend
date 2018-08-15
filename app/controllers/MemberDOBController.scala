@@ -24,6 +24,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import forms.MemberDateOfBirthForm.form
 import metrics.Metrics
 import services.AuditService
+import play.api.data.Form
 
 import scala.concurrent.Future
 
@@ -67,6 +68,7 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
               Logger.error("[DobController][post] Invalid form field passed")
               sessionService.fetchRasSession() map {
                 case Some(session) =>
+                  implicit val formInstance: Option[Form[models.MemberDateOfBirth]] = Some(formWithErrors)
                   val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
                   BadRequest(views.html.member_dob(formWithErrors, name, edit))
                 case _ =>

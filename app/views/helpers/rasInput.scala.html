@@ -34,8 +34,6 @@
     FormHelpers.getErrors(field, parentField)
 }
 
-<h1>here:@field.hasErrors @errors</h1>
-
 @parentElements = @{
     parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )
 }
