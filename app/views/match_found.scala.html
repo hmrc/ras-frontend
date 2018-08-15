@@ -20,10 +20,9 @@
   currentYearResidencyStatus: String,
   nextYearResidencyStatus: Option[String],
   currentTaxYear: Int,
-  nextTaxYear: Int,
-  showUrBanner: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+  nextTaxYear: Int)(implicit request: Request[_], context: config.RasContext, messages: Messages)
 
-@ras_main(title = Messages("match.found.page.title"), showUrBanner = showUrBanner) {
+@ras_main(title = Messages("match.found.page.title"), showUrBanner = true) {
 
     <div class="grid-row">
         <div class="column-two-thirds">

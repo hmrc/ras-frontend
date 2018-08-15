@@ -17,30 +17,12 @@
     margin-top: -8px;
 }
 
-.ras-top-margin {
-    margin-top: 1.1em;
-}
-
 .ras-top-margin-small {
     margin-top: 0.5em;
 }
 
-
 .ras-top-margin-big {
     margin-top: 1.5em;
-}
-
-.dob-field{
-  display: inline-block;
-  margin-bottom: 0px;
-}
-
-#dob_hint{
-  margin-top:0px;
-}
-
-.form-hint{
-  margin-top:0px;
 }
 
 .form-field--error{
@@ -63,22 +45,12 @@ input:focus {
     outline-offset: 0;
 }
 
-#choose-file {
-  display: block;
-  border: 0px;
-}
-
-.error-list{
-  font-weight: bold;
-  color: #b10e1e;
-}
-
 .continue-div{
   padding-top: 20px;
 }
 
-.content__body {
-    width: 100%;
+.content__body{
+  width: 100%;
 }
 
 .common-error {
@@ -133,10 +105,6 @@ input:focus {
 
 .small-margin-top {
     margin-top: .2em;
-}
-
-.no-margin {
-    margin: 0;
 }
 
 @media (min-width: 641px)
