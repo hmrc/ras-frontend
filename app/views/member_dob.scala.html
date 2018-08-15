@@ -53,12 +53,10 @@
                 <div class="form-group">
                     <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
 
-                        <div id="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
                             '_id -> "dateOfBirth-day",
                             '_type -> "tel")
-                        </div>
 
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
