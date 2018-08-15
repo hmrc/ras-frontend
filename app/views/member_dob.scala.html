@@ -38,40 +38,39 @@
                     <header class="page-header">
                         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
                     </header>
-
-                    <div class="@if(memberDobForm.errors.nonEmpty) {form-group-error}">
-                        <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
-                        @if(!memberDobForm.errors.isEmpty) {
-                        <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
-                        }
-                    </div>
                 </legend>
 
                 <div class="form-group">
                     <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
+
+                        <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                        @if(memberDobForm.errors.nonEmpty) {
+                        <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
+                        }
 
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
                             '_id -> "dateOfBirth-day",
                             '_type -> "tel",
-                            '_inputClass -> "form-control")
-
+                            '_inputClass -> "form-control-error")
                         </div>
+
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.month"),
                             '_label -> Html(Messages("month").capitalize),
                             '_id -> "dateOfBirth-month",
                             '_type -> "tel",
-                            '_inputClass -> "form-control")
+                            '_inputClass -> "form-control-error")
                         </div>
+
                         <div class="dob-field">
                             @rasInput(memberDobForm("dateOfBirth.year"),
                             '_label -> Html(Messages("year").capitalize),
                             '_id -> "dateOfBirth-year",
                             '_type -> "tel",
                             '_groupClass -> "form-group-year",
-                            '_inputClass -> "form-control")
+                            '_inputClass -> "form-control-error")
                         </div>
 
                     </div>

@@ -47,7 +47,7 @@
 @labelFor = @{elements.args.get('_id)}
 
 @inputClass = {
-        @if(parentElements.isDefined && parentElements.get.hasErrors || (errors.nonEmpty)){
+        @if(parentElements.isDefined && parentElements.get.hasErrors || (errors.nonEmpty) ){
         form-control-error
         }else{
         form-control
@@ -79,13 +79,10 @@
         </label>
 
         <input type="@if(elements.args.get('_type)){@elements.args.get('_type)}else{text}"
-            @if(elements.args.contains('_maxLength)){
-            maxlength="@elements.args.get('_maxLength)"
-            }else{}
 
-            class="@if( elements.args.get('_inputClass)){
+            class="@if(elements.args.get('_inputClass)){
             @inputClass"}
-        
+
             name="@elements.field.name"
 
             id="@elements.args.get('_id)"
