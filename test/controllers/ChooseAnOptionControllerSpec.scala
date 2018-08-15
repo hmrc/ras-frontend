@@ -285,7 +285,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with MockitoSugar with I18nH
     "contain a icon file image" in {
       when(mockShortLivedCache.fetchFileSession(any())(any()))thenReturn(Future.successful(Some(fileSession)))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("icon--file img").attr("src") should include("icon-file-download.png")
+      doc(result).getElementById("attachment-1").children().first().attr("src") should include("icon-file-download.png")
     }
 
     "contain a result link with the correct file name" in {
