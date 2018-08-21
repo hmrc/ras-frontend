@@ -28,8 +28,6 @@ trait ApplicationConfig {
   val reportAProblemNonJSUrl: String
   val signOutUrl: String
   val signOutAndContinueUrl: String
-  val betaFeedbackUrl: String
-  val betaFeedbackUnauthenticatedUrl: String
   val loginCallback:String
   val fileUploadCallBack: String
   val fileDeletionUrl: String
@@ -68,8 +66,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val signOutUrl = s"$signOutBaseUrl$logoutCallback"
   override lazy val signOutAndContinueUrl = s"$signOutBaseUrl$continueCallback"
-  override lazy val betaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
-  override lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
   override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/relief-at-source/")
   override lazy val fileUploadCallBack: String = configuration.getString("file-upload-ras-callback-url")
     .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
