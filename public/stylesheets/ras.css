@@ -188,10 +188,10 @@ input:focus {
 }
 
 #dateOfBirth-day-input{
-    border-left: 0px !important;
-    padding-left: 15px !important;
-    border-left: 0px solid !important;
-    padding-left: 0px !important;
+    border-left: 0px;
+    padding-left: 15px;
+    border-left: 0px solid;
+    padding-left: 0px;
 }
 
 #dateOfBirth-day-error {
@@ -199,10 +199,10 @@ input:focus {
 }
 
 #dateOfBirth-month-input{
-    border-left: 0px !important;
-    padding-left: 15px !important;
-    border-left: 0px solid !important;
-    padding-left: 0px !important;
+    border-left: 0px;
+    padding-left: 15px;
+    border-left: 0px solid;
+    padding-left: 0px;
 }
 
 #dateOfBirth-month-error {
@@ -211,18 +211,20 @@ input:focus {
 
 
 #dateOfBirth-year-input{
-    border-left: 0px !important;
-    padding-left: 15px !important;
-    border-left: 0px solid !important;
-    padding-left: 0px !important;
+    border-left: 0px;
+    padding-left: 15px;
+    border-left: 0px solid;
+    padding-left: 0px;
 }
 
 #dateOfBirth-year-error {
     display: none;
 }
 
-input[type="tel" i] {
-        padding: 2px 0px;
 
-}
+
+
+
+
+
 

@@ -49,9 +49,8 @@
                     </div>
                 </legend>
 
-
-                <div class="form-group">
-                    <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
+                    <div class="form-group @if(memberDobForm.errors.nonEmpty) {form-group-error}">
+                        <div class="form-date">
 
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
@@ -68,9 +67,8 @@
                             '_id -> "dateOfBirth-year",
                             '_type -> "tel",
                             '_groupClass -> "form-group-year")
-
+                        </div>
                     </div>
-                </div>
             </fieldset>
             <button class="button" type="submit" id="continue"
                     data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">
