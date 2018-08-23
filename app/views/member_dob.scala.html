@@ -40,15 +40,17 @@
                     <header class="page-header">
                         <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
                     </header>
+
+                    <div class="@if(memberDobForm.errors.nonEmpty) {form-group-error}">
+                        <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                        @if(!memberDobForm.errors.isEmpty) {
+                        <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
+                        }
+                    </div>
                 </legend>
 
-                <div class="form-group">
-                    <div class="form-group form-date @if(memberDobForm.errors.nonEmpty) {form-group-error}">
-
-                        <div class="form-hint" id="dob_hint">@Messages("dob.hint")</div>
-                        @if(memberDobForm.errors.nonEmpty) {
-                        <div class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</div>
-                        }
+                    <div class="form-group @if(memberDobForm.errors.nonEmpty) {form-group-error}">
+                        <div class="form-date">
 
                             @rasInput(memberDobForm("dateOfBirth.day"),
                             '_label -> Html(Messages("day").capitalize),
@@ -65,9 +67,8 @@
                             '_id -> "dateOfBirth-year",
                             '_type -> "tel",
                             '_groupClass -> "form-group-year")
-
+                        </div>
                     </div>
-                </div>
             </fieldset>
             <button class="button" type="submit" id="continue"
                     data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">

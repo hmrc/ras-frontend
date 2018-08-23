@@ -37,9 +37,6 @@
   font-size:19px;
 }
 
-.form-control-error {
-    border: 4px solid #b10e1e;
-}
 
 input:focus {
     outline-offset: 0;
@@ -189,3 +186,45 @@ input:focus {
     font-size: 16px;
     line-height: 1.25;
 }
+
+#dateOfBirth-day-input{
+    border-left: 0px;
+    padding-left: 15px;
+    border-left: 0px solid;
+    padding-left: 0px;
+}
+
+#dateOfBirth-day-error {
+    display: none;
+}
+
+#dateOfBirth-month-input{
+    border-left: 0px;
+    padding-left: 15px;
+    border-left: 0px solid;
+    padding-left: 0px;
+}
+
+#dateOfBirth-month-error {
+    display: none;
+}
+
+
+#dateOfBirth-year-input{
+    border-left: 0px;
+    padding-left: 15px;
+    border-left: 0px solid;
+    padding-left: 0px;
+}
+
+#dateOfBirth-year-error {
+    display: none;
+}
+
+
+
+
+
+
+
+
