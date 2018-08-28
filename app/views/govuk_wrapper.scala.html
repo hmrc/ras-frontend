@@ -104,21 +104,12 @@
     )
 }
 
-@betaBanner = {
-    @uiLayouts.betaBanner(
-        userLoggedIn = false,
-        betaFeedbackUrl = applicationConfig.betaFeedbackUrl,
-        betaFeedbackUnauthenticatedUrl = applicationConfig.betaFeedbackUnauthenticatedUrl,
-        showFeedbackLinkInBetaBanner = true
-    )
-}
-
 @footerTop = {}
 @footerLinks = {}
 
 @serviceInfo = {
     @uiLayouts.serviceInfo(
-      betaBanner = betaBanner,
+      betaBanner = HtmlFormat.empty,
       includeGridWrapper = false,
       serviceInfoContent = Some(serviceInfoContent),
       includeHMRCBranding = false
