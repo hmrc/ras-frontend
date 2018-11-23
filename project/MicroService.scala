@@ -9,8 +9,8 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 trait MicroService {
 
   import uk.gov.hmrc._
-  import DefaultBuildSettings.{defaultSettings, scalaSettings, addTestReportOption}
-  import uk.gov.hmrc.{SbtBuildInfo, ShellPrompt, SbtAutoBuildPlugin}
+  import DefaultBuildSettings.{defaultSettings, addTestReportOption}
+  import uk.gov.hmrc.SbtAutoBuildPlugin
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
   import uk.gov.hmrc.versioning.SbtGitVersioning
   import uk.gov.hmrc.SbtArtifactory
@@ -39,7 +39,6 @@ trait MicroService {
     .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory) ++ plugins : _*)
     .settings(majorVersion := 0)
     .settings(playSettings : _*)
-    .settings(scalaSettings: _*)
     .settings(scoverageSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
