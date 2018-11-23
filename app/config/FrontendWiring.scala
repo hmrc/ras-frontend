@@ -20,7 +20,7 @@ import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.StreamedResponse
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
+import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.http.ws._
 
 import scala.concurrent.Future
@@ -29,14 +29,14 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
 
 object FrontendAuditConnector extends Auditing with AppName {
-  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
+  override lazy val auditingConfig = LoadAuditingConfig("auditing")
 }
 
 trait WSHttp extends WSGet with HttpGet
   with WSPut with HttpPut
   with WSPost with HttpPost
   with WSDelete with HttpDelete
-  with AppName with RunMode {
+  with AppName {
   override val hooks = NoneRequired
 
   def buildRequestWithStream(uri: String)(implicit hc: HeaderCarrier): Future[StreamedResponse] = buildRequest(uri).stream()
