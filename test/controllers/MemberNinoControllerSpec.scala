@@ -17,6 +17,7 @@
 package controllers
 
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import controllers.RasResidencyCheckerController._
 import helpers.RandomNino
 import helpers.helpers.I18nHelper
 import models._
@@ -30,7 +31,7 @@ import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers._
 import play.api.{Configuration, Environment}
 import services.{AuditService, SessionService}
 import uk.gov.hmrc.auth.core._
@@ -40,7 +41,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import scala.concurrent.Future
 
 
-class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I18nHelper with MockitoSugar{
+class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I18nHelper with MockitoSugar {
 
   val fakeRequest = FakeRequest()
   val mockAuthConnector = mock[AuthConnector]
@@ -51,10 +52,10 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
   val mockRasConnector = mock[ResidencyStatusAPIConnector]
   val mockAuditService = mock[AuditService]
 
-  val memberName: MemberName = MemberName("Jackie","Chan")
+  val memberName: MemberName = MemberName("Jackie", "Chan")
   val memberNino = MemberNino("AB123456C")
-  val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
-  val rasSession = RasSession(memberName, memberNino, memberDob, None,None)
+  val memberDob = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
+  val rasSession = RasSession(memberName, memberNino, memberDob, None, None)
   val postData = Json.obj("nino" -> RandomNino.generate)
 
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
@@ -62,10 +63,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
   private val enrolments = new Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val SCOTTISH = "scotResident"
-  val NON_SCOTTISH = "otherUKResident"
-
-  object TestMemberNinoController extends MemberNinoController{
+  object TestMemberNinoController extends MemberNinoController {
     val authConnector: AuthConnector = mockAuthConnector
     override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
     override val sessionService = mockSessionService
@@ -73,6 +71,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
     override val env: Environment = mockEnvironment
     override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockRasConnector
     override val auditService: AuditService = mockAuditService
+    override val apiVersion: ApiVersion = ApiV1_0
 
     when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.cacheNino(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
@@ -80,7 +79,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
 
   "MemberNinoController get" should {
 
-    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
     when(mockUserDetailsConnector.getUserDetails(any())(any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
@@ -96,7 +95,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
       "rendered" in {
         val result = TestMemberNinoController.get()(fakeRequest)
         doc(result).title shouldBe Messages("member.nino.page.title")
-        doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header","Jackie Chan")
+        doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", "Jackie Chan")
         doc(result).getElementById("nino_hint").text shouldBe Messages("nino.hint")
         assert(doc(result).getElementById("nino").attr("input") != null)
         doc(result).getElementById("continue").text shouldBe Messages("continue")
@@ -106,7 +105,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
         when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
         val result = TestMemberNinoController.get()(fakeRequest)
         doc(result).title shouldBe Messages("member.nino.page.title")
-        doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header",Messages("member"))
+        doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", Messages("member"))
       }
 
       "contain the correct ga data when edit mode is false" in {
@@ -163,7 +162,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "redirect to match found page when edit mode is true and matching successful" in {
-      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
+      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
       when(mockSessionService.cacheNino(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))

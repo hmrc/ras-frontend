@@ -17,23 +17,24 @@
 package controllers
 
 import connectors.ResidencyStatusAPIConnector
+import controllers.RasResidencyCheckerController._
 import metrics.Metrics
 import models._
 import play.api.Logger
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{AnyContent, Request, Result}
 import services.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.time.TaxYearResolver
 
+import scala.concurrent.Future
+
 trait RasResidencyCheckerController extends RasController {
 
-  val residencyStatusAPIConnector : ResidencyStatusAPIConnector
+  val residencyStatusAPIConnector: ResidencyStatusAPIConnector
   val auditService: AuditService
+  val apiVersion: ApiVersion
 
-  val SCOTTISH = "scotResident"
-  val NON_SCOTTISH = "otherUKResident"
-
-  def submitResidencyStatus(session: RasSession, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier) = {
+  def submitResidencyStatus(session: RasSession, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] = {
 
     val timer = Metrics.responseTimer.time()
     val memberDetails = MemberDetails(session.name, session.nino.nino, session.dateOfBirth.dateOfBirth)
@@ -87,23 +88,25 @@ trait RasResidencyCheckerController extends RasController {
     }
   }
 
-  private def extractResidencyStatus(residencyStatus: String) : String = {
-    if(residencyStatus == SCOTTISH)
-      Messages("scottish.taxpayer")
-    else if(residencyStatus == NON_SCOTTISH)
-      Messages("non.scottish.taxpayer")
-    else
-      ""
+  private[controllers] def extractResidencyStatus(residencyStatus: String): String = {
+    (residencyStatus, apiVersion) match {
+      case (SCOTTISH, _) => Messages("scottish.taxpayer")
+      case (WELSH, ApiV2_0) => Messages("welsh.taxpayer")
+      case (OTHER_UK, ApiV1_0) => Messages("non.scottish.taxpayer")
+      case (OTHER_UK, ApiV2_0) => Messages("english.or.ni.taxpayer")
+      case _ => ""
+    }
   }
 
   /**
     * Audits the response, if failure reason is None then residencyStatus is Some (sucess) and vice versa (failure).
-    * @param failureReason Optional message, present if the journey failed, else not
-    * @param nino Optional user identifier, present if the customer-matching-cache call was a success, else not
+    *
+    * @param failureReason   Optional message, present if the journey failed, else not
+    * @param nino            Optional user identifier, present if the customer-matching-cache call was a success, else not
     * @param residencyStatus Optional status object returned from the HoD, present if the journey succeeded, else not
-    * @param userId Identifies the user which made the request
-    * @param request Object containing request made by the user
-    * @param hc Headers
+    * @param userId          Identifies the user which made the request
+    * @param request         Object containing request made by the user
+    * @param hc              Headers
     */
   private def auditResponse(failureReason: Option[String], nino: Option[String],
                             residencyStatus: Option[ResidencyStatus], userId: String)
@@ -125,4 +128,10 @@ trait RasResidencyCheckerController extends RasController {
       auditData = auditDataMap ++ Map("userIdentifier" -> userId, "requestSource" -> "FE_SINGLE") ++ ninoMap
     )
   }
+}
+
+object RasResidencyCheckerController {
+  val SCOTTISH = "scotResident"
+  val WELSH = "welshResident"
+  val OTHER_UK = "otherUKResident"
 }

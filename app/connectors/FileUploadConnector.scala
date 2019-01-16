@@ -17,6 +17,7 @@
 package connectors
 
 import config.{ApplicationConfig, WSHttp}
+import models.ApiVersion
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -36,6 +37,7 @@ trait FileUploadConnector extends ServicesConfig {
   lazy val maxSize = getString("file-upload-constraints.maxSize")
   lazy val maxSizePerItem = getString("file-upload-constraints.maxSizePerItem")
   lazy val allowZeroLengthFiles = getBoolean("file-upload-constraints.allowZeroLengthFiles")
+  val apiVersion: ApiVersion
 
   def createEnvelope(userId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
@@ -43,7 +45,7 @@ trait FileUploadConnector extends ServicesConfig {
     val requestBody = Json.parse(
       s"""
         {
-          "callbackUrl": "$rasApiBaseUrl$rasFileUploadCallbackUrl/${userId}",
+          "callbackUrl": "$rasApiBaseUrl$rasFileUploadCallbackUrl/${userId}?version=$apiVersion",
           "constraints": 	{
               "maxItems": 1,
               "maxSize": "$maxSize",
@@ -64,4 +66,5 @@ trait FileUploadConnector extends ServicesConfig {
 object FileUploadConnector extends FileUploadConnector {
   override val http = WSHttp
   override lazy val rasFileUploadCallbackUrl: String = ApplicationConfig.fileUploadCallBack
+  override lazy val apiVersion: ApiVersion = ApplicationConfig.rasApiVersion
 }
