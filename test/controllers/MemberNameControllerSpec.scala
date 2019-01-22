@@ -17,6 +17,7 @@
 package controllers
 
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import controllers.RasResidencyCheckerController._
 import helpers.helpers.I18nHelper
 import models._
 import org.jsoup.Jsoup
@@ -29,11 +30,10 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, contentType, _}
+import play.api.test.Helpers._
 import play.api.{Configuration, Environment}
 import services.{AuditService, SessionService}
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
@@ -56,16 +56,14 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   private val enrolments = new Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
-  val memberName = MemberName("Jackie","Chan")
+  val memberName = MemberName("Jackie", "Chan")
   val memberNino = MemberNino("AB123456C")
-  val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
+  val memberDob = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
   val rasSession = RasSession(memberName, memberNino, memberDob, None, None)
   val postData = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
 
-  val SCOTTISH = "scotResident"
-  val NON_SCOTTISH = "otherUKResident"
 
-  object TestMemberNameController extends MemberNameController{
+  object TestMemberNameController extends MemberNameController {
     val authConnector: AuthConnector = mockAuthConnector
     override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
     override val sessionService = mockSessionService
@@ -73,6 +71,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     override val env: Environment = mockEnvironment
     override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockRasConnector
     override val auditService: AuditService = mockAuditService
+    override val apiVersion: ApiVersion = ApiV1_0
 
     when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
@@ -84,7 +83,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
 
   "MemberNameController" should {
 
-    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
     when(mockUserDetailsConnector.getUserDetails(any())(any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
@@ -175,7 +174,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "redirect to nino page when name cached and edit mode is false" in {
-      val session = RasSession(memberName, MemberNino(""), MemberDateOfBirth(RasDate(None,None,None)), None,None)
+      val session = RasSession(memberName, MemberNino(""), MemberDateOfBirth(RasDate(None, None, None)), None, None)
       when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(session)))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
@@ -183,7 +182,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "redirect to match found page when edit mode is true and matching successful" in {
-      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(NON_SCOTTISH))))
+      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
       when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))

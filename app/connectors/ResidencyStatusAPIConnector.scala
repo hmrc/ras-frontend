@@ -25,19 +25,17 @@ import config.{ApplicationConfig, WSHttp}
 import models.{MemberDetails, ResidencyStatus}
 import play.api.Logger
 import play.api.libs.json.{JsSuccess, JsValue}
-import uk.gov.hmrc.play.config.ServicesConfig
-
-import scala.concurrent.Future
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Success, Try}
 
 trait ResidencyStatusAPIConnector extends ServicesConfig {
 
-  val http: HttpPost
-  val wsHttp: WSHttp
+  val http: WSHttp
 
   lazy val serviceUrl = baseUrl("relief-at-source")
   lazy val residencyStatusUrl = ApplicationConfig.rasApiResidencyStatusEndpoint
@@ -60,7 +58,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     implicit val materializer = ActorMaterializer()
 
     Logger.info(s"Get results file with URI for $fileName by userId ($userId)")
-    wsHttp.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/$fileName").map { res =>
+    http.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/$fileName").map { res =>
       Some(res.body.runWith(StreamConverters.asInputStream()))
     }
 
@@ -68,7 +66,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
 
   def deleteFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
-    wsHttp.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl/$fileName/$userId")(implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails)
+    http.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl/$fileName/$userId")(implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails)
   }
 
   private val responseHandler = new HttpReads[ResidencyStatus] {
@@ -91,6 +89,5 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
 }
 
 object ResidencyStatusAPIConnector extends ResidencyStatusAPIConnector {
-  override val http: HttpPost = WSHttp
-  override val wsHttp: WSHttp = WSHttp
+  override val http: WSHttp = WSHttp
 }

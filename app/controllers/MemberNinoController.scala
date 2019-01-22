@@ -16,9 +16,10 @@
 
 package controllers
 
-import config.{FrontendAuthConnector, RasContext, RasContextImpl}
+import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import forms.MemberNinoForm.form
+import models.ApiVersion
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
 import services.AuditService
@@ -33,6 +34,7 @@ object MemberNinoController extends MemberNinoController {
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
   override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
   override val auditService: AuditService = AuditService
+  override lazy val apiVersion: ApiVersion = ApplicationConfig.rasApiVersion
 }
 
 trait MemberNinoController extends RasResidencyCheckerController with PageFlowController {

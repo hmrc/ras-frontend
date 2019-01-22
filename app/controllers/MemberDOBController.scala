@@ -16,13 +16,14 @@
 
 package controllers
 
-import config.{FrontendAuthConnector, RasContext, RasContextImpl}
+import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import play.api.mvc.Action
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import forms.MemberDateOfBirthForm.form
 import metrics.Metrics
+import models.ApiVersion
 import services.AuditService
 import play.api.data.Form
 
@@ -36,6 +37,7 @@ object MemberDOBController extends MemberDOBController {
   val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
   override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
   override val auditService: AuditService = AuditService
+  override lazy val apiVersion: ApiVersion = ApplicationConfig.rasApiVersion
   // $COVERAGE-ON$
 }
 

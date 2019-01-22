@@ -16,10 +16,9 @@
 
 package config
 
+import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import play.api.Play.{configuration, current}
 import uk.gov.hmrc.play.config.ServicesConfig
-
-import scala.util.Try
 
 trait ApplicationConfig {
   val analyticsToken: String
@@ -34,7 +33,7 @@ trait ApplicationConfig {
   val hoursToWaitForReUpload :Int
   val rasApiResidencyStatusEndpoint: String
   val reportAProblemUrl: String
-  val rasApiVersion: String
+  val rasApiVersion: ApiVersion
   val timeOutSeconds: Int
   val timeOutCountDownSeconds: Int
   val refreshInterval: Int
@@ -75,7 +74,11 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val urBannerEnabled: Boolean = configuration.getBoolean("ur-banner.enabled").getOrElse(false)
   override lazy val urBannerLinkUrl: String = configuration.getString("ur-banner.link-url").getOrElse("")
 
-  override lazy val rasApiVersion: String = getString("ras-api-version")
+  override lazy val rasApiVersion: ApiVersion = getString("ras-api-version") match {
+    case "1.0" => ApiV1_0
+    case "2.0" => ApiV2_0
+    case _ => throw new Exception(s"Invalid value for configuration key: ras-api-version")
+  }
 
   override lazy val timeOutSeconds : Int = configuration.getString("sessionTimeout.timeoutSeconds").getOrElse("780").toInt
   override lazy val timeOutCountDownSeconds: Int = configuration.getString("sessionTimeout.time-out-countdown-seconds").getOrElse("120").toInt

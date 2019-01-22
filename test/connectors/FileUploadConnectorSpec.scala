@@ -16,6 +16,8 @@
 
 package connectors
 
+import models.{ApiV1_0, ApiV2_0, ApiVersion}
+import org.mockito.ArgumentMatcher
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -31,20 +33,39 @@ class FileUploadConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoS
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  object TestConnector extends FileUploadConnector {
-    override val http: HttpPost = mock[HttpPost]
+  val mockHttp = mock[HttpPost]
+
+  def testConnector(version: ApiVersion) = new FileUploadConnector {
+    override val http: HttpPost = mockHttp
     override val rasFileUploadCallbackUrl: String = "fake-url"
+    override val apiVersion: ApiVersion = version
+  }
+
+  def bodyMatcher(version: ApiVersion) = new ArgumentMatcher[JsValue] {
+    override def matches(other: scala.Any): Boolean = {
+      val residencyStatusVersion = version match {
+        case ApiV1_0 => "1.0"
+        case ApiV2_0 => "2.0"
+      }
+      other match {
+        case body: JsValue => (body \ "callbackUrl").validate[String].get.matches(s"^.*/?version=$residencyStatusVersion$$")
+        case _ => false
+      }
+    }
   }
 
   "File upload connector" when {
+    Seq(ApiV1_0, ApiV2_0) foreach { testApiVersion =>
 
-    "calling file upload service create envelope endpoint" should {
-
-      "return service response to caller" in {
-        val response = HttpResponse(201, None, Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653")), None)
-        when(TestConnector.http.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(response))
-        val result = await(TestConnector.createEnvelope(""))
-        result shouldBe response
+      s"api version is $testApiVersion" when {
+        "calling file upload service create envelope endpoint" should {
+          "return service response to caller" in {
+            val response = HttpResponse(201, None, Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653")), None)
+            when(mockHttp.POST[JsValue, HttpResponse](any(), argThat(bodyMatcher(testApiVersion)), any())(any(), any(), any(), any())).thenReturn(Future.successful(response))
+            val result = await(testConnector(testApiVersion).createEnvelope(""))
+            result shouldBe response
+          }
+        }
       }
 
     }
