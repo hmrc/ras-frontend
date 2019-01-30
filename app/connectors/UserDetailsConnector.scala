@@ -18,6 +18,8 @@ package connectors
 
 import config.WSHttp
 import models._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.Future
@@ -27,6 +29,9 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 trait UserDetailsConnector extends ServicesConfig with UserDetailsJsonFormats {
 
   val httpGet: HttpGet = WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   def getUserDetails(url: String)(implicit hc: HeaderCarrier): Future[UserDetails] = {
     httpGet.GET[UserDetails](url)(implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails(hc))

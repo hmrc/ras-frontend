@@ -17,7 +17,8 @@
 package connectors
 
 import config.{ApplicationConfig, WSHttp}
-import play.api.Logger
+import play.api.Mode.Mode
+import play.api.{Configuration, Logger, Play}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.Future
@@ -28,6 +29,9 @@ trait ContactFrontendConnector extends ServicesConfig {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val http: HttpGet = WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   def getHelpPartial(implicit hc: HeaderCarrier): Future[String] = {
 
@@ -44,4 +48,4 @@ trait ContactFrontendConnector extends ServicesConfig {
 
 }
 
-object ContactFrontendConnector extends ContactFrontendConnector {}
+object ContactFrontendConnector extends ContactFrontendConnector

@@ -22,7 +22,7 @@ import play.Logger
 import play.api.{Configuration, Environment, Play}
 import play.api.mvc.Action
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.time.TaxYearResolver
+import services.TaxYearResolver
 
 
 object ResultsController extends ResultsController {

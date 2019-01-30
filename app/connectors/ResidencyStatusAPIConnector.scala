@@ -23,7 +23,8 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.StreamConverters
 import config.{ApplicationConfig, WSHttp}
 import models.{MemberDetails, ResidencyStatus}
-import play.api.Logger
+import play.api.Mode.Mode
+import play.api.{Configuration, Logger, Play}
 import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -36,6 +37,9 @@ import scala.util.{Success, Try}
 trait ResidencyStatusAPIConnector extends ServicesConfig {
 
   val http: WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   lazy val serviceUrl = baseUrl("relief-at-source")
   lazy val residencyStatusUrl = ApplicationConfig.rasApiResidencyStatusEndpoint

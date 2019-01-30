@@ -22,6 +22,8 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -71,4 +73,6 @@ class FileUploadConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoS
     }
   }
 
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

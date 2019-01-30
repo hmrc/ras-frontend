@@ -16,6 +16,10 @@
 
 package config
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.StreamedResponse
 import uk.gov.hmrc.auth.core.PlayAuthConnector
@@ -30,6 +34,8 @@ import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
 
 object FrontendAuditConnector extends Auditing with AppName {
   override lazy val auditingConfig = LoadAuditingConfig("auditing")
+
+  override protected def appNameConfiguration: Configuration = Play.current.configuration
 }
 
 trait WSHttp extends WSGet with HttpGet
@@ -37,7 +43,12 @@ trait WSHttp extends WSGet with HttpGet
   with WSPost with HttpPost
   with WSDelete with HttpDelete
   with AppName {
+
   override val hooks = NoneRequired
+
+  override protected def actorSystem: ActorSystem = akka.actor.ActorSystem()
+  override protected def configuration: Option[Config] = Some(Play.current.configuration.underlying)
+  override protected def appNameConfiguration: Configuration = Play.current.configuration
 
   def buildRequestWithStream(uri: String)(implicit hc: HeaderCarrier): Future[StreamedResponse] = buildRequest(uri).stream()
 
@@ -51,4 +62,7 @@ object WSHttp extends WSHttp
 object FrontendAuthConnector extends PlayAuthConnector with ServicesConfig with WSHttp {
   val serviceUrl = baseUrl("auth")
   lazy val http = WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

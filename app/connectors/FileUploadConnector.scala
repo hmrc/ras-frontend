@@ -18,6 +18,8 @@ package connectors
 
 import config.{ApplicationConfig, WSHttp}
 import models.ApiVersion
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -26,6 +28,9 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import scala.concurrent.Future
 
 trait FileUploadConnector extends ServicesConfig {
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   val http: HttpPost
   lazy val rasApiBaseUrl = baseUrl("relief-at-source")

@@ -37,7 +37,7 @@ import play.api.test.Helpers.{contentAsString, _}
 import services.SessionService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import uk.gov.hmrc.time.TaxYearResolver
+import services.TaxYearResolver
 
 import scala.concurrent.Future
 

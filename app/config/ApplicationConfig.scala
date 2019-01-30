@@ -17,6 +17,8 @@
 package config
 
 import models.{ApiV1_0, ApiV2_0, ApiVersion}
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.Play.{configuration, current}
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -84,4 +86,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val timeOutCountDownSeconds: Int = configuration.getString("sessionTimeout.time-out-countdown-seconds").getOrElse("120").toInt
   override lazy val refreshInterval: Int = timeOutSeconds + 10
   override lazy val enableRefresh: Boolean= configuration.getBoolean("sessionTimeout.enableRefresh").getOrElse(true)
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
