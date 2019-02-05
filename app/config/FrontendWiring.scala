@@ -46,7 +46,7 @@ trait WSHttp extends WSGet with HttpGet
 
   override val hooks = NoneRequired
 
-  override protected def actorSystem: ActorSystem = akka.actor.ActorSystem()
+  override protected def actorSystem: ActorSystem = Play.current.actorSystem
   override protected def configuration: Option[Config] = Some(Play.current.configuration.underlying)
   override protected def appNameConfiguration: Configuration = Play.current.configuration
 
