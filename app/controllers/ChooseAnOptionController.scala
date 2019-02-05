@@ -29,7 +29,7 @@ import helpers.helpers.I18nHelper
 import models.{FileSession, FileUploadStatus}
 import services.ShortLivedCache
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.time.TaxYearResolver
+import services.TaxYearResolver
 import models.FileUploadStatus._
 
 import scala.concurrent.Future

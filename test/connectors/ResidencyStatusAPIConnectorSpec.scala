@@ -29,6 +29,8 @@ import org.mockito.Matchers.{eq => Meq, _}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.ws.{DefaultWSResponseHeaders, StreamedResponse}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -157,4 +159,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite 
       await(result).status shouldBe 500
     }
   }
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

@@ -38,7 +38,7 @@ import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import uk.gov.hmrc.time.TaxYearResolver
+import services.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.reflect.internal.util.NoFile

@@ -22,7 +22,8 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.Application
+import play.api.Mode.Mode
+import play.api.{Application, Configuration, Play}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -71,4 +72,7 @@ class ContactFrontendConnectorSpec extends PlaySpec with OneAppPerSuite with Moc
       result mustBe ""
     }
   }
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

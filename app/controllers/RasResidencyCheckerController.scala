@@ -24,7 +24,7 @@ import play.api.Logger
 import play.api.mvc.{AnyContent, Request, Result}
 import services.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
-import uk.gov.hmrc.time.TaxYearResolver
+import services.TaxYearResolver
 
 import scala.concurrent.Future
 
