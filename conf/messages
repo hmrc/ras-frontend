@@ -126,9 +126,9 @@ year = year
 dob.hint = For example, 21 2 1983
 nino.hint = For example, 'QQ 12 34 56 C'
 back = Back
-tried = Tried already and can’t find them?
+tried = Tried already and cannot find them?
 tried.confirm.details = Confirm with your scheme member the details you hold are correct
-tried.guidance = If you have already done this and still can’t find them, your scheme member will need to contact HMRC themselves to
+tried.guidance = If you have already done this and still cannot find them, your scheme member will need to contact HMRC themselves to
 confirm.nino.link = confirm their National Insurance number
 scottish.taxpayer = Scotland
 non.scottish.taxpayer = England, Northern Ireland or Wales
@@ -156,7 +156,7 @@ get.help.uploading.link = Get help formatting your file
 upload = Upload
 file.upload.empty.file.reason=Envelope does not allow zero length files, and submitted file has length 0
 no.results.available.link = upload a file
-file.not.available.link = upload a new file or download one that’s waiting
+file.not.available.link = upload a new file or download one that is waiting
 nav.title = Look up residency status for relief at source
 signout = Sign out
 cy.message = You should also use this service from January to get the residency status for these members for the {0} to {1} tax year.
@@ -175,7 +175,7 @@ unauthorised.list.last = register as an administrator or practitioner
 
 ##feedback
 
-label.youre_signed_out=You’re signed out
+label.youre_signed_out=You are signed out
 label.explore_gov_uk=Explore GOV.UK
 label.satisfaction_survey=Satisfaction survey
 label.feedback.use = We use your feedback to make our services better.
