@@ -124,7 +124,7 @@ day = day
 month = month
 year = year
 dob.hint = For example, 21 2 1983
-nino.hint = For example, 'QQ 12 34 56 C'
+nino.hint = For example, QQ 12 34 56 C
 back = Back
 tried = Tried already and cannot find them?
 tried.confirm.details = Confirm with your scheme member the details you hold are correct
@@ -225,10 +225,10 @@ today = today
 yesterday = yesterday
 formatted.upload.timestamp = {0} at {1}
 filestatus.NoFileSession =
-filestatus.Ready = 'File ready - '
-filestatus.InProgress = 'File processing - '
-filestatus.UploadError = 'File problem - '
-filestatus.TimeExpiryError = 'File problem - '
+filestatus.Ready = File ready - 
+filestatus.InProgress = File processing - 
+filestatus.UploadError = File problem - 
+filestatus.TimeExpiryError = File problem - 
 
 
 
