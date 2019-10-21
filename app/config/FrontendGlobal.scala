@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.frontend.filters.{ FrontendAuditFilter, FrontendLoggingF
 object FrontendGlobal extends DefaultFrontendGlobal {
 
   override val auditConnector = FrontendAuditConnector
+  implicit val context: RasContext = RasContextImpl
   override val loggingFilter = LoggingFilter
   override val frontendAuditFilter = AuditFilter
 
@@ -42,6 +43,10 @@ object FrontendGlobal extends DefaultFrontendGlobal {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html =
     views.html.error(pageTitle, heading, message)
+
+  override def notFoundTemplate(implicit rh: Request[_]): Html = {
+    views.html.global_page_not_found()
+  }
 
   override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig("microservice.metrics")
 }
