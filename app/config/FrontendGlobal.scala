@@ -45,7 +45,7 @@ object FrontendGlobal extends DefaultFrontendGlobal {
     views.html.error(pageTitle, heading, message)
 
   override def notFoundTemplate(implicit rh: Request[_]): Html = {
-    views.html.global_page_not_found()
+    views.html.test_page_not_found()
   }
 
   override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig("microservice.metrics")

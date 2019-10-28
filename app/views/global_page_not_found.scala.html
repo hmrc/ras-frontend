@@ -27,6 +27,8 @@
     applicationConfig: config.ApplicationConfig = config.ApplicationConfig,
     signOutEnabled: Boolean = true,
     supportLinkEnabled: Boolean = true,
+    scriptElem: Option[Html] = None,
+    hasTimeOut:Boolean = true,
     getHelpForm: Html  = HtmlFormat.empty
 )(implicit messages: Messages, request: Request[_], context: RasContext)
 
@@ -44,7 +46,6 @@
         headScripts = None
     )
     <meta name="format-detection" content="telephone=no"/>
-    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/toggle-view.js")'></script>
 }
 
 @contentHeader = {
@@ -92,9 +93,39 @@
     )
 }
 
+@scriptElement = {
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/ras.js")'></script>
+    @scriptElem
+    <script>
+        @if(hasTimeOut && ApplicationConfig.enableRefresh) {
+        $.timeoutDialog({
+                timeout: @ApplicationConfig.timeOutSeconds,
+                countdown: @ApplicationConfig.timeOutCountDownSeconds,
+                keep_alive_url: '@controllers.routes.SessionController.keepAlive',
+                title: "@Messages("ras.timeoutDialog.title")",
+                messageSeconds: "@Messages("ras.timeoutDialog.seconds")",
+                messageMinutes: "@Messages("ras.timeoutDialog.minutes")",
+                messageMinute: "@Messages("ras.timeoutDialog.minute")",
+                logout_url: "@ApplicationConfig.signOutUrl",
+                message: "@Messages("ras.timeoutDialog.p1")",
+                keep_alive_button_text: "@Messages("ras.timeoutDialog.button")",
+      });
+    }
+    </script>
+
+}
+
 @footerTop = {}
 @footerLinks = {}
 @afterHeader = {}
-@bodyEnd = {}
+@bodyEnd = {
+    @uiLayouts.footer(
+        analyticsToken = Some(applicationConfig.analyticsToken),
+        analyticsHost = applicationConfig.analyticsHost,
+        ssoUrl = None,
+        scriptElem = scriptElem,
+        gaCalls = None
+    )
+}
 
 @hmrcGovUkTemplate(Some(messages("error.page_not_found.tabtitle")), None)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)

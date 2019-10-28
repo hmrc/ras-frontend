@@ -1,0 +1,58 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.Play.current
+@import uk.gov.hmrc.play.config.RunMode._
+@import config.RasContext
+
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+@import play.api.i18n.Messages
+@import config.ApplicationConfig
+
+@(
+    applicationConfig: config.ApplicationConfig = config.ApplicationConfig,
+    signOutEnabled: Boolean = true,
+    supportLinkEnabled: Boolean = true,
+    scriptElem: Option[Html] = None,
+    hasTimeOut:Boolean = true,
+    getHelpForm: Html  = HtmlFormat.empty
+)(implicit messages: Messages, request: Request[_], context: RasContext)
+
+@anchor(serviceName: String, email: String) = {
+    <a href="mailto:@email">@serviceName</a>
+}
+
+@ras_main(title = Messages("error.page_not_found.tabtitle")) {
+    <div class="grid-row">
+        <div class="column-two-thirds">
+    
+            <div class="row">
+                <h1 id="header" class="heading-xlarge">@Messages("error.page_not_found.heading")</h1>
+            </div>
+
+            <div class="row">
+                <p>@messages("error.page.not.found.error.check.web.address.correct")</p>
+                <p>@messages("error.page.not.found.error.check.web.address.full")</p>
+                <p>@messages("error.page.not.found.error.contact")
+                    @anchor(Messages("error.page.not.found.error.ras.email"), Messages("error.page.not.found.error.ras.email"))
+                    @messages("error.page.not.found.error.contact.end")
+                </p>
+            </div>
+        </div>
+    </div>
+}
+    
