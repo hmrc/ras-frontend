@@ -26,9 +26,13 @@
 @(
     applicationConfig: config.ApplicationConfig = config.ApplicationConfig,
     signOutEnabled: Boolean = true,
-    getHelpForm: Html  = HtmlFormat.empty,
-    supportLinkEnabled: Boolean = true
+    supportLinkEnabled: Boolean = true,
+    getHelpForm: Html  = HtmlFormat.empty
 )(implicit messages: Messages, request: Request[_], context: RasContext)
+
+@getHelpForm = {
+    @includes.report_problem(supportLinkEnabled)
+}
 
 @anchor(serviceName: String, email: String) = {
     <a href="mailto:@email">@serviceName</a>
@@ -36,9 +40,11 @@
 
 @head = {
     @uiLayouts.head(
-    linkElem = None,
-    headScripts = None)
+        linkElem = None,
+        headScripts = None
+    )
     <meta name="format-detection" content="telephone=no"/>
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/toggle-view.js")'></script>
 }
 
 @contentHeader = {
