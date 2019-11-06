@@ -22,53 +22,48 @@
 
 @ras_main(title = Messages("file.upload.page.title"),scriptElem = Some(scriptElem)) {
 
-<div class="grid-row">
-    <div class="column-two-thirds">
-        
-        <div class="back-arrow">
-            <a class="link-back" href="@routes.FileUploadController.back" data-journey-click="navigation - link:Upload a file:Back">@Messages("back")</a>
-        </div>
-        <div id="errors" class="validation-summary error-summary" role="group" tabindex="-1" @if(error==""){ style="display:none;" }>
-            <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h2>
+    <a class="link-back" href="@routes.FileUploadController.back" data-journey-click="navigation - link:Upload a file:Back">@Messages("back")</a>
 
-            <ul class="error-summary-list">
-                <li><a id="error" href="#choose-file" data-focuses="choose-file">@if(error==""){@Messages("error.select.csv")}else{@error}</a></li>
-            </ul>
-        </div>
+    <div id="errors" class="validation-summary error-summary" role="group" tabindex="-1" @if(error==""){ style="display:none;" }>
+        <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@Messages("generic.errors_heading")</h2>
 
-        <input type="hidden" id="temp-error"/>
-
-        <header class="page-header">
-            <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
-        </header>
-
-        <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
-
-        <!-- div is closed early due to styling restrictions -->
-        @if(error==""){
-        <div id="file-upload" class="form-group">
-            }else{
-            <div id="file-upload-with-error" class="form-group form-field--error">
-                }
-                <form
-                        id="upload-form"
-                        action="@fileUploadUrl"
-                        enctype="multipart/form-data"
-                        method="post"
-                        onsubmit="return checkFileType(this)">
-
-                    <label for="choose-file" id="upload-label">
-                        <span class="form-label visually-hidden">Upload a file</span>
-                        <span id="upload-error" class="common-error">@error</span>
-                    </label>
-
-                    <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>
-            </div>
-                    <p class="ras-bottom-margin"><a href="http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members" target="_blank" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@Messages("get.help.uploading.link")</a></p>
-                    <button class="button" type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@Messages("continue")</button>
-                </form>
-        </div>
+        <ul class="error-summary-list">
+            <li><a id="error" href="#choose-file" data-focuses="choose-file">@if(error==""){@Messages("error.select.csv")}else{@error}</a></li>
+        </ul>
     </div>
+
+    <input type="hidden" id="temp-error"/>
+
+    <header class="page-header">
+        <h1 id="header" class="heading-xlarge">@Messages("file.upload.page.header")</h1>
+    </header>
+
+    <p id="sub-header">@Html(Messages("file.upload.page.sub-header"))</p>
+
+    <!-- div is closed early due to styling restrictions -->
+    @if(error==""){
+    <div id="file-upload" class="form-group">
+        }else{
+        <div id="file-upload-with-error" class="form-group form-field--error">
+            }
+            <form
+                    id="upload-form"
+                    action="@fileUploadUrl"
+                    enctype="multipart/form-data"
+                    method="post"
+                    onsubmit="return checkFileType(this)">
+
+                <label for="choose-file" id="upload-label">
+                    <span class="form-label visually-hidden">Upload a file</span>
+                    <span id="upload-error" class="common-error">@error</span>
+                </label>
+
+                <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>
+        </div>
+                <p class="ras-bottom-margin"><a href="http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members" target="_blank" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@Messages("get.help.uploading.link")</a></p>
+                <button class="button" type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@Messages("continue")</button>
+            </form>
+
 
 
     }

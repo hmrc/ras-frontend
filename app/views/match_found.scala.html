@@ -24,40 +24,36 @@
 
 @ras_main(title = Messages("match.found.page.title"), showUrBanner = true) {
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <div class="govuk-box-highlight">
-                <h1 class="heading-large">@Messages("match.found.header",name)</h1>
-                    <p role="text" class="lede">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
-                        <span class="bold body-text" id="cy-residency-status">@Messages(currentYearResidencyStatus)</span></p>
-                    @if(nextYearResidencyStatus.nonEmpty) {
-                    <p role="text" class="lede">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-                        <span class="bold body-text" id="ny-residency-status">@Messages(nextYearResidencyStatus.get)</span></p>
-                    }
-            </div>
-
-            <h2 class="heading-medium" id="sub-header">@Messages("match.found.what.happens.next")</h2>
-
-            <p id="top-content">@Messages("match.found.top")</p>
-
-
-            @if(!nextYearResidencyStatus.nonEmpty) {
-                <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+    <div class="govuk-box-highlight">
+        <h1 class="heading-large">@Messages("match.found.header",name)</h1>
+            <p role="text" class="lede">@Messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
+                <span class="bold body-text" id="cy-residency-status">@Messages(currentYearResidencyStatus)</span></p>
+            @if(nextYearResidencyStatus.nonEmpty) {
+            <p role="text" class="lede">@Messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+                <span class="bold body-text" id="ny-residency-status">@Messages(nextYearResidencyStatus.get)</span></p>
             }
+    </div>
 
-            <div class="grid-row">
-                <div class ="column-two-thirds ras-top-margin-small">
-                    <div class="ras-bottom-margin">
-                        <a id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name",true)' data-journey-click="link - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Look up another member">@Messages("look.up.another.member")</a>
-                    </div>
+    <h2 class="heading-medium" id="sub-header">@Messages("match.found.what.happens.next")</h2>
 
-                    <a id="choose-something-else"
-                       class="button"
-                       href='@routes.SessionController.redirect("choose-an-option",true)'
-                       data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
-                    >@Messages("choose.something.else")</a>
-                </div>
+    <p id="top-content">@Messages("match.found.top")</p>
+
+
+    @if(!nextYearResidencyStatus.nonEmpty) {
+        <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+    }
+
+    <div class="grid-row">
+        <div class ="column-two-thirds ras-top-margin-small">
+            <div class="ras-bottom-margin">
+                <a id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name",true)' data-journey-click="link - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Look up another member">@Messages("look.up.another.member")</a>
             </div>
+
+            <a id="choose-something-else"
+               class="button"
+               href='@routes.SessionController.redirect("choose-an-option",true)'
+               data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
+            >@Messages("choose.something.else")</a>
         </div>
     </div>
 }

@@ -21,36 +21,29 @@
 
 @ras_main(title = Messages("member.nino.page.title")) {
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
+    <a class="link-back" href="@routes.MemberNinoController.back(edit)"
+           data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
 
-            <div class="back-arrow">
-                <a class="link-back" href="@routes.MemberNinoController.back(edit)"
-                   data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
-            </div>
+    @views.html.helpers.errorSummary(memberNinoForm, "What is their NINO?")
 
-            @views.html.helpers.errorSummary(memberNinoForm, "What is their NINO?")
+    <header class="page-header">
+        <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
+    </header>
 
-            <header class="page-header">
-                <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
-            </header>
+    @form(action = routes.MemberNinoController.post(edit)) {
 
-            @form(action = routes.MemberNinoController.post(edit)) {
+        <div class="form-group">
 
-                <div class="form-group">
-
-                    @rasInput(memberNinoForm("nino"),
-                    '_id -> "nino",
-                    '_hintText -> Messages("nino.hint"))
-
-                </div>
-
-            <button class="button" type="submit" id="continue"
-                    data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">
-                @Messages("continue")
-            </button>
-            }
+            @rasInput(memberNinoForm("nino"),
+            '_id -> "nino",
+            '_hintText -> Messages("nino.hint"))
 
         </div>
-    </div>
+
+    <button class="button" type="submit" id="continue"
+            data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">
+        @Messages("continue")
+    </button>
+    }
+
 }
