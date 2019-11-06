@@ -42,10 +42,10 @@
 
     <!-- div is closed early due to styling restrictions -->
     @if(error==""){
-    <div id="file-upload" class="form-group">
-        }else{
+        <div id="file-upload" class="form-group">
+    }else{
         <div id="file-upload-with-error" class="form-group form-field--error">
-            }
+    }
             <form
                     id="upload-form"
                     action="@fileUploadUrl"
@@ -59,11 +59,10 @@
                 </label>
 
                 <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>
-        </div>
                 <p class="ras-bottom-margin"><a href="http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members" target="_blank" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@Messages("get.help.uploading.link")</a></p>
                 <button class="button" type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@Messages("continue")</button>
             </form>
-
+        </div>
 
 
     }
