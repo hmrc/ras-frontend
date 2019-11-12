@@ -22,63 +22,59 @@
 
 @views.html.ras_main(title = "Relief at Source Feedback Questionnaire - Look up residency status for relief at source - GOV.UK", bodyClasses = None, contentHeader = None, signOutEnabled = false, hasTimeOut = false){
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
 
-            <h1 class="heading-xlarge" id="heading">@Messages("label.youre_signed_out")</h1>
+    <h1 class="heading-xlarge" id="heading">@Messages("label.youre_signed_out")</h1>
 
-            <h2 class="heading-medium" id="satisfaction-survey-heading">@Messages("label.satisfaction_survey")</h2>
+    <h2 class="heading-medium" id="satisfaction-survey-heading">@Messages("label.satisfaction_survey")</h2>
 
-            <p class="ras-bottom-margin-big">@Messages("label.feedback.use")</p>
+    <p class="ras-bottom-margin-big">@Messages("label.feedback.use")</p>
 
-            @helpers.form(action = controllers.routes.QuestionnaireController.submitQuestionnaire, 'class -> "satisfactionSurveyForm") {
+    @helpers.form(action = controllers.routes.QuestionnaireController.submitQuestionnaire, 'class -> "satisfactionSurveyForm") {
 
-                <div class="form-group">
-                    <div class="ras-bottom-margin-big">
-                    @radioGroup(
-                        questionnaireForm("easyToUse"),
-                        Seq(
-                            "4" -> "4" -> Messages("label.very_easy"),
-                            "3" -> "3" -> Messages("label.easy"),
-                            "2" -> "2" -> Messages("label.neither_easy_or_difficult"),
-                            "1" -> "1" -> Messages("label.difficult"),
-                            "0" -> "0" -> Messages("label.very_difficult")
-                        ),
-                        '_legend -> Messages("label.how_easy_was_the_service_to_use"),
-                        '_fieldsetAttributes -> "id=easyToUseFieldset"
-                    )
-                    </div>
+        <div class="form-group">
+            <div class="ras-bottom-margin-big">
+            @radioGroup(
+                questionnaireForm("easyToUse"),
+                Seq(
+                    "4" -> "4" -> Messages("label.very_easy"),
+                    "3" -> "3" -> Messages("label.easy"),
+                    "2" -> "2" -> Messages("label.neither_easy_or_difficult"),
+                    "1" -> "1" -> Messages("label.difficult"),
+                    "0" -> "0" -> Messages("label.very_difficult")
+                ),
+                '_legend -> Messages("label.how_easy_was_the_service_to_use"),
+                '_fieldsetAttributes -> "id=easyToUseFieldset"
+            )
+            </div>
 
-                    <div class="ras-bottom-margin-big">
-                    @radioGroup(
-                        questionnaireForm("satisfactionLevel"),
-                        Seq(
-                            "4" -> "4" -> Messages("label.very_satisfied"),
-                            "3" -> "3" -> Messages("label.satisfied"),
-                            "2" -> "2" -> Messages("label.neither_satisfied_or_dissatisfied"),
-                            "1" -> "1" -> Messages("label.dissatisfied"),
-                            "0" -> "0" -> Messages("label.very_dissatisfied")
-                        ),
-                        '_legend -> Messages("label.how_satisfied_were_you_with_the_service"),
-                        '_fieldsetAttributes -> "id=satisfactionLevelFieldset"
-                    )
-                    </div>
+            <div class="ras-bottom-margin-big">
+            @radioGroup(
+                questionnaireForm("satisfactionLevel"),
+                Seq(
+                    "4" -> "4" -> Messages("label.very_satisfied"),
+                    "3" -> "3" -> Messages("label.satisfied"),
+                    "2" -> "2" -> Messages("label.neither_satisfied_or_dissatisfied"),
+                    "1" -> "1" -> Messages("label.dissatisfied"),
+                    "0" -> "0" -> Messages("label.very_dissatisfied")
+                ),
+                '_legend -> Messages("label.how_satisfied_were_you_with_the_service"),
+                '_fieldsetAttributes -> "id=satisfactionLevelFieldset"
+            )
+            </div>
 
-                    <label class="form-label" for="whyGiveThisRating">
-                        <h3 class="heading-large">@Messages("label.why_did_you_give_this_rating")</h3>
-                    </label>
+            <label class="form-label" for="whyGiveThisRating">
+                <h3 class="heading-large">@Messages("label.why_did_you_give_this_rating")</h3>
+            </label>
 
-                    <span class="form-hint">
-                        @Messages("label.please_dont_include_any_personal_or_financial_information")
-                    </span>
+            <span class="form-hint">
+                @Messages("label.please_dont_include_any_personal_or_financial_information")
+            </span>
 
-                    <textarea class="form-control form-control-3-4 ras-bottom-margin" name="whyGiveThisRating" id="whyGiveThisRating" rows="9"></textarea>
+            <textarea class="form-control form-control-3-4 ras-bottom-margin" name="whyGiveThisRating" id="whyGiveThisRating" rows="9"></textarea>
 
-                    <button id="submit" type="submit" class="button">@Messages("label.send_feedback")</button>
-                </div>
-
-            }
-
+            <button id="submit" type="submit" class="button">@Messages("label.send_feedback")</button>
         </div>
-    </div>
+
+    }
+
 }

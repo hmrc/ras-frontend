@@ -20,23 +20,18 @@
 
 @ras_main(title = Messages("upload.result.page.title"), showUrBanner = true) {
 
-  <div class="grid-row">
-      <div class="column-two-thirds">
-          <div class="back-arrow">
-              <a id="back" class="link-back"
-                 href="@routes.ChooseAnOptionController.get"
-                 data-journey-click="navigation - link:Residency status upload added @year:Back">
-                  @Messages("back")
-              </a>
-          </div>
-          <header class="page-header">
-              <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
-          </header>
-      </div>
-  </div>
+      <a id="back" class="link-back"
+         href="@routes.ChooseAnOptionController.get"
+         data-journey-click="navigation - link:Residency status upload added @year:Back">
+          @Messages("back")
+      </a>
 
-<div class="grid-row">
-    <div class="column-two-thirds" aria-labelledby="document-title" id="document-title">
+      <header class="page-header">
+          <h1 id="page-header" class="heading-xlarge">@Messages("upload.result.page.header")</h1>
+      </header>
+
+
+    <div aria-labelledby="document-title" id="document-title">
         <div class="govuk-govspeak direction-ltr">
             <section class="attachment embedded">
                 <div class="attachment--title">
@@ -67,7 +62,6 @@
             }
         </div>
     </div>
-</div>
 
 
 <div class="continue-div">

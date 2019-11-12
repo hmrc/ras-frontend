@@ -23,59 +23,52 @@
 
 @ras_main(title = Messages("member.dob.page.title")) {
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
+    <a class="link-back" href="@routes.MemberDOBController.back(edit)"
+           data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
 
-            <div class="back-arrow">
-                <a class="link-back" href="@routes.MemberDOBController.back(edit)"
-                   data-journey-click="navigation - link:What is their DOB?:Back">@Messages("back")</a>
+    @views.html.helpers.errorSummary(memberDobForm, "What is their DOB?")
+
+    @form(action = routes.MemberDOBController.post(edit)) {
+
+    <fieldset class="inline">
+        <legend>
+            <header class="page-header">
+                <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
+            </header>
+
+            <div class="@if(memberDobForm.errors.nonEmpty) {form-group-error}">
+                <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
+                @if(!memberDobForm.errors.isEmpty) {
+                <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
+                }
             </div>
+        </legend>
 
-            @views.html.helpers.errorSummary(memberDobForm, "What is their DOB?")
+            <div class="form-group @if(memberDobForm.errors.nonEmpty) {form-group-error}">
+                <div class="form-date">
 
-            @form(action = routes.MemberDOBController.post(edit)) {
+                    @rasInput(memberDobForm("dateOfBirth.day"),
+                    '_label -> Html(Messages("day").capitalize),
+                    '_id -> "dateOfBirth-day",
+                    '_type -> "tel")
 
-            <fieldset class="inline">
-                <legend>
-                    <header class="page-header">
-                        <h1 id="header" class="heading-xlarge">@Messages("member.dob.page.header",name)</h1>
-                    </header>
+                    @rasInput(memberDobForm("dateOfBirth.month"),
+                    '_label -> Html(Messages("month").capitalize),
+                    '_id -> "dateOfBirth-month",
+                    '_type -> "tel")
 
-                    <div class="@if(memberDobForm.errors.nonEmpty) {form-group-error}">
-                        <span class="form-hint" id="dob_hint">@Messages("dob.hint")</span>
-                        @if(!memberDobForm.errors.isEmpty) {
-                        <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
-                        }
-                    </div>
-                </legend>
-
-                    <div class="form-group @if(memberDobForm.errors.nonEmpty) {form-group-error}">
-                        <div class="form-date">
-
-                            @rasInput(memberDobForm("dateOfBirth.day"),
-                            '_label -> Html(Messages("day").capitalize),
-                            '_id -> "dateOfBirth-day",
-                            '_type -> "tel")
-
-                            @rasInput(memberDobForm("dateOfBirth.month"),
-                            '_label -> Html(Messages("month").capitalize),
-                            '_id -> "dateOfBirth-month",
-                            '_type -> "tel")
-
-                            @rasInput(memberDobForm("dateOfBirth.year"),
-                            '_label -> Html(Messages("year").capitalize),
-                            '_id -> "dateOfBirth-year",
-                            '_type -> "tel",
-                            '_groupClass -> "form-group-year")
-                        </div>
-                    </div>
-            </fieldset>
-            <button class="button" type="submit" id="continue"
-                    data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">
-                @Messages("continue")
-            </button>
-            }
-        </div>
-    </div>
+                    @rasInput(memberDobForm("dateOfBirth.year"),
+                    '_label -> Html(Messages("year").capitalize),
+                    '_id -> "dateOfBirth-year",
+                    '_type -> "tel",
+                    '_groupClass -> "form-group-year")
+                </div>
+            </div>
+    </fieldset>
+    <button class="button" type="submit" id="continue"
+            data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">
+        @Messages("continue")
+    </button>
+    }
 
  }

@@ -18,12 +18,7 @@
 
 @ras_main(title = Messages("results.not.available.yet.page.title")) {
 
- <div class="grid-row">
-  <div class="column-two-thirds">
-
-   <div class="back-arrow">
-    <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:Results are still being added:Back">@Messages("back")</a>
-   </div>
+   <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:Results are still being added:Back">@Messages("back")</a>
 
    <div class="row">
     <h1 id="header" class="heading-xlarge">@Messages("results.not.available.yet.page.header")</h1>
@@ -37,8 +32,5 @@
    <div class="row">
     <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:Results are still being added:Choose something else to do">@Messages("choose.something.else")</a>
    </div>
-
-  </div>
- </div>
 
 }
