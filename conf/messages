@@ -87,7 +87,7 @@ error.page_not_found.tabtitle = Page not found - Look up residency status for re
 error.page_not_found.heading = Page not found
 error.page.not.found.error.check.web.address.correct = If you typed the web address, check it is correct.
 error.page.not.found.error.check.web.address.full = If you pasted the web address, check you copied the entire address
-error.page.not.found.error.contact = If the web address is correct or you selected a link or button, contact the 
+error.page.not.found.error.contact = If the web address is correct or you selected a link or button, contact
 error.page.not.found.error.ras.email = reliefatsource.administration@hmrc.gov.uk
 error.page.not.found.error.contact.end = if you need to help with a member's residency status.
 
