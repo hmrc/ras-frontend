@@ -23,14 +23,7 @@
 @import play.api.i18n.Messages
 @import config.ApplicationConfig
 
-@(
-    applicationConfig: config.ApplicationConfig = config.ApplicationConfig,
-    signOutEnabled: Boolean = true,
-    supportLinkEnabled: Boolean = true,
-    scriptElem: Option[Html] = None,
-    hasTimeOut:Boolean = true,
-    getHelpForm: Html  = HtmlFormat.empty
-)(implicit messages: Messages, request: Request[_], context: RasContext)
+@()(implicit messages: Messages, request: Request[_], context: RasContext)
 
 @anchor(serviceName: String, email: String) = {
     <a href="mailto:@email">@serviceName</a>
