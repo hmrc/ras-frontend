@@ -62,7 +62,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   private val signOutBaseUrl = s"$caFrontendHost/gg/sign-out?continue="
   private val continueCallback: String =  configuration.getString("gg-urls.continue-callback.url").getOrElse("/relief-at-source/")
 
-  override lazy val reportAProblemUrl = s"$contactHost/contact"
+  override lazy val reportAProblemUrl = s"$contactHost/contact/problem_reports"
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val signOutUrl = s"$signOutBaseUrl$logoutCallback"
