@@ -30,21 +30,11 @@
 }
 
 @ras_main(title = Messages("error.page_not_found.tabtitle")) {
-    <div class="grid-row">
-        <div class="column-two-thirds">
-    
-            <div class="row">
-                <h1 id="header" class="heading-xlarge">@Messages("error.page_not_found.heading")</h1>
-            </div>
-
-            <div class="row">
-                <p>@messages("error.page.not.found.error.check.web.address.correct")</p>
-                <p>@messages("error.page.not.found.error.check.web.address.full")</p>
-                <p>@messages("error.page.not.found.error.contact")
-                    @anchor(Messages("error.page.not.found.error.ras.email"), Messages("error.page.not.found.error.ras.email"))
-                    @messages("error.page.not.found.error.contact.end")
-                </p>
-            </div>
-        </div>
-    </div>
+    <h1>@Messages("error.page_not_found.heading")</h1>
+    <p>@messages("error.page.not.found.error.check.web.address.correct")</p>
+    <p>@messages("error.page.not.found.error.check.web.address.full")</p>
+    <p>@messages("error.page.not.found.error.contact")
+        @anchor(Messages("error.page.not.found.error.ras.email"), Messages("error.page.not.found.error.ras.email"))
+        @messages("error.page.not.found.error.contact.end")
+    </p>
 }
