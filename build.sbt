@@ -2,7 +2,7 @@ import play.sbt.routes.RoutesKeys._
 import sbt.Keys._
 import sbt._
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings.defaultSettings
+import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning
@@ -33,7 +33,7 @@ lazy val microservice = Project(appName, file("."))
     scoverageSettings,
     publishingSettings,
     defaultSettings(),
-    scalaVersion := "2.11.11",
+    scalaSettings,
     PlayKeys.playDefaultPort := 9673,
     libraryDependencies ++= AppDependencies.all,
     retrieveManaged := true,
