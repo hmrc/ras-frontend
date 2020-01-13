@@ -181,7 +181,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
 
       doc(result).getElementById("top-content").text shouldBe Messages("match.found.top")
       doc(result).getElementById("sub-header").text shouldBe Messages("match.found.what.happens.next")
-      doc(result).getElementById("bottom-content-cy").text shouldBe Messages("match.found.bottom.current-year.bottom", formattedName, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
+      doc(result).getElementById("bottom-content-cy").text shouldBe Messages("match.found.bottom.current-year.bottom", (currentTaxYear + 1).toString, formattedName, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
       doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
       doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
     }
