@@ -11,3 +11,7 @@
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes
+
+GET        /relief-at-source/test-only/set-features          testonly.SetFeaturesController.set(features: List[(Feature, Boolean)])
+GET        /relief-at-source/test-only/get-features          testonly.GetFeaturesController.getAllFeatures()
+GET        /relief-at-source/test-only/reset-features        testonly.ResetFeaturesController.reset()
