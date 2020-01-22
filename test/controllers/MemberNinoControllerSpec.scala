@@ -163,7 +163,7 @@ class MemberNinoControllerSpec extends UnitSpec with WithFakeApplication with I1
 
     "redirect to match found page when edit mode is true and matching successful" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
-      when(mockSessionService.cacheNino(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheResidencyStatusResult(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
