@@ -39,7 +39,7 @@ trait RasResidencyCheckerController extends RasController {
     val timer = Metrics.responseTimer.time()
     val memberDetails = MemberDetails(session.name, session.nino.nino, session.dateOfBirth.dateOfBirth)
 
-    residencyStatusAPIConnector.getResidencyStatus(memberDetails).map { rasResponse =>
+    residencyStatusAPIConnector.getResidencyStatus(memberDetails).flatMap { rasResponse =>
       val formattedName = session.name.firstName + " " + session.name.lastName
       val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
       val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
@@ -50,11 +50,11 @@ trait RasResidencyCheckerController extends RasController {
           None
 
       if (cyResidencyStatus.isEmpty) {
-        Logger.error("[DobController][post] An unknown residency status was returned")
-        Redirect(routes.ErrorController.renderGlobalErrorPage())
+        Logger.error("[RasResidencyCheckerController][post] An unknown residency status was returned")
+        Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
       }
       else {
-        Logger.info("[DobController][post] Match found")
+        Logger.info("[RasResidencyCheckerController][post] Match found")
 
         timer.stop()
 
@@ -65,25 +65,28 @@ trait RasResidencyCheckerController extends RasController {
             (TaxYearResolver.currentTaxYear + 1).toString,
             formattedName, formattedDob, memberDetails.nino)
 
-        sessionService.cacheResidencyStatusResult(residencyStatusResult)
-
         auditResponse(failureReason = None, nino = Some(memberDetails.nino),
           residencyStatus = Some(rasResponse),
           userId = userId)
 
-        Redirect(routes.ResultsController.matchFound())
+        for {
+          _ <- sessionService.cacheResidencyStatusResult(residencyStatusResult)
+        }
+        yield {
+          Redirect(routes.ResultsController.matchFound())
+        }
       }
     }.recover {
       case e: Upstream4xxResponse if e.upstreamResponseCode == FORBIDDEN =>
         auditResponse(failureReason = Some("MATCHING_FAILED"), nino = Some(memberDetails.nino),
           residencyStatus = None, userId = userId)
-        Logger.info("[DobController][getResult] No match found from customer matching")
+        Logger.info("[RasResidencyCheckerController][getResult] No match found from customer matching")
         timer.stop()
         Redirect(routes.ResultsController.noMatchFound())
       case e: Throwable =>
         auditResponse(failureReason = Some("INTERNAL_SERVER_ERROR"), nino = Some(memberDetails.nino),
           residencyStatus = None, userId = userId)
-        Logger.error(s"[DobController][getResult] Customer Matching failed: ${e.getMessage}")
+        Logger.error(s"[RasResidencyCheckerController][getResult] Customer Matching failed: ${e.getMessage}")
         Redirect(routes.ErrorController.renderGlobalErrorPage())
     }
   }

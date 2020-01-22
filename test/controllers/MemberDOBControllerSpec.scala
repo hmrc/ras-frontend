@@ -231,10 +231,11 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "redirect to match found page" when {
-      "a request is made during the february 2018" in {
+      "a request is made which returns CY and NY results (i.e. before 6th April)" in {
 
         when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
         when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockSessionService.cacheResidencyStatusResult(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
@@ -255,10 +256,11 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
         )(any())
       }
 
-      "a request is made during the June 2018" in {
+      "a request is made which returns only a CY result (i.e. after 6th April)" in {
 
         when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, None)))
         when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockSessionService.cacheResidencyStatusResult(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 

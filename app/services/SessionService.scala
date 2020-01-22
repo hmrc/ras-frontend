@@ -63,30 +63,29 @@ trait SessionService extends SessionCacheWiring {
   def resetCacheEnvelope()(implicit hc: HeaderCarrier) = cache(CacheKeys.Envelope)
   def resetCacheResidencyStatusResult()(implicit hc: HeaderCarrier) = cache(CacheKeys.StatusResult)
 
-  def resetRasSession()(implicit hc: HeaderCarrier) = cache(CacheKeys.All)
+  def resetRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.All)
 
   private def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
-
-    val result = fetchRasSession flatMap { currentSession =>
-
-      val session = currentSession.getOrElse(cleanSession)
-
-      sessionCache.cache[RasSession](RAS_SESSION_KEY,
-        key match {
-          case CacheKeys.Name => session.copy(name = value.getOrElse(cleanMemberName).asInstanceOf[MemberName])
-          case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
-          case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth).asInstanceOf[MemberDateOfBirth])
-          case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.asInstanceOf[Option[ResidencyStatusResult]])
-          case CacheKeys.UploadResponse => session.copy(uploadResponse = value.asInstanceOf[Option[UploadResponse]])
-          case CacheKeys.Envelope => session.copy(envelope = value.asInstanceOf[Option[Envelope]])
-          case _ => cleanSession
-        }
-      )
+    def selectKeysToCache(session: RasSession): RasSession = {
+      key match {
+        case CacheKeys.Name => session.copy(name = value.getOrElse(cleanMemberName).asInstanceOf[MemberName])
+        case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
+        case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth).asInstanceOf[MemberDateOfBirth])
+        case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.asInstanceOf[Option[ResidencyStatusResult]])
+        case CacheKeys.UploadResponse => session.copy(uploadResponse = value.asInstanceOf[Option[UploadResponse]])
+        case CacheKeys.Envelope => session.copy(envelope = value.asInstanceOf[Option[Envelope]])
+        case _ => cleanSession
+      }
     }
 
-    result.map(cacheMap => {
-      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-    })
+    for {
+      currentSession <- fetchRasSession
+      session = currentSession.getOrElse(cleanSession)
+      cacheMap <- sessionCache.cache[RasSession](RAS_SESSION_KEY, selectKeysToCache(session))
+    }
+      yield {
+        cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
+      }
   }
 }
 
