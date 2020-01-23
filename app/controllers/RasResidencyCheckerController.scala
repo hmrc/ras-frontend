@@ -44,11 +44,7 @@ trait RasResidencyCheckerController extends RasController {
       val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
       val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
       val nyResidencyStatus: Option[String] =
-        if (rasResponse.nextYearForecastResidencyStatus.nonEmpty)
-          Some(extractResidencyStatus(rasResponse.nextYearForecastResidencyStatus.get))
-        else
-          None
-
+        rasResponse.nextYearForecastResidencyStatus.map(extractResidencyStatus)
       if (cyResidencyStatus.isEmpty) {
         Logger.error("[RasResidencyCheckerController][post] An unknown residency status was returned")
         Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
