@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => Meq}
 import org.mockito.Mockito._
+import org.scalacheck.Gen
 import org.scalatest.BeforeAndAfter
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status.OK
@@ -35,31 +36,41 @@ import play.api.test.Helpers._
 import play.api.{Configuration, Environment}
 import services.{AuditService, SessionService}
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.domain.{Generator, PsaId}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
+import scala.util.Random
 
 class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18nHelper with MockitoSugar with BeforeAndAfter {
 
   implicit val headerCarrier = HeaderCarrier()
 
-  val fakeRequest = FakeRequest()
-  val mockAuthConnector = mock[AuthConnector]
-  val mockUserDetailsConnector = mock[UserDetailsConnector]
-  val mockSessionService = mock[SessionService]
-  val mockConfig = mock[Configuration]
-  val mockEnvironment = mock[Environment]
-  val mockRasConnector = mock[ResidencyStatusAPIConnector]
-  val mockAuditService = mock[AuditService]
-  val uuid = "b5a4c95d-93ff-4054-b416-79c8a7e6f712"
-  val memberName = MemberName("Jackie", "Chan")
-  val memberNino = MemberNino("AB123456C")
-  val dob = RasDate(Some("12"), Some("12"), Some("2012"))
-  val memberDob = MemberDateOfBirth(dob)
-  val rasSession = RasSession(memberName, memberNino, memberDob, None, None)
-  val postData = Json.obj("dateOfBirth" -> dob)
-  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  def randomPsaId: Gen[PsaId] =
+    for {
+      prefix <- Gen.alphaUpperChar
+      number <- Gen.chooseNum(0, 9999999)
+    } yield {
+      PsaId(f"$prefix$number%07d")
+    }
+
+  private val fakeRequest = FakeRequest()
+  private val mockAuthConnector = mock[AuthConnector]
+  private val mockUserDetailsConnector = mock[UserDetailsConnector]
+  private val mockSessionService = mock[SessionService]
+  private val mockConfig = mock[Configuration]
+  private val mockEnvironment = mock[Environment]
+  private val mockRasConnector = mock[ResidencyStatusAPIConnector]
+  private val mockAuditService = mock[AuditService]
+  private val memberName = MemberName("Jackie", "Chan")
+  private val memberNino: String = new Generator(new Random()).nextNino.nino
+  private val dob = RasDate(Some("12"), Some("12"), Some("2012"))
+  private val memberDob = MemberDateOfBirth(dob)
+  private val rasSession = RasSession(memberName, MemberNino(memberNino), memberDob, None, None)
+  private val postData = Json.obj("dateOfBirth" -> dob)
+  private val psaId: String = randomPsaId.sample.get.id
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", psaId)
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   private val enrolments = new Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
@@ -74,7 +85,6 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     override val auditService: AuditService = mockAuditService
     override val apiVersion: ApiVersion = ApiV1_0
 
-    when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
@@ -166,6 +176,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "redirect" in {
+      when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
 
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("1"), Some("1"), Some("1999")))
@@ -174,6 +185,7 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
     }
 
     "redirect if current year residency status is empty" in {
+      when(mockSessionService.cacheDob(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus("", Some(OTHER_UK))))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
@@ -250,8 +262,8 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
           auditData = Meq(Map("successfulLookup" -> "true",
             "CYStatus" -> "scotResident",
             "NextCYStatus" -> "otherUKResident",
-            "nino" -> "AB123456C",
-            "userIdentifier" -> "Z123456",
+            "nino" -> memberNino,
+            "userIdentifier" -> psaId,
             "requestSource" -> "FE_SINGLE"))
         )(any())
       }
@@ -274,8 +286,8 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
           path = Meq("/"),
           auditData = Meq(Map("successfulLookup" -> "true",
             "CYStatus" -> "scotResident",
-            "nino" -> "AB123456C",
-            "userIdentifier" -> "Z123456",
+            "nino" -> memberNino,
+            "userIdentifier" -> psaId,
             "requestSource" -> "FE_SINGLE"))
         )(any())
       }
@@ -297,8 +309,8 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
           path = Meq("/"),
           auditData = Meq(Map("successfulLookup" -> "false",
             "reason" -> "MATCHING_FAILED",
-            "nino" -> "AB123456C",
-            "userIdentifier" -> "Z123456",
+            "nino" -> memberNino,
+            "userIdentifier" -> psaId,
             "requestSource" -> "FE_SINGLE"))
         )(any())
       }
@@ -319,8 +331,8 @@ class MemberDOBControllerSpec extends UnitSpec with WithFakeApplication with I18
           path = Meq("/"),
           auditData = Meq(Map("successfulLookup" -> "false",
             "reason" -> "INTERNAL_SERVER_ERROR",
-            "nino" -> "AB123456C",
-            "userIdentifier" -> "Z123456",
+            "nino" -> memberNino,
+            "userIdentifier" -> psaId,
             "requestSource" -> "FE_SINGLE"))
         )(any())
       }
