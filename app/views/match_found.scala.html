@@ -1,5 +1,5 @@
 @*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@
 
 
     @if(!nextYearResidencyStatus.nonEmpty) {
-        <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.bottom", name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+        <p id="bottom-content-cy">@Messages("match.found.bottom.current-year.bottom", (currentTaxYear + 1).toString, name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
     }
 
     <div class="grid-row">
