@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,7 +183,7 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
 
     "redirect to match found page when edit mode is true and matching successful" in {
       when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheResidencyStatusResult(any())(any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
