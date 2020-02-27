@@ -16,7 +16,7 @@
 
 package forms
 
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models.MemberName
 import play.api.data.Form
 import play.api.data.Forms._
@@ -39,6 +39,3 @@ object MemberNameForm extends I18nHelper{
     )(MemberName.apply)(MemberName.unapply)
   )
 }
-
-
-

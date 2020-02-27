@@ -18,7 +18,7 @@ package controllers
 
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import controllers.RasResidencyCheckerController._
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models._
 import org.scalatest.BeforeAndAfter
 import org.scalatest.mockito.MockitoSugar

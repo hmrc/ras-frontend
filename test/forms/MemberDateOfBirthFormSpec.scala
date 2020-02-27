@@ -17,7 +17,7 @@
 package forms
 
 import forms.MemberDateOfBirthForm._
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models.RasDate
 import org.joda.time.LocalDate
 import org.scalatestplus.play.OneAppPerSuite

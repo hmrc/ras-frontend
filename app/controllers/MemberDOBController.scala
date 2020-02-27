@@ -18,7 +18,7 @@ package controllers
 
 import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import forms.MemberDateOfBirthForm.form
@@ -45,7 +45,7 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
 
   implicit val context: RasContext = RasContextImpl
 
-  def get(edit: Boolean = false) = Action.async {
+  def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
@@ -56,18 +56,18 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
             case _ => Ok(views.html.member_dob(form, "", edit))
           }
         case Left(resp) =>
-          Logger.error("[DobController][get] user Not authorised")
+          Logger.warn("[DobController][get] user Not authorised")
           resp
       }
   }
 
-  def post(edit: Boolean = false) = Action.async {
+  def post(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
           form.bindFromRequest.fold(
             formWithErrors => {
-              Logger.error("[DobController][post] Invalid form field passed")
+              Logger.warn("[DobController][post] Invalid form field passed")
               sessionService.fetchRasSession() map {
                 case Some(session) =>
                   implicit val formInstance: Option[Form[models.MemberDateOfBirth]] = Some(formWithErrors)
@@ -84,19 +84,23 @@ trait MemberDOBController extends RasResidencyCheckerController with PageFlowCon
               }
             }
           )
-        case Left(res) => res
+        case Left(res) =>
+          Logger.warn("[DobController][back] user Not authorised")
+          res
       }
   }
 
-  def back(edit: Boolean = false) = Action.async {
+  def back(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) =>
+        case Right(_) =>
           sessionService.fetchRasSession() map {
-            case Some(session) => previousPage("MemberDOBController", edit)
+            case Some(_) => previousPage("MemberDOBController", edit)
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
-        case Left(res) => res
+        case Left(res) =>
+          Logger.warn("[DobController][back] user Not authorised")
+          res
       }
   }
 }

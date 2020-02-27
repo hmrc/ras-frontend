@@ -58,21 +58,21 @@ trait TaxYearResolver {
 
   def currentTaxYear: Int = taxYearFor(new LocalDate(now(), ukTime))
 
-  def currentTaxYearYearsRange = currentTaxYear to currentTaxYear + 1
+  def currentTaxYearYearsRange: Seq[Int] = currentTaxYear to currentTaxYear + 1
 
   def startOfTaxYear(year: Int) = new LocalDate(year, 4, 6)
 
   def endOfTaxYear(year: Int) = new LocalDate(year + 1, 4, 5)
 
-  def endOfLastTaxYear = endOfTaxYear(currentTaxYear - 1)
+  def endOfLastTaxYear: LocalDate = endOfTaxYear(currentTaxYear - 1)
 
-  def startOfCurrentTaxYear = startOfTaxYear(currentTaxYear)
+  def startOfCurrentTaxYear: LocalDate = startOfTaxYear(currentTaxYear)
 
-  def endOfCurrentTaxYear = endOfTaxYear(currentTaxYear)
+  def endOfCurrentTaxYear: LocalDate = endOfTaxYear(currentTaxYear)
 
-  def startOfNextTaxYear = startOfTaxYear(currentTaxYear + 1)
+  def startOfNextTaxYear: LocalDate = startOfTaxYear(currentTaxYear + 1)
 
-  def taxYearInterval = new Interval(startOfCurrentTaxYear.toDateTimeAtStartOfDay(ukTime),
+  def taxYearInterval: Interval = new Interval(startOfCurrentTaxYear.toDateTimeAtStartOfDay(ukTime),
     startOfNextTaxYear.toDateTimeAtStartOfDay(ukTime))
 }
 

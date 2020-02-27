@@ -17,7 +17,7 @@
 package forms
 
 import forms.MemberNameForm._
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.libs.json.Json

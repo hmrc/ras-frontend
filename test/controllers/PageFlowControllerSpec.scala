@@ -22,7 +22,7 @@ import play.api.{Configuration, Environment, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import connectors.UserDetailsConnector
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models._
 import org.scalatest.mockito.MockitoSugar
 

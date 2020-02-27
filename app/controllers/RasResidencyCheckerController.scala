@@ -28,7 +28,8 @@ import services.TaxYearResolver
 
 import scala.concurrent.Future
 
-trait RasResidencyCheckerController extends RasController {
+trait
+RasResidencyCheckerController extends RasController {
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
   val auditService: AuditService

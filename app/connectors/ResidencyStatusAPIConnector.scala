@@ -61,7 +61,7 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
 
-    Logger.info(s"Get results file with URI for $fileName by userId ($userId)")
+    Logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
     http.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/$fileName").map { res =>
       Some(res.body.runWith(StreamConverters.asInputStream()))
     }
@@ -78,14 +78,14 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
       response.status match {
         case 200 => Try(response.json.validate[ResidencyStatus]) match {
           case Success(JsSuccess(payload, _)) => payload
-          case _ => Logger.error("ResidencyStatusAPIConnector responseHandler | There was a problem parsing the response json.")
+          case _ => Logger.error("[ResidencyStatusAPIConnector][responseHandler] There was a problem parsing the response json.")
                     throw new InternalServerException("ResidencyStatusAPIConnector responseHandler | Response json could not be parsed.")
         }
-        case 400 => Logger.error("ResidencyStatusAPIConnector responseHandler | Data sent to the API was not sent in the correct format.")
+        case 400 => Logger.error("[ResidencyStatusAPIConnector][responseHandler] Data sent to the API was not sent in the correct format.")
                     throw new InternalServerException("Internal Server Error")
-        case 403 => Logger.info("ResidencyStatusAPIConnector responseHandler | Member not found.")
+        case 403 => Logger.info("[ResidencyStatusAPIConnector][responseHandler] Member not found.")
                     throw new Upstream4xxResponse("Member not found", 403, 403, response.allHeaders)
-        case _ => Logger.error(s"ResidencyStatusAPIConnector responseHandler | ${response.status} status code received from RAS-API.")
+        case _ => Logger.error(s"[ResidencyStatusAPIConnector][responseHandler] ${response.status} status code received from RAS-API.")
                   throw new InternalServerException("Internal Server Error")
       }
     }

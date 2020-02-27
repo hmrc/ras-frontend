@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status

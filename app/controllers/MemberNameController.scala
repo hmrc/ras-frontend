@@ -20,7 +20,7 @@ import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextI
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import forms.MemberNameForm._
 import models.ApiVersion
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Environment, Logger, Play}
 import services.AuditService
 import uk.gov.hmrc.auth.core._
@@ -41,7 +41,7 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
 
   implicit val context: RasContext = RasContextImpl
 
-  def get(edit: Boolean = false) = Action.async {
+  def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
@@ -50,17 +50,17 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
             case _ => Ok(views.html.member_name(form, edit))
           }
         case Left(resp) =>
-          Logger.error("[NameController][get] user Not authorised")
+          Logger.warn("[NameController][get] user Not authorised")
           resp
       }
   }
 
-  def post(edit: Boolean = false) = Action.async { implicit request =>
+  def post(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
     isAuthorised.flatMap{
       case Right(userId) =>
       form.bindFromRequest.fold(
         formWithErrors => {
-          Logger.error("[NameController][post] Invalid form field passed")
+          Logger.warn("[NameController][post] Invalid form field passed")
           Future.successful(BadRequest(views.html.member_name(formWithErrors, edit)))
         },
         memberName => {
@@ -75,15 +75,19 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
           }
         }
       )
-      case Left(res) => res
+      case Left(res) =>
+        Logger.warn("[NameController][post] user Not authorised")
+        res
     }
   }
 
-  def back(edit: Boolean = false) = Action.async {
+  def back(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) => Future.successful(previousPage("MemberNameController", edit))
-        case Left(res) => res
+        case Right(_) => Future.successful(previousPage("MemberNameController", edit))
+        case Left(res) =>
+          Logger.warn("[NameController][back] user Not authorised")
+          res
       }
   }
 
