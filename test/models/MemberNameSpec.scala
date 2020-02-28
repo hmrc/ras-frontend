@@ -16,7 +16,7 @@
 
 package models
 
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 

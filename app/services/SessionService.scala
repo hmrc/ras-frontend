@@ -39,29 +39,29 @@ trait SessionService extends SessionCacheWiring {
   }
 
   val config: ApplicationConfig
-  val RAS_SESSION_KEY = "ras_session"
-  val cleanMemberName = MemberName("", "")
-  val cleanMemberNino = MemberNino("")
-  val cleanMemberDateOfBirth = MemberDateOfBirth(RasDate(None, None, None))
-  val cleanSession = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, None, None)
+  val RAS_SESSION_KEY: String = "ras_session"
+  val cleanMemberName: MemberName = MemberName("", "")
+  val cleanMemberNino: MemberNino = MemberNino("")
+  val cleanMemberDateOfBirth: MemberDateOfBirth = MemberDateOfBirth(RasDate(None, None, None))
+  val cleanSession: RasSession = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, None, None)
 
   def fetchRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
   }
 
-  def cacheName(value: MemberName)(implicit hc: HeaderCarrier) = cache(CacheKeys.Name, Some(value))
-  def cacheNino(value: MemberNino)(implicit hc: HeaderCarrier) = cache(CacheKeys.Nino, Some(value))
-  def cacheDob(value: MemberDateOfBirth)(implicit hc: HeaderCarrier) = cache(CacheKeys.Dob, Some(value))
-  def cacheUploadResponse(value: UploadResponse)(implicit hc: HeaderCarrier) = cache(CacheKeys.UploadResponse, Some(value))
-  def cacheEnvelope(value: Envelope)(implicit hc: HeaderCarrier) = cache(CacheKeys.Envelope, Some(value))
-  def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit hc: HeaderCarrier) = cache(CacheKeys.StatusResult, Some(value))
+  def cacheName(value: MemberName)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Name, Some(value))
+  def cacheNino(value: MemberNino)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Nino, Some(value))
+  def cacheDob(value: MemberDateOfBirth)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Dob, Some(value))
+  def cacheUploadResponse(value: UploadResponse)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.UploadResponse, Some(value))
+  def cacheEnvelope(value: Envelope)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Envelope, Some(value))
+  def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.StatusResult, Some(value))
 
-  def resetCacheName()(implicit hc: HeaderCarrier) = cache(CacheKeys.Name)
-  def resetCacheNino()(implicit hc: HeaderCarrier) = cache(CacheKeys.Nino)
-  def resetCacheDob()(implicit hc: HeaderCarrier) = cache(CacheKeys.Dob)
-  def resetCacheUploadResponse()(implicit hc: HeaderCarrier) = cache(CacheKeys.UploadResponse)
-  def resetCacheEnvelope()(implicit hc: HeaderCarrier) = cache(CacheKeys.Envelope)
-  def resetCacheResidencyStatusResult()(implicit hc: HeaderCarrier) = cache(CacheKeys.StatusResult)
+  def resetCacheName()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Name)
+  def resetCacheNino()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Nino)
+  def resetCacheDob()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Dob)
+  def resetCacheUploadResponse()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.UploadResponse)
+  def resetCacheEnvelope()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Envelope)
+  def resetCacheResidencyStatusResult()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.StatusResult)
 
   def resetRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.All)
 
@@ -111,7 +111,7 @@ trait ShortLivedCache  {
     }
   }
 
-  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier) = {
+  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier): Future[Option[FileSession]] = {
     shortLivedCache.fetchAndGetEntry[FileSession](source, userId, "fileSession").recover {
       case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache => " +
         s"${userId} , Exception is ${ex.getMessage}")
@@ -119,7 +119,7 @@ trait ShortLivedCache  {
     }
   }
 
-  def hasBeen24HoursSinceTheUpload(fileUploadTime: Long) = {
+  def hasBeen24HoursSinceTheUpload(fileUploadTime: Long): Boolean = {
     new DateTime(fileUploadTime).plusHours(hoursToWaitForReUpload).isBefore(DateTime.now.getMillis)
   }
 
@@ -128,7 +128,7 @@ trait ShortLivedCache  {
       case Some(fileSession) =>
         fileSession.uploadTimeStamp match {
           case Some(timestamp) =>
-            errorInFileUpload(fileSession) || (hasBeen24HoursSinceTheUpload(timestamp) && !fileSession.resultsFile.isDefined)
+            errorInFileUpload(fileSession) || (hasBeen24HoursSinceTheUpload(timestamp) && fileSession.resultsFile.isEmpty)
           case _ =>
             Logger.error("[ShortLivedCache][failedProcessingUploadedFile] no upload timestamp found")
             false
@@ -167,11 +167,11 @@ trait ShortLivedCache  {
         case true =>
           fileSession.get.resultsFile.isDefined || !hasBeen24HoursSinceTheUpload(fileSession.get.uploadTimeStamp.get)
         case false =>
-          Logger.error("fileSession not defined for " + userId)
+          Logger.error("[ShortLivedCache][isFileInProgress] fileSession not defined for " + userId)
           false
     }).recover {
       case ex: Throwable =>
-        Logger.error(s"unable to fetch FileSession from cache to check isFileInProgress => ${userId} , Exception is ${ex.getMessage}")
+        Logger.error(s"[ShortLivedCache][isFileInProgress] unable to fetch FileSession from cache to check isFileInProgress => ${userId} , Exception is ${ex.getMessage}")
         false
     }
   }
@@ -180,14 +180,13 @@ trait ShortLivedCache  {
     fetchFileSession(userId).flatMap {
       case Some(fileSession) =>
         fileSession.resultsFile match {
-          case Some(resultFile) => Future.successful(Ready)
+          case Some(_) => Future.successful(Ready)
           case _ => isFileInProgress(userId).flatMap {
             case true =>
               failedProcessingUploadedFile(userId).flatMap {
                 case true => Future.successful(UploadError)
                 case _ => Future.successful(InProgress)
               }
-
             case _ => Future.successful(TimeExpiryError)
           }
         }
@@ -195,9 +194,9 @@ trait ShortLivedCache  {
     }
   }
   
-  def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier) = {
+  def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier): Future[Any] = {
     shortLivedCache.remove(userId).map(_.status).recover {
-    case ex: Throwable => Logger.error(s"unable to remove FileSession from cache  => " +
+    case ex: Throwable => Logger.error(s"[ShortLivedCache][removeFileSessionFromCache] unable to remove FileSession from cache  => " +
       s"${userId} , Exception is ${ex.getMessage}")
     //try again as the only option left if sessioncache fails
       shortLivedCache.remove(userId).map(_.status)
@@ -207,7 +206,5 @@ trait ShortLivedCache  {
 
 object ShortLivedCache extends ShortLivedCache {
   override val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
-  override val hoursToWaitForReUpload = ApplicationConfig.hoursToWaitForReUpload
+  override val hoursToWaitForReUpload: Int = ApplicationConfig.hoursToWaitForReUpload
 }
-
-

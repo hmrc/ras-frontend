@@ -17,7 +17,7 @@
 package controllers
 
 import connectors.{FileUploadConnector, UserDetailsConnector}
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup

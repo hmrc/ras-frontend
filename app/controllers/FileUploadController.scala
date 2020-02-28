@@ -22,20 +22,21 @@ import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextI
 import connectors.{FileUploadConnector, UserDetailsConnector}
 import models.{Envelope, UploadResponse, UserDetails}
 import play.Logger
-import play.api.mvc.{Action, Request}
+import play.api.mvc.{Action, AnyContent, Request}
 import play.api.{Configuration, Environment, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.matching.UnanchoredRegex
 
 trait FileUploadController extends RasController with PageFlowController {
 
   implicit val context: RasContext = RasContextImpl
   val fileUploadConnector: FileUploadConnector
 
-  def get = Action.async {
+  def get: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
@@ -45,7 +46,7 @@ trait FileUploadController extends RasController with PageFlowController {
                 case true =>
                   Logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
                     s"so another could not be uploaded")
-                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress))
+                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
                 case _ =>
                   createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
                     case Some(url) =>
@@ -53,7 +54,7 @@ trait FileUploadController extends RasController with PageFlowController {
                       val error = extractErrorReason(session.uploadResponse)
                       if(error == Messages("upload.failed.error")){
                         sessionService.cacheUploadResponse(UploadResponse("",None)).map {
-                          case Some(session) =>
+                          case Some(_) =>
                             Redirect(routes.ErrorController.renderProblemUploadingFilePage())
                           case _ =>
                             Logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
@@ -85,20 +86,20 @@ trait FileUploadController extends RasController with PageFlowController {
               Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(resp) =>
-          Logger.error("[FileUploadController][get] user not authorised")
+          Logger.warn("[FileUploadController][get] user not authorised")
           resp
       }
   }
 
   def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
-    val config = ApplicationConfig
-    val rasFrontendBaseUrl = config.getString("ras-frontend.host")
-    val rasFrontendUrlSuffix = config.getString("ras-frontend-url-suffix")
-    val fileUploadFrontendBaseUrl = config.getString("file-upload-frontend.host")
-    val fileUploadFrontendSuffix = config.getString("file-upload-frontend-url-suffix")
-    val envelopeIdPattern = "envelopes/([\\w\\d-]+)$".r.unanchored
-    val successRedirectUrl = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-uploaded"
-    val errorRedirectUrl = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-failed"
+    val config: ApplicationConfig.type = ApplicationConfig
+    val rasFrontendBaseUrl: String = config.getString("ras-frontend.host")
+    val rasFrontendUrlSuffix: String = config.getString("ras-frontend-url-suffix")
+    val fileUploadFrontendBaseUrl: String = config.getString("file-upload-frontend.host")
+    val fileUploadFrontendSuffix: String = config.getString("file-upload-frontend-url-suffix")
+    val envelopeIdPattern: UnanchoredRegex = "envelopes/([\\w\\d-]+)$".r.unanchored
+    val successRedirectUrl: String = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-uploaded"
+    val errorRedirectUrl: String = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-failed"
 
 
     envelope match {
@@ -113,7 +114,7 @@ trait FileUploadController extends RasController with PageFlowController {
               locationHeader match {
                 case envelopeIdPattern(id) =>
                   sessionService.cacheEnvelope(Envelope(id)).map {
-                    case Some(session) =>
+                    case Some(_) =>
                       Logger.info(s"[UploadService][createFileUploadUrl] Envelope id obtained and cached for userId ($userId)")
                       val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
                       val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
@@ -132,21 +133,21 @@ trait FileUploadController extends RasController with PageFlowController {
           }
         }.recover {
           case e: Throwable =>
-            Logger.error("[UploadService][createFileUploadUrl] Failed to create envelope")
+            Logger.error(s"[UploadService][createFileUploadUrl] Failed to create envelope. ${e.getMessage}", e)
             None
         }
     }
   }
 
-  def back = Action.async {
+  def back: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) => Future.successful(previousPage("FileUploadController"))
+        case Right(_) => Future.successful(previousPage("FileUploadController"))
         case Left(res) => res
       }
   }
 
-  def uploadSuccess = Action.async { implicit request =>
+  def uploadSuccess: Action[AnyContent] = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(userId) =>
         sessionService.fetchRasSession.flatMap {
@@ -170,33 +171,33 @@ trait FileUploadController extends RasController with PageFlowController {
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
       case Left(resp) =>
-        Logger.error("[FileUploadController][uploadSuccess] user not authorised")
+        Logger.warn("[FileUploadController][uploadSuccess] user not authorised")
         resp
     }
   }
 
-  def uploadError = Action.async { implicit request =>
+  def uploadError: Action[AnyContent] = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
 
-        val errorCode = request.getQueryString("errorCode").getOrElse("")
-        val errorReason = request.getQueryString("reason").getOrElse("")
-        val errorResponse = UploadResponse(errorCode, Some(errorReason))
+        val errorCode: String = request.getQueryString("errorCode").getOrElse("")
+        val errorReason: String = request.getQueryString("reason").getOrElse("")
+        val errorResponse: UploadResponse = UploadResponse(errorCode, Some(errorReason))
 
         sessionService.cacheUploadResponse(errorResponse).flatMap {
-          case Some(session) =>
+          case Some(_) =>
             Future.successful(Redirect(routes.FileUploadController.get()))
           case _ =>
             Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
         }
 
       case Left(resp) =>
-        Logger.error("[FileUploadController][uploadError] user not authorised")
+        Logger.warn("[FileUploadController][uploadError] user not authorised")
         resp
     }
   }
 
-  def uploadInProgress = Action.async { implicit request =>
+  def uploadInProgress: Action[AnyContent] = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(userId) =>
         shortLivedCache.fetchFileSession(userId).flatMap {
@@ -214,7 +215,7 @@ trait FileUploadController extends RasController with PageFlowController {
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
       case Left(resp) =>
-        Logger.error("[FileUploadController][uploadInProgress] user not authorised")
+        Logger.warn("[FileUploadController][uploadInProgress] user not authorised")
         resp
     }
   }

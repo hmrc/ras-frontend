@@ -33,15 +33,15 @@ trait FileUploadConnector extends ServicesConfig {
   override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   val http: HttpPost
-  lazy val rasApiBaseUrl = baseUrl("relief-at-source")
-  lazy val fileUploadBaseUrl = baseUrl("file-upload")
-  lazy val fileUploadUrlSuffix = getString("file-upload-url-suffix")
+  lazy val rasApiBaseUrl: String = baseUrl("relief-at-source")
+  lazy val fileUploadBaseUrl: String = baseUrl("file-upload")
+  lazy val fileUploadUrlSuffix: String = getString("file-upload-url-suffix")
   val rasFileUploadCallbackUrl: String
 
-  lazy val maxItems = getInt("file-upload-constraints.maxItems")
-  lazy val maxSize = getString("file-upload-constraints.maxSize")
-  lazy val maxSizePerItem = getString("file-upload-constraints.maxSizePerItem")
-  lazy val allowZeroLengthFiles = getBoolean("file-upload-constraints.allowZeroLengthFiles")
+  lazy val maxItems: Int = getInt("file-upload-constraints.maxItems")
+  lazy val maxSize: String = getString("file-upload-constraints.maxSize")
+  lazy val maxSizePerItem: String = getString("file-upload-constraints.maxSizePerItem")
+  lazy val allowZeroLengthFiles: Boolean = getBoolean("file-upload-constraints.allowZeroLengthFiles")
   val apiVersion: ApiVersion
 
   def createEnvelope(userId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {

@@ -19,7 +19,7 @@ package controllers
 import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
 import controllers.RasResidencyCheckerController._
 import helpers.RandomNino
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

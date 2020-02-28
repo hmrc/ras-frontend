@@ -17,7 +17,7 @@
 package controllers
 
 import config.{RasContext, RasContextImpl}
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import models.Questionnaire
 import play.api.i18n.Messages.Implicits._
@@ -32,11 +32,11 @@ trait QuestionnaireController extends FrontendController {
   implicit val context: RasContext = RasContextImpl
   val auditService: AuditService
 
-  def showQuestionnaire = Action.async { implicit request =>
+  def showQuestionnaire: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(views.html.feedback.feedbackQuestionaire(Questionnaire.form)))
   }
 
-  def submitQuestionnaire = Action.async { implicit request =>
+  def submitQuestionnaire: Action[AnyContent] = Action.async { implicit request =>
       Questionnaire.form.bindFromRequest.fold(
         formWithErrors => {
           Future.successful(BadRequest(views.html.feedback.feedbackQuestionaire(formWithErrors))
@@ -49,7 +49,7 @@ trait QuestionnaireController extends FrontendController {
       )
   }
 
-  def feedbackThankyou = Action.async { implicit request =>
+  def feedbackThankyou: Action[AnyContent] = Action.async { implicit request =>
       Future.successful(Ok(views.html.feedback.thanks()))
   }
 

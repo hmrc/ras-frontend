@@ -18,9 +18,9 @@ package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.UserDetailsConnector
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import play.api.{Configuration, Environment, Logger, Play}
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
@@ -36,43 +36,43 @@ trait ErrorController extends RasController with I18nHelper {
 
   implicit val context: RasContext = RasContextImpl
 
-  def renderGlobalErrorPage = Action.async {
+  def renderGlobalErrorPage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
           Logger.info("[ErrorController][renderGlobalErrorPage] rendering global error page")
           Future.successful(InternalServerError(views.html.global_error()))
         case Left(resp) =>
-          Logger.error("[ErrorController][renderGlobalErrorPage] user not authorised")
+          Logger.warn("[ErrorController][renderGlobalErrorPage] user not authorised")
           resp
       }
   }
 
-  def renderProblemUploadingFilePage = Action.async {
+  def renderProblemUploadingFilePage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
           Logger.info("[ErrorController][renderProblemUploadingFilePage] rendering problem uploading file page")
           Future.successful(InternalServerError(views.html.problem_uploading_file()))
         case Left(resp) =>
-          Logger.error("[ErrorController][renderProblemUploadingFilePage] user not authorised")
+          Logger.warn("[ErrorController][renderProblemUploadingFilePage] user not authorised")
           resp
       }
   }
 
-  def fileNotAvailable = Action.async {
+  def fileNotAvailable: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
           Logger.info("[ErrorController][fileNotAvailable] rendering file not available page")
           Future.successful(InternalServerError(views.html.file_not_available()))
         case Left(resp) =>
-          Logger.error("[ErrorController][fileNotAvailable] user not authorised")
+          Logger.warn("[ErrorController][fileNotAvailable] user not authorised")
           resp
       }
   }
 
-  def notAuthorised = Action.async {
+  def notAuthorised: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(Ok(views.html.unauthorised()))
   }

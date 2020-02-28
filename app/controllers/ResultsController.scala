@@ -18,9 +18,8 @@ package controllers
 
 import config.{FrontendAuthConnector, RasContext, RasContextImpl}
 import connectors.UserDetailsConnector
-import play.Logger
-import play.api.{Configuration, Environment, Play}
-import play.api.mvc.Action
+import play.api.{Configuration, Environment, Logger, Play}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.auth.core.AuthConnector
 import services.TaxYearResolver
 
@@ -38,7 +37,7 @@ trait ResultsController extends RasController with PageFlowController{
 
   implicit val context: RasContext = RasContextImpl
 
-  def matchFound = Action.async {
+  def matchFound: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userInfo) =>
@@ -73,11 +72,13 @@ trait ResultsController extends RasController with PageFlowController{
                 Redirect(routes.ErrorController.renderGlobalErrorPage())
             }
           }
-        case Left(res) => res
+        case Left(res) =>
+          Logger.warn("[ResultsController][matchFound] user Not authorised")
+          res
       }
   }
 
-  def noMatchFound = Action.async {
+  def noMatchFound: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userInfo) =>
@@ -109,11 +110,13 @@ trait ResultsController extends RasController with PageFlowController{
                 Redirect(routes.ErrorController.renderGlobalErrorPage())
             }
           }
-        case Left(res) => res
+        case Left(res) =>
+          Logger.warn("[ResultsController][matchFound] user Not authorised")
+          res
       }
   }
 
-  def back = Action.async {
+  def back: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userInfo) =>
@@ -121,7 +124,9 @@ trait ResultsController extends RasController with PageFlowController{
             case Some(session) => previousPage("ResultsController")
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
-        case Left(res) => res
+        case Left(res) =>
+          Logger.warn("[ResultsController][back] user Not authorised")
+          res
       }
   }
 }

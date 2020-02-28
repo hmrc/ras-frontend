@@ -16,7 +16,7 @@
 
 package forms
 
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models.MemberNino
 import play.api.data.Form
 import play.api.data.Forms._
@@ -25,6 +25,3 @@ import validators.NinoValidator
 object MemberNinoForm extends I18nHelper{
   val form = Form(mapping("nino" -> text.verifying(NinoValidator.ninoConstraint))(MemberNino.apply)(MemberNino.unapply))
 }
-
-
-

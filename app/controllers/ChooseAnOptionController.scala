@@ -25,7 +25,7 @@ import play.api.http.HttpEntity
 import play.api.mvc._
 import play.api.{Configuration, Environment, Logger, Play}
 import uk.gov.hmrc.auth.core.AuthConnector
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models.{FileSession, FileUploadStatus}
 import services.ShortLivedCache
 import uk.gov.hmrc.http.HeaderCarrier
@@ -51,7 +51,7 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
   implicit val context: RasContext = RasContextImpl
   private val _contentType =   "application/csv"
 
-  def get = Action.async {
+  def get: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
@@ -63,7 +63,7 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
             }
           }
         case Left(resp) =>
-          Logger.error("[ChooseAnOptionController][get] user not authorised")
+          Logger.warn("[ChooseAnOptionController][get] user not authorised")
           resp
       }
   }
@@ -88,14 +88,15 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
   private def formattedUploadDate(timestamp: Long): String = {
     val uploadDate = new DateTime(timestamp)
 
-    val todayOrYesterday = uploadDate.toLocalDate().isEqual(DateTime.now.toLocalDate) match {
-      case true => Messages("today")
-      case _ => Messages("yesterday")
+    val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(DateTime.now.toLocalDate)) {
+      Messages("today")
+    } else {
+      Messages("yesterday")
     }
     Messages("formatted.upload.timestamp", todayOrYesterday, uploadDate.toString("H:mm"))
   }
 
-  def renderUploadResultsPage = Action.async {
+  def renderUploadResultsPage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
@@ -127,19 +128,19 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
               Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage)
           }
         case Left(resp) =>
-          Logger.error("[ChooseAnOptionController][renderUploadResultsPage] user not authorised")
+          Logger.warn("[ChooseAnOptionController][renderUploadResultsPage] user not authorised")
           resp
       }
   }
 
-  def renderNoResultAvailablePage = Action.async {
+  def renderNoResultAvailablePage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
               fileSession.resultsFile match {
-                case Some(resultFile) =>
+                case Some(_) =>
                   Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] there is a file ready, rendering results page")
                   Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage()))
                 case _ =>
@@ -151,12 +152,12 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
               Future.successful(Ok(views.html.no_results_available()))
           }
         case Left(resp) =>
-          Logger.error("[ChooseAnOptionController][renderNotResultAvailablePage] user not authorised")
+          Logger.warn("[ChooseAnOptionController][renderNotResultAvailablePage] user not authorised")
           resp
       }
   }
 
-  def renderNoResultsAvailableYetPage = Action.async {
+  def renderNoResultsAvailableYetPage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
@@ -175,19 +176,19 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
               Future.successful(Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage()))
           }
         case Left(resp) =>
-          Logger.error("[ChooseAnOptionController][renderNotResultAvailableYetPage] user not authorised")
+          Logger.warn("[ChooseAnOptionController][renderNotResultAvailableYetPage] user not authorised")
           resp
       }
   }
 
-  def renderFileReadyPage = Action.async {
+  def renderFileReadyPage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
               fileSession.resultsFile match {
-                case Some(resultFile) =>
+                case Some(_) =>
                   Future.successful(Ok(views.html.file_ready()))
                 case _ =>
                   Logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
@@ -198,12 +199,12 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
               Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
           }
         case Left(resp) =>
-          Logger.error("[ChooseAnOptionController][renderFileReadyPage] user not authorised")
+          Logger.warn("[ChooseAnOptionController][renderFileReadyPage] user not authorised")
           resp
       }
   }
 
-  def getResultsFile(fileName:String) = Action.async {
+  def getResultsFile(fileName:String): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
@@ -228,7 +229,7 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
               Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
           }
         case Left(resp) =>
-          Logger.error("[ChooseAnOptionController][getResultsFile] user not authorised")
+          Logger.warn("[ChooseAnOptionController][getResultsFile] user not authorised")
           resp
       }
   }
@@ -238,10 +239,10 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
       val dataContent: Source[ByteString, _] = StreamConverters.fromInputStream(() => response.get)
         .watchTermination()((_, futDone) => futDone.onComplete {
           case Success(_) =>
-            Logger.info(s"File with name $fileName has started to delete")
+            Logger.info(s"[ChooseAnOptionController][getFile] File with name $fileName has started to delete")
             resultsFileConnector.deleteFile(fileName, userId)
           case Failure(t) =>
-            Logger.warn(s"File with name $fileName was not deleted")
+            Logger.warn(s"[ChooseAnOptionController][getFile] File with name $fileName was not deleted")
         })
 
       Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
@@ -250,13 +251,13 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
           CONTENT_TYPE -> _contentType)
 
     }.recover {
-      case ex: Throwable => Logger.error("Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
+      case ex: Throwable => Logger.error("[ChooseAnOptionController][getFile] Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
         Redirect(routes.ErrorController.renderGlobalErrorPage)
     }
   }
 
   private def isBeforeApr6(timestamp: Long) : Boolean = {
     val uploadDate = new DateTime(timestamp)
-    uploadDate.isBefore(DateTime.parse(s"${uploadDate.getYear()}-04-06"))
+    uploadDate.isBefore(DateTime.parse(s"${uploadDate.getYear}-04-06"))
   }
 }

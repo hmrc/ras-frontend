@@ -16,7 +16,7 @@
 
 package forms
 
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import models.{MemberDateOfBirth, MemberName, RasDate}
 import play.api.data.Form
 import play.api.data.Forms._
@@ -34,6 +34,3 @@ object MemberDateOfBirthForm extends I18nHelper{
     (MemberDateOfBirth.apply)(MemberDateOfBirth.unapply)
   )
 }
-
-
-

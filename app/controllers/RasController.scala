@@ -18,9 +18,9 @@ package controllers
 
 import config.ApplicationConfig
 import connectors.UserDetailsConnector
-import helpers.helpers.I18nHelper
+import helpers.I18nHelper
 import play.api.Logger
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{AnyContent, Request, Result}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
@@ -36,30 +36,31 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
   val sessionService: SessionService = SessionService
   val shortLivedCache: ShortLivedCache = ShortLivedCache
 
-  def isAuthorised()(implicit request: Request[AnyContent]) = {
+  def isAuthorised()(implicit request: Request[AnyContent]): Future[Either[Future[Result], String]] = {
     authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
     ).retrieve(authorisedEnrolments) {
       case (enrolments) =>
       Logger.info("User authorised")
       Future(Right(enrolments.enrolments.head.identifiers.head.value))
     } recover {
-      case _ : NoActiveSession => Left(notLogged)
-      case _ : AuthorisationException => Left(unAuthorise)
+      case _ : NoActiveSession => Left(notLogged())
+      case ex : AuthorisationException => Left(unAuthorise(ex))
     }
   }
 
-  def notLogged() = {Logger.warn("User not logged in - no active session found");Future.successful(toGGLogin(ApplicationConfig.loginCallback))}
-
-  def unAuthorise() = {
-    Logger.error("User not authorised");
-    Future.successful(Redirect(routes.ErrorController.notAuthorised))
+  def notLogged(): Future[Result] = {
+    Logger.warn("[RasController][notLogged] User not logged in - no active session found")
+    Future.successful(toGGLogin(ApplicationConfig.loginCallback))
   }
 
-  def userInfoNotFond(idName:String) = {
-    Logger.error(s"${idName} not found");
+  def unAuthorise(ex: AuthorisationException): Future[Result] = {
+    Logger.error(s"[RasController][unAuthorise] User not authorised - ${ex.reason}")
+    Future.successful(Redirect(routes.ErrorController.notAuthorised()))
+  }
+
+  def userInfoNotFond(idName:String): Future[Result] = {
+    Logger.error(s"[RasController][userInfoNotFound] $idName not found")
     Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
   }
 
 }
-
-
