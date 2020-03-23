@@ -14,20 +14,21 @@
  * limitations under the License.
  *@
 
-@(memberNinoForm: Form[models.MemberNino], name:String, edit: Boolean)(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@import config.ApplicationConfig
+@(memberNinoForm: Form[models.MemberNino], name:String, edit: Boolean)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@ras_main(title = Messages("member.nino.page.title")) {
+@ras_main(title = messages("member.nino.page.title")) {
 
     <a class="link-back" href="@routes.MemberNinoController.back(edit)"
-           data-journey-click="navigation - link:What is their NINO?:Back">@Messages("back")</a>
+           data-journey-click="navigation - link:What is their NINO?:Back">@messages("back")</a>
 
     @views.html.helpers.errorSummary(memberNinoForm, "What is their NINO?")
 
     <header class="page-header">
-        <h1 id="header" class="heading-xlarge">@Messages("member.nino.page.header", name)</h1>
+        <h1 id="header" class="heading-xlarge">@messages("member.nino.page.header", name)</h1>
     </header>
 
     @form(action = routes.MemberNinoController.post(edit)) {
@@ -36,13 +37,13 @@
 
             @rasInput(memberNinoForm("nino"),
             '_id -> "nino",
-            '_hintText -> Messages("nino.hint"))
+            '_hintText -> messages("nino.hint"))
 
         </div>
 
     <button class="button" type="submit" id="continue"
             data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">
-        @Messages("continue")
+        @messages("continue")
     </button>
     }
 

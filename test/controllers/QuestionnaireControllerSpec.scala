@@ -16,46 +16,41 @@
 
 package controllers
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.test.FakeRequest
-import play.api.libs.json._
-import play.api.test.Helpers._
+import helpers.RasTestHelper
 import play.api.http.Status
-import org.scalatest.mockito.MockitoSugar
-import services.AuditService
+import play.api.libs.json._
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
 
-class QuestionnaireControllerSpec extends PlaySpec with MockitoSugar  with OneAppPerSuite {
+class QuestionnaireControllerSpec extends UnitSpec with RasTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val fakeRequest = FakeRequest("GET", "/")
+  override val fakeRequest = FakeRequest("GET", "/")
   val fakePostRequest = FakeRequest("POST", "/signed-out")
 
-  val mockAuditService: AuditService = mock[AuditService]
-
-  object SUT extends QuestionnaireController {
-    override val auditService = mockAuditService
-  }
+  val TestController = new QuestionnaireController(mockAuditConnector, mockAppConfig)
 
   "Calling the QuestionnaireController.showQuestionnaire" should {
     "respond with OK" in {
-      val result = SUT.showQuestionnaire(fakeRequest)
-      status(result) mustBe Status.OK
+      val result = TestController.showQuestionnaire(fakeRequest)
+      status(result) shouldBe Status.OK
     }
   }
 
   "Calling the QuestionnaireController.submitQuestionnaire" should {
     "respond with OK" in {
-      val result = SUT.submitQuestionnaire(fakePostRequest)
-      status(result) mustBe Status.SEE_OTHER
+      val result = TestController.submitQuestionnaire(fakePostRequest)
+      status(result) shouldBe Status.SEE_OTHER
     }
   }
 
   "Calling the QuestionnaireController.feedbackThankyou" should {
     "respond with OK" in {
-      val result = SUT.feedbackThankyou(fakeRequest)
-      status(result) mustBe Status.OK
+      val result = TestController.feedbackThankyou(fakeRequest)
+      status(result) shouldBe Status.OK
     }
   }
 
@@ -66,8 +61,8 @@ class QuestionnaireControllerSpec extends PlaySpec with MockitoSugar  with OneAp
         "easyToUse" -> 1,
         "satisfactionLevel" -> "incorrect",
         "whyGiveThisRating" -> "some feedback")
-      val result = SUT.submitQuestionnaire.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) mustBe BAD_REQUEST
+      val result = TestController.submitQuestionnaire.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      status(result) shouldBe BAD_REQUEST
     }
   }
 }

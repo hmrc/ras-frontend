@@ -16,44 +16,38 @@
 
 package controllers
 
-import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.UserDetailsConnector
-import play.api.{Configuration, Environment, Logger, Play}
-import play.api.mvc.Action
-import uk.gov.hmrc.auth.core.AuthConnector
+import config.ApplicationConfig
+import javax.inject.Inject
+import play.api.Logger
+import play.api.mvc.{Action, AnyContent}
+import services.{SessionService, ShortLivedCache}
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import scala.concurrent.Future
 
-object SessionController extends SessionController {
-  // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  // $COVERAGE-ON$
-}
+class SessionController @Inject()(val authConnector: DefaultAuthConnector,
+																	val shortLivedCache: ShortLivedCache,
+																	val sessionService: SessionService,
+																	val appConfig: ApplicationConfig
+																 ) extends RasController {
 
-trait SessionController extends RasController {
-
-  implicit val context: RasContext = RasContextImpl
-
-  val CHOOSE_AN_OPTION = "choose-an-option"
+	val CHOOSE_AN_OPTION = "choose-an-option"
   val MEMBER_NAME = "member-name"
   val MEMBER_NINO = "member-nino"
   val MEMBER_DOB = "member-dob"
 
-  def redirect(target:String, cleanSession:Boolean, edit: Boolean = false) = Action.async {
+  def redirect(target:String, cleanSession:Boolean, edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       if(cleanSession){
         sessionService.resetRasSession() map {
-          case Some(session) =>
+          case Some(_) =>
             target match {
               case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get())
               case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
               case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
               case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
               case _ =>
-                Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target ${target}")
+                Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
                 Redirect(routes.ErrorController.renderGlobalErrorPage())
             }
           case _ =>
@@ -67,12 +61,12 @@ trait SessionController extends RasController {
           case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
           case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
           case _ =>
-            Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target ${target}")
+            Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
       }
   }
-  def keepAlive() = Action.async {
+  def keepAlive(): Action[AnyContent] = Action.async {
     implicit request => Future.successful(Ok("OK"))
   }
 }

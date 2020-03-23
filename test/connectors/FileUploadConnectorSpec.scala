@@ -16,35 +16,29 @@
 
 package connectors
 
+import helpers.RasTestHelper
 import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import org.mockito.ArgumentMatcher
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneAppPerSuite
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.test.UnitSpec
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class FileUploadConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with ServicesConfig {
+class FileUploadConnectorSpec extends UnitSpec with RasTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val mockHttp = mock[HttpPost]
-
-  def testConnector(version: ApiVersion) = new FileUploadConnector {
-    override val http: HttpPost = mockHttp
-    override val rasFileUploadCallbackUrl: String = "fake-url"
-    override val apiVersion: ApiVersion = version
+	def testConnector(version: ApiVersion): FileUploadConnector = new FileUploadConnector(mockHttp, mockAppConfig) {
+    override lazy val rasFileUploadCallbackUrl: String = "fake-url"
+    override lazy val apiVersion: ApiVersion = version
   }
 
-  def bodyMatcher(version: ApiVersion) = new ArgumentMatcher[JsValue] {
-    override def matches(other: scala.Any): Boolean = {
+  def bodyMatcher(version: ApiVersion): ArgumentMatcher[JsValue] = new ArgumentMatcher[JsValue] {
+     override def matches(other: JsValue): Boolean = {
       val residencyStatusVersion = version match {
         case ApiV1_0 => "1.0"
         case ApiV2_0 => "2.0"
@@ -72,7 +66,4 @@ class FileUploadConnectorSpec extends UnitSpec with OneAppPerSuite with MockitoS
 
     }
   }
-
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

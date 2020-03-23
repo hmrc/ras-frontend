@@ -17,23 +17,23 @@
 package controllers
 
 import connectors.ResidencyStatusAPIConnector
-import controllers.RasResidencyCheckerController._
 import metrics.Metrics
 import models._
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request, Result}
-import services.AuditService
+import services.{AuditService, TaxYearResolver}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
-import services.TaxYearResolver
 
 import scala.concurrent.Future
 
-trait
-RasResidencyCheckerController extends RasController {
+trait RasResidencyCheckerController extends RasController with AuditService {
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
-  val auditService: AuditService
   val apiVersion: ApiVersion
+
+	val SCOTTISH = "scotResident"
+	val WELSH = "welshResident"
+	val OTHER_UK = "otherUKResident"
 
   def submitResidencyStatus(session: RasSession, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] = {
 
@@ -123,15 +123,9 @@ RasResidencyCheckerController extends RasController {
         "CYStatus" -> residencyStatus.get.currentYearResidencyStatus
       ) ++ nextYearStatusMap)
 
-    auditService.audit(auditType = "ReliefAtSourceResidency",
+    audit(auditType = "ReliefAtSourceResidency",
       path = request.path,
       auditData = auditDataMap ++ Map("userIdentifier" -> userId, "requestSource" -> "FE_SINGLE") ++ ninoMap
     )
   }
-}
-
-object RasResidencyCheckerController {
-  val SCOTTISH = "scotResident"
-  val WELSH = "welshResident"
-  val OTHER_UK = "otherUKResident"
 }

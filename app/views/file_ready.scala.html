@@ -14,19 +14,19 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@import config.ApplicationConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+	@ras_main(title = messages("file.ready.page.title")) {
 
-@ras_main(title = Messages("file.ready.page.title")) {
-
-    <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:File ready:Back">@Messages("back")</a>
+    <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:File ready:Back">@messages("back")</a>
 
     <div class="row">
-        <h1 id="header" class="heading-xlarge">@Messages("file.ready.page.header")</h1>
+        <h1 id="header" class="heading-xlarge">@messages("file.ready.page.header")</h1>
     </div>
 
     <div class="row">
       <p id="sub-header">
-          <a id="sub-header-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:File ready:Download your file">@Messages("file.ready.sub-header")</a>
+          <a id="sub-header-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:File ready:Download your file">@messages("file.ready.sub-header")</a>
       </p>
     </div>
 

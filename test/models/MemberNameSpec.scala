@@ -26,17 +26,17 @@ class MemberNameSpec extends UnitSpec {
 
     "return false if first name is empty" in {
       val name = MemberName("", "last name")
-      assert(name.hasAValue() == false)
+      assert(!name.hasAValue())
     }
 
     "return false if firstName & lastName are empty" in {
       val name = MemberName ("", "")
-      assert(name.hasAValue() == false)
+      assert(!name.hasAValue())
     }
 
     "return true if firstName & lastName contain values" in {
       val name = MemberName ("Jim", "Jimson")
-      assert(name.hasAValue() == true)
+      assert(name.hasAValue())
     }
   }
 }

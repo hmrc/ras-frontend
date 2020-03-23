@@ -16,36 +16,31 @@
 
 package controllers
 
-import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import play.api.mvc.{Action, AnyContent}
-import play.api.{Configuration, Environment, Logger, Play}
-import uk.gov.hmrc.auth.core.AuthConnector
+import config.ApplicationConfig
+import connectors.ResidencyStatusAPIConnector
 import forms.MemberDateOfBirthForm.form
-import metrics.Metrics
+import javax.inject.Inject
 import models.ApiVersion
-import services.AuditService
+import play.api.Logger
 import play.api.data.Form
+import play.api.mvc.{Action, AnyContent}
+import services.{SessionService, ShortLivedCache}
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import scala.concurrent.Future
 
-object MemberDOBController extends MemberDOBController {
-  // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
-  override val auditService: AuditService = AuditService
-  override lazy val apiVersion: ApiVersion = ApplicationConfig.rasApiVersion
-  // $COVERAGE-ON$
-}
+class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
+																		val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
+																		val connector: DefaultAuditConnector,
+																		val shortLivedCache: ShortLivedCache,
+																		val sessionService: SessionService,
+																		implicit val appConfig: ApplicationConfig
+																	 ) extends RasResidencyCheckerController with PageFlowController {
 
-trait MemberDOBController extends RasResidencyCheckerController with PageFlowController {
+	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
 
-  implicit val context: RasContext = RasContextImpl
-
-  def get(edit: Boolean = false): Action[AnyContent] = Action.async {
+	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>

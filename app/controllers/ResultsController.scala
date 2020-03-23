@@ -16,62 +16,52 @@
 
 package controllers
 
-import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.UserDetailsConnector
-import play.api.{Configuration, Environment, Logger, Play}
+import config.ApplicationConfig
+import javax.inject.Inject
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
+import services.{SessionService, ShortLivedCache, TaxYearResolver}
 import uk.gov.hmrc.auth.core.AuthConnector
-import services.TaxYearResolver
 
+class ResultsController @Inject()(val authConnector: AuthConnector,
+																	val shortLivedCache: ShortLivedCache,
+																	val sessionService: SessionService,
+																	implicit val appConfig: ApplicationConfig
+																 ) extends PageFlowController {
 
-object ResultsController extends ResultsController {
-  // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  // $COVERAGE-ON$
-}
-
-trait ResultsController extends RasController with PageFlowController{
-
-  implicit val context: RasContext = RasContextImpl
-
-  def matchFound: Action[AnyContent] = Action.async {
+def matchFound: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) =>
-          sessionService.fetchRasSession() map { session =>
-            session match {
-              case Some(session) =>
-                session.residencyStatusResult match {
-                  case Some(residencyStatusResult) =>
-                    val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-                    val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
-                    val nino = session.nino.nino
-                    val currentTaxYear = TaxYearResolver.currentTaxYear
-                    val nextTaxYear = TaxYearResolver.currentTaxYear + 1
-                    val currentYearResidencyStatus = residencyStatusResult.currentYearResidencyStatus
-                    val nextYearResidencyStatus = residencyStatusResult.nextYearResidencyStatus
+        case Right(_) =>
+          sessionService.fetchRasSession() map {
+						case Some(session) =>
+							session.residencyStatusResult match {
+								case Some(residencyStatusResult) =>
+									val name = s"${session.name.firstName.capitalize} ${session.name.lastName.capitalize}"
+									val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+									val nino = session.nino.nino
+									val currentTaxYear = TaxYearResolver.currentTaxYear
+									val nextTaxYear = TaxYearResolver.currentTaxYear + 1
+									val currentYearResidencyStatus = residencyStatusResult.currentYearResidencyStatus
+									val nextYearResidencyStatus = residencyStatusResult.nextYearResidencyStatus
 
-                    sessionService.resetRasSession()
+									sessionService.resetRasSession()
 
-                    Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
-                    Ok(views.html.match_found(
-                      name, dateOfBirth, nino,
-                      currentYearResidencyStatus,
-                      nextYearResidencyStatus,
-                      currentTaxYear, nextTaxYear))
+									Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
+									Ok(views.html.match_found(
+										name, dateOfBirth, nino,
+										currentYearResidencyStatus,
+										nextYearResidencyStatus,
+										currentTaxYear, nextTaxYear))
 
-                  case _ =>
-                    Logger.info("[ResultsController][matchFound] Session does not contain residency status result - wrong result")
-                    Redirect(routes.ChooseAnOptionController.get())
-                }
-              case _ =>
-                Logger.error("[ResultsController][matchFound] failed to retrieve ras session")
-                Redirect(routes.ErrorController.renderGlobalErrorPage())
-            }
-          }
+								case _ =>
+									Logger.info("[ResultsController][matchFound] Session does not contain residency status result - wrong result")
+									Redirect(routes.ChooseAnOptionController.get())
+							}
+						case _ =>
+							Logger.error("[ResultsController][matchFound] failed to retrieve ras session")
+							Redirect(routes.ErrorController.renderGlobalErrorPage())
+					}
         case Left(res) =>
           Logger.warn("[ResultsController][matchFound] user Not authorised")
           res
@@ -81,35 +71,32 @@ trait ResultsController extends RasController with PageFlowController{
   def noMatchFound: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) =>
-          sessionService.fetchRasSession() map { session =>
-            session match {
-              case Some(session) =>
-                session.name.hasAValue() && session.nino.hasAValue() && session.dateOfBirth.hasAValue() match {
-                  case true =>
-                    session.residencyStatusResult match {
-                      case None =>
+        case Right(_) =>
+          sessionService.fetchRasSession() map {
+						case Some(session) =>
+							if (session.name.hasAValue() && session.nino.hasAValue() && session.dateOfBirth.hasAValue()) {
+								session.residencyStatusResult match {
+									case None =>
 
-                        val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-                        val nino = session.nino.nino
-                        val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+										val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+										val nino = session.nino.nino
+										val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
 
-                        Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
-                        Ok(views.html.match_not_found(name, dateOfBirth, nino))
+										Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
+										Ok(views.html.match_not_found(name, dateOfBirth, nino))
 
-                      case Some(_) =>
-                        Logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
-                        Redirect(routes.ChooseAnOptionController.get())
-                    }
-                  case false =>
-                    Logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
-                    Redirect(routes.ChooseAnOptionController.get())
-                }
-              case _ =>
-                Logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
-                Redirect(routes.ErrorController.renderGlobalErrorPage())
-            }
-          }
+									case Some(_) =>
+										Logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
+										Redirect(routes.ChooseAnOptionController.get())
+								}
+							} else {
+								Logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
+								Redirect(routes.ChooseAnOptionController.get())
+							}
+						case _ =>
+							Logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
+							Redirect(routes.ErrorController.renderGlobalErrorPage())
+					}
         case Left(res) =>
           Logger.warn("[ResultsController][matchFound] user Not authorised")
           res
@@ -119,9 +106,9 @@ trait ResultsController extends RasController with PageFlowController{
   def back: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
-        case Right(userInfo) =>
+        case Right(_) =>
           sessionService.fetchRasSession() map {
-            case Some(session) => previousPage("ResultsController")
+            case Some(_) => previousPage("ResultsController")
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) =>

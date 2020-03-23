@@ -16,37 +16,25 @@
 
 package controllers
 
-import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import controllers.RasResidencyCheckerController._
-import helpers.I18nHelper
+import config.ApplicationConfig
+import connectors.ResidencyStatusAPIConnector
+import helpers.{I18nHelper, RasTestHelper}
 import models._
-import org.scalatest.BeforeAndAfter
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.{Configuration, Environment}
-import services.{AuditService, SessionService}
+import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.test.UnitSpec
 
-class RasResidencyCheckerControllerSpec extends UnitSpec with GuiceOneAppPerSuite with I18nHelper with MockitoSugar with BeforeAndAfter {
+class RasResidencyCheckerControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
 
-  val mockAuthConnector: AuthConnector = mock[AuthConnector]
-  val mockUserDetailsConnector: UserDetailsConnector = mock[UserDetailsConnector]
-  val mockSessionService: SessionService = mock[SessionService]
-  val mockConfig: Configuration = mock[Configuration]
-  val mockEnvironment: Environment = mock[Environment]
-  val mockRasConnector: ResidencyStatusAPIConnector = mock[ResidencyStatusAPIConnector]
-  val mockAuditService: AuditService = mock[AuditService]
-
-  def configureRasResidencyCheckerController(version: ApiVersion) = new RasResidencyCheckerController {
+  def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController = new RasResidencyCheckerController {
     override val authConnector: AuthConnector = mockAuthConnector
-    override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
+		override val connector: DefaultAuditConnector = mockAuditConnector
     override val sessionService: SessionService = mockSessionService
-    override val config: Configuration = mockConfig
-    override val env: Environment = mockEnvironment
-    override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockRasConnector
-    override val auditService: AuditService = mockAuditService
+    override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockResidencyStatusAPIConnector
     override val apiVersion: ApiVersion = version
+		override val shortLivedCache: ShortLivedCache = mockShortLivedCache
+		override val appConfig: ApplicationConfig = mockAppConfig
   }
 
   "RasResidencyCheckerController extractResidencyStatus" when {

@@ -16,40 +16,33 @@
 
 package connectors
 
+import helpers.RasTestHelper
 import models.UserDetails
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet }
 
-class UserDetailsConnectorSpec extends PlaySpec
-  with MockitoSugar
-  with GuiceOneAppPerSuite {
+class UserDetailsConnectorSpec extends UnitSpec with RasTestHelper {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+	def testConnector: UserDetailsConnector = new UserDetailsConnector(mockHttp)
 
   "Get User Details endpoint" must {
 
     "return whatever it receives" in {
-      when(mockHttpGet.GET[UserDetails](any())(any(), any(), any())).
+      when(mockHttp.GET[UserDetails](any())(any(), any(), any())).
         thenReturn(Future.successful(UserDetails(None, None, "")))
 
-      val response = Await.result(SUT.getUserDetails("1234567890"), Duration.Inf)
+      val response = Await.result(testConnector.getUserDetails("1234567890"), Duration.Inf)
 
-      response mustBe UserDetails(None, None, "")
+      response shouldBe UserDetails(None, None, "")
     }
 
-  }
-
-  val mockHttpGet = mock[HttpGet]
-
-  object SUT extends UserDetailsConnector {
-    override val httpGet = mockHttpGet
   }
 
 }

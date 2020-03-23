@@ -16,20 +16,7 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import connectors.UserDetailsConnector
-import play.api.{Configuration, Environment, Play}
 import play.api.mvc.Result
-import uk.gov.hmrc.auth.core.AuthConnector
-
-object PageFlowController extends PageFlowController {
-  // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  // $COVERAGE-ON$
-}
 
 trait PageFlowController extends RasController {
 
@@ -41,26 +28,26 @@ trait PageFlowController extends RasController {
 
   def previousPage(from: String, edit: Boolean = false): Result = {
     from match {
-      case FILE_UPLOAD => Redirect(routes.ChooseAnOptionController.get)
-      case MEMBER_NAME => {
-        edit match {
-          case true => Redirect(routes.ResultsController.noMatchFound)
-          case _ => Redirect(routes.ChooseAnOptionController.get)
-        }
-      }
-      case MEMBER_NINO => {
-        edit match {
-          case true => Redirect(routes.ResultsController.noMatchFound)
-          case _ => Redirect(routes.MemberNameController.get())
-        }
-      }
-      case MEMBER_DOB => {
-        edit match {
-          case true => Redirect(routes.ResultsController.noMatchFound)
-          case _ => Redirect(routes.MemberNinoController.get())
-        }
-      }
-      case RESULTS => Redirect(routes.MemberDOBController.get())
+      case FILE_UPLOAD => Redirect(routes.ChooseAnOptionController.get())
+      case MEMBER_NAME =>
+				if (edit) {
+					Redirect(routes.ResultsController.noMatchFound())
+				} else {
+					Redirect(routes.ChooseAnOptionController.get())
+				}
+			case MEMBER_NINO =>
+				if (edit) {
+					Redirect(routes.ResultsController.noMatchFound())
+				} else {
+					Redirect(routes.MemberNameController.get())
+				}
+			case MEMBER_DOB =>
+				if (edit) {
+					Redirect(routes.ResultsController.noMatchFound())
+				} else {
+					Redirect(routes.MemberNinoController.get())
+				}
+			case RESULTS => Redirect(routes.MemberDOBController.get())
       case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
     }
   }

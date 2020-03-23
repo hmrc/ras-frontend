@@ -16,8 +16,6 @@
 
 package models
 
-import helpers.I18nHelper
-import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 
 class MemberNinoSpec extends UnitSpec {
@@ -26,12 +24,12 @@ class MemberNinoSpec extends UnitSpec {
 
     "return false if nino is empty" in {
         val nino = MemberNino("")
-        assert(nino.hasAValue() == false)
+        assert(!nino.hasAValue())
     }
 
     "return true if nino has a value" in {
       val nino = MemberNino("LE241311C")
-      assert(nino.hasAValue() == true)
+      assert(nino.hasAValue())
     }
   }
 }

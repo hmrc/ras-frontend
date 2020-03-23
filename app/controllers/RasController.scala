@@ -17,32 +17,30 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.UserDetailsConnector
 import helpers.I18nHelper
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request, Result}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
-import uk.gov.hmrc.play.frontend.config.AuthRedirects
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
-trait RasController extends FrontendController with I18nHelper with AuthorisedFunctions with AuthRedirects {
+trait RasController extends FrontendController with I18nHelper with AuthorisedFunctions {
 
-  val userDetailsConnector:UserDetailsConnector
-  val sessionService: SessionService = SessionService
-  val shortLivedCache: ShortLivedCache = ShortLivedCache
+	val appConfig: ApplicationConfig
+  val sessionService: SessionService
+  val shortLivedCache: ShortLivedCache
 
   def isAuthorised()(implicit request: Request[AnyContent]): Future[Either[Future[Result], String]] = {
     authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
     ).retrieve(authorisedEnrolments) {
-      case (enrolments) =>
-      Logger.info("User authorised")
-      Future(Right(enrolments.enrolments.head.identifiers.head.value))
-    } recover {
+			enrolments =>
+				Logger.info("User authorised")
+				Future(Right(enrolments.enrolments.head.identifiers.head.value))
+		} recover {
       case _ : NoActiveSession => Left(notLogged())
       case ex : AuthorisationException => Left(unAuthorise(ex))
     }
@@ -50,7 +48,7 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
 
   def notLogged(): Future[Result] = {
     Logger.warn("[RasController][notLogged] User not logged in - no active session found")
-    Future.successful(toGGLogin(ApplicationConfig.loginCallback))
+    Future.successful(toGGLogin(appConfig.loginCallback))
   }
 
   def unAuthorise(ex: AuthorisationException): Future[Result] = {
@@ -62,5 +60,14 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
     Logger.error(s"[RasController][userInfoNotFound] $idName not found")
     Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
   }
+
+	def toGGLogin(continueUrl: String): Result = {
+		Redirect(appConfig.loginURL,
+			Map(
+				"continue" -> Seq(continueUrl),
+				"origin"   -> Seq("ras-frontend")
+			)
+		)
+	}
 
 }

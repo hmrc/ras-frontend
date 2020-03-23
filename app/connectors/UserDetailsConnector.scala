@@ -16,27 +16,20 @@
 
 package connectors
 
-import config.WSHttp
+import javax.inject.Inject
 import models._
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
-import uk.gov.hmrc.play.config.ServicesConfig
+import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-trait UserDetailsConnector extends ServicesConfig with UserDetailsJsonFormats {
+class UserDetailsConnector @Inject()(val http: DefaultHttpClient) {
 
-  val httpGet: HttpGet = WSHttp
+	implicit val userDetailsFormats: OFormat[UserDetails] = Json.format[UserDetails]
 
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-
-  def getUserDetails(url: String)(implicit hc: HeaderCarrier): Future[UserDetails] = {
-    httpGet.GET[UserDetails](url)(implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails(hc))
+	def getUserDetails(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserDetails] = {
+    http.GET[UserDetails](url)(implicitly, hc, ec)
   }
 
 }
-
-object UserDetailsConnector extends UserDetailsConnector

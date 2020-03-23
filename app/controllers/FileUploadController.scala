@@ -18,23 +18,26 @@ package controllers
 
 import java.util.UUID
 
-import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.{FileUploadConnector, UserDetailsConnector}
-import models.{Envelope, UploadResponse, UserDetails}
+import config.ApplicationConfig
+import connectors.FileUploadConnector
+import javax.inject.Inject
+import models.{Envelope, UploadResponse}
 import play.Logger
 import play.api.mvc.{Action, AnyContent, Request}
-import play.api.{Configuration, Environment, Play}
-import uk.gov.hmrc.auth.core.AuthConnector
+import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.matching.UnanchoredRegex
 
-trait FileUploadController extends RasController with PageFlowController {
-
-  implicit val context: RasContext = RasContextImpl
-  val fileUploadConnector: FileUploadConnector
+class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
+																		 val authConnector: DefaultAuthConnector,
+																		 val shortLivedCache: ShortLivedCache,
+																		 val sessionService: SessionService,
+																		 implicit val appConfig: ApplicationConfig
+																		) extends PageFlowController {
 
   def get: Action[AnyContent] = Action.async {
     implicit request =>
@@ -82,7 +85,7 @@ trait FileUploadController extends RasController with PageFlowController {
               }
           }.recover {
             case e: Throwable =>
-              Logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId)")
+              Logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId) - $e")
               Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(resp) =>
@@ -92,11 +95,10 @@ trait FileUploadController extends RasController with PageFlowController {
   }
 
   def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
-    val config: ApplicationConfig.type = ApplicationConfig
-    val rasFrontendBaseUrl: String = config.getString("ras-frontend.host")
-    val rasFrontendUrlSuffix: String = config.getString("ras-frontend-url-suffix")
-    val fileUploadFrontendBaseUrl: String = config.getString("file-upload-frontend.host")
-    val fileUploadFrontendSuffix: String = config.getString("file-upload-frontend-url-suffix")
+    lazy val rasFrontendBaseUrl: String = appConfig.rasFrontendBaseUrl
+    lazy val rasFrontendUrlSuffix: String = appConfig.rasFrontendUrlSuffix
+    lazy val fileUploadFrontendBaseUrl: String = appConfig.fileUploadFrontendBaseUrl
+    lazy val fileUploadFrontendSuffix: String = appConfig.fileUploadFrontendSuffix
     val envelopeIdPattern: UnanchoredRegex = "envelopes/([\\w\\d-]+)$".r.unanchored
     val successRedirectUrl: String = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-uploaded"
     val errorRedirectUrl: String = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-failed"
@@ -105,7 +107,7 @@ trait FileUploadController extends RasController with PageFlowController {
     envelope match {
       case Some(envelope) =>
         val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/${envelope.id}/files/${UUID.randomUUID().toString}"
-        val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
+        val completeFileUploadUrl = s"$fileUploadUrl?$successRedirectUrl&$errorRedirectUrl"
         Future.successful(Some(completeFileUploadUrl))
       case _ =>
         fileUploadConnector.createEnvelope(userId).flatMap { response =>
@@ -117,7 +119,7 @@ trait FileUploadController extends RasController with PageFlowController {
                     case Some(_) =>
                       Logger.info(s"[UploadService][createFileUploadUrl] Envelope id obtained and cached for userId ($userId)")
                       val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
-                      val completeFileUploadUrl = s"${fileUploadUrl}?${successRedirectUrl}&${errorRedirectUrl}"
+                      val completeFileUploadUrl = s"$fileUploadUrl?$successRedirectUrl&$errorRedirectUrl"
                       Some(completeFileUploadUrl)
                     case _ =>
                       Logger.error(s"[FileUploadController][get] failed to retrieve cache after storing the envelope for userId ($userId)")
@@ -252,14 +254,4 @@ trait FileUploadController extends RasController with PageFlowController {
       case _ => ""
     }
   }
-}
-
-object FileUploadController extends FileUploadController {
-  // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  override val fileUploadConnector = FileUploadConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  // $COVERAGE-ON$
 }

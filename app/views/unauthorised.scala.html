@@ -14,11 +14,10 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
-
 @import config.ApplicationConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@ras_main(title = Messages("unauthorised.error.page.title"), hasTimeOut = false) {
+@ras_main(title = messages("unauthorised.error.page.title"), hasTimeOut = false) {
 
    <h1 class="heading-xlarge" id="header">@messages("unauthorised.page.header")</h1>
    <p id="paragraph-top">@messages("unauthorised.paragraph.top")</p>
@@ -26,9 +25,9 @@
    <ul id="action-list" class="list list-bullet">
     <li>
     @Html(
-     Messages(
+     messages(
       "unauthorised.list.first",
-      "<a id='link-sign-in' href='" + ApplicationConfig.signOutAndContinueUrl + "' data-journey-click='link - click:There is a problem:Sign in'>" + Messages("unauthorised.list.first.link") + "</a>"
+      "<a id='link-sign-in' href='" + appConfig.signOutAndContinueUrl + "' data-journey-click='link - click:There is a problem:Sign in'>" + messages("unauthorised.list.first.link") + "</a>"
      )
     )
     </li>

@@ -16,41 +16,36 @@
 
 package connectors
 
-import config.{ApplicationConfig, WSHttp}
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.ApiVersion
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait FileUploadConnector extends ServicesConfig {
+class FileUploadConnector @Inject()(val http: DefaultHttpClient,
+																		appConfig: ApplicationConfig) {
 
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
+  lazy val rasApiBaseUrl: String = appConfig.rasApiBaseUrl
+  lazy val fileUploadBaseUrl: String = appConfig.fileUploadBaseUrl
+  lazy val fileUploadUrlSuffix: String = appConfig.fileUploadUrlSuffix
+  lazy val rasFileUploadCallbackUrl: String = appConfig.fileUploadCallBack
 
-  val http: HttpPost
-  lazy val rasApiBaseUrl: String = baseUrl("relief-at-source")
-  lazy val fileUploadBaseUrl: String = baseUrl("file-upload")
-  lazy val fileUploadUrlSuffix: String = getString("file-upload-url-suffix")
-  val rasFileUploadCallbackUrl: String
+  lazy val maxItems: Int = appConfig.maxItems
+  lazy val maxSize: String = appConfig.maxSize
+  lazy val maxSizePerItem: String = appConfig.maxSizePerItem
+  lazy val allowZeroLengthFiles: Boolean = appConfig.allowZeroLengthFiles
+  lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
 
-  lazy val maxItems: Int = getInt("file-upload-constraints.maxItems")
-  lazy val maxSize: String = getString("file-upload-constraints.maxSize")
-  lazy val maxSizePerItem: String = getString("file-upload-constraints.maxSizePerItem")
-  lazy val allowZeroLengthFiles: Boolean = getBoolean("file-upload-constraints.allowZeroLengthFiles")
-  val apiVersion: ApiVersion
 
-  def createEnvelope(userId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-
+  def createEnvelope(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
     val requestBody = Json.parse(
       s"""
         {
-          "callbackUrl": "$rasApiBaseUrl$rasFileUploadCallbackUrl/${userId}?version=$apiVersion",
+          "callbackUrl": "$rasApiBaseUrl$rasFileUploadCallbackUrl/$userId?version=$apiVersion",
           "constraints": 	{
               "maxItems": 1,
               "maxSize": "$maxSize",
@@ -63,13 +58,7 @@ trait FileUploadConnector extends ServicesConfig {
 
     http.POST[JsValue, HttpResponse](
       s"$fileUploadBaseUrl/$fileUploadUrlSuffix", requestBody, Seq()
-    )(implicitly, implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails(hc))
+    )(implicitly, implicitly, hc, ec)
 
   }
-}
-
-object FileUploadConnector extends FileUploadConnector {
-  override val http = WSHttp
-  override lazy val rasFileUploadCallbackUrl: String = ApplicationConfig.fileUploadCallBack
-  override lazy val apiVersion: ApiVersion = ApplicationConfig.rasApiVersion
 }

@@ -1,6 +1,5 @@
 # microservice specific routes
-
-GET         /assets/*file                                                       @controllers.AssetsController.at(path="/public", file)
+GET         /assets/*file                               						controllers.Assets.at(path="/public", file)
 
 GET         /                                                                   controllers.ChooseAnOptionController.get
 GET         /choose-option-to-get-residency-status                              controllers.ChooseAnOptionController.get
