@@ -14,13 +14,14 @@
  * limitations under the License.
  *@
 
-@()(implicit request : Request[_], messages: Messages, context: config.RasContext)
+@import config.ApplicationConfig
+@()(implicit request : Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @views.html.ras_main(title = "Thanks for your feedback - Look up residency status for relief at source - GOV.UK", bodyClasses = None, signOutEnabled = false, hasTimeOut = false) {
 
-    <h1 class="heading-xlarge">@Messages("label.thanks_for_your_feedback")</h1>
+    <h1 class="heading-xlarge">@messages("label.thanks_for_your_feedback")</h1>
     <p>
-        <a href="http://www.gov.uk">@Messages("label.explore_gov_uk")</a>
+        <a href="http://www.gov.uk">@messages("label.explore_gov_uk")</a>
     </p>
 
 }

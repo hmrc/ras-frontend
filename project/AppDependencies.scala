@@ -6,11 +6,12 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "frontend-bootstrap" % "12.9.0",
+		"uk.gov.hmrc" %% "bootstrap-play-25" % "5.1.0",
+		"uk.gov.hmrc" %% "govuk-template" % "5.52.0-play-25",
+	  "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-25",
     "uk.gov.hmrc" %% "play-partials" % "6.9.0-play-25",
-    "uk.gov.hmrc" %% "auth-client" % "2.32.1-play-25",
-    "uk.gov.hmrc" %% "http-caching-client" % "8.4.0-play-25",
-    "uk.gov.hmrc" %% "play-ui" % "8.5.0-play-25"
+    "uk.gov.hmrc" %% "auth-client" % "2.35.0-play-25",
+    "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-25"
   )
 
   val test: Seq[ModuleID] = Seq(
@@ -20,9 +21,10 @@ object AppDependencies {
     "org.jsoup" % "jsoup" % "1.12.1",
     "com.typesafe.play" %% "play-test" % PlayVersion.current,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1",
-    "org.mockito" % "mockito-core" % "1.10.19",
-    "org.scalacheck" %% "scalacheck" % "1.14.1"
-  ).map(_ % "test")
+    "org.mockito" % "mockito-core" % "3.3.3",
+    "org.scalacheck" %% "scalacheck" % "1.14.1",
+		"uk.gov.hmrc" %% "domain" % "5.6.0-play-25"
+	).map(_ % "test")
 
   val all: Seq[ModuleID] = compile ++ test
 }

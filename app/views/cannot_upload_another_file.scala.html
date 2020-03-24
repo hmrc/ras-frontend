@@ -14,19 +14,18 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
-
-
-@ras_main(title = Messages("cannot.upload.another.file.page.title")) {
+@import config.ApplicationConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+	@ras_main(title = messages("cannot.upload.another.file.page.title")) {
 
     <div class="row ras-bottom-margin">
-        <h1 id="page-header" class="heading-xlarge">@Messages("cannot.upload.another.file.page.header")</h1>
-        <p id="page-reason">@Messages("cannot.upload.another.file.page.reason")</p>
-        <p id="page-clarification">@Messages("cannot.upload.another.file.page.clarification")</p>
+        <h1 id="page-header" class="heading-xlarge">@messages("cannot.upload.another.file.page.header")</h1>
+        <p id="page-reason">@messages("cannot.upload.another.file.page.reason")</p>
+        <p id="page-clarification">@messages("cannot.upload.another.file.page.clarification")</p>
     </div>
 
     <div class="row">
-        <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:You cannot upload another file:Choose something else to do">@Messages("choose.something.else")</a>
+        <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:You cannot upload another file:Choose something else to do">@messages("choose.something.else")</a>
     </div>
 
 }

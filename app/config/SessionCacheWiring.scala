@@ -16,39 +16,22 @@
 
 package config
 
-import play.api.Mode.Mode
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
+import javax.inject.Inject
+import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedHttpCaching}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-trait SessionCacheWiring {
-  def sessionCache: SessionCache = RasSessionCache
+class RasSessionCache @Inject()(val http: DefaultHttpClient,
+																appConfig: ApplicationConfig
+															 ) extends SessionCache {
+	lazy val defaultSource = "ras-frontend"
+	lazy val baseUri: String = appConfig.sessionCacheBaseUri
+	lazy val domain: String = appConfig.sessionCacheDomain
 }
 
-object RasSessionCache extends SessionCache with AppName with ServicesConfig {
-  override lazy val http = WSHttp
-  override lazy val defaultSource = appName
-  override lazy val baseUri = baseUrl("keystore")
-  override lazy val domain = getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-object RasShortLivedHttpCaching extends ShortLivedHttpCaching with AppName with ServicesConfig {
-  override lazy val http = WSHttp
-  override lazy val defaultSource = "ras"
-  override lazy val baseUri = baseUrl("cachable.short-lived-cache")
-  override lazy val domain = getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-object RasShortLivedCache extends ShortLivedCache {
-  override implicit lazy val crypto = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
-  override lazy val shortLiveCache = RasShortLivedHttpCaching
+class RasShortLivedHttpCaching @Inject()(val http: DefaultHttpClient,
+																				 appConfig: ApplicationConfig
+																				) extends ShortLivedHttpCaching {
+	override lazy val defaultSource = "ras"
+	lazy val baseUri: String = appConfig.shortLivedCacheBaseUri
+	lazy val domain: String = appConfig.shortLivedCacheDomain
 }

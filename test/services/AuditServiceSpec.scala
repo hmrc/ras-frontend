@@ -16,25 +16,27 @@
 
 package services
 
+import helpers.RasTestHelper
 import org.mockito.ArgumentCaptor
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneAppPerTest
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.test.UnitSpec
 
-trait AuditServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest with BeforeAndAfter {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
 
   implicit val hc:HeaderCarrier = HeaderCarrier()
-  val mockAuditConnector = mock[AuditConnector]
 
-  val SUT = new AuditService {
-    override val connector: AuditConnector = mockAuditConnector
-  }
+	class TestService extends AuditService {
+		override val connector: DefaultAuditConnector = mockAuditConnector
+	}
 
   before {
     reset(mockAuditConnector)
@@ -47,50 +49,50 @@ trait AuditServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest wit
 
     val auditDataMap: Map[String, String] = Map("testKey" -> "testValue")
 
-    "build an audit event with the correct mandatory details" in {//new FakeAppWithAppName {
+    "build an audit event with the correct mandatory details" in new TestService {
 
-      val result = SUT.audit(fakeAuditType, fakeEndpoint, auditDataMap)
-      val captor = ArgumentCaptor.forClass(classOf[DataEvent])
+      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
       verify(mockAuditConnector).sendEvent(captor.capture())(any(), any())
 
-      val event = captor.getValue
+      val event: DataEvent = captor.getValue
 
       event.auditSource shouldBe "ras-api"
       event.auditType shouldBe "fake-audit-type"
     }
 
-    "build an audit event with the correct tags" in {
+    "build an audit event with the correct tags" in new TestService {
 
-      val result = SUT.audit(fakeAuditType, fakeEndpoint, auditDataMap)
-      val captor = ArgumentCaptor.forClass(classOf[DataEvent])
+      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
       verify(mockAuditConnector).sendEvent(captor.capture())(any(), any())
 
-      val event = captor.getValue
+      val event: DataEvent = captor.getValue
 
       event.tags should contain ("transactionName" -> "fake-audit-type")
       event.tags should contain("path" -> "/fake-endpoint")
       event.tags should contain key "clientIP"
     }
 
-    "build an audit event with the correct detail" in {
+    "build an audit event with the correct detail" in new TestService {
 
-      val result = SUT.audit(fakeAuditType, fakeEndpoint, auditDataMap)
-      val captor = ArgumentCaptor.forClass(classOf[DataEvent])
+      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
       verify(mockAuditConnector).sendEvent(captor.capture())(any(), any())
 
-      val event = captor.getValue
+      val event: DataEvent = captor.getValue
 
       event.detail should contain ("testKey" -> "testValue")
 
       event.detail should contain key "Authorization"
     }
 
-    "send an event via the audit connector" in {
+    "send an event via the audit connector" in new TestService {
 
-      val result = SUT.audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
       verify(mockAuditConnector).sendEvent(any())(any(), any())
     }
   }

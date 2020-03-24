@@ -16,77 +16,78 @@
 
 package config
 
+import javax.inject.Inject
 import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import play.api.{Configuration, Play}
 import play.api.Mode.Mode
-import play.api.Play.{configuration, current}
 import uk.gov.hmrc.play.config.ServicesConfig
 
-trait ApplicationConfig {
-  val analyticsToken: String
-  val analyticsHost: String
-  val reportAProblemPartialUrl: String
-  val reportAProblemNonJSUrl: String
-  val signOutUrl: String
-  val signOutAndContinueUrl: String
-  val loginCallback:String
-  val fileUploadCallBack: String
-  val fileDeletionUrl: String
-  val hoursToWaitForReUpload :Int
-  val rasApiResidencyStatusEndpoint: String
-  val reportAProblemUrl: String
-  val rasApiVersion: ApiVersion
-  val timeOutSeconds: Int
-  val timeOutCountDownSeconds: Int
-  val refreshInterval: Int
-  val enableRefresh: Boolean
-  val urBannerEnabled: Boolean
-  val urBannerLinkUrl: String
-}
 
-object ApplicationConfig extends ApplicationConfig with ServicesConfig {
+//TODO Inject services config rather than extend during play 2.6 upgrade
+class ApplicationConfig @Inject()() extends ServicesConfig {
 
-  private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+	override protected def mode: Mode = Play.current.mode
+	override protected def runModeConfiguration: Configuration = Play.current.configuration
 
-  private val contactHost = configuration.getString("contact-frontend.host").getOrElse("")
-  private val contactFormServiceIdentifier = "RAS"
-  private val caFrontendHost = configuration.getString("ca-frontend.host").getOrElse("")
+  private def loadConfig(key: String) = getString(key)
 
-  override lazy val analyticsToken = loadConfig(s"google-analytics.token")
-  override lazy val analyticsHost = loadConfig(s"google-analytics.host")
+	lazy val contactHost: String = loadConfig("contact-frontend.host")
+  private lazy val contactFormServiceIdentifier: String = "RAS"
+	lazy val caFrontendHost: String = loadConfig("ca-frontend.host")
 
-  override lazy val hoursToWaitForReUpload = configuration.getInt(s"re-upload.wait.time.hours").getOrElse(
-    throw new Exception("Missing configuration key: re-upload.wait.time.hours "))
+	lazy val analyticsToken: String = loadConfig(s"google-analytics.token")
+	lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
+	lazy val hoursToWaitForReUpload: Int = getConfInt(s"re-upload.wait.time.hours", 24)
 
-  private val logoutCallback = configuration.getString("gg-urls.logout-callback.url").getOrElse("/relief-at-source/")
-  private val signOutBaseUrl = s"$caFrontendHost/gg/sign-out?continue="
-  private val continueCallback: String =  configuration.getString("gg-urls.continue-callback.url").getOrElse("/relief-at-source/")
+  private lazy val logoutCallback: String = getConfString("gg-urls.logout-callback.url", "/relief-at-source/")
+  private lazy val signOutBaseUrl: String = s"$caFrontendHost/gg/sign-out?continue="
+  private lazy val continueCallback =  getConfString("gg-urls.continue-callback.url", "/relief-at-source/")
 
-  override lazy val reportAProblemUrl = s"$contactHost/contact/problem_reports"
-  override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val signOutUrl = s"$signOutBaseUrl$logoutCallback"
-  override lazy val signOutAndContinueUrl = s"$signOutBaseUrl$continueCallback"
-  override lazy val loginCallback: String = configuration.getString("gg-urls.login-callback.url").getOrElse("/relief-at-source/")
-  override lazy val fileUploadCallBack: String = configuration.getString("file-upload-ras-callback-url")
-    .getOrElse(throw new Exception("Missing configuration key: file-upload-ras-callback-url"))
-  override lazy val fileDeletionUrl: String = configuration.getString("file-deletion-url").getOrElse("/ras-api/file/remove/")
-  override lazy val rasApiResidencyStatusEndpoint: String = getString("residency-status-url")
+	lazy val companyAuthHost: String = s"${getConfString("auth.company-auth.host", "")}"
+	lazy val loginURL: String = s"$companyAuthHost/gg/signin"
 
-  override lazy val urBannerEnabled: Boolean = configuration.getBoolean("ur-banner.enabled").getOrElse(false)
-  override lazy val urBannerLinkUrl: String = configuration.getString("ur-banner.link-url").getOrElse("")
+	lazy val reportAProblemUrl: String = s"$contactHost/contact/problem_reports"
+	lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+	lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+	lazy val signOutUrl: String = s"$signOutBaseUrl$logoutCallback"
+	lazy val signOutAndContinueUrl: String = s"$signOutBaseUrl$continueCallback"
+	lazy val loginCallback: String = getConfString("gg-urls.login-callback.url","/relief-at-source/")
+	lazy val fileUploadCallBack: String = loadConfig("file-upload-ras-callback-url")
+	lazy val fileDeletionUrl: String = getConfString("file-deletion-url","/ras-api/file/remove/")
+	lazy val rasApiResidencyStatusEndpoint: String = loadConfig("residency-status-url")
 
-  override lazy val rasApiVersion: ApiVersion = getString("ras-api-version") match {
+	lazy val urBannerEnabled: Boolean = getConfBool("ur-banner.enabled", defBool = false)
+	lazy val urBannerLinkUrl: String = getConfString("ur-banner.link-url","")
+
+	lazy val rasApiVersion: ApiVersion = loadConfig("ras-api-version") match {
     case "1.0" => ApiV1_0
     case "2.0" => ApiV2_0
     case _ => throw new Exception(s"Invalid value for configuration key: ras-api-version")
   }
 
-  override lazy val timeOutSeconds : Int = configuration.getString("sessionTimeout.timeoutSeconds").getOrElse("780").toInt
-  override lazy val timeOutCountDownSeconds: Int = configuration.getString("sessionTimeout.time-out-countdown-seconds").getOrElse("120").toInt
-  override lazy val refreshInterval: Int = timeOutSeconds + 10
-  override lazy val enableRefresh: Boolean= configuration.getBoolean("sessionTimeout.enableRefresh").getOrElse(true)
+	lazy val timeOutSeconds : Int = getConfInt("sessionTimeout.timeoutSeconds",780)
+	lazy val timeOutCountDownSeconds: Int = getConfInt("sessionTimeout.time-out-countdown-seconds",120)
+	lazy val refreshInterval: Int = timeOutSeconds + 10
+	lazy val enableRefresh: Boolean= getConfBool("sessionTimeout.enableRefresh", defBool = true)
 
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
+
+	//FileUpload
+	lazy val rasApiBaseUrl: String = baseUrl("relief-at-source")
+	lazy val fileUploadBaseUrl: String = baseUrl("file-upload")
+	lazy val fileUploadUrlSuffix: String = loadConfig("file-upload-url-suffix")
+	lazy val maxItems: Int = getInt("file-upload-constraints.maxItems")
+	lazy val maxSize: String = loadConfig("file-upload-constraints.maxSize")
+	lazy val maxSizePerItem: String = loadConfig("file-upload-constraints.maxSizePerItem")
+	lazy val allowZeroLengthFiles: Boolean = getBoolean("file-upload-constraints.allowZeroLengthFiles")
+	lazy val rasFrontendBaseUrl: String = loadConfig("ras-frontend.host")
+	lazy val rasFrontendUrlSuffix: String = loadConfig("ras-frontend-url-suffix")
+	lazy val fileUploadFrontendBaseUrl: String = loadConfig("file-upload-frontend.host")
+	lazy val fileUploadFrontendSuffix: String = loadConfig("file-upload-frontend-url-suffix")
+
+	//SessionCacheWiring
+	lazy val shortLivedCacheBaseUri: String = baseUrl("cachable.short-lived-cache")
+	lazy val shortLivedCacheDomain: String = getString(s"$rootServices.cachable.short-lived-cache.domain")
+	lazy val sessionCacheBaseUri: String = baseUrl("keystore")
+	lazy val sessionCacheDomain: String = getString(s"$rootServices.cachable.session-cache.domain")
+
 }

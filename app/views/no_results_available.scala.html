@@ -14,28 +14,28 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
+@import config.ApplicationConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+	@ras_main(title = messages("no.results.available.page.title")) {
 
-@ras_main(title = Messages("no.results.available.page.title")) {
-
-   <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:You have not uploaded a file:Back">@Messages("back")</a>
+   <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:You have not uploaded a file:Back">@messages("back")</a>
 
    <div class="row">
-    <h1 id="header" class="heading-xlarge">@Messages("no.results.available.page.header")</h1>
+    <h1 id="header" class="heading-xlarge">@messages("no.results.available.page.header")</h1>
    </div>
    <div class="row ras-bottom-margin">
     <p id="sub-header">
     @Html(
-     Messages(
+     messages(
       "no.results.available.sub-header",
-      "<a id='upload-link' href='" + routes.FileUploadController.get + "' data-journey-click='link - click:You have not uploaded a file:Upload a file'>" + Messages("no.results.available.link") + "</a>"
+      "<a id='upload-link' href='" + routes.FileUploadController.get + "' data-journey-click='link - click:You have not uploaded a file:Upload a file'>" + messages("no.results.available.link") + "</a>"
      )
     )
     </p>
    </div>
 
    <div class="row">
-    <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:You have not uploaded a file:Choose something else to do">@Messages("choose.something.else")</a>
+    <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:You have not uploaded a file:Choose something else to do">@messages("choose.something.else")</a>
    </div>
 
 }

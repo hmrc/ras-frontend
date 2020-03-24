@@ -16,56 +16,36 @@
 
 package controllers
 
-import config.ApplicationConfig
-import helpers.I18nHelper
+import helpers.{I18nHelper, RasTestHelper}
+import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import connectors.UserDetailsConnector
-import models._
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ErrorControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar with I18nHelper {
+class ErrorControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
 
-  val fakeRequest = FakeRequest("GET", "/")
-  val mockAuthConnector = mock[AuthConnector]
-  val mockUserDetailsConnector = mock[UserDetailsConnector]
-  val mockConfig = mock[Configuration]
-  val mockEnvironment = mock[Environment]
+  override val fakeRequest = FakeRequest("GET", "/")
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
-  private val enrolments = new Enrolments(Set(enrolment))
-  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
+  val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
 
-  object TestErrorController extends ErrorController {
-    val authConnector: AuthConnector = mockAuthConnector
-    override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
-    override val config: Configuration = mockConfig
-    override val env: Environment = mockEnvironment
-
+  val TestErrorController: ErrorController = new ErrorController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
-    when(mockUserDetailsConnector.getUserDetails(any())(any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
+    when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
   "ErrorController" should {
-
-    "respond to GET /relief-at-source/not-authorised" in {
-      val result = await(route(fakeApplication, FakeRequest(GET, "/relief-at-source/not-authorised")))
-      status(result.get) should not equal (NOT_FOUND)
-    }
-
     "return error when global error endpoint is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
@@ -145,7 +125,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
 
     "contain a back link pointing to /relief-at-source" in {
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
-      doc(result).getElementById("back").attr("href") shouldBe ("/relief-at-source")
+      doc(result).getElementById("back").attr("href") shouldBe "/relief-at-source"
     }
 
     "contain the correct content paragraph" in {
@@ -155,7 +135,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
 
     "contain the correct link in the content paragraph" in {
       val result = await(TestErrorController.fileNotAvailable(fakeRequest))
-      doc(result).getElementById("sub-header-link").attr("href") shouldBe ("/relief-at-source")
+      doc(result).getElementById("sub-header-link").attr("href") shouldBe "/relief-at-source"
     }
 
     "contain the correct ga events" in {
@@ -198,7 +178,7 @@ class ErrorControllerSpec extends UnitSpec with WithFakeApplication with Mockito
 
     "first list item link should have the correct href" in {
       val result = await(TestErrorController.notAuthorised(fakeRequest))
-      doc(result).getElementById("link-sign-in").attr("href") shouldBe ApplicationConfig.signOutAndContinueUrl
+      doc(result).getElementById("link-sign-in").attr("href") shouldBe mockAppConfig.signOutAndContinueUrl
     }
 
     "second list item should contain the correct text" in {

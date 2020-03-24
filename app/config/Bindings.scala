@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package controllers
+package config
 
-import com.google.inject.Inject
-import play.api.http.HttpErrorHandler
+import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
 
-class AssetsController @Inject()(errorHandler: HttpErrorHandler) extends AssetsBuilder(errorHandler)
+class Bindings extends Module{
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
+    bindDeps()
+  }
+
+  private def bindDeps(): Seq[Binding[_]] = Seq(
+		bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector]),
+		bind(classOf[HttpClient]).to(classOf[DefaultHttpClient])
+	)
+}

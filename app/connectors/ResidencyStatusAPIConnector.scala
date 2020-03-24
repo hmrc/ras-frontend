@@ -21,56 +21,51 @@ import java.io.InputStream
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.StreamConverters
-import config.{ApplicationConfig, WSHttp}
-import models.{MemberDetails, ResidencyStatus}
-import play.api.Mode.Mode
-import play.api.{Configuration, Logger, Play}
+import config.ApplicationConfig
+import javax.inject.Inject
+import models.{ApiVersion, MemberDetails, ResidencyStatus}
+import play.api.Logger
 import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
-trait ResidencyStatusAPIConnector extends ServicesConfig {
+class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
+																						val appConfig: ApplicationConfig) {
 
-  val http: WSHttp
+  lazy val serviceUrl: String = appConfig.rasApiBaseUrl
+  lazy val residencyStatusUrl: String = appConfig.rasApiResidencyStatusEndpoint
+  lazy val fileDeletionUrl: String = appConfig.fileDeletionUrl
+  lazy val residencyStatusVersion: ApiVersion = appConfig.rasApiVersion
 
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-
-  lazy val serviceUrl = baseUrl("relief-at-source")
-  lazy val residencyStatusUrl = ApplicationConfig.rasApiResidencyStatusEndpoint
-  lazy val fileDeletionUrl = ApplicationConfig.fileDeletionUrl
-  lazy val residencyStatusVersion = ApplicationConfig.rasApiVersion
-
-  def getResidencyStatus(memberDetails: MemberDetails)(implicit hc: HeaderCarrier): Future[ResidencyStatus] = {
+  def getResidencyStatus(memberDetails: MemberDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ResidencyStatus] = {
 
     val rasUri = s"$serviceUrl/$residencyStatusUrl"
 
-    val headerCarrier = hc.withExtraHeaders("Accept" -> s"application/vnd.hmrc.${residencyStatusVersion}+json", "Content-Type" -> "application/json" )
+    val headerCarrier = hc.withExtraHeaders("Accept" -> s"application/vnd.hmrc.$residencyStatusVersion+json", "Content-Type" -> "application/json" )
 
     Logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
 
-    http.POST[JsValue, ResidencyStatus](rasUri, memberDetails.asCustomerDetailsPayload)(implicitly, rds = responseHandler, headerCarrier, MdcLoggingExecutionContext.fromLoggingDetails(hc))
+    http.POST[JsValue, ResidencyStatus](rasUri, memberDetails.asCustomerDetailsPayload)(implicitly, rds = responseHandler, headerCarrier, ec)
   }
 
   def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[Option[InputStream]] = {
-    implicit val system = ActorSystem()
-    implicit val materializer = ActorMaterializer()
+    implicit val system: ActorSystem = ActorSystem()
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
 
     Logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
-    http.buildRequestWithStream(s"$serviceUrl/ras-api/file/getFile/$fileName").map { res =>
+    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName").stream().map { res =>
       Some(res.body.runWith(StreamConverters.asInputStream()))
     }
 
   }
 
-  def deleteFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def deleteFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
-    http.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl/$fileName/$userId")(implicitly, hc, MdcLoggingExecutionContext.fromLoggingDetails)
+    http.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl/$fileName/$userId")(implicitly, hc, ec)
   }
 
   private val responseHandler = new HttpReads[ResidencyStatus] {
@@ -84,14 +79,10 @@ trait ResidencyStatusAPIConnector extends ServicesConfig {
         case 400 => Logger.error("[ResidencyStatusAPIConnector][responseHandler] Data sent to the API was not sent in the correct format.")
                     throw new InternalServerException("Internal Server Error")
         case 403 => Logger.info("[ResidencyStatusAPIConnector][responseHandler] Member not found.")
-                    throw new Upstream4xxResponse("Member not found", 403, 403, response.allHeaders)
+                    throw Upstream4xxResponse("Member not found", 403, 403, response.allHeaders)
         case _ => Logger.error(s"[ResidencyStatusAPIConnector][responseHandler] ${response.status} status code received from RAS-API.")
                   throw new InternalServerException("Internal Server Error")
       }
     }
   }
-}
-
-object ResidencyStatusAPIConnector extends ResidencyStatusAPIConnector {
-  override val http: WSHttp = WSHttp
 }

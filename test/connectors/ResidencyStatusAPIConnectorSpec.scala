@@ -18,40 +18,32 @@ package connectors
 
 import java.io.{BufferedReader, InputStreamReader}
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import config.WSHttp
+import helpers.RasTestHelper
 import models._
 import org.mockito.ArgumentMatcher
-import org.mockito.Matchers.{eq => Meq, _}
+import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
-import play.api.libs.ws.{DefaultWSResponseHeaders, StreamedResponse}
+import play.api.libs.ws.{DefaultWSResponseHeaders, StreamedResponse, WSRequest}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.test.UnitSpec
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite with MockitoSugar with ServicesConfig {
+class ResidencyStatusAPIConnectorSpec extends UnitSpec with RasTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val mockWsHttp = mock[WSHttp]
 
-  def createTestConnector(apiVersion: ApiVersion) = new ResidencyStatusAPIConnector {
-    override val http: WSHttp = mockWsHttp
-    override lazy val residencyStatusVersion = apiVersion
+  def createTestConnector(apiVersion: ApiVersion): ResidencyStatusAPIConnector = new ResidencyStatusAPIConnector(mockHttp, mockAppConfig) {
+    override lazy val residencyStatusVersion: ApiVersion = apiVersion
   }
 
   val testConnector: ResidencyStatusAPIConnector = createTestConnector(apiVersion = ApiV2_0)
 
-  def headerCarrierMatcher(version: ApiVersion) = new ArgumentMatcher[HeaderCarrier] {
-    override def matches(other: scala.Any): Boolean = {
+  def headerCarrierMatcher(version: ApiVersion): ArgumentMatcher[HeaderCarrier] = new ArgumentMatcher[HeaderCarrier] {
+    override def matches(other: HeaderCarrier): Boolean = {
       val residencyStatusVersion = version match {
         case ApiV1_0 => "1.0"
         case ApiV2_0 => "2.0"
@@ -79,7 +71,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite 
 
           val testConnector = createTestConnector(apiVersion = testApiVersion)
 
-          when(mockWsHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(
+          when(mockHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(
             any(), any(), argThat(headerCarrierMatcher(testApiVersion)), any())
           ).thenReturn(Future.successful(expectedResponse))
 
@@ -95,7 +87,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite 
 
         val expectedResponse = ResidencyStatus("scotResident", Some("otherUKResident"))
 
-        when(mockWsHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
+        when(mockHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
 
         val result = testConnector.getResidencyStatus(memberDetails)
 
@@ -109,7 +101,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite 
 
         val expectedResponse = ResidencyStatus("scotResident", None)
 
-        when(mockWsHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
+        when(mockHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
 
         val result = testConnector.getResidencyStatus(memberDetails)
 
@@ -121,18 +113,16 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite 
   "getFile" should {
 
     "return an StreamedResponse from ras-api service" in {
-
-      implicit val system = ActorSystem()
-      implicit val materializer = ActorMaterializer()
+			val mockWSRequest = mock[WSRequest]
 
       val streamResponse: StreamedResponse = StreamedResponse(DefaultWSResponseHeaders(200, Map("CONTENT_TYPE" -> Seq("application/octet-stream"))),
         Source.apply[ByteString](Seq(ByteString("Test"), ByteString("\r\n"), ByteString("Passed")).to[scala.collection.immutable.Iterable]))
 
-      when(mockWsHttp.buildRequestWithStream(any())(any())).thenReturn(Future.successful(streamResponse))
+      when(mockHttp.buildRequest(any(), any())(any())).thenReturn(Future.successful(mockWSRequest))
+			when(mockWSRequest.stream()).thenReturn(Future.successful(streamResponse))
 
-      val values = List("Test", "Passed")
 
-      val result = await(testConnector.getFile("file1", "A1234567"))
+			val result = await(testConnector.getFile("file1", "A1234567"))
 
       val reader = new BufferedReader(new InputStreamReader(result.get))
 
@@ -144,7 +134,7 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite 
   "deleteFile" should {
     "return a 200 when a file has been successfully deleted" in {
 
-      when(mockWsHttp.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200)))
+      when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200)))
 
       val result = testConnector.deleteFile("file-name", "userId")
 
@@ -152,14 +142,11 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with GuiceOneAppPerSuite 
     }
 
     "return a 500 when a file has not been deleted" in {
-      when(mockWsHttp.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(500)))
+      when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(500)))
 
       val result = testConnector.deleteFile("file-name", "userId")
 
       await(result).status shouldBe 500
     }
   }
-
-  override protected def mode: Mode = Play.current.mode
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

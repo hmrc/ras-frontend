@@ -16,32 +16,30 @@
 
 package controllers
 
-import config.{ApplicationConfig, FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import config.ApplicationConfig
+import connectors.ResidencyStatusAPIConnector
 import forms.MemberNameForm._
+import javax.inject.Inject
 import models.ApiVersion
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
-import play.api.{Configuration, Environment, Logger, Play}
-import services.AuditService
-import uk.gov.hmrc.auth.core._
+import services.{SessionService, ShortLivedCache}
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import scala.concurrent.Future
 
-object MemberNameController extends MemberNameController {
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  override val residencyStatusAPIConnector = ResidencyStatusAPIConnector
-  override val auditService: AuditService = AuditService
-  override lazy val apiVersion: ApiVersion = ApplicationConfig.rasApiVersion
-}
+class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
+																		 val connector: DefaultAuditConnector,
+																		 val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
+																		 val shortLivedCache: ShortLivedCache,
+																		 val sessionService: SessionService,
+																		 implicit val appConfig: ApplicationConfig
+																	 ) extends RasResidencyCheckerController with PageFlowController {
 
-trait MemberNameController extends RasResidencyCheckerController with PageFlowController {
+	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
 
-  implicit val context: RasContext = RasContextImpl
-
-  def get(edit: Boolean = false): Action[AnyContent] = Action.async {
+	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
@@ -65,13 +63,13 @@ trait MemberNameController extends RasResidencyCheckerController with PageFlowCo
         },
         memberName => {
           sessionService.cacheName(memberName) flatMap {
-            case Some(session) => {
-              edit match {
-                case true => submitResidencyStatus(session, userId)
-                case _ => Future.successful(Redirect(routes.MemberNinoController.get()))
-              }
-            }
-            case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+            case Some(session) =>
+							if (edit) {
+								submitResidencyStatus(session, userId)
+							} else {
+								Future.successful(Redirect(routes.MemberNinoController.get()))
+							}
+						case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
           }
         }
       )

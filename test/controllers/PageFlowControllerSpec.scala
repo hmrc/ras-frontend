@@ -16,23 +16,21 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import play.api.test.Helpers._
-import play.api.{Configuration, Environment, Play}
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import connectors.UserDetailsConnector
-import helpers.I18nHelper
+import config.ApplicationConfig
+import helpers.{I18nHelper, RasTestHelper}
 import models._
-import org.scalatest.mockito.MockitoSugar
+import play.api.test.Helpers._
+import services.{SessionService, ShortLivedCache}
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.play.test.UnitSpec
 
-class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18nHelper with MockitoSugar{
+class PageFlowControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
 
   object TestPageFlowController extends PageFlowController{
-    override val authConnector: AuthConnector = FrontendAuthConnector
-    override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-    override val config: Configuration = Play.current.configuration
-    override val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
+    override val authConnector: AuthConnector = mockAuthConnector
+		override val shortLivedCache: ShortLivedCache = mockShortLivedCache
+		override val sessionService: SessionService = mockSessionService
+		override val appConfig: ApplicationConfig = mockAppConfig
   }
 
   val emptySession = RasSession(MemberName("",""),MemberNino(""),
@@ -50,7 +48,7 @@ class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18n
 
     "redirect to match not found page" when {
       "on member name page and edit is true" in {
-        val result = TestPageFlowController.previousPage("MemberNameController", true)
+        val result = TestPageFlowController.previousPage("MemberNameController", edit = true)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/no-residency-status-displayed")
       }
@@ -66,7 +64,7 @@ class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18n
 
     "redirect to match not found page" when {
       "on member nino page and edit is true" in {
-        val result = TestPageFlowController.previousPage("MemberNinoController", true)
+        val result = TestPageFlowController.previousPage("MemberNinoController", edit = true)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/no-residency-status-displayed")
       }
@@ -82,7 +80,7 @@ class PageFlowControllerSpec extends UnitSpec with WithFakeApplication with I18n
 
     "redirect to match not found page" when {
       "on member dob page and edit is true" in {
-        val result = TestPageFlowController.previousPage("MemberDOBController", true)
+        val result = TestPageFlowController.previousPage("MemberDOBController", edit = true)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/no-residency-status-displayed")
       }

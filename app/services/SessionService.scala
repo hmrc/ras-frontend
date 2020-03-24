@@ -16,29 +16,28 @@
 
 package services
 
-import config.{ApplicationConfig, RasShortLivedHttpCaching, SessionCacheWiring}
+import config._
+import javax.inject.Inject
+import models.FileUploadStatus._
 import models._
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.mvc.Request
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.http.cache.client.ShortLivedHttpCaching
-import models.FileUploadStatus._
+import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object SessionService extends SessionService {
-  override val config: ApplicationConfig = ApplicationConfig
-}
-
-trait SessionService extends SessionCacheWiring {
+class SessionService @Inject()(val http: DefaultHttpClient,
+															 val sessionCache: RasSessionCache,
+															 appConfig: ApplicationConfig
+															) {
 
   private object CacheKeys extends Enumeration {
     val All, Name, Nino, Dob, StatusResult, UploadResponse, Envelope = Value
   }
 
-  val config: ApplicationConfig
   val RAS_SESSION_KEY: String = "ras_session"
   val cleanMemberName: MemberName = MemberName("", "")
   val cleanMemberNino: MemberNino = MemberNino("")
@@ -89,12 +88,16 @@ trait SessionService extends SessionCacheWiring {
   }
 }
 
-trait ShortLivedCache  {
 
-  val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
-  private val source = "ras"
+class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
+																appConfig: ApplicationConfig,
+																applicationCrypto: ApplicationCrypto
+															 ) {
 
-  val hoursToWaitForReUpload = 24
+	implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
+
+	private val source = "ras"
+  lazy val hoursToWaitForReUpload: Int = appConfig.hoursToWaitForReUpload
 
   val STATUS_AVAILABLE: String = "AVAILABLE"
 
@@ -102,19 +105,19 @@ trait ShortLivedCache  {
 
   def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier):Future[Boolean] = {
 
-    shortLivedCache.cache[FileSession](source, userId, "fileSession",
-      FileSession(None, None, userId, Some(DateTime.now().getMillis), None)).map(res => true) recover {
+    shortLiveCache.cache[FileSession](source, userId, "fileSession",
+      FileSession(None, None, userId, Some(DateTime.now().getMillis), None)).map(_ => true) recover {
       case ex: Throwable => Logger.error(s"unable to create FileSession to cache => " +
-        s"${userId} , envelopeId :${envelopeId},  Exception is ${ex.getMessage}")
+        s"$userId , envelopeId :$envelopeId,  Exception is ${ex.getMessage}")
         false
       //retry or what is the other option?
     }
   }
 
   def fetchFileSession(userId: String)(implicit hc: HeaderCarrier): Future[Option[FileSession]] = {
-    shortLivedCache.fetchAndGetEntry[FileSession](source, userId, "fileSession").recover {
+    shortLiveCache.fetchAndGetEntry[FileSession](source, userId, "fileSession").recover {
       case ex: Throwable => Logger.error(s"unable to fetch FileSession from cache => " +
-        s"${userId} , Exception is ${ex.getMessage}")
+        s"$userId , Exception is ${ex.getMessage}")
         None
     }
   }
@@ -144,11 +147,10 @@ trait ShortLivedCache  {
       case Some(userFile) =>
         userFile.status match {
           case STATUS_AVAILABLE => false
-          case _ => {
-            removeFileSessionFromCache(fileSession.userId)
-            true
-          }
-        }
+          case _ =>
+						removeFileSessionFromCache(fileSession.userId)
+						true
+				}
       case _ => false
     }
   }
@@ -163,15 +165,14 @@ trait ShortLivedCache  {
 
   def isFileInProgress(userId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     fetchFileSession(userId).map(fileSession =>
-      fileSession.isDefined match {
-        case true =>
-          fileSession.get.resultsFile.isDefined || !hasBeen24HoursSinceTheUpload(fileSession.get.uploadTimeStamp.get)
-        case false =>
-          Logger.error("[ShortLivedCache][isFileInProgress] fileSession not defined for " + userId)
-          false
-    }).recover {
+      if (fileSession.isDefined) {
+				fileSession.get.resultsFile.isDefined || !hasBeen24HoursSinceTheUpload(fileSession.get.uploadTimeStamp.get)
+			} else {
+				Logger.error("[ShortLivedCache][isFileInProgress] fileSession not defined for " + userId)
+				false
+			}).recover {
       case ex: Throwable =>
-        Logger.error(s"[ShortLivedCache][isFileInProgress] unable to fetch FileSession from cache to check isFileInProgress => ${userId} , Exception is ${ex.getMessage}")
+        Logger.error(s"[ShortLivedCache][isFileInProgress] unable to fetch FileSession from cache to check isFileInProgress => $userId , Exception is ${ex.getMessage}")
         false
     }
   }
@@ -193,18 +194,13 @@ trait ShortLivedCache  {
       case _ => Future.successful(NoFileSession)
     }
   }
-  
+
   def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier): Future[Any] = {
-    shortLivedCache.remove(userId).map(_.status).recover {
+    shortLiveCache.remove(userId).map(_.status).recover {
     case ex: Throwable => Logger.error(s"[ShortLivedCache][removeFileSessionFromCache] unable to remove FileSession from cache  => " +
-      s"${userId} , Exception is ${ex.getMessage}")
+      s"$userId , Exception is ${ex.getMessage}")
     //try again as the only option left if sessioncache fails
-      shortLivedCache.remove(userId).map(_.status)
+      shortLiveCache.remove(userId).map(_.status)
     }
   }
-}
-
-object ShortLivedCache extends ShortLivedCache {
-  override val shortLivedCache: ShortLivedHttpCaching = RasShortLivedHttpCaching
-  override val hoursToWaitForReUpload: Int = ApplicationConfig.hoursToWaitForReUpload
 }

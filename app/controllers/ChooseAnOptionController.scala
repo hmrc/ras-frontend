@@ -18,37 +18,29 @@ package controllers
 
 import akka.stream.scaladsl.{Source, StreamConverters}
 import akka.util.ByteString
-import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
+import config.ApplicationConfig
+import connectors.ResidencyStatusAPIConnector
+import javax.inject.Inject
+import models.FileUploadStatus._
+import models.{FileSession, FileUploadStatus}
 import org.joda.time.DateTime
+import play.api.Logger
 import play.api.http.HttpEntity
 import play.api.mvc._
-import play.api.{Configuration, Environment, Logger, Play}
-import uk.gov.hmrc.auth.core.AuthConnector
-import helpers.I18nHelper
-import models.{FileSession, FileUploadStatus}
-import services.ShortLivedCache
+import services.{SessionService, ShortLivedCache, TaxYearResolver}
 import uk.gov.hmrc.http.HeaderCarrier
-import services.TaxYearResolver
-import models.FileUploadStatus._
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-object ChooseAnOptionController extends ChooseAnOptionController {
-  // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-  override val resultsFileConnector:ResidencyStatusAPIConnector = ResidencyStatusAPIConnector
-  // $COVERAGE-ON$
-}
+class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAPIConnector,
+																				 val authConnector: DefaultAuthConnector,
+																				 val shortLivedCache: ShortLivedCache,
+																				 val sessionService: SessionService,
+																				 implicit val appConfig: ApplicationConfig
+																				) extends PageFlowController {
 
-trait ChooseAnOptionController extends RasController with PageFlowController with I18nHelper {
-
-  val resultsFileConnector: ResidencyStatusAPIConnector
-  implicit val context: RasContext = RasContextImpl
   private val _contentType =   "application/csv"
 
   def get: Action[AnyContent] = Action.async {
@@ -109,23 +101,23 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
                       fileSession.userFile match {
                         case Some(callbackData) =>
                           val currentTaxYear = TaxYearResolver.currentTaxYear
-                          val filename = ShortLivedCache.getDownloadFileName(fileSession)
+                          val filename = shortLivedCache.getDownloadFileName(fileSession)
                           Ok(views.html.upload_result(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
                         case _ =>
                           Logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
-                          Redirect(routes.ErrorController.renderGlobalErrorPage)
+                          Redirect(routes.ErrorController.renderGlobalErrorPage())
                       }
                     case _ =>
                       Logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve upload timestamp")
-                      Redirect(routes.ErrorController.renderGlobalErrorPage)
+                      Redirect(routes.ErrorController.renderGlobalErrorPage())
                   }
                 case _ =>
                   Logger.info("[ChooseAnOptionController][renderUploadResultsPage] file upload in progress")
-                  Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage)
+                  Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage())
               }
             case _ =>
               Logger.info("[ChooseAnOptionController][renderUploadResultsPage] no results available")
-              Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage)
+              Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage())
           }
         case Left(resp) =>
           Logger.warn("[ChooseAnOptionController][renderUploadResultsPage] user not authorised")
@@ -196,7 +188,7 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
               }
             case _ =>
               Logger.error("[ChooseAnOptionController][renderFileReadyPage] failed to retrieve session")
-              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
           }
         case Left(resp) =>
           Logger.warn("[ChooseAnOptionController][renderFileReadyPage] user not authorised")
@@ -218,15 +210,15 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
                       getFile(fileName, userId, shortLivedCache.getDownloadFileName(fileSession))
                     case _ =>
                       Logger.error("[ChooseAnOptionController][getResultsFile] filename empty")
-                      Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
+                      Future.successful(Redirect(routes.ErrorController.fileNotAvailable()))
                   }
                 case _ =>
                   Logger.error("[ChooseAnOptionController][getResultsFile] no result file found")
-                  Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
+                  Future.successful(Redirect(routes.ErrorController.fileNotAvailable()))
               }
             case _ =>
               Logger.error("[ChooseAnOptionController][getResultsFile] no file session for User Id")
-              Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
+              Future.successful(Redirect(routes.ErrorController.fileNotAvailable()))
           }
         case Left(resp) =>
           Logger.warn("[ChooseAnOptionController][getResultsFile] user not authorised")
@@ -241,18 +233,18 @@ trait ChooseAnOptionController extends RasController with PageFlowController wit
           case Success(_) =>
             Logger.info(s"[ChooseAnOptionController][getFile] File with name $fileName has started to delete")
             resultsFileConnector.deleteFile(fileName, userId)
-          case Failure(t) =>
-            Logger.warn(s"[ChooseAnOptionController][getFile] File with name $fileName was not deleted")
+          case Failure(f) =>
+            Logger.warn(s"[ChooseAnOptionController][getFile] File with name $fileName was not deleted - $f")
         })
 
       Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
-        .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="${downloadFileName}-results.csv"""",
+        .withHeaders(CONTENT_DISPOSITION -> s"""attachment; filename="$downloadFileName-results.csv"""",
           // CONTENT_LENGTH -> s"${fileData.get.length}",
           CONTENT_TYPE -> _contentType)
 
     }.recover {
       case ex: Throwable => Logger.error("[ChooseAnOptionController][getFile] Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
-        Redirect(routes.ErrorController.renderGlobalErrorPage)
+        Redirect(routes.ErrorController.renderGlobalErrorPage())
     }
   }
 

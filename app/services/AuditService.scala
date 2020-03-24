@@ -16,25 +16,20 @@
 
 package services
 
-import config.FrontendAuditConnector
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.audit.model.DataEvent
-import uk.gov.hmrc.play.audit.AuditExtensions._
-import uk.gov.hmrc.play.config.AppName
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.AuditExtensions._
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
+import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 
-trait AuditService extends AppName {
-  val connector: AuditConnector
+import scala.concurrent.{ExecutionContext, Future}
 
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
+trait AuditService {
+  val connector: DefaultAuditConnector
 
-  def audit(auditType: String, path: String, auditData: Map[String, String])(implicit hc:HeaderCarrier): Future[AuditResult] = {
+  def audit(auditType: String, path: String, auditData: Map[String, String])(implicit hc:HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val event = DataEvent(
-      auditSource = appName,
+      auditSource = "ras-frontend",
       auditType = auditType,
       tags = hc.toAuditTags(auditType, path),
       detail = hc.toAuditDetails() ++ auditData
@@ -43,10 +38,4 @@ trait AuditService extends AppName {
     connector.sendEvent(event)
   }
 
-}
-
-object AuditService extends AuditService {
-  // $COVERAGE-OFF$Trivial and never going to be called by a test that uses it's own object implementation
-  override val connector: AuditConnector = FrontendAuditConnector
-  // $COVERAGE-ON$
 }

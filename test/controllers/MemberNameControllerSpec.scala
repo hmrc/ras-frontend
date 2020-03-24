@@ -16,76 +16,51 @@
 
 package controllers
 
-import connectors.{ResidencyStatusAPIConnector, UserDetailsConnector}
-import controllers.RasResidencyCheckerController._
-import helpers.I18nHelper
+import helpers.{I18nHelper, RasTestHelper}
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Matchers
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Environment}
-import services.{AuditService, SessionService}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I18nHelper with MockitoSugar {
+class MemberNameControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
 
-  implicit val headerCarrier = HeaderCarrier()
-
-  val fakeRequest = FakeRequest()
-  val mockAuthConnector = mock[AuthConnector]
-  val mockUserDetailsConnector = mock[UserDetailsConnector]
-  val mockSessionService = mock[SessionService]
-  val mockConfig = mock[Configuration]
-  val mockEnvironment = mock[Environment]
-  val mockRasConnector = mock[ResidencyStatusAPIConnector]
-  val mockAuditService = mock[AuditService]
+  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
-  private val enrolments = new Enrolments(Set(enrolment))
+  private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
   val memberName = MemberName("Jackie", "Chan")
   val memberNino = MemberNino("AB123456C")
   val memberDob = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
   val rasSession = RasSession(memberName, memberNino, memberDob, None, None)
-  val postData = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
+  val postData: JsObject = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
 
 
-  object TestMemberNameController extends MemberNameController {
-    val authConnector: AuthConnector = mockAuthConnector
-    override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
-    override val sessionService = mockSessionService
-    override val config: Configuration = mockConfig
-    override val env: Environment = mockEnvironment
-    override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockRasConnector
-    override val auditService: AuditService = mockAuditService
-    override val apiVersion: ApiVersion = ApiV1_0
+  val TestMemberNameController: MemberNameController = new MemberNameController(mockAuthConnector, mockAuditConnector, mockResidencyStatusAPIConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+    override lazy val apiVersion: ApiVersion = ApiV1_0
 
-    when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
-    when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
-
-  // and finally the tests
 
   "MemberNameController" should {
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
-    when(mockUserDetailsConnector.getUserDetails(any())(any())).
+    when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
 
 
@@ -133,32 +108,27 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "present empty form when no cached data exists" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = await(TestMemberNameController.get()(fakeRequest))
       assert(doc(result).getElementById("firstName").attr("value").equals(""))
       assert(doc(result).getElementById("lastName").attr("value").equals(""))
     }
 
     "contain the correct ga data when edit mode is false" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = await(TestMemberNameController.get()(fakeRequest))
       assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue"))
       assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their name?:Back"))
     }
 
     "contain the correct ga data when edit mode is true" in {
-      when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = await(TestMemberNameController.get(true)(fakeRequest))
       assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue and submit"))
     }
   }
 
   "Member name controller form submission" should {
-
-    "respond to POST /relief-at-source/member-name" in {
-      val result = route(fakeApplication, FakeRequest(POST, "/relief-at-source/member-name"))
-      status(result.get) should not equal (NOT_FOUND)
-    }
 
     "return bad request when form error present" in {
       val postData = Json.obj(
@@ -169,20 +139,20 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
     }
 
     "save details to cache" in {
-      val result = await(TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any())
+      await(TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
+      verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
     }
 
     "redirect to nino page when name cached and edit mode is false" in {
       val session = RasSession(memberName, MemberNino(""), MemberDateOfBirth(RasDate(None, None, None)), None, None)
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(session)))
+      when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(session)))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result).get should include("/member-national-insurance-number")
     }
 
     "redirect to match found page when edit mode is true and matching successful" in {
-      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
       when(mockSessionService.cacheResidencyStatusResult(any())(any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
@@ -190,21 +160,21 @@ class MemberNameControllerSpec extends UnitSpec with WithFakeApplication with I1
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("/member-residency-status")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any())
+      verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
-      when(mockRasConnector.getResidencyStatus(any())(any())).thenReturn(Future.failed(Upstream4xxResponse("Member not found", 403, 403)))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(Upstream4xxResponse("Member not found", 403, 403)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
       redirectLocation(result).get should include("/no-residency-status-displayed")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(Matchers.any())(Matchers.any())
+      verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
     }
 
     "redirect to technical error page if name is not cached" in {
-      when(mockSessionService.cacheName(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+      when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(None))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result).get should include("global-error")

@@ -16,66 +16,46 @@
 
 package controllers
 
-import java.io.File
-
-import connectors.UserDetailsConnector
-import helpers.RandomNino
-import helpers.I18nHelper
+import helpers.{I18nHelper, RandomNino, RasTestHelper}
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import play.api.{Configuration, Environment, Mode}
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
-import services.SessionService
-import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import services.TaxYearResolver
+import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nHelper with MockitoSugar {
+class ResultsControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
 
-  val fakeRequest = FakeRequest("GET", "/")
-  val currentTaxYear = TaxYearResolver.currentTaxYear
+  override val fakeRequest = FakeRequest("GET", "/")
+  val currentTaxYear: Int = TaxYearResolver.currentTaxYear
 
-  val SCOTTISH = "Scotland"
+  override val SCOTTISH = "Scotland"
   val NON_SCOTTISH = "England, Northern Ireland or Wales"
-  val mockConfig: Configuration = mock[Configuration]
-  val mockEnvironment: Environment = Environment(mock[File], mock[ClassLoader], Mode.Test)
-  val mockAuthConnector = mock[AuthConnector]
-  val mockUserDetailsConnector = mock[UserDetailsConnector]
-  val mockSessionService = mock[SessionService]
+
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
-  private val enrolments = new Enrolments(Set(enrolment))
+  private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
-  val name = MemberName("Jim", "McGill")
-  val nino = MemberNino(RandomNino.generate)
-  val dob = RasDate(Some("1"), Some("1"), Some("1999"))
-  val memberDob = MemberDateOfBirth(dob)
-  val residencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
-  val postData = Json.obj("firstName" -> "Jim", "lastName" -> "McGill", "nino" -> nino, "dateOfBirth" -> dob)
-  val rasSession = RasSession(name, nino, memberDob, Some(residencyStatusResult), None)
+  val name: MemberName = MemberName("Jim", "McGill")
+  val nino: MemberNino = MemberNino(RandomNino.generate)
+  val dob: RasDate = RasDate(Some("1"), Some("1"), Some("1999"))
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(dob)
+  val residencyStatusResult: ResidencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
+  val postData: JsObject = Json.obj("firstName" -> "Jim", "lastName" -> "McGill", "nino" -> nino, "dateOfBirth" -> dob)
+  val rasSession: RasSession = RasSession(name, nino, memberDob, Some(residencyStatusResult), None)
 
 
-  object TestResultsController extends ResultsController {
-    val authConnector: AuthConnector = mockAuthConnector
-    override val userDetailsConnector: UserDetailsConnector = mockUserDetailsConnector
-
-    override val config: Configuration = mockConfig
-    override val env: Environment = mockEnvironment
-
-    override val sessionService = mockSessionService
-
-    when(mockSessionService.fetchRasSession()(Matchers.any())).thenReturn(Future.successful(Some(rasSession)))
+  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+    when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
@@ -83,7 +63,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
   "Results Controller" should {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
 
-    when(mockUserDetailsConnector.getUserDetails(any())(any())).
+    when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).
       thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
 
     "return 200 when match found" in {
@@ -142,7 +122,6 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
               "")),None))
       ))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
 
       doc(result).getElementById("top-content").text shouldBe Messages("match.found.top")
       doc(result).getElementById("sub-header").text shouldBe Messages("match.found.what.happens.next")
@@ -228,7 +207,6 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
               ""))))
       ))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
       doc(result).getElementById("look-up-another-member-link").attr("href") shouldBe "/relief-at-source/check-another-member/member-name?cleanSession=true"
     }
 
@@ -312,7 +290,7 @@ class ResultsControllerSpec extends UnitSpec with WithFakeApplication with I18nH
       status(result) shouldBe 303
       redirectLocation(result).get should include("/relief-at-source")
     }
-    
+
     "return to member dob page when back link is clicked" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(RasSession(name, nino, memberDob,

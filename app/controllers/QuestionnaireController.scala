@@ -16,21 +16,22 @@
 
 package controllers
 
-import config.{RasContext, RasContextImpl}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.Questionnaire
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import services.AuditService
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
 
-trait QuestionnaireController extends FrontendController {
-
-  implicit val context: RasContext = RasContextImpl
-  val auditService: AuditService
+class QuestionnaireController @Inject()(val connector: DefaultAuditConnector,
+																				implicit val appConfig: ApplicationConfig
+																			 ) extends FrontendController with AuditService {
 
   def showQuestionnaire: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(views.html.feedback.feedbackQuestionaire(Questionnaire.form)))
@@ -43,7 +44,7 @@ trait QuestionnaireController extends FrontendController {
           )
         },
         data => {
-          auditService.audit(auditType="rasFeedbackSurvey", path=routes.QuestionnaireController.submitQuestionnaire().url,CreateQuestionnaireAudit(data))
+          audit(auditType="rasFeedbackSurvey", path=routes.QuestionnaireController.submitQuestionnaire().url,CreateQuestionnaireAudit(data))
           Future.successful(Redirect(routes.QuestionnaireController.feedbackThankyou()))
         }
       )
@@ -60,8 +61,4 @@ trait QuestionnaireController extends FrontendController {
       "whyGiveThisRating" -> survey.whyGiveThisRating.mkString
     )
   }
-}
-
-object QuestionnaireController extends QuestionnaireController {
-  override val auditService: AuditService = AuditService
 }

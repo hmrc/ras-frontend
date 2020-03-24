@@ -14,27 +14,21 @@
  * limitations under the License.
  *@
 
-@import play.api.Play.current
-@import uk.gov.hmrc.play.config.RunMode._
-@import config.RasContext
-
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 @import play.api.i18n.Messages
-@import config.ApplicationConfig
 
-@()(implicit messages: Messages, request: Request[_], context: RasContext)
+@import config.ApplicationConfig
+@()(implicit messages: Messages, request: Request[_], appConfig: ApplicationConfig)
 
 @anchor(serviceName: String, email: String) = {
     <a href="mailto:@email">@serviceName</a>
 }
 
-@ras_main(title = Messages("error.page_not_found.tabtitle")) {
-    <h1>@Messages("error.page_not_found.heading")</h1>
+@ras_main(title = messages("error.page_not_found.tabtitle")) {
+    <h1>@messages("error.page_not_found.heading")</h1>
     <p>@messages("error.page.not.found.error.check.web.address.correct")</p>
     <p>@messages("error.page.not.found.error.check.web.address.full")</p>
     <p>@messages("error.page.not.found.error.contact")
-        @anchor(Messages("error.page.not.found.error.ras.email"), Messages("error.page.not.found.error.ras.email"))
+        @anchor(messages("error.page.not.found.error.ras.email"), messages("error.page.not.found.error.ras.email"))
         @messages("error.page.not.found.error.contact.end")
     </p>
 }

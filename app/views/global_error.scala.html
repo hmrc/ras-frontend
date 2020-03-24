@@ -14,16 +14,16 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], context: config.RasContext, messages: Messages)
-
-@ras_main(title = Messages("global.error.page.title")) {
+@import config.ApplicationConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+	@ras_main(title = messages("global.error.page.title")) {
 
     <div class="row">
-        <h1 id="header" class="heading-xlarge">@Messages("global.error.header")</h1>
+        <h1 id="header" class="heading-xlarge">@messages("global.error.header")</h1>
     </div>
 
     <div class="row">
-        <p id="message">@Messages("global.error.message")</p>
+        <p id="message">@messages("global.error.message")</p>
     </div>
 
 }

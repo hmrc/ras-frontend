@@ -16,27 +16,21 @@
 
 package controllers
 
-import config.{FrontendAuthConnector, RasContext, RasContextImpl}
-import connectors.UserDetailsConnector
-import helpers.I18nHelper
-import play.api.{Configuration, Environment, Logger, Play}
+import config.ApplicationConfig
+import javax.inject.Inject
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.auth.core.AuthConnector
+import services.{SessionService, ShortLivedCache}
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import scala.concurrent.Future
 
-object ErrorController extends ErrorController {
-  val authConnector: AuthConnector = FrontendAuthConnector
-  override val userDetailsConnector: UserDetailsConnector = UserDetailsConnector
-  val config: Configuration = Play.current.configuration
-  val env: Environment = Environment(Play.current.path, Play.current.classloader, Play.current.mode)
-}
+class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
+																val shortLivedCache: ShortLivedCache,
+																val sessionService: SessionService,
+																implicit val appConfig: ApplicationConfig) extends RasController {
 
-trait ErrorController extends RasController with I18nHelper {
-
-  implicit val context: RasContext = RasContextImpl
-
-  def renderGlobalErrorPage: Action[AnyContent] = Action.async {
+def renderGlobalErrorPage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>

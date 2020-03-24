@@ -14,8 +14,9 @@
  * limitations under the License.
  *@
 
-@(applicationConfig: config.ApplicationConfig,
-    title: String,
+@import config.ApplicationConfig
+
+@(title: String,
     mainClass: Option[String] = None,
     mainDataAttributes: Option[Html] = None,
     bodyClasses: Option[String] = None,
@@ -27,12 +28,10 @@
     linkElement : Option[Html] = None,
     getHelpForm: Html  = HtmlFormat.empty,
     signOutEnabled:Boolean,
-    showUrBanner: Boolean = false)(implicit request: Request[_], messages: Messages)
+    showUrBanner: Boolean = false)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
-@import config.ApplicationConfig
 
 @head = {
     @uiLayouts.head(
@@ -43,13 +42,13 @@
 
 @headerNavLinks = {
     @if(signOutEnabled) {
-        <li><a id="logOutStatusHref" href="@ApplicationConfig.signOutUrl">@Messages("signout")</a></li>
+        <li><a id="logOutStatusHref" href="@appConfig.signOutUrl">@messages("signout")</a></li>
     }
 }
 
 @insideHeader = {
     @uiLayouts.header_nav(
-      navTitle = Some(Messages("nav.title")),
+      navTitle = Some(messages("nav.title")),
       navTitleLink = None,
       showBetaLink = false,
       navLinks = Some(headerNavLinks))
@@ -95,8 +94,8 @@
 
 @bodyEnd = {
     @uiLayouts.footer(
-      analyticsToken = Some(applicationConfig.analyticsToken),
-      analyticsHost = applicationConfig.analyticsHost,
+      analyticsToken = Some(appConfig.analyticsToken),
+      analyticsHost = appConfig.analyticsHost,
       ssoUrl = None,
       scriptElem = scriptElem,
       gaCalls = None
@@ -122,13 +121,13 @@
 }
 
 @urBanner = {
-    @if(showUrBanner && applicationConfig.urBannerEnabled && !request.cookies.exists(x => x.name == "rasUrBannerHide")) {
-        @views.html.helpers.urBanner(title = Messages("ur.banner.title"),
-            text = Messages("ur.banner.text"),
-            linkUrl = applicationConfig.urBannerLinkUrl,
+    @if(showUrBanner && appConfig.urBannerEnabled && !request.cookies.exists(x => x.name == "rasUrBannerHide")) {
+        @views.html.helpers.urBanner(title = messages("ur.banner.title"),
+            text = messages("ur.banner.text"),
+            linkUrl = appConfig.urBannerLinkUrl,
             linkGaAction = title,
             linkGaLabel = "Get involved in making government services better",
-            dismissText = Messages("ur.banner.dismiss.text"),
+            dismissText = messages("ur.banner.dismiss.text"),
             dismissUrl = "#",
             dismissGaAction = title,
             dismissGaLabel = "Dismiss UR banner"
@@ -148,4 +147,4 @@
       sidebar = sidebar)
 }
 
-@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)
+@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), nav = true)(content)
