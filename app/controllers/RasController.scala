@@ -62,7 +62,8 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
   }
 
 	def toGGLogin(continueUrl: String): Result = {
-		Redirect(appConfig.loginURL,
+		Redirect(
+      appConfig.loginURL,
 			Map(
 				"continue" -> Seq(continueUrl),
 				"origin"   -> Seq("ras-frontend")

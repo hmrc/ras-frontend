@@ -44,7 +44,7 @@ class ApplicationConfig @Inject()() extends ServicesConfig {
   private lazy val continueCallback =  getConfString("gg-urls.continue-callback.url", "/relief-at-source/")
 
 	lazy val companyAuthHost: String = s"${getConfString("auth.company-auth.host", "")}"
-	lazy val loginURL: String = s"$companyAuthHost/gg/signin"
+	lazy val loginURL: String = s"$companyAuthHost/gg/sign-in"
 
 	lazy val reportAProblemUrl: String = s"$contactHost/contact/problem_reports"
 	lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
