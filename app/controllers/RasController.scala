@@ -56,11 +56,6 @@ trait RasController extends FrontendController with I18nHelper with AuthorisedFu
     Future.successful(Redirect(routes.ErrorController.notAuthorised()))
   }
 
-  def userInfoNotFond(idName:String): Future[Result] = {
-    Logger.error(s"[RasController][userInfoNotFound] $idName not found")
-    Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
-  }
-
 	def toGGLogin(continueUrl: String): Result = {
 		Redirect(
       appConfig.loginURL,
