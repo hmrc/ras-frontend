@@ -1,6 +1,6 @@
 ######  TITLES #####################################################################################
 
-unauthorised.error.page.title = There is a problem - Look up residency status for relief at source - GOV.UK
+unauthorised.error.page.title = You cannot use these sign in detail - Relief At Source - GOV.UK
 file.upload.page.title = Upload a file - Look up residency status for relief at source - GOV.UK
 file.upload.successful.page.title = Your file has been uploaded - Look up residency status for relief at source - GOV.UK
 chooseAnOption.page.title = Choose an option to get a residency status - {0}Look up residency status for relief at source - GOV.UK
@@ -36,7 +36,7 @@ problem.uploading.file.header = There has been a problem uploading your file
 no.results.available.page.header = You have not uploaded a file
 results.not.available.yet.page.header = The results file is not available yet
 file.not.available.page.header = This file is not available
-unauthorised.page.header = There is a problem
+unauthorised.page.header = You cannot use these sign in details
 file.ready.page.header = The last file you uploaded is ready
 
 ###### SUB-HEADERS #################################################################################
