@@ -1,6 +1,7 @@
-!.github
+.*
 
 !.gitignore
+!.github
 
 .cache
 /.classpath
