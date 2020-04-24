@@ -130,7 +130,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
         val date = new DateTime(mockExpiryTimeStamp)
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("EEEE d MMMM yyyy")} at ${date.toString("H:mma").toLowerCase()}")
+        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("H:mma").toLowerCase()} on ${date.toString("EEEE d MMMM yyyy")}")
       }
     }
 
@@ -277,7 +277,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
 
     "contain expiry date message" in {
       val expiryDate = new DateTime(mockExpiryTimeStamp)
-      val formattedDate =  s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("H:mma").toLowerCase()}"
+      val formattedDate =  s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}"
       when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",formattedDate)

@@ -74,7 +74,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   private def formattedExpiryDate(timestamp: Long): String = {
     val expiryDate = new DateTime(timestamp).plusDays(3)
-    s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("H:mma").toLowerCase()}"
+    s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}"
   }
 
   private def formattedUploadDate(timestamp: Long): String = {
