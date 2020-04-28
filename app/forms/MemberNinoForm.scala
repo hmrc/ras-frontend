@@ -22,6 +22,8 @@ import play.api.data.Form
 import play.api.data.Forms._
 import validators.NinoValidator
 
-object MemberNinoForm extends I18nHelper{
-  val form = Form(mapping("nino" -> text.verifying(NinoValidator.ninoConstraint))(MemberNino.apply)(MemberNino.unapply))
+object MemberNinoForm extends I18nHelper {
+  def apply(name: Option[String] = None) = Form(
+    mapping("nino" -> text.verifying(NinoValidator.ninoConstraint(name.getOrElse(Messages("member")))))(MemberNino.apply)(MemberNino.unapply)
+  )
 }

@@ -16,13 +16,15 @@
 
 package forms
 
-import forms.MemberNinoForm._
+import forms.MemberNameForm.Messages
+import forms.{MemberNinoForm => form}
 import helpers.RandomNino
 import helpers.I18nHelper
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
+import services.{SessionService, ShortLivedCache}
 
 class MemberNinoFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
 
@@ -32,35 +34,44 @@ class MemberNinoFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
 
     "return no error when valid data is entered" in {
       val formData = Json.obj("nino" -> RandomNino.generate)
-      val validatedForm = form.bind(formData)
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.isEmpty)
     }
 
     "return an error when nino field is empty" in {
       val formData = Json.obj("nino" -> "")
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.mandatory", Messages("nino"))))))
+      val validatedForm = form(Some("James Potter")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.mandatory", "James Potter", Messages("nino"))))))
+    }
+
+    "return an error when nino field has special character" in {
+      val formData = Json.obj("nino" -> "a!")
+      val validatedForm = form(Some("James Potter")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.special.character", "James Potter")))))
     }
 
     "return an error when invalid nino is passed" in {
       val formData = Json.obj("nino" -> "QQ322312B")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.invalid")))))
-      assert(!validatedForm.errors.contains(FormError("nino", List(Messages("error.mandatory")))))
     }
 
     "return an error when invalid nino suffix is passed" in {
       val formData = Json.obj("nino" -> "AB322312E")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.invalid")))))
-      assert(!validatedForm.errors.contains(FormError("nino", List(Messages("error.mandatory")))))
+    }
+
+    "return an error when invalid nino length is passed" in {
+      val formData = Json.obj("nino" -> "AA")
+      val validatedForm = form().bind(formData)
+      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.length")))))
     }
 
     "return no error when nino with no suffix is passed" in {
       val formData = Json.obj("nino" -> "AB123456")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.isEmpty)
     }
-
   }
 }
