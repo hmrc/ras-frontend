@@ -42,7 +42,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "",
         "lastName" -> "Esfandiari")
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("firstName", List(Messages("error.mandatory", Messages("first.name"))))))
+      assert(validatedForm.errors.contains(FormError("firstName", List(Messages("error.mandatory.name", Messages("first.name"))))))
     }
 
     "return an error when last name field is empty" in {
@@ -50,7 +50,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "Ramin",
         "lastName" -> "")
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("lastName", List(Messages("error.mandatory", Messages("last.name"))))))
+      assert(validatedForm.errors.contains(FormError("lastName", List(Messages("error.mandatory.name", Messages("last.name"))))))
     }
 
     "return error when first name is longer max allowed length" in {

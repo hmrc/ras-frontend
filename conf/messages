@@ -61,12 +61,13 @@ multiple.members.subheading = Multiple members
 ###### ERRORS ######################################################################################
 
 error.mandatory = Enter a {0}
+error.mandatory.name = Enter the member’s {0}
+error.name.invalid = Member’s {0} must only include letters a to z, apostrophes, hyphens and spaces
+error.length = Member's {0} must be 35 characters or less
 error.nino.mandatory = Enter {0}’s {1}
 error.nino.invalid = Enter a National Insurance number in the right format
 error.nino.length = Enter a valid National Insurance number using 8 or 9 characters
 error.nino.special.character =  {0}’s National Insurance number must only include letters a to z and numbers 0 to 9
-error.length = {0} must be {1} characters or less
-error.name.invalid = Enter a {0} using only letters, hyphens, apostrophes and spaces
 error.date.non.number = Enter a {0} using numbers only
 error.day.invalid = Enter a day between 1 and 31
 error.day.invalid.feb = Enter a day between 1 and 28
@@ -237,8 +238,4 @@ filestatus.NoFileSession =
 filestatus.Ready = File ready - 
 filestatus.InProgress = File processing - 
 filestatus.UploadError = File problem - 
-filestatus.TimeExpiryError = File problem - 
-
-
-
-
+filestatus.TimeExpiryError = File problem -

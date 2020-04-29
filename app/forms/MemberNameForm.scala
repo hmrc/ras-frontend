@@ -29,11 +29,11 @@ object MemberNameForm extends I18nHelper{
   val form = Form(
     mapping(
       "firstName" -> text
-        .verifying(Messages("error.mandatory", Messages("first.name")), _.length > 0)
+        .verifying(Messages("error.mandatory.name", Messages("first.name")), _.length > 0)
         .verifying(Messages("error.length", Messages("first.name").capitalize, MAX_LENGTH), _.length <= MAX_LENGTH)
         .verifying(Messages("error.name.invalid", Messages("first.name")), x => x.length == 0 || x.matches(NAME_REGEX)),
       "lastName" -> text
-        .verifying(Messages("error.mandatory", Messages("last.name")), _.length > 0)
+        .verifying(Messages("error.mandatory.name", Messages("last.name")), _.length > 0)
         .verifying(Messages("error.length", Messages("last.name").capitalize, MAX_LENGTH), _.length <= MAX_LENGTH)
         .verifying(Messages("error.name.invalid", Messages("last.name")), x => x.length == 0 || x.matches(NAME_REGEX))
     )(MemberName.apply)(MemberName.unapply)
