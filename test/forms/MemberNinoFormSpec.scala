@@ -41,7 +41,7 @@ class MemberNinoFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
     "return an error when nino field is empty" in {
       val formData = Json.obj("nino" -> "")
       val validatedForm = form(Some("James Potter")).bind(formData)
-      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.nino.mandatory", "James Potter", Messages("nino"))))))
+      assert(validatedForm.errors.contains(FormError("nino", List(Messages("error.withName.mandatory", "James Potter", Messages("nino"))))))
     }
 
     "return an error when nino field has special character" in {

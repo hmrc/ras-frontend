@@ -22,15 +22,25 @@ import play.api.data.Form
 import play.api.data.Forms._
 import validators.DateValidator
 
-object MemberDateOfBirthForm extends I18nHelper{
+object MemberDateOfBirthForm extends I18nHelper {
 
-  val form = Form(
-    mapping(
-      "dateOfBirth" -> mapping(
-        "day" -> optional(text),
-        "month" -> optional(text),
+  def apply(name: Option[String] = None) = Form(
+    "dateOfBirth" -> mapping(
+      "" -> mapping(
+        "day" -> optional(text)
+          .verifying(Messages("error.withName.mandatory.date", name.getOrElse(Messages("member")), "day"), mandatoryCheck)
+          .verifying(Messages("error.date.non.number.date", name.getOrElse(Messages("member")), "day"), mandatoryCheckNonNumber),
+        "month" -> optional(text)
+          .verifying(Messages("error.withName.mandatory.date", name.getOrElse(Messages("member")), "month"), mandatoryCheck)
+          .verifying(Messages("error.date.non.number.date", name.getOrElse(Messages("member")), "month"), mandatoryCheckNonNumber),
         "year" -> optional(text)
-      )(RasDate.apply)(RasDate.unapply).verifying(DateValidator.rasDateConstraint))
-    (MemberDateOfBirth.apply)(MemberDateOfBirth.unapply)
+          .verifying(Messages("error.withName.mandatory.date", name.getOrElse(Messages("member")), "year"), mandatoryCheck)
+          .verifying(Messages("error.date.non.number.date", name.getOrElse(Messages("member")), "year"), mandatoryCheckNonNumber)
+      )(RasDate.apply)(RasDate.unapply)
+    )(MemberDateOfBirth.apply)(MemberDateOfBirth.unapply).verifying(DateValidator.rasDateConstraint(name.getOrElse(Messages("member"))))
   )
+
+  val mandatoryCheck: Option[String] => Boolean = input => input.getOrElse("").trim != ""
+  val mandatoryCheckNonNumber: Option[String] => Boolean = input => input.getOrElse("0") forall Character.isDigit
+
 }
