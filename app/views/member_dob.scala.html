@@ -17,57 +17,37 @@
 @import config.ApplicationConfig
 @(memberDobForm: Form[models.MemberDateOfBirth], name:String, edit: Boolean)(implicit request: Request[_], messages: Messages, formInstance: Option[Form[models.MemberDateOfBirth]] = None, appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
+@import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form, dateFieldsFreeInlineLegend}
 
 @ras_main(title = messages("member.dob.page.title")) {
 
-    <a class="link-back" href="@routes.MemberDOBController.back(edit)"
-           data-journey-click="navigation - link:What is their DOB?:Back">@messages("back")</a>
+<a class="link-back" href="@routes.MemberDOBController.back(edit)"
+   data-journey-click="navigation - link:What is their DOB?:Back">@messages("back")</a>
 
-    @views.html.helpers.errorSummary(memberDobForm, "What is their DOB?")
+<!--@views.html.helpers.errorSummary(memberDobForm, "What is their DOB?")-->
+@(if(memberDobForm.hasErrors) errorSummary(Messages("generic.errors_heading"), memberDobForm))
 
-    @form(action = routes.MemberDOBController.post(edit)) {
+@form(action = routes.MemberDOBController.post(edit)) {
 
-    <fieldset class="inline">
-        <legend>
-            <header class="page-header">
-                <h1 id="header" class="heading-xlarge">@messages("member.dob.page.header",name)</h1>
-            </header>
+<fieldset class="inline">
+    <legend>
+        <header class="page-header">
+            <h1 id="header" class="heading-xlarge">@messages("member.dob.page.header",name)</h1>
+        </header>
 
-            <div class="@if(memberDobForm.errors.nonEmpty) {form-group-error}">
-                <span class="form-hint" id="dob_hint">@messages("dob.hint")</span>
-                @if(!memberDobForm.errors.isEmpty) {
-                <span class="common-error">@views.html.helpers.groupError(memberDobForm("dateOfBirth"))</span>
-                }
-            </div>
-        </legend>
 
-            <div class="form-group @if(memberDobForm.errors.nonEmpty) {form-group-error}">
-                <div class="form-date">
+    </legend>
 
-                    @rasInput(memberDobForm("dateOfBirth.day"),
-                    '_label -> Html(messages("day").capitalize),
-                    '_id -> "dateOfBirth-day",
-                    '_type -> "tel")
 
-                    @rasInput(memberDobForm("dateOfBirth.month"),
-                    '_label -> Html(messages("month").capitalize),
-                    '_id -> "dateOfBirth-month",
-                    '_type -> "tel")
+    @dateFieldsFreeInlineLegend(memberDobForm,
+    "dateOfBirth",
+    '_inputHint -> Messages("dob.hint")
+    )
+</fieldset>
+<button class="button" type="submit" id="continue"
+        data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">
+    @messages("continue")
+</button>
+}
 
-                    @rasInput(memberDobForm("dateOfBirth.year"),
-                    '_label -> Html(messages("year").capitalize),
-                    '_id -> "dateOfBirth-year",
-                    '_type -> "tel",
-                    '_groupClass -> "form-group-year")
-                </div>
-            </div>
-    </fieldset>
-    <button class="button" type="submit" id="continue"
-            data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">
-        @messages("continue")
-    </button>
-    }
-
- }
+}

@@ -18,15 +18,15 @@ package controllers
 
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import forms.MemberDateOfBirthForm.form
+import forms.{MemberDateOfBirthForm => form}
 import javax.inject.Inject
 import models.ApiVersion
 import play.api.Logger
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -40,6 +40,13 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 
 	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
 
+  def getFullName()(implicit hc: HeaderCarrier): Future[String] = {
+    sessionService.fetchRasSession() map {
+      case Some(session) => session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+      case _ =>  Messages("member")
+    }
+  }
+
 	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
@@ -47,8 +54,8 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(views.html.member_dob(form.fill(session.dateOfBirth),name, edit))
-            case _ => Ok(views.html.member_dob(form, "", edit))
+              Ok(views.html.member_dob(form(Some(name)).fill(session.dateOfBirth), name, edit))
+            case _ => Ok(views.html.member_dob(form(), Messages("member"), edit))
           }
         case Left(resp) =>
           Logger.warn("[DobController][get] user Not authorised")
@@ -60,25 +67,20 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
     implicit request =>
       isAuthorised.flatMap {
         case Right(userId) =>
-          form.bindFromRequest.fold(
-            formWithErrors => {
-              Logger.warn("[DobController][post] Invalid form field passed")
-              sessionService.fetchRasSession() map {
-                case Some(session) =>
-                  implicit val formInstance: Option[Form[models.MemberDateOfBirth]] = Some(formWithErrors)
-                  val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-                  BadRequest(views.html.member_dob(formWithErrors, name, edit))
-                case _ =>
-                  BadRequest(views.html.member_dob(formWithErrors, Messages("member"), edit))
+          getFullName() flatMap { name =>
+            form(Some(name)).bindFromRequest.fold(
+              formWithErrors => {
+                Logger.warn("[DobController][post] Invalid form field passed")
+                Future.successful(BadRequest(views.html.member_dob(formWithErrors, name, edit)))
+              },
+              dateOfBirth => {
+                sessionService.cacheDob(dateOfBirth) flatMap {
+                  case Some(session) => submitResidencyStatus(session, userId)
+                  case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                }
               }
-            },
-            dateOfBirth => {
-              sessionService.cacheDob(dateOfBirth) flatMap {
-                case Some(session) => submitResidencyStatus(session, userId)
-                case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
-              }
-            }
-          )
+            )
+          }
         case Left(res) =>
           Logger.warn("[DobController][back] user Not authorised")
           res
