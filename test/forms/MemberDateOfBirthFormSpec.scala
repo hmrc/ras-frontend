@@ -16,7 +16,8 @@
 
 package forms
 
-import forms.MemberDateOfBirthForm._
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import helpers.I18nHelper
 import models.RasDate
 import org.joda.time.LocalDate
@@ -24,124 +25,143 @@ import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
+import forms.{MemberDateOfBirthForm => form}
 
 class MemberDateOfBirthFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
 
   "Member date of birth form" should {
 
     "return no error when valid data is entered" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"),Some("1"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"), Some("1"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.isEmpty)
     }
 
     "return error when all fields are empty" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(None,None,None))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.mandatory", Messages("dob"))), Seq("day"))))
+      val formData = Json.obj("dateOfBirth" -> RasDate(None, None, None))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List(Messages("error.withName.mandatory.date", "Chris Bristow", Messages("day"))))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List(Messages("error.withName.mandatory.date", "Chris Bristow", Messages("month"))))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List(Messages("error.withName.mandatory.date", "Chris Bristow", Messages("year"))))))
+
     }
 
     "return error when day is empty" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(None,Some("1"),Some("1999")))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.mandatory", Messages("day"))), Seq("day"))))
+      val formData = Json.obj("dateOfBirth" -> RasDate(None, Some("1"), Some("1999")))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List(Messages("error.withName.mandatory.date", "Chris Bristow", Messages("day"))))))
     }
 
     "return error when month is empty" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"), None, Some("1999")))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.mandatory", Messages("month"))), Seq("month"))))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List(Messages("error.withName.mandatory.date", "Chris Bristow", Messages("month"))))))
     }
 
     "return error when year is empty" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"),Some("1"),None))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.mandatory", Messages("year"))), Seq("year"))))
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("1"), None))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List(Messages("error.withName.mandatory.date", "Chris Bristow", Messages("year"))))))
+    }
+
+    "return error when all fields are not a number" in {
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("a"), Some("b"), Some("!")))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List(Messages("error.date.non.number.date", "Chris Bristow", Messages("day"))))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List(Messages("error.date.non.number.date", "Chris Bristow", Messages("month"))))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List(Messages("error.date.non.number.date", "Chris Bristow", Messages("year"))))))
     }
 
     "return error when day is not a number" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("a"),Some("2"),Some("1")))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.date.non.number",Messages("day"))), Seq("day"))))
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("a"), Some("2"), Some("1")))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List(Messages("error.date.non.number.date", "Chris Bristow", Messages("day"))))))
     }
 
     "return error when month is not a number" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"),Some("a"),Some("1")))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.date.non.number",Messages("month"))), Seq("month"))))
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"), Some("a"), Some("1")))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List(Messages("error.date.non.number.date", "Chris Bristow", Messages("month"))))))
     }
 
     "return error when year is not a number" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"),Some("2"),Some("a")))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.date.non.number",Messages("year"))), Seq("year"))))
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("2"), Some("a")))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List(Messages("error.date.non.number.date", "Chris Bristow", Messages("year"))))))
     }
 
     "return error when non existing date is entered in month 2" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("29"),Some("2"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("29"), Some("2"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid.feb")), Seq("day"))))
     }
 
     "return error when non existing date is entered in month 2 and leap year" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("30"),Some("2"),Some("2056")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("30"), Some("2"), Some("2056")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid.feb.leap")), Seq("day"))))
     }
 
     "return error when non existing date is entered in month 4" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"),Some("4"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"), Some("4"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid.thirty")), Seq("day"))))
     }
 
     "return error when non existing date is entered in month 6" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"),Some("6"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"), Some("6"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid.thirty")), Seq("day"))))
     }
 
     "return error when non existing date is entered in month 9" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"),Some("9"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"), Some("9"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid.thirty")), Seq("day"))))
     }
 
     "return error when non existing date is entered in month 11" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"),Some("11"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("31"), Some("11"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid.thirty")), Seq("day"))))
     }
 
     "return error when day over 31 is entered" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("32"),Some("3"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("32"), Some("3"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid")), Seq("day"))))
     }
 
     "return error when day under one is entered is entered" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("0"),Some("3"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("0"), Some("3"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.day.invalid")), Seq("day"))))
     }
 
     "return error when 0 is entered for month" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"),Some("0"),Some("1999")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("0"), Some("1999")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.month.invalid")), Seq("month"))))
     }
 
     "return error when 0 is entered for year" in {
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"),Some("3"),Some("0")))
-      val validatedForm = form.bind(formData)
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("3"), Some("0")))
+      val validatedForm = form().bind(formData)
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.year.invalid.format")), Seq("year"))))
     }
 
     "return error when date is in future" in {
       val year = (LocalDate.now.getYear + 1).toString
-      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"),Some("3"),Some(year)))
-      val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.dob.invalid.future")), Seq("day"))))
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("3"), Some(year)))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      val nextDay = DateTimeFormatter.ofPattern("dd MMMM uuuu").format(LocalDateTime.now().plusDays(1))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.dob.invalid.future", "Chris Bristow", Messages("dob"), nextDay)), Seq("day"))))
+    }
+
+    "return error when date is before 1900" in {
+      val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("3"), Some("1899")))
+      val validatedForm = form(Some("Chris Bristow")).bind(formData)
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List(Messages("error.dob.before.1900", "Chris Bristow", Messages("dob"))), Seq("year"))))
     }
   }
 }
