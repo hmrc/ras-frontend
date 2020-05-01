@@ -58,7 +58,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "r" * (MAX_NAME_LENGTH + 1),
         "lastName" -> "Esfandiari")
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("firstName", List(Messages("error.length", Messages("first.name").capitalize, MAX_NAME_LENGTH)))))
+      assert(validatedForm.errors.contains(FormError("firstName", List(Messages("error.length.firstName", Messages("first.name").capitalize, MAX_NAME_LENGTH)))))
     }
 
     "return error when last name is longer max allowed length" in {
@@ -66,7 +66,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "Ramin",
         "lastName" -> "e" * (MAX_NAME_LENGTH + 1))
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("lastName", List(Messages("error.length", Messages("last.name").capitalize, MAX_NAME_LENGTH)))))
+      assert(validatedForm.errors.contains(FormError("lastName", List(Messages("error.length.lastName", Messages("last.name").capitalize, MAX_NAME_LENGTH)))))
     }
 
     "return no error when first name is of minimum allowed length" in {
