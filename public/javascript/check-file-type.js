@@ -34,12 +34,12 @@ function checkFileType(form) {
             }
         }
         else {
-            showError('File must be a CSV');
+            showError('File must be in CSV format');
             return false;
         }
     }
     else {
-        showError('Select a CSV');
+        showError('Select a CSV file');
         return false;
     }
 }
