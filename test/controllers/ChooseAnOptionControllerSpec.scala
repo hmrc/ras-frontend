@@ -130,7 +130,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
         val date = new DateTime(mockExpiryTimeStamp)
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
         val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("EEEE d MMMM yyyy")} at ${date.toString("H:mma").toLowerCase()}")
+        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("H:mma").toLowerCase()} on ${date.toString("EEEE d MMMM yyyy")}")
       }
     }
 
@@ -277,7 +277,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
 
     "contain expiry date message" in {
       val expiryDate = new DateTime(mockExpiryTimeStamp)
-      val formattedDate =  s"${expiryDate.toString("EEEE d MMMM yyyy")} at ${expiryDate.toString("H:mma").toLowerCase()}"
+      val formattedDate =  s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}"
       when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
       val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
       doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",formattedDate)
@@ -627,6 +627,16 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You have not uploaded a file:Choose something else to do"
       doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:You have not uploaded a file:Back"
       doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:You have not uploaded a file:Upload a file"
+    }
+  }
+
+  "fomattedExpiryDate method" should {
+    "return correctly formatted date and time" in {
+      val date = new DateTime()
+        .withDate(2020,3,20)
+        .withTime(10,30,0,0)
+      assert(TestChooseAnOptionController.formattedExpiryDate(date.getMillis) ==  "10:30am on Monday 23 March 2020"
+      )
     }
   }
 }
