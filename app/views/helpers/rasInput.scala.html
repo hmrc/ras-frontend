@@ -40,6 +40,8 @@
 
 @value = @{field.value match {case Some(x) => x case None => "" case x => x}}
 
+@spellcheck = @{elements.args.get('_spellcheck) match {case Some(x) => x case None => "" case x => x}}
+
 @labelAfter = @{
     elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean]
 }
@@ -85,7 +87,9 @@
 
             id="@elements.args.get('_id)"
 
-            value="@value"/>
+            value="@value"
+
+            spellcheck="@spellcheck" />
 
     </div>
 </div>
