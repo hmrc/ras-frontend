@@ -25,50 +25,38 @@
 
     <p id="subheader">@messages("match.not.found.subheader", name)</p>
 
-    <div class="grid-row ras-remove-left-grid ras-div-table-divider">
-        <div class="column-one-half ras-align-text-left ">
-            @messages("name").capitalize
+        <div class="govuk-check-your-answers cya-questions-long">
+            <dl class="govuk-!-margin-bottom-9">
+            <dt class="cya-question">@messages("name").capitalize</dt>
+            <dd id="name">@name</dd>
+                <dd>
+                <a id="change-name-link" href='@routes.SessionController.redirect("member-name",cleanSession = false, edit = true)' data-journey-click="link - click:User details not found:Change Name">
+                    <span class="visually-hidden">@messages("change.name")</span>
+                    <span aria-hidden="true">@messages("change")</span>
+                </a>
+                </dd>
+            </dl>
+            <dl class="govuk-!-margin-bottom-9">
+            <dt class="cya-question">@messages("nino").capitalize</dt>
+            <dd id="nino">@nino</dd>
+                <dd>
+                <a class="govuk-link" id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO">
+                    <span class="visually-hidden">@messages("change.nino")</span>
+                    <span aria-hidden="true">@messages("change")</span>
+                </a>
+                </dd>
+            </dl>
+            <dl class="govuk-!-margin-bottom-9">
+            <dt class="cya-question">@messages("dob").capitalize</dt>
+            <dd id="dob">@dateOfBirth</dd>
+                <dd>
+                <a class="govuk-link" id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB">
+                    <span class="visually-hidden">@messages("change.dob")</span>
+                    <span aria-hidden="true">@messages("change")</span>
+                </a>
+                </dd>
+            </dl>
         </div>
-        <div id="name" class="column-one-third">
-            @name
-        </div>
-        <span id="change-name" class="ras-column-one-sixth ras-align-right">
-            <a id="change-name-link" href='@routes.SessionController.redirect("member-name",cleanSession = false, edit = true)' data-journey-click="link - click:User details not found:Change Name">
-                <span class="visually-hidden">@messages("change.name")</span>
-                <span aria-hidden="true">@messages("change")</span>
-            </a>
-        </span>
-    </div>
-
-    <div class="grid-row ras-remove-left-grid ras-div-table-divider">
-        <div class="column-one-half ras-align-text-left">
-            @messages("nino").capitalize
-        </div>
-        <div id="nino" class="column-one-third">
-            @nino
-        </div>
-        <span id="change-nino" class="ras-column-one-sixth ras-align-right">
-            <a id="change-nino-link" href='@routes.SessionController.redirect("member-nino",false,true)' data-journey-click="link - click:User details not found:Change NINO">
-                <span class="visually-hidden">@messages("change.nino")</span>
-                <span aria-hidden="true">@messages("change")</span>
-            </a>
-        </span>
-    </div>
-    <div class="grid-row ras-remove-left-grid ras-div-table-divider">
-        <div class="column-one-half ras-align-text-left">
-            @messages("dob").capitalize
-        </div>
-        <div id="dob" class="column-one-third">
-            @dateOfBirth
-        </div>
-        <span id="change-dob" class="ras-column-one-sixth ras-align-right">
-            <a id="change-dob-link" href='@routes.SessionController.redirect("member-dob",false,true)' data-journey-click="link - click:User details not found:Change DOB">
-                <span class="visually-hidden">@messages("change.dob")</span>
-                <span aria-hidden="true">@messages("change")</span>
-            </a>
-        </span>
-    </div>
-
     <p id="what-to-do" class="ras-bottom-margin ras-top-margin-big">
           @Html(
           messages(
@@ -84,5 +72,4 @@
     <div class="row">
         <a id="choose-something-else" class="button" href='@routes.SessionController.redirect("choose-an-option",true)' data-journey-click="button - click:User details not found:Choose something else to do">@messages("choose.something.else")</a>
       </div>
-
 }
