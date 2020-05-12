@@ -5,7 +5,7 @@ file.upload.page.title = Upload a file - Look up residency status for relief at 
 file.upload.successful.page.title = Your file is being processed - Relief At Source - GOV.UK
 chooseAnOption.page.title = Choose an option to get a residency status - {0}Look up residency status for relief at source - GOV.UK
 upload.result.page.title = The residency status has been added - Look up residency status for relief at source - GOV.UK
-cannot.upload.another.file.page.title = You cannot upload another file at the moment - Look up residency status for relief at source - GOV.UK
+cannot.upload.another.file.page.title = You must wait until the last file has uploaded - Relief At Source - GOV.UK
 member.name.page.title = What is the member’s name? - Look up residency status for relief at source - GOV.UK
 member.nino.page.title = What is the member’s National Insurance number? - Look up residency status for relief at source - GOV.UK
 member.dob.page.title = What is the member’s date of birth? - Look up residency status for relief at source - GOV.UK
@@ -31,7 +31,7 @@ expiry.date.table.header = Expires on
 match.found.header = {0}’s residency status
 file.upload.page.header = Upload a file
 upload.success.header = Your file is being processed
-cannot.upload.another.file.page.header = You cannot upload another file at the moment
+cannot.upload.another.file.page.header = You must wait until the last file has uploaded
 problem.uploading.file.header = There has been a problem uploading your file
 no.results.available.page.header = You have not uploaded a file
 results.not.available.yet.page.header = The results file is not available yet
@@ -175,7 +175,6 @@ signout = Sign out
 cy.message = You should also use this service from January to get the residency status for these members for the {0} to {1} tax year.
 cy.1.message = When you open the file, the first residency status is for the current tax year of {0} to {1}. The second residency status should be used for the tax year {1} to {2}.
 
-cannot.upload.another.file.page.reason = The last file you uploaded is still being processed.
 cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.
 
 global.error.message = Try again later.
