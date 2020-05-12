@@ -87,6 +87,7 @@ file.large.error=CSV must be smaller than 2MB
 file.empty.error=This CSV is empty. Upload a CSV with data in it
 upload.failed.error=There was a problem uploading your file. Please try again
 error.select.csv = Select a CSV file
+error.not.csv = File must be in CSV format
 
 error.page_not_found.tabtitle = Page not found - Look up residency status for relief at source - GOV.UK
 error.page_not_found.heading = Page not found

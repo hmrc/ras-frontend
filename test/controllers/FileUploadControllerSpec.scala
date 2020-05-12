@@ -24,7 +24,10 @@ import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.libs.Files
+import play.api.libs.Files.TemporaryFile
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.mvc.{AnyContent, MultipartFormData, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.auth.core._
@@ -50,34 +53,27 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
-  val TestFileUploadController: FileUploadController = new FileUploadController(mockFileUploadConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+  val TestFileUploadController: FileUploadController = new FileUploadController(mockFileUploadConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockHttp ,mockAppConfig) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
+  }
+
+  def mockTestFileUploadController(file: FilePart[Files.TemporaryFile]): FileUploadController = new FileUploadController(mockFileUploadConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockHttp ,mockAppConfig) {
+    override def getFile(request: Request[AnyContent]): FilePart[TemporaryFile] = file
+
   }
 
   "FileUploadController" should {
 
     "render file upload page" when {
-      "a url is successfully created from an envelope stored in the session" in {
+      "a user navigates to the page" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
         when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = await(TestFileUploadController.get.apply(fakeRequest))
         status(result) shouldBe OK
-        val expectedUrlPart = "file-upload/upload/envelopes/existingEnvelopeId123/files/"
-        doc(result).getElementById("upload-form").attr("action") should include(expectedUrlPart)
       }
 
-      "a url is successfully created using a new envelope where session does not exist" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("0b215e97-11d4-4006-91db-c067e74fc653")))
-        when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
-        when(mockFileUploadConnector.createEnvelope(any())(any(), any())).thenReturn(Future.successful(connectorResponse))
-        when(mockSessionService.cacheEnvelope(any())(any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = await(TestFileUploadController.get.apply(fakeRequest))
-        status(result) shouldBe OK
-        val expectedUrlPart = "file-upload/upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653/files/"
-        doc(result).getElementById("upload-form").attr("action") should include(expectedUrlPart)
-      }
     }
 
     "redirect to cannot upload another file page" when {
@@ -111,18 +107,20 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
 
       "a url is not successfully created from an existing envelope stored in the session" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, None, None, None)
+        val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
         when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockFileUploadConnector.createEnvelope(any())(any(), any())).thenReturn(Future.failed(new RuntimeException))
-        val result = TestFileUploadController.get().apply(fakeRequest)
+        val result = mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100")))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/global-error")
       }
 
       "a new url is not successfully created" in {
+        val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
         when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
         when(mockFileUploadConnector.createEnvelope(any())(any(), any())).thenReturn(Future.successful(connectorResponse))
         when(mockSessionService.cacheEnvelope(any())(any())).thenReturn(Future.successful(None))
-        val result = await(TestFileUploadController.get.apply(fakeRequest))
+        val result = await(mockTestFileUploadController(file).post.apply(fakeRequest.withHeaders(("Content-Length","100"))))
         status(result) shouldBe SEE_OTHER
         redirectLocation(result).get should include("/global-error")
       }
@@ -201,6 +199,20 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
         val result = await(TestFileUploadController.uploadError().apply(uploadRequest))
         redirectLocation(result).get should include("/upload-a-file")
       }
+
+      "no file is selected to upload" in {
+        val result = await(TestFileUploadController.post().apply(fakeRequest.withHeaders(("Content-Length","0"))))
+        status(result) shouldBe BAD_REQUEST
+        doc(result).getElementById("header").text shouldBe Messages("file.upload.page.header")
+
+      }
+
+      "a non csv file is selected to upload" in {
+        val file = FilePart("file","test.xml",Some("text.xml"), TemporaryFile("uploaded"))
+        val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
+        status(result) shouldBe BAD_REQUEST
+        doc(result).getElementById("header").text shouldBe Messages("file.upload.page.header")
+      }
     }
   }
 
@@ -269,73 +281,81 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
     }
 
     "contain empty file error if present in session cache" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse = UploadResponse("400",Some(Messages("file.upload.empty.file.reason")))
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       doc(result).getElementById("upload-error").text shouldBe Messages("file.empty.error")
     }
 
     "redirect to problem uploading file if a bad request has been submitted" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse = UploadResponse("400",None)
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("123456")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "contain file too large error if present in session cache" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse = UploadResponse("413",Some(""))
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","3000000"))))
       doc(result).getElementById("upload-error").text shouldBe Messages("file.large.error")
     }
 
     "redirect to problem uploading file if envelope not found in session cache" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse = UploadResponse("404",Some(""))
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if file type is wrong" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse = UploadResponse("415",Some(""))
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if locked" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse = UploadResponse("423",Some(""))
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if server error" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse = UploadResponse("500",None)
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       redirectLocation(result).get should include("/file-upload-problem")
     }
 
     "redirect to problem uploading file if any unknown errors" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse1 = UploadResponse("500",None)
       val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession1)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       when(mockSessionService.cacheUploadResponse(any())(any())).thenReturn(Future.successful(Some(rasSession1)))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       redirectLocation(result).get should include("/file-upload-problem")
     }
 
@@ -349,12 +369,13 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
     }
 
     "redirect to global error page when upload response has not been cleared properly (no session returned form cache upload response)" in {
+      val file = FilePart("file","test.csv",Some("text.csv"), TemporaryFile("uploaded"))
       val uploadResponse1 = UploadResponse("500",None)
       val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession1)))
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       when(mockSessionService.cacheUploadResponse(any())(any())).thenReturn(Future.successful(None))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
+      val result = await(mockTestFileUploadController(file).post().apply(fakeRequest.withHeaders(("Content-Length","100"))))
       redirectLocation(result).get should include("/global-error")
     }
 
@@ -435,6 +456,21 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
       doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You cannot upload another file:Choose something else to do"
+    }
+  }
+
+  "getFile method" should {
+    "return the file from the request header if one is present" in {
+      val requestBody = MultipartFormData(Map("csrfToken" -> Vector("ABC")),Vector(FilePart("file","test.csv",Some("text/csv"),TemporaryFile("uploaded"))),Vector())
+      val result = TestFileUploadController.getFile(fakeRequest.withMultipartFormDataBody(requestBody))
+      result.key shouldBe "file"
+      result.contentType shouldBe Some("text/csv")
+      result.filename shouldBe "test.csv"
+    }
+
+    "return an empty file when none is given" in {
+      val result = TestFileUploadController.getFile(fakeRequest)
+      result.filename shouldBe ""
     }
   }
 }
