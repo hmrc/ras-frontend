@@ -401,15 +401,6 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       doc(result).getElementById("page-header").text shouldBe Messages("cannot.upload.another.file.page.header")
     }
 
-    "contains a reason paragraph" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
-      doc(result).getElementById("page-reason").text shouldBe Messages("cannot.upload.another.file.page.reason")
-    }
-
     "contains a clarification paragraph" in {
       val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
