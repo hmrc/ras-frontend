@@ -48,14 +48,16 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
       isAuthorised.flatMap {
         case Right(userId) =>
           sessionService.fetchRasSession().flatMap {
-            case Some(_) =>
+            case Some(session) =>
+              val error = extractErrorReason(session.uploadResponse)
+              sessionService.resetCacheUploadResponse()
               shortLivedCache.isFileInProgress(userId).flatMap {
                 case true =>
                   Logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
                     s"so another could not be uploaded")
                   Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
                 case _ =>
-                  Future.successful(Ok(views.html.file_upload(form, "")))
+                  Future.successful(Ok(views.html.file_upload(form, error)))
               }
             case _ =>
               Future.successful(Ok(views.html.file_upload(form, "")))
@@ -239,7 +241,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
 
         sessionService.cacheUploadResponse(errorResponse).flatMap {
           case Some(_) =>
-            Future.successful(Redirect(routes.FileUploadController.post()))
+            Future.successful(Redirect(routes.FileUploadController.get()))
           case _ =>
             Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
         }
