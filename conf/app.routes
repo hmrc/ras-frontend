@@ -10,6 +10,7 @@ GET         /results-not-available                                              
 GET         /file-ready                                                         controllers.ChooseAnOptionController.renderFileReadyPage
 
 GET         /upload-a-file                                                      controllers.FileUploadController.get
+POST        /upload-a-file                                                      controllers.FileUploadController.post
 GET         /upload-a-file/back                                                 controllers.FileUploadController.back
 
 GET         /file-uploaded                                                      controllers.FileUploadController.uploadSuccess
