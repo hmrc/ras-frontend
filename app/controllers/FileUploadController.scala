@@ -58,8 +58,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                   Future.successful(Ok(views.html.file_upload(form, "")))
               }
             case _ =>
-              Logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
-              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+              Future.successful(Ok(views.html.file_upload(form, "")))
 
           }.recover {
             case e: Throwable =>
