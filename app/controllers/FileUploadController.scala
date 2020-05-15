@@ -17,6 +17,7 @@
 package controllers
 
 import java.util.UUID
+
 import config.ApplicationConfig
 import connectors.FileUploadConnector
 import forms.FileUploadForm.form
@@ -25,14 +26,16 @@ import models.{Envelope, UploadResponse}
 import play.Logger
 import play.api.libs.Files
 import play.api.libs.Files.TemporaryFile
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.MultipartFormData.FilePart
-import play.api.mvc.{Action, AnyContent, Request, MultipartFormData}
+import play.api.mvc.{Action, AnyContent, MultipartFormData, Request}
 import services.{SessionService, ShortLivedCache}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.UnanchoredRegex
 
 class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
@@ -77,13 +80,19 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
     isAuthorised.flatMap {
       case Right(userId) =>
         getFile(request) match {
-          case file if (file.filename.isEmpty) =>
+          case file if file.filename.isEmpty =>
             Logger.info(s"[FileUploadController][post] No file selected")
             Future.successful(BadRequest(views.html.file_upload(form, Messages("error.select.csv"))))
-          case file if (!file.filename.endsWith(".csv")) =>
+
+          case file if !file.filename.endsWith(".csv") =>
             Logger.info(s"[FileUploadController][post] Chosen file not a csv")
             Future.successful(BadRequest(views.html.file_upload(form, Messages("error.not.csv"))))
-          case _ if (request.headers("Content-Length").toInt > 2097152) =>
+
+          case _ if request.body.asMultipartFormData.get.files.head.ref.file.length() == 0 =>
+            Logger.info(s"[FileUploadController][post] Chosen file is empty")
+            Future.successful(BadRequest(views.html.file_upload(form, Messages("file.empty.error"))))
+
+          case _ if request.body.asMultipartFormData.get.files.head.ref.file.length() > 2097152 =>
             Logger.info(s"[FileUploadController][post] CSV must be smaller than 2MB")
             Future.successful(EntityTooLarge(views.html.file_upload(form, Messages("file.large.error"))))
           case _ =>
@@ -115,8 +124,11 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 createFileUploadUrl(None, userId)(request, hc).flatMap {
                   case Some(url) =>
                     Logger.info(s"[FileUploadController][post] stored new envelope id successfully for userId ($userId)")
-                    http.POSTForm(url, request.body.asMultipartFormData.get.dataParts, request.headers.headers).map{ _ =>
-                      Redirect(routes.FileUploadController.uploadSuccess())
+                    http.POST[MultipartFormData[Files.TemporaryFile], HttpResponse](url,request.body.asMultipartFormData.get,request.headers.headers).map{ response =>
+                      response.status match {
+                        case 200 => Redirect(routes.FileUploadController.uploadSuccess())
+                        case _ => Redirect(routes.FileUploadController.uploadError())
+                      }
                     } recover {
                       case err =>
                         Logger.info(s"[FileUploadController][post] file upload failed", err)
