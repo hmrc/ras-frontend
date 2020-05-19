@@ -18,19 +18,23 @@ package controllers
 
 import java.util.UUID
 
+import akka.stream.scaladsl.{FileIO, Source}
 import config.ApplicationConfig
 import connectors.FileUploadConnector
 import forms.FileUploadForm.form
 import javax.inject.Inject
-import models.{Envelope, UploadResponse}
+import models.{Envelope, Hope, UploadResponse}
 import play.Logger
+import play.api.http.{HeaderNames, Writeable}
 import play.api.libs.Files
 import play.api.libs.Files.TemporaryFile
-import play.api.libs.json.{JsValue, Json, Writes}
-import play.api.mvc.MultipartFormData.FilePart
+import play.api.libs.json.{Format, JsValue, Json, OFormat, Writes}
+import play.api.libs.json.Json._
+
+import play.api.mvc.MultipartFormData.{DataPart, FilePart}
 import play.api.mvc.{Action, AnyContent, MultipartFormData, Request}
 import services.{SessionService, ShortLivedCache}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
@@ -124,12 +128,14 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 createFileUploadUrl(None, userId)(request, hc).flatMap {
                   case Some(url) =>
                     Logger.info(s"[FileUploadController][post] stored new envelope id successfully for userId ($userId)")
-                    http.POST[MultipartFormData[Files.TemporaryFile], HttpResponse](url,request.body.asMultipartFormData.get,request.headers.headers).map{ response =>
+                    val thingy = request.body.asMultipartFormData.get
+                    http.POST[MultipartFormData[TemporaryFile], HttpResponse](url, thingy,request.headers.headers)
+                    .map{ response =>
                       response.status match {
                         case 200 => Redirect(routes.FileUploadController.uploadSuccess())
                         case _ => Redirect(routes.FileUploadController.uploadError())
                       }
-                    } recover {
+                    }.recover {
                       case err =>
                         Logger.info(s"[FileUploadController][post] file upload failed", err)
                         Redirect(routes.FileUploadController.uploadError())
