@@ -23,16 +23,13 @@ import config.ApplicationConfig
 import connectors.FileUploadConnector
 import forms.FileUploadForm.form
 import javax.inject.Inject
-import models.{Envelope, Hope, UploadResponse}
+import models.{Envelope, UploadResponse}
 import play.Logger
-import play.api.http.{HeaderNames, Writeable}
 import play.api.libs.Files
 import play.api.libs.Files.TemporaryFile
-import play.api.libs.json.{Format, JsValue, Json, OFormat, Writes}
-import play.api.libs.json.Json._
-
+import play.api.libs.ws.WSClient
 import play.api.mvc.MultipartFormData.{DataPart, FilePart}
-import play.api.mvc.{Action, AnyContent, MultipartFormData, Request}
+import play.api.mvc.{Action, AnyContent, Request}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -92,11 +89,11 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
             Logger.info(s"[FileUploadController][post] Chosen file not a csv")
             Future.successful(BadRequest(views.html.file_upload(form, Messages("error.not.csv"))))
 
-          case _ if request.body.asMultipartFormData.get.files.head.ref.file.length() == 0 =>
+          case file if file.ref.file.length() == 0 =>
             Logger.info(s"[FileUploadController][post] Chosen file is empty")
             Future.successful(BadRequest(views.html.file_upload(form, Messages("file.empty.error"))))
 
-          case _ if request.body.asMultipartFormData.get.files.head.ref.file.length() > 2097152 =>
+          case file if file.ref.file.length() > 2097152 =>
             Logger.info(s"[FileUploadController][post] CSV must be smaller than 2MB")
             Future.successful(EntityTooLarge(views.html.file_upload(form, Messages("file.large.error"))))
           case _ =>
@@ -128,8 +125,9 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 createFileUploadUrl(None, userId)(request, hc).flatMap {
                   case Some(url) =>
                     Logger.info(s"[FileUploadController][post] stored new envelope id successfully for userId ($userId)")
-                    val thingy = request.body.asMultipartFormData.get
-                    http.POST[MultipartFormData[TemporaryFile], HttpResponse](url, thingy,request.headers.headers)
+                    val file = getFile(request)
+                    http.wsClient.url(url).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromPath(file.ref.file.toPath)) ::
+                      DataPart(request.body.asMultipartFormData.get.dataParts.keys.head, request.body.asMultipartFormData.get.dataParts.values.head.head) :: List()))
                     .map{ response =>
                       response.status match {
                         case 200 => Redirect(routes.FileUploadController.uploadSuccess())
