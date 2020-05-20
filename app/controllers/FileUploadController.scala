@@ -115,7 +115,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 createFileUploadUrl(None, userId)(request, hc).flatMap {
                   case Some(url) =>
                     Logger.info(s"[FileUploadController][post] stored new envelope id successfully for userId ($userId)")
-                    http.POSTForm(url, request.body.asMultipartFormData.get.dataParts, request.headers.headers).map{ _ =>
+                    http.POSTForm(url, request.body.asMultipartFormData.get.asFormUrlEncoded, request.headers.headers).map{ _ =>
                       Redirect(routes.FileUploadController.uploadSuccess())
                     } recover {
                       case err =>
