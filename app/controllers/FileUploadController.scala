@@ -114,7 +114,10 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                     }
                     else {
                       sessionService.resetCacheUploadResponse()
-                      Future.successful(Ok(views.html.file_upload(form, error)))
+                      error match {
+                        case err if err == "" => uploadFile(url, request)
+                        case _ => Future.successful(Ok(views.html.file_upload(form, error)))
+                      }
                     }
                   case _ =>
                     Logger.error(s"[FileUploadController][post] failed to obtain a form url using existing envelope " +
@@ -125,19 +128,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 createFileUploadUrl(None, userId)(request, hc).flatMap {
                   case Some(url) =>
                     Logger.info(s"[FileUploadController][post] stored new envelope id successfully for userId ($userId)")
-                    val file = getFile(request)
-                    http.wsClient.url(url).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromPath(file.ref.file.toPath)) ::
-                      DataPart(request.body.asMultipartFormData.get.dataParts.keys.head, request.body.asMultipartFormData.get.dataParts.values.head.head) :: List()))
-                    .map{ response =>
-                      response.status match {
-                        case 200 => Redirect(routes.FileUploadController.uploadSuccess())
-                        case _ => Redirect(routes.FileUploadController.uploadError())
-                      }
-                    }.recover {
-                      case err =>
-                        Logger.info(s"[FileUploadController][post] file upload failed", err)
-                        Redirect(routes.FileUploadController.uploadError())
-                    }
+                    uploadFile(url,request)
                   case _ =>
                     Logger.error(s"[FileUploadController][post] failed to obtain a form url using new envelope for userId ($userId)")
                     Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
@@ -152,6 +143,22 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
       =>
         Logger.warn("[FileUploadController][post] user Not authorised")
         res
+    }
+  }
+
+  def uploadFile(url: String, request: Request[AnyContent]) = {
+    val file = getFile(request)
+    http.wsClient.url(url).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromPath(file.ref.file.toPath)) ::
+      DataPart(request.body.asMultipartFormData.get.dataParts.keys.head, request.body.asMultipartFormData.get.dataParts.values.head.head) :: List()))
+      .map{ response =>
+        response.status match {
+          case 200 => Redirect(routes.FileUploadController.uploadSuccess())
+          case _ => Redirect(routes.FileUploadController.uploadError())
+        }
+      }.recover {
+      case err =>
+        Logger.info(s"[FileUploadController][post] file upload failed", err)
+        Redirect(routes.FileUploadController.uploadError())
     }
   }
 
