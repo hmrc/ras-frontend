@@ -148,7 +148,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestChooseAnOptionController.get(fakeRequest)
         doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("today"), date.toString("H:mm")))
+          Messages("formatted.upload.timestamp", Messages("today"), date.toString("h:mma").toLowerCase()))
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
@@ -161,7 +161,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
         when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
         val result = TestChooseAnOptionController.get(fakeRequest)
         doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("H:mm")))
+          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("h:mma").toLowerCase()))
         doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
         doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 

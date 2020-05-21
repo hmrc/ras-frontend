@@ -85,7 +85,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     } else {
       Messages("yesterday")
     }
-    Messages("formatted.upload.timestamp", todayOrYesterday, uploadDate.toString("H:mm"))
+    Messages("formatted.upload.timestamp", todayOrYesterday, uploadDate.toString("h:mma").toLowerCase())
   }
 
   def renderUploadResultsPage: Action[AnyContent] = Action.async {
