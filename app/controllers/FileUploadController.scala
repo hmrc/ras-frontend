@@ -18,25 +18,32 @@ package controllers
 
 import java.util.UUID
 
+import akka.stream.scaladsl.{FileIO, Source}
 import config.ApplicationConfig
 import connectors.FileUploadConnector
+import forms.FileUploadForm.form
 import javax.inject.Inject
 import models.{Envelope, UploadResponse}
 import play.Logger
+import play.api.libs.Files
+import play.api.libs.Files.TemporaryFile
+import play.api.mvc.MultipartFormData.{DataPart, FilePart}
 import play.api.mvc.{Action, AnyContent, Request}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.matching.UnanchoredRegex
 
 class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
-																		 val authConnector: DefaultAuthConnector,
-																		 val shortLivedCache: ShortLivedCache,
-																		 val sessionService: SessionService,
-																		 implicit val appConfig: ApplicationConfig
+                                     val authConnector: DefaultAuthConnector,
+                                     val shortLivedCache: ShortLivedCache,
+                                     val sessionService: SessionService,
+                                     val http: DefaultHttpClient,
+                                     implicit val appConfig: ApplicationConfig
 																		) extends PageFlowController {
 
   def get: Action[AnyContent] = Action.async {
@@ -45,44 +52,18 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
         case Right(userId) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
+              val error = extractErrorReason(session.uploadResponse)
               shortLivedCache.isFileInProgress(userId).flatMap {
                 case true =>
                   Logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
                     s"so another could not be uploaded")
                   Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
                 case _ =>
-                  createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
-                    case Some(url) =>
-                      Logger.info(s"[FileUploadController][get] form url created successfully for userId ($userId)")
-                      val error = extractErrorReason(session.uploadResponse)
-                      if(error == Messages("upload.failed.error")){
-                        sessionService.cacheUploadResponse(UploadResponse("",None)).map {
-                          case Some(_) =>
-                            Redirect(routes.ErrorController.renderProblemUploadingFilePage())
-                          case _ =>
-                            Logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
-                            Redirect(routes.ErrorController.renderGlobalErrorPage())
-                        }
-                      }
-                      else {
-                        sessionService.resetCacheUploadResponse()
-                        Future.successful(Ok(views.html.file_upload(url,error)))
-                      }
-                    case _ =>
-                      Logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
-                        s"for userId ($userId)")
-                      Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
-                  }
+                  Future.successful(Ok(views.html.file_upload(form, error)))
               }
             case _ =>
-              createFileUploadUrl(None, userId)(request, hc).flatMap {
-                case Some(url) =>
-                  Logger.info(s"[FileUploadController][get] stored new envelope id successfully for userId ($userId)")
-                  Future.successful(Ok(views.html.file_upload(url,"")))
-                case _ =>
-                  Logger.error(s"[FileUploadController][get] failed to obtain a form url using new envelope for userId ($userId)")
-                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
-              }
+              Future.successful(Ok(views.html.file_upload(form, "")))
+
           }.recover {
             case e: Throwable =>
               Logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId) - $e")
@@ -92,6 +73,99 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
           Logger.warn("[FileUploadController][get] user not authorised")
           resp
       }
+  }
+
+  def post: Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised.flatMap {
+      case Right(userId) =>
+        getFile(request) match {
+          case file if file.filename.isEmpty =>
+            Logger.info(s"[FileUploadController][post] No file selected")
+            Future.successful(BadRequest(views.html.file_upload(form, Messages("error.select.csv"))))
+
+          case file if !file.filename.endsWith(".csv") =>
+            Logger.info(s"[FileUploadController][post] Chosen file not a csv")
+            Future.successful(BadRequest(views.html.file_upload(form, Messages("error.not.csv"))))
+
+          case file if file.ref.file.length() == 0 =>
+            Logger.info(s"[FileUploadController][post] Chosen file is empty")
+            Future.successful(BadRequest(views.html.file_upload(form, Messages("file.empty.error"))))
+
+          case file if file.ref.file.length() > 2097152 =>
+            Logger.info(s"[FileUploadController][post] CSV must be smaller than 2MB")
+            Future.successful(EntityTooLarge(views.html.file_upload(form, Messages("file.large.error"))))
+          case _ =>
+            sessionService.fetchRasSession().flatMap {
+              case Some(session) =>
+                createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
+                  case Some(url) =>
+                    Logger.info(s"[FileUploadController][post] form url created successfully for userId ($userId)")
+                    val error = extractErrorReason(session.uploadResponse)
+                    if (error == Messages("upload.failed.error")) {
+                      sessionService.cacheUploadResponse(UploadResponse("", None)).map {
+                        case Some(_) =>
+                          Redirect(routes.ErrorController.renderProblemUploadingFilePage())
+                        case _ =>
+                          Logger.error(s"[FileUploadController][post] failed to obtain a session for userId ($userId)")
+                          Redirect(routes.ErrorController.renderGlobalErrorPage())
+                      }
+                    }
+                    else {
+                      sessionService.resetCacheUploadResponse()
+                      error match {
+                        case err if err == "" => uploadFile(url, request)
+                        case _ => Future.successful(Ok(views.html.file_upload(form, error)))
+                      }
+                    }
+                  case _ =>
+                    Logger.error(s"[FileUploadController][post] failed to obtain a form url using existing envelope " +
+                      s"for userId ($userId)")
+                    Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                }
+              case _ =>
+                createFileUploadUrl(None, userId)(request, hc).flatMap {
+                  case Some(url) =>
+                    Logger.info(s"[FileUploadController][post] stored new envelope id successfully for userId ($userId)")
+                    uploadFile(url,request)
+                  case _ =>
+                    Logger.error(s"[FileUploadController][post] failed to obtain a form url using new envelope for userId ($userId)")
+                    Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                }
+            }.recover {
+              case e: Throwable =>
+                Logger.error(s"[FileUploadController][post] failed to fetch ras session for userId ($userId) - $e")
+                Redirect(routes.ErrorController.renderProblemUploadingFilePage())
+            }
+        }
+      case Left(res)
+      =>
+        Logger.warn("[FileUploadController][post] user Not authorised")
+        res
+    }
+  }
+
+  def uploadFile(url: String, request: Request[AnyContent]) = {
+    val file = getFile(request)
+    http.wsClient.url(url).withHeaders(request.headers.headers: _*).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromPath(file.ref.file.toPath)) ::
+      DataPart(request.body.asMultipartFormData.get.dataParts.keys.head, request.body.asMultipartFormData.get.dataParts.values.head.head) :: List()))
+      .map{ response =>
+        response.status match {
+          case 200 => Redirect(routes.FileUploadController.uploadSuccess())
+          case _ => Redirect(routes.FileUploadController.uploadError())
+        }
+      }.recover {
+      case err =>
+        Logger.info(s"[FileUploadController][post] file upload failed", err)
+        Redirect(routes.FileUploadController.uploadError())
+    }
+  }
+
+  def getFile(request: Request[AnyContent]): FilePart[Files.TemporaryFile]  = {
+    val fallBackFilePart = FilePart("","",Some("text"), TemporaryFile(""))
+    request.body.asMultipartFormData match {
+      case Some(body) => body.file("file").getOrElse(fallBackFilePart)
+      case _ => fallBackFilePart
+    }
   }
 
   def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
