@@ -15,15 +15,15 @@
  *@
 
 @import config.ApplicationConfig
-@(fileUploadUrl: String, error: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+@(fileUploadForm: Form[models.FileUpload], error: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@scriptElem = {
-<script type="text/javascript" src='@controllers.routes.Assets.at("javascript/check-file-type.js")'></script>
-}
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
 
-@ras_main(title = messages("file.upload.page.title"),scriptElem = Some(scriptElem)) {
+@ras_main(title = messages("file.upload.page.title")) {
 
-    <a class="link-back" href="@routes.FileUploadController.back" data-journey-click="navigation - link:Upload a file:Back">@messages("back")</a>
+    <a class="link-back" href="@routes.FileUploadController.back"
+    data-journey-click="navigation - link:Upload a file:Back">@messages("back")</a>
 
     <div id="errors" class="validation-summary error-summary" role="group" tabindex="-1" @if(error==""){ style="display:none;" }>
         <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@messages("generic.errors_heading")</h2>
@@ -47,13 +47,7 @@
     }else{
         <div id="file-upload-with-error" class="form-group form-field--error">
     }
-            <form
-                    id="upload-form"
-                    action="@fileUploadUrl"
-                    enctype="multipart/form-data"
-                    method="post"
-                    onsubmit="return checkFileType(this)">
-
+            @form(action = routes.FileUploadController.post(), 'enctype -> "multipart/form-data", 'id -> "upload-form", 'method -> "post") {
                 <label for="choose-file" id="upload-label">
                     <span class="form-label visually-hidden">Upload a file</span>
                     <span id="upload-error" class="common-error">@error</span>
@@ -62,9 +56,6 @@
                 <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file"/>
                 <p class="ras-bottom-margin"><a href="http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members" target="_blank" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@messages("get.help.uploading.link")</a></p>
                 <button class="button" type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@messages("continue")</button>
-            </form>
         </div>
-
-
+    }
 }
-
