@@ -146,8 +146,8 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
 
   def uploadFile(url: String, request: Request[AnyContent])(implicit hc: HeaderCarrier): Future[Result] = {
     val file = getFile(request)
-    http.wsClient.url(url).withHeaders(hc.copy(otherHeaders = Seq("CSRF-token" -> "nocheck")).headers: _*).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromFile(file.ref.file)) ::
-      DataPart(request.body.asMultipartFormData.get.dataParts.keys.head, request.body.asMultipartFormData.get.dataParts.values.head.head) :: List()))
+    http.wsClient.url(url).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromPath(file.ref.file.toPath)) ::
+      DataPart("","") :: Nil))
       .map{ response =>
         response.status match {
           case 200 => Redirect(routes.FileUploadController.uploadSuccess())
