@@ -147,7 +147,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
   def uploadFile(url: String, request: Request[AnyContent])(implicit hc: HeaderCarrier): Future[Result] = {
     val file = getFile(request)
     http.wsClient.url(url).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromPath(file.ref.file.toPath)) ::
-      DataPart("","") :: Nil))
+      DataPart(request.body.asMultipartFormData.get.dataParts.keys.head, request.body.asMultipartFormData.get.dataParts.values.head.head) :: List()))
       .map{ response =>
         response.status match {
           case 200 => Redirect(routes.FileUploadController.uploadSuccess())
@@ -155,6 +155,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
         }
       }.recover {
       case err =>
+        Logger.info(s"File upload url posted to: $url", url)
         Logger.info(s"[FileUploadController][post] file upload failed", err)
         Redirect(routes.FileUploadController.uploadError())
     }
