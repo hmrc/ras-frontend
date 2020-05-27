@@ -28,7 +28,7 @@ import play.Logger
 import play.api.libs.Files
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.{DataPart, FilePart}
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -144,9 +144,9 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
     }
   }
 
-  def uploadFile(url: String, request: Request[AnyContent]) = {
+  def uploadFile(url: String, request: Request[AnyContent])(implicit hc: HeaderCarrier): Future[Result] = {
     val file = getFile(request)
-    http.wsClient.url(url).withHeaders(("Connection","keep-alive")).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromPath(file.ref.file.toPath)) ::
+    http.wsClient.url(url).withHeaders(hc.copy(otherHeaders = Seq("CSRF-token" -> "nocheck")).headers: _*).post(Source(FilePart(file.key, file.filename, file.contentType, FileIO.fromFile(file.ref.file)) ::
       DataPart(request.body.asMultipartFormData.get.dataParts.keys.head, request.body.asMultipartFormData.get.dataParts.values.head.head) :: List()))
       .map{ response =>
         response.status match {
