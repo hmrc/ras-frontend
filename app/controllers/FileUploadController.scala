@@ -155,8 +155,8 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
         }
       }.recover {
       case err =>
-        Logger.info(s"File upload url posted to: $url", url)
-        Logger.info(s"[FileUploadController][post] file upload failed", err)
+        Logger.info(s"File upload url posted to: $url", err)
+        //Logger.info(s"[FileUploadController][post] file upload failed", err)
         Redirect(routes.FileUploadController.uploadError())
     }
   }
