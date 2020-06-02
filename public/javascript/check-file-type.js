@@ -44,6 +44,20 @@ function checkFileType(form) {
     }
 }
 
+function enableContinue() {
+    var fileName = document.getElementById("choose-file").value.toString();
+    if (fileName.substr(fileName.length - ".csv".length, ".csv".length).toLowerCase() == ".csv") {
+        $('#error').addClass("visually-hidden");
+        $('#file-upload').removeClass("form-field--error");
+        $('#upload-error').empty();
+        $('.validation-summary').addClass("visually-hidden");
+        document.getElementById("continue").disabled = false;
+    }
+    else {
+        $('#errors').focus();
+    }
+}
+
 function reportedError() {
     return $('#temp-error').val();
 }
@@ -53,8 +67,9 @@ function hasErrors() {
 }
 
 function showError(message){
-    $('#error').removeClass("visually-hidden")
+    $('#error').removeClass("visually-hidden");
     $('.validation-summary').show();
+    $('.validation-summary').removeClass("visually-hidden");
     $('#error').html(message);
     $('#file-upload').addClass("form-field--error");
     $('#upload-error').empty();
