@@ -172,7 +172,7 @@ no.results.available.link = upload a file
 file.not.available.link = upload a new file or download one that is waiting
 nav.title = Look up residency status for relief at source
 signout = Sign out
-cy.message = You should also use this service from January to get the residency status for these members for the {0} to {1} tax year.
+cy.message = You should also use this service from January to get the residency status for these members for 6 April {0} to 5 April {1} tax year.
 cy.1.message = When you open the file, the first residency status is for the current tax year of {0} to {1}. The second residency status should be used for the tax year {1} to {2}.
 
 cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.
