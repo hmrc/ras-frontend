@@ -93,7 +93,7 @@ trait RasResidencyCheckerController extends RasController with AuditService {
       case (SCOTTISH, _) => Messages("scottish.taxpayer")
       case (WELSH, ApiV2_0) => Messages("welsh.taxpayer")
       case (OTHER_UK, ApiV1_0) => Messages("non.scottish.taxpayer")
-      case (OTHER_UK, ApiV2_0) => Messages("english.or.ni.taxpayer")
+      case (OTHER_UK, ApiV2_0) => Messages("non.scottish.taxpayer")
       case _ => ""
     }
   }
