@@ -582,7 +582,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
     "contain the correct page title" in {
       when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
       val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).title shouldBe Messages("no.results.available.page.title", Messages("filestatus.NoFileSession"))
+      doc(result).title shouldBe Messages("no.results.available.page.title")
     }
 
     "contain the correct page header" in {
