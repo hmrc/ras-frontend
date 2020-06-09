@@ -54,7 +54,7 @@ class RasResidencyCheckerControllerSpec extends UnitSpec with I18nHelper with Ra
 
         testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe Messages("scottish.taxpayer")
         testRasResidencyCheckerController.extractResidencyStatus(WELSH) shouldBe Messages("welsh.taxpayer")
-        testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe Messages("english.or.ni.taxpayer")
+        testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe Messages("non.scottish.taxpayer")
         testRasResidencyCheckerController.extractResidencyStatus("") shouldBe ""
       }
     }

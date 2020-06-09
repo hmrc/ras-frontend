@@ -122,7 +122,6 @@ back = Back
 scottish.taxpayer = Scotland
 non.scottish.taxpayer = England, Northern Ireland or Wales
 welsh.taxpayer = Wales
-english.or.ni.taxpayer = England or Northern Ireland
 member.details.not.found = {0}’s residency status cannot be displayed
 residency.status = Residency status
 tax.year.period = For the {0} to {1} tax year use
