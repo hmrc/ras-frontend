@@ -16,22 +16,21 @@
 
 package services
 
-import helpers.RasTestHelper
 import models.FileUploadStatus._
 import models.{CallbackData, FileSession, ResultsFileMetaData}
 import org.joda.time.DateTime
-import org.mockito.ArgumentMatchers.{any, argThat}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.{JsValue, Json, Writes}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ShortLivedServiceSpec extends UnitSpec with RasTestHelper {
-  implicit val hc: HeaderCarrier = HeaderCarrier()
   val fileId = "file-id-1"
   val fileStatus = "AVAILABLE"
   val reason: Option[String] = None

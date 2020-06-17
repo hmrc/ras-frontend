@@ -16,9 +16,9 @@
 
 package validators
 
-import helpers.RandomNino
 import org.scalatest.Matchers
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RandomNino
 
 class NinoValidatorSpec extends UnitSpec with Matchers {
 

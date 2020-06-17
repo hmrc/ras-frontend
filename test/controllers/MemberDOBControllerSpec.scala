@@ -16,15 +16,15 @@
 
 package controllers
 
-import helpers.{I18nHelper, RasTestHelper}
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.ArgumentMatchers.{any, eq => Meq}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalacheck.Gen
 import org.scalatest.BeforeAndAfter
 import play.api.http.Status.OK
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -33,11 +33,12 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.domain.{Generator, PsaId}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.Future
 import scala.util.Random
 
-class MemberDOBControllerSpec extends UnitSpec with I18nHelper with RasTestHelper with BeforeAndAfter {
+class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -61,7 +62,7 @@ class MemberDOBControllerSpec extends UnitSpec with I18nHelper with RasTestHelpe
   private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val TestMemberDobController: MemberDOBController = new MemberDOBController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+  val TestMemberDobController: MemberDOBController = new MemberDOBController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
@@ -81,49 +82,6 @@ class MemberDOBControllerSpec extends UnitSpec with I18nHelper with RasTestHelpe
         status(result) shouldBe OK
       }
     }
-
-    "contain correct page elements and content" when {
-      "rendered" in {
-        val result = TestMemberDobController.get()(fakeRequest)
-        doc(result).title shouldBe Messages("member.dob.page.title")
-        doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", "Jackie Chan")
-        doc(result).getElementsByClass("form-hint").text shouldBe Messages("dob.hint")
-        doc(result).getElementById("continue").text shouldBe Messages("continue")
-        doc(result).getElementById("dateOfBirth.day").previousElementSibling().text() shouldBe Messages("Day")
-        doc(result).getElementById("dateOfBirth.month").previousElementSibling().text() shouldBe Messages("Month")
-        doc(result).getElementById("dateOfBirth.year").previousElementSibling().text() shouldBe Messages("Year")
-      }
-
-      "contain the correct ga data when edit mode is false" in {
-        val result = TestMemberDobController.get()(fakeRequest)
-        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue"
-        doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their DOB?:Back"
-      }
-
-      "contain the correct ga data when edit mode is true" in {
-        val result = TestMemberDobController.get(true)(fakeRequest)
-        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue and submit"
-      }
-    }
-
-    "fill in form" when {
-      "details returned from session cache" in {
-        val result = TestMemberDobController.get()(fakeRequest)
-        doc(result).getElementById("dateOfBirth.year").value.toString should include(memberDob.dateOfBirth.year.getOrElse("0"))
-        doc(result).getElementById("dateOfBirth.month").value.toString should include(memberDob.dateOfBirth.month.getOrElse("0"))
-        doc(result).getElementById("dateOfBirth.day").value.toString should include(memberDob.dateOfBirth.day.getOrElse("0"))
-      }
-    }
-
-    "present empty form" when {
-      "no details returned from session cache" in {
-        when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
-        val result = TestMemberDobController.get()(fakeRequest)
-        assert(doc(result).getElementById("dateOfBirth.year").attr("value").isEmpty)
-        assert(doc(result).getElementById("dateOfBirth.month").attr("value").isEmpty)
-        assert(doc(result).getElementById("dateOfBirth.day").attr("value").isEmpty)
-      }
-    }
   }
 
   "Member dob controller form submission" should {
@@ -133,7 +91,6 @@ class MemberDOBControllerSpec extends UnitSpec with I18nHelper with RasTestHelpe
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"), Some("1"), Some("1111")))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
-      doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", "Jackie Chan")
     }
 
     "return bad request with member as name when form error present and session has no name" in {
@@ -141,7 +98,6 @@ class MemberDOBControllerSpec extends UnitSpec with I18nHelper with RasTestHelpe
       val postData = Json.obj("dateOfBirth" -> RasDate(Some("0"), Some("1"), Some("1111")))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
-      doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", Messages("member"))
     }
 
     "redirect" in {
@@ -266,7 +222,4 @@ class MemberDOBControllerSpec extends UnitSpec with I18nHelper with RasTestHelpe
       }
     }
   }
-
-  private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
-
 }

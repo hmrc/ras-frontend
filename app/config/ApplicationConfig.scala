@@ -18,18 +18,11 @@ package config
 
 import javax.inject.Inject
 import models.{ApiV1_0, ApiV2_0, ApiVersion}
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 
-//TODO Inject services config rather than extend during play 2.6 upgrade
-class ApplicationConfig @Inject()() extends ServicesConfig {
-
-	override protected def mode: Mode = Play.current.mode
-	override protected def runModeConfiguration: Configuration = Play.current.configuration
-
-  private def loadConfig(key: String) = getString(key)
+class ApplicationConfig @Inject()(config: ServicesConfig){
+  private def loadConfig(key: String) = config.getString(key)
 
 	lazy val contactHost: String = loadConfig("contact-frontend.host")
   private lazy val contactFormServiceIdentifier: String = "RAS"
@@ -37,13 +30,13 @@ class ApplicationConfig @Inject()() extends ServicesConfig {
 
 	lazy val analyticsToken: String = loadConfig(s"google-analytics.token")
 	lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
-	lazy val hoursToWaitForReUpload: Int = getConfInt(s"re-upload.wait.time.hours", 24)
+	lazy val hoursToWaitForReUpload: Int = config.getConfInt(s"re-upload.wait.time.hours", 24)
 
-  private lazy val logoutCallback: String = getConfString("gg-urls.logout-callback.url", "/relief-at-source/")
+  private lazy val logoutCallback: String = config.getConfString("gg-urls.logout-callback.url", "/relief-at-source/")
   private lazy val signOutBaseUrl: String = s"$caFrontendHost/gg/sign-out?continue="
-  private lazy val continueCallback =  getConfString("gg-urls.continue-callback.url", "/relief-at-source/")
+  private lazy val continueCallback =  config.getConfString("gg-urls.continue-callback.url", "/relief-at-source/")
 
-	lazy val companyAuthHost: String = s"${getConfString("auth.company-auth.host", "")}"
+	lazy val companyAuthHost: String = s"${config.getConfString("auth.company-auth.host", "")}"
 	lazy val loginURL: String = s"$companyAuthHost/gg/sign-in"
 
 	lazy val reportAProblemUrl: String = s"$contactHost/contact/problem_reports"
@@ -51,13 +44,13 @@ class ApplicationConfig @Inject()() extends ServicesConfig {
 	lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 	lazy val signOutUrl: String = s"$signOutBaseUrl$logoutCallback"
 	lazy val signOutAndContinueUrl: String = s"$signOutBaseUrl$continueCallback"
-	lazy val loginCallback: String = getConfString("gg-urls.login-callback.url","/relief-at-source/")
+	lazy val loginCallback: String = config.getConfString("gg-urls.login-callback.url","/relief-at-source/")
 	lazy val fileUploadCallBack: String = loadConfig("file-upload-ras-callback-url")
-	lazy val fileDeletionUrl: String = getConfString("file-deletion-url","/ras-api/file/remove/")
+	lazy val fileDeletionUrl: String = config.getConfString("file-deletion-url","/ras-api/file/remove/")
 	lazy val rasApiResidencyStatusEndpoint: String = loadConfig("residency-status-url")
 
-	lazy val urBannerEnabled: Boolean = getConfBool("ur-banner.enabled", defBool = false)
-	lazy val urBannerLinkUrl: String = getConfString("ur-banner.link-url","")
+	lazy val urBannerEnabled: Boolean = config.getConfBool("ur-banner.enabled", defBool = false)
+	lazy val urBannerLinkUrl: String = config.getConfString("ur-banner.link-url","")
 
 	lazy val rasApiVersion: ApiVersion = loadConfig("ras-api-version") match {
     case "1.0" => ApiV1_0
@@ -65,29 +58,29 @@ class ApplicationConfig @Inject()() extends ServicesConfig {
     case _ => throw new Exception(s"Invalid value for configuration key: ras-api-version")
   }
 
-	lazy val timeOutSeconds : Int = getConfInt("sessionTimeout.timeoutSeconds",780)
-	lazy val timeOutCountDownSeconds: Int = getConfInt("sessionTimeout.time-out-countdown-seconds",120)
+	lazy val timeOutSeconds : Int = config.getConfInt("sessionTimeout.timeoutSeconds",780)
+	lazy val timeOutCountDownSeconds: Int = config.getConfInt("sessionTimeout.time-out-countdown-seconds",120)
 	lazy val refreshInterval: Int = timeOutSeconds + 10
-	lazy val enableRefresh: Boolean= getConfBool("sessionTimeout.enableRefresh", defBool = true)
+	lazy val enableRefresh: Boolean= config.getConfBool("sessionTimeout.enableRefresh", defBool = true)
 
 
 	//FileUpload
-	lazy val rasApiBaseUrl: String = baseUrl("relief-at-source")
-	lazy val fileUploadBaseUrl: String = baseUrl("file-upload")
+	lazy val rasApiBaseUrl: String = config.baseUrl("relief-at-source")
+	lazy val fileUploadBaseUrl: String = config.baseUrl("file-upload")
 	lazy val fileUploadUrlSuffix: String = loadConfig("file-upload-url-suffix")
-	lazy val maxItems: Int = getInt("file-upload-constraints.maxItems")
+	lazy val maxItems: Int = config.getInt("file-upload-constraints.maxItems")
 	lazy val maxSize: String = loadConfig("file-upload-constraints.maxSize")
 	lazy val maxSizePerItem: String = loadConfig("file-upload-constraints.maxSizePerItem")
-	lazy val allowZeroLengthFiles: Boolean = getBoolean("file-upload-constraints.allowZeroLengthFiles")
+	lazy val allowZeroLengthFiles: Boolean = config.getBoolean("file-upload-constraints.allowZeroLengthFiles")
 	lazy val rasFrontendBaseUrl: String = loadConfig("ras-frontend.host")
 	lazy val rasFrontendUrlSuffix: String = loadConfig("ras-frontend-url-suffix")
 	lazy val fileUploadFrontendBaseUrl: String = loadConfig("file-upload-frontend.host")
 	lazy val fileUploadFrontendSuffix: String = loadConfig("file-upload-frontend-url-suffix")
 
 	//SessionCacheWiring
-	lazy val shortLivedCacheBaseUri: String = baseUrl("cachable.short-lived-cache")
-	lazy val shortLivedCacheDomain: String = getString(s"$rootServices.cachable.short-lived-cache.domain")
-	lazy val sessionCacheBaseUri: String = baseUrl("keystore")
-	lazy val sessionCacheDomain: String = getString(s"$rootServices.cachable.session-cache.domain")
+	lazy val shortLivedCacheBaseUri: String = config.baseUrl("cachable.short-lived-cache")
+	lazy val shortLivedCacheDomain: String = config.getString(s"microservice.services.cachable.short-lived-cache.domain")
+	lazy val sessionCacheBaseUri: String = config.baseUrl("keystore")
+	lazy val sessionCacheDomain: String = config.getString(s"microservice.services.cachable.session-cache.domain")
 
 }

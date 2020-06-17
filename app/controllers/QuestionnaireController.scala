@@ -19,19 +19,19 @@ package controllers
 import config.ApplicationConfig
 import javax.inject.Inject
 import models.Questionnaire
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class QuestionnaireController @Inject()(val connector: DefaultAuditConnector,
+																				val mcc: MessagesControllerComponents,
 																				implicit val appConfig: ApplicationConfig
-																			 ) extends FrontendController with AuditService {
+																			 ) extends FrontendController(mcc) with AuditService {
+	implicit val ec: ExecutionContext = mcc.executionContext
 
   def showQuestionnaire: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(views.html.feedback.feedbackQuestionaire(Questionnaire.form)))

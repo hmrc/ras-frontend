@@ -58,7 +58,7 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
 
     Logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
     http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName").stream().map { res =>
-      Some(res.body.runWith(StreamConverters.asInputStream()))
+      Some(res.bodyAsSource.runWith(StreamConverters.asInputStream()))
     }
 
   }

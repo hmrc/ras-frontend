@@ -16,7 +16,6 @@
 
 package services
 
-import helpers.{RandomNino, RasTestHelper}
 import models._
 import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito._
@@ -24,6 +23,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

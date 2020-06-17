@@ -19,18 +19,22 @@ package controllers
 import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 																val shortLivedCache: ShortLivedCache,
 																val sessionService: SessionService,
-																implicit val appConfig: ApplicationConfig) extends RasController {
+																val mcc: MessagesControllerComponents,
+																implicit val appConfig: ApplicationConfig) extends FrontendController(mcc) with RasController {
 
-def renderGlobalErrorPage: Action[AnyContent] = Action.async {
+	implicit val ec: ExecutionContext = mcc.executionContext
+
+	def renderGlobalErrorPage: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>

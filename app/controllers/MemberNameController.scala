@@ -22,21 +22,24 @@ import forms.MemberNameForm._
 import javax.inject.Inject
 import models.ApiVersion
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
 																		 val connector: DefaultAuditConnector,
 																		 val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
 																		 val shortLivedCache: ShortLivedCache,
 																		 val sessionService: SessionService,
+																		 val mcc: MessagesControllerComponents,
 																		 implicit val appConfig: ApplicationConfig
-																	 ) extends RasResidencyCheckerController with PageFlowController {
+																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
 
+	implicit val ec: ExecutionContext = mcc.executionContext
 	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
 
 	def get(edit: Boolean = false): Action[AnyContent] = Action.async {

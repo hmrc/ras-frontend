@@ -19,6 +19,6 @@
 @errors.zipWithIndex.map { case (error, index) =>
 <span data-journey="ras:error:@field.name"
       id="@(field.name)-error-@index">
-                    @Messages(error.message)
+                    @messages(error.message, error.args:_*)
                 </span>
 }

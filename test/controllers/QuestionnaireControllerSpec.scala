@@ -16,22 +16,19 @@
 
 package controllers
 
-import helpers.RasTestHelper
 import play.api.http.Status
 import play.api.libs.json._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 class QuestionnaireControllerSpec extends UnitSpec with RasTestHelper {
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override val fakeRequest = FakeRequest("GET", "/")
   val fakePostRequest = FakeRequest("POST", "/signed-out")
 
-  val TestController = new QuestionnaireController(mockAuditConnector, mockAppConfig)
+  val TestController = new QuestionnaireController(mockAuditConnector, mockMCC, mockAppConfig)
 
   "Calling the QuestionnaireController.showQuestionnaire" should {
     "respond with OK" in {

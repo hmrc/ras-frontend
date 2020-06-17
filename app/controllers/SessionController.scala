@@ -19,17 +19,21 @@ package controllers
 import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SessionController @Inject()(val authConnector: DefaultAuthConnector,
 																	val shortLivedCache: ShortLivedCache,
 																	val sessionService: SessionService,
+																	val mcc: MessagesControllerComponents,
 																	val appConfig: ApplicationConfig
-																 ) extends RasController {
+																 ) extends FrontendController(mcc) with RasController {
+
+	implicit val ec: ExecutionContext = mcc.executionContext
 
 	val CHOOSE_AN_OPTION = "choose-an-option"
   val MEMBER_NAME = "member-name"

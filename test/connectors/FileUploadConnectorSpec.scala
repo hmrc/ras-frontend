@@ -16,7 +16,6 @@
 
 package connectors
 
-import helpers.RasTestHelper
 import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers.{any, argThat}
@@ -24,13 +23,12 @@ import org.mockito.Mockito._
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class FileUploadConnectorSpec extends UnitSpec with RasTestHelper {
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
 	def testConnector(version: ApiVersion): FileUploadConnector = new FileUploadConnector(mockHttp, mockAppConfig) {
     override lazy val rasFileUploadCallbackUrl: String = "fake-url"

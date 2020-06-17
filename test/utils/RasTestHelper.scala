@@ -14,33 +14,63 @@
  * limitations under the License.
  */
 
-package helpers
+package utils
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import config.{ApplicationConfig, RasSessionCache, RasShortLivedHttpCaching}
 import connectors.{FileUploadConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
+import org.joda.time.DateTime
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.mockito.Mockito.when
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.i18n
+import play.api.i18n.{MessagesApi, MessagesImpl}
+import play.api.mvc._
 import play.api.test.FakeRequest
+import play.api.test.Helpers.{contentAsString, stubBodyParser, stubControllerComponents, stubMessagesApi}
+import play.twirl.api.Html
 import services.{AuditService, SessionService, ShortLivedCache}
 import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.test.WithFakeApplication
-import org.mockito.Mockito._
+import play.api.test.Helpers.{contentAsString, _}
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait RasTestHelper extends MockitoSugar with WithFakeApplication {  this: Suite =>
+
+	def doc(result: Html): Document = Jsoup.parse(contentAsString(result))
+
+	private val messagesActionBuilder: MessagesActionBuilder = new DefaultMessagesActionBuilderImpl(stubBodyParser[AnyContent](), stubMessagesApi())
+	private val cc: ControllerComponents = stubControllerComponents()
+	val fakeRequest = FakeRequest()
+
+	val mockMCC: MessagesControllerComponents = DefaultMessagesControllerComponents(
+		messagesActionBuilder,
+		DefaultActionBuilder(stubBodyParser[AnyContent]()),
+		cc.parsers,
+		fakeApplication.injector.instanceOf[MessagesApi],
+		cc.langs,
+		cc.fileMimeTypes,
+		ExecutionContext.global
+	)
+
+	implicit lazy val testMessages: MessagesImpl = MessagesImpl(i18n.Lang("en"), mockMCC.messagesApi)
 	implicit val actorSystem: ActorSystem = ActorSystem()
 	implicit val materializer: ActorMaterializer = ActorMaterializer()
-
+	implicit val hc: HeaderCarrier = HeaderCarrier()
 
 	val SCOTTISH = "scotResident"
 	val WELSH = "welshResident"
 	val OTHER_UK = "otherUKResident"
 
-	val fakeRequest = FakeRequest()
 	val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 	val mockAppCrypto: ApplicationCrypto = mock[ApplicationCrypto]
 
@@ -72,4 +102,8 @@ trait RasTestHelper extends MockitoSugar with WithFakeApplication {  this: Suite
 	when(mockAppConfig.rasFrontendUrlSuffix).thenReturn("relief-at-source")
 	when(mockAppConfig.fileUploadFrontendBaseUrl).thenReturn("http://localhost:8899")
 	when(mockAppConfig.fileUploadFrontendSuffix).thenReturn("file-upload/upload/envelopes")
+	when(mockAppConfig.loginCallback).thenReturn("/relief-at-source/")
+	when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
+
+
 }

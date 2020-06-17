@@ -22,30 +22,25 @@ import forms.{MemberDateOfBirthForm => form}
 import javax.inject.Inject
 import models.ApiVersion
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 																		val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
 																		val connector: DefaultAuditConnector,
 																		val shortLivedCache: ShortLivedCache,
 																		val sessionService: SessionService,
+																		val mcc: MessagesControllerComponents,
 																		implicit val appConfig: ApplicationConfig
-																	 ) extends RasResidencyCheckerController with PageFlowController {
+																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
 
+	implicit val ec: ExecutionContext = mcc.executionContext
 	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
-
-  def getFullName()(implicit hc: HeaderCarrier): Future[String] = {
-    sessionService.fetchRasSession() map {
-      case Some(session) => session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-      case _ =>  Messages("member")
-    }
-  }
 
 	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
@@ -55,7 +50,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
               Ok(views.html.member_dob(form(Some(name)).fill(session.dateOfBirth), name, edit))
-            case _ => Ok(views.html.member_dob(form(), Messages("member"), edit))
+            case _ => Ok(views.html.member_dob(form(), "member", edit))
           }
         case Left(resp) =>
           Logger.warn("[DobController][get] user Not authorised")

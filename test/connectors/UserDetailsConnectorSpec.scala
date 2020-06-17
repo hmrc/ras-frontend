@@ -16,12 +16,11 @@
 
 package connectors
 
-import helpers.RasTestHelper
 import models.UserDetails
-import org.mockito.ArgumentMatchers.{any, argThat}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
@@ -29,7 +28,6 @@ import scala.concurrent.{Await, Future}
 
 class UserDetailsConnectorSpec extends UnitSpec with RasTestHelper {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 	def testConnector: UserDetailsConnector = new UserDetailsConnector(mockHttp)
 
   "Get User Details endpoint" must {

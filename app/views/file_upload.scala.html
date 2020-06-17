@@ -29,7 +29,7 @@
         <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@messages("generic.errors_heading")</h2>
 
         <ul class="error-summary-list">
-            <li><a id="error" href="#choose-file" data-focuses="choose-file">@if(error==""){@messages("error.select.csv")}else{@error}</a></li>
+            <li><a id="error" href="#choose-file" data-focuses="choose-file">@if(error==""){messages("error.select.csv")}else{@messages(error)}</a></li>
         </ul>
     </div>
 
@@ -56,7 +56,7 @@
 
                 <label for="choose-file" id="upload-label">
                     <span class="form-label visually-hidden">Upload a file</span>
-                    <span id="upload-error" class="common-error">@error</span>
+                    <span id="upload-error" class="common-error">@messages(error)</span>
                 </label>
 
                 <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file" onchange="enableContinue()"/>

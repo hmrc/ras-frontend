@@ -16,28 +16,28 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class CallbackData(envelopeId: String, fileId: String, status: String, reason: Option[String])
 
 object CallbackData {
-  implicit val formats = Json.format[CallbackData]
+  implicit val formats: OFormat[CallbackData] = Json.format[CallbackData]
 }
 
 case class ResultsFileMetaData (id: String, filename: Option[String],uploadDate: Option[Long], chunkSize: Int, length: Long)
 
 object ResultsFileMetaData {
-  implicit val formats = Json.format[ResultsFileMetaData]
+  implicit val formats: OFormat[ResultsFileMetaData] = Json.format[ResultsFileMetaData]
 }
 
 case class FileMetadata(id: String, name: Option[String], created: Option[String])
 
 object FileMetadata {
-  implicit val format = Json.format[FileMetadata]
+  implicit val format: OFormat[FileMetadata] = Json.format[FileMetadata]
 }
 
 case class FileSession(userFile: Option[CallbackData], resultsFile: Option[ResultsFileMetaData], userId: String, uploadTimeStamp : Option[Long], fileMetadata: Option[FileMetadata])
 
 object FileSession {
-  implicit val format = Json.format[FileSession]
+  implicit val format: OFormat[FileSession] = Json.format[FileSession]
 }

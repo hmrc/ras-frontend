@@ -17,22 +17,16 @@
 package models
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class RasDate(day: Option[String], month: Option[String], year: Option[String]){
 
-  def asLocalDate: LocalDate = {
-    new LocalDate(year.getOrElse("1").toInt, month.getOrElse("1").toInt, day.getOrElse("1").toInt)
-  }
+  def asLocalDate: LocalDate = new LocalDate(year.getOrElse("1").toInt, month.getOrElse("1").toInt, day.getOrElse("1").toInt)
+  def isInFuture: Boolean = asLocalDate.isAfter(LocalDate.now)
 
-  def isInFuture: Boolean = {
-    asLocalDate.isAfter(LocalDate.now)
-  }
-
-  override def toString = year + "-" + month + "-" + day
-
+  override def toString: String = year + "-" + month + "-" + day
 }
 
 object RasDate {
-  implicit val format = Json.format[RasDate]
+  implicit val format: OFormat[RasDate] = Json.format[RasDate]
 }

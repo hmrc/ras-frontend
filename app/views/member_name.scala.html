@@ -25,7 +25,7 @@
     <a class="link-back" href="@routes.MemberNameController.back(edit)"
        data-journey-click="navigation - link:What is their name?:Back">@messages("back")</a>
 
-    @views.html.helpers.errorSummary(memberNameForm, "What is their name?")
+	@(if(memberNameForm.hasErrors) errorSummary(Messages("generic.errors_heading"), memberNameForm))
 
     @form(action = routes.MemberNameController.post(edit)) {
 
@@ -37,11 +37,11 @@
         </legend>
 
         @rasInput(memberNameForm("firstName"),
-        '_label -> Html(messages("first.name").capitalize),
+        '_label -> Html("first name".capitalize),
         '_id -> "firstName")
 
         @rasInput(memberNameForm("lastName"),
-        '_label -> Html(messages("last.name").capitalize),
+        '_label -> Html("last name".capitalize),
         '_id -> "lastName")
 
     </fieldset>

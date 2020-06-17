@@ -18,13 +18,13 @@ package models
 
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Json, Reads, Writes}
+import play.api.libs.json.{JsPath, JsValue, Json, Reads, Writes}
 
 case class MemberDetails(name: MemberName,
                          nino: String,
                          dateOfBirth: RasDate) {
 
-  def asCustomerDetailsPayload = {
+  def asCustomerDetailsPayload: JsValue = {
     Json.parse(
       s"""{
           "nino":"${nino.toUpperCase}",

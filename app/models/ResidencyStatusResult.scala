@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class ResidencyStatusResult(currentYearResidencyStatus: String,
                                  nextYearResidencyStatus: Option[String],
@@ -28,5 +28,5 @@ case class ResidencyStatusResult(currentYearResidencyStatus: String,
 
 
 object ResidencyStatusResult {
-  implicit val format = Json.format[ResidencyStatusResult]
+  implicit val format: OFormat[ResidencyStatusResult] = Json.format[ResidencyStatusResult]
 }

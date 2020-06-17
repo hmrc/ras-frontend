@@ -16,12 +16,11 @@
 
 package forms
 
-import helpers.I18nHelper
 import models.MemberName
 import play.api.data.Form
 import play.api.data.Forms._
 
-object MemberNameForm extends I18nHelper{
+object MemberNameForm {
 
   val MAX_LENGTH = 35
   val NAME_REGEX = """^[a-zA-Z &`\-\'^ôéàëŵŷáîïâêûü]+$"""
@@ -29,13 +28,13 @@ object MemberNameForm extends I18nHelper{
   val form = Form(
     mapping(
       "firstName" -> text
-        .verifying(Messages("error.mandatory.name", Messages("first.name")), _.length > 0)
-        .verifying(Messages("error.length.firstName"), _.length <= MAX_LENGTH)
-        .verifying(Messages("error.name.invalid", Messages("first.name")), x => x.length == 0 || x.matches(NAME_REGEX)),
+        .verifying("error.mandatory.firstName", _.length > 0)
+        .verifying("error.length.firstName", _.length <= MAX_LENGTH)
+        .verifying("error.firstName.invalid", x => x.length == 0 || x.matches(NAME_REGEX)),
       "lastName" -> text
-        .verifying(Messages("error.mandatory.name", Messages("last.name")), _.length > 0)
-        .verifying(Messages("error.length.lastName"), _.length <= MAX_LENGTH)
-        .verifying(Messages("error.name.invalid", Messages("last.name")), x => x.length == 0 || x.matches(NAME_REGEX))
+        .verifying("error.mandatory.lastName", _.length > 0)
+        .verifying("error.length.lastName", _.length <= MAX_LENGTH)
+        .verifying("error.lastName.invalid", x => x.length == 0 || x.matches(NAME_REGEX))
     )(MemberName.apply)(MemberName.unapply)
   )
 }

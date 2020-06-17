@@ -17,42 +17,38 @@
 package controllers
 
 import config.ApplicationConfig
-import helpers.I18nHelper
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request, Result}
-import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.Results._
+import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait RasController extends FrontendController with I18nHelper with AuthorisedFunctions {
+trait RasController extends AuthorisedFunctions {
 
 	val appConfig: ApplicationConfig
-  val sessionService: SessionService
-  val shortLivedCache: ShortLivedCache
 
-  def isAuthorised()(implicit request: Request[AnyContent]): Future[Either[Future[Result], String]] = {
+	def isAuthorised()(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
     authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
     ).retrieve(authorisedEnrolments) {
 			enrolments =>
-				Logger.info("User authorised")
 				Future(Right(enrolments.enrolments.head.identifiers.head.value))
 		} recover {
-      case _ : NoActiveSession => Left(notLogged())
+      case e: NoActiveSession => Left(notLogged(e))
       case ex : AuthorisationException => Left(unAuthorise(ex))
     }
   }
 
-  def notLogged(): Future[Result] = {
-    Logger.warn("[RasController][notLogged] User not logged in - no active session found")
+  def notLogged(e: NoActiveSession): Future[Result] = {
+    Logger.warn(s"[RasController][notLogged] No Active Session - $e")
     Future.successful(toGGLogin(appConfig.loginCallback))
   }
 
   def unAuthorise(ex: AuthorisationException): Future[Result] = {
-    Logger.error(s"[RasController][unAuthorise] User not authorised - ${ex.reason}")
+    Logger.error(s"[RasController][unAuthorise] User not authorised - $ex")
     Future.successful(Redirect(routes.ErrorController.notAuthorised()))
   }
 

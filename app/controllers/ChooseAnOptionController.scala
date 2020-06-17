@@ -30,17 +30,20 @@ import play.api.mvc._
 import services.{SessionService, ShortLivedCache, TaxYearResolver}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAPIConnector,
 																				 val authConnector: DefaultAuthConnector,
 																				 val shortLivedCache: ShortLivedCache,
 																				 val sessionService: SessionService,
+																				 val mcc: MessagesControllerComponents,
 																				 implicit val appConfig: ApplicationConfig
-																				) extends PageFlowController {
+																				) extends FrontendController(mcc) with PageFlowController {
 
+	implicit val ec: ExecutionContext = mcc.executionContext
   private val _contentType =   "application/csv"
 
   def get: Action[AnyContent] = Action.async {
@@ -81,11 +84,11 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     val uploadDate = new DateTime(timestamp)
 
     val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(DateTime.now.toLocalDate)) {
-      Messages("today")
+      "today"
     } else {
-      Messages("yesterday")
+      "yesterday"
     }
-    Messages("formatted.upload.timestamp", todayOrYesterday, uploadDate.toString("h:mma").toLowerCase())
+		s"$todayOrYesterday at ${uploadDate.toString("h:mma").toLowerCase()}}"
   }
 
   def renderUploadResultsPage: Action[AnyContent] = Action.async {
@@ -127,7 +130,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   def renderNoResultAvailablePage: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>

@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 
 case class RasSession(name:MemberName,
@@ -28,5 +28,5 @@ case class RasSession(name:MemberName,
                       aFileIsInProcess: Option[Boolean] = None)
 
 object RasSession{
-  implicit val format = Json.format[RasSession]
+  implicit val format: OFormat[RasSession] = Json.format[RasSession]
 }

@@ -21,21 +21,24 @@ import metrics.Metrics
 import models._
 import play.api.Logger
 import play.api.mvc.{AnyContent, Request, Result}
-import services.{AuditService, TaxYearResolver}
+import services.{AuditService, SessionService, TaxYearResolver}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
+import play.api.mvc.Results.Redirect
+import play.api.http.Status.FORBIDDEN
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait RasResidencyCheckerController extends RasController with AuditService {
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
   val apiVersion: ApiVersion
+	val sessionService: SessionService
 
 	val SCOTTISH = "scotResident"
 	val WELSH = "welshResident"
 	val OTHER_UK = "otherUKResident"
 
-  def submitResidencyStatus(session: RasSession, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] = {
+  def submitResidencyStatus(session: RasSession, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
 
     val timer = Metrics.responseTimer.time()
     val memberDetails = MemberDetails(session.name, session.nino.nino, session.dateOfBirth.dateOfBirth)
@@ -90,10 +93,10 @@ trait RasResidencyCheckerController extends RasController with AuditService {
 
   private[controllers] def extractResidencyStatus(residencyStatus: String): String = {
     (residencyStatus, apiVersion) match {
-      case (SCOTTISH, _) => Messages("scottish.taxpayer")
-      case (WELSH, ApiV2_0) => Messages("welsh.taxpayer")
-      case (OTHER_UK, ApiV1_0) => Messages("non.scottish.taxpayer")
-      case (OTHER_UK, ApiV2_0) => Messages("non.scottish.taxpayer")
+      case (SCOTTISH, _) => "Scotland"
+      case (WELSH, ApiV2_0) => "Wales"
+      case (OTHER_UK, ApiV1_0) => "England, Northern Ireland or Wales"
+      case (OTHER_UK, ApiV2_0) => "England, Northern Ireland or Wales"
       case _ => ""
     }
   }
@@ -110,7 +113,7 @@ trait RasResidencyCheckerController extends RasController with AuditService {
     */
   private def auditResponse(failureReason: Option[String], nino: Option[String],
                             residencyStatus: Option[ResidencyStatus], userId: String)
-                           (implicit request: Request[AnyContent], hc: HeaderCarrier): Unit = {
+                           (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
 
     val ninoMap: Map[String, String] = nino.map(nino => Map("nino" -> nino)).getOrElse(Map())
     val nextYearStatusMap: Map[String, String] = if (residencyStatus.nonEmpty) residencyStatus.get.nextYearForecastResidencyStatus
@@ -128,4 +131,11 @@ trait RasResidencyCheckerController extends RasController with AuditService {
       auditData = auditDataMap ++ Map("userIdentifier" -> userId, "requestSource" -> "FE_SINGLE") ++ ninoMap
     )
   }
+
+	def getFullName()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
+		sessionService.fetchRasSession() map {
+			case Some(session) => session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+			case _ => "member"
+		}
+	}
 }

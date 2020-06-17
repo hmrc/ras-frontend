@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package helpers
+package utils
 
 import scala.util.Random
-
 
 object RandomNino {
 

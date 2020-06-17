@@ -20,7 +20,6 @@ package validators
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-import forms.MemberNameForm.Messages
 import models.{MemberDateOfBirth, RasDate}
 import org.joda.time.DateTime
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -45,29 +44,29 @@ trait DateValidator {
 
       if (!DateValidator.checkDayRange(date)) {
         if (date.month.getOrElse("0").toInt == 2 && leapYear)
-          Invalid(Seq(ValidationError(Messages("error.day.invalid.feb.leap"), day)))
+          Invalid(Seq(ValidationError("error.day.invalid.feb.leap", day)))
         else if (date.month.getOrElse("0").toInt == 2)
-          Invalid(Seq(ValidationError(Messages("error.day.invalid.feb"), day)))
+          Invalid(Seq(ValidationError("error.day.invalid.feb", day)))
         else if (List(4, 6, 9, 11).contains(date.month.getOrElse("0").toInt))
-          Invalid(Seq(ValidationError(Messages("error.day.invalid.thirty"), day)))
+          Invalid(Seq(ValidationError("error.day.invalid.thirty", day)))
         else
-          Invalid(Seq(ValidationError(Messages("error.day.invalid"), day)))
+          Invalid(Seq(ValidationError("error.day.invalid", day)))
       }
 
       else if (!DateValidator.checkMonthRange(date.month.getOrElse("0")))
-        Invalid(Seq(ValidationError(Messages("error.month.invalid"), month)))
+        Invalid(Seq(ValidationError("error.month.invalid", month)))
 
       else if (!DateValidator.checkYearLength(date.year.getOrElse("0")))
-        Invalid(Seq(ValidationError(Messages("error.year.invalid.format"), year)))
+        Invalid(Seq(ValidationError("error.year.invalid.format", year)))
 
       else {
         try {
           if (date.isInFuture) {
             val nextDay = DateTimeFormatter.ofPattern("dd MMMM uuuu").format(LocalDateTime.now().plusDays(1))
-            Invalid(Seq(ValidationError(Messages("error.dob.invalid.future", name, Messages("dob"), nextDay), day)))
+            Invalid(Seq(ValidationError("error.dob.invalid.future", name, "date of birth", nextDay, day)))
           }
           else if (!DateValidator.isAfter1900(date.year.getOrElse("0")))
-            Invalid(Seq(ValidationError(Messages("error.dob.before.1900", name, Messages("dob")), year)))
+            Invalid(Seq(ValidationError("error.dob.before.1900", name, "date of birth", year)))
           else
             Valid
         }
