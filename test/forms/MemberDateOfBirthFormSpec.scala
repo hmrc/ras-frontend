@@ -156,13 +156,13 @@ class MemberDateOfBirthFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("3"), Some(year)))
       val validatedForm = form(Some("Chris Bristow")).bind(formData)
       val nextDay = DateTimeFormatter.ofPattern("dd MMMM uuuu").format(LocalDateTime.now().plusDays(1))
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.dob.invalid.future"), Seq("Chris Bristow", "dob", nextDay, "day"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.dob.invalid.future"), Seq("Chris Bristow", "date of birth", nextDay, "day"))))
     }
 
     "return error when date is before 1900" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("3"), Some("1899")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.dob.before.1900"), Seq( "Chris Bristow", "dob", "year"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.dob.before.1900"), Seq( "Chris Bristow", "date of birth", "year"))))
     }
   }
 }
