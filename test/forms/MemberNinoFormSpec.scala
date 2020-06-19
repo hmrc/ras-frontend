@@ -37,7 +37,7 @@ class MemberNinoFormSpec extends UnitSpec with RasTestHelper {
     "return an error when nino field is empty" in {
       val formData = Json.obj("nino" -> "")
       val validatedForm = form(Some("James Potter")).bind(formData)
-      assert(validatedForm.errors.contains(FormError("nino", List("error.withName.mandatory"), Seq("James Potter", "nino"))))
+      assert(validatedForm.errors.contains(FormError("nino", List("error.withName.mandatory"), Seq("James Potter", "National Insurance number"))))
     }
 
     "return an error when nino field has special character" in {
