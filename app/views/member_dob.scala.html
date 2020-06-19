@@ -15,7 +15,7 @@
  *@
 
 @import config.ApplicationConfig
-@(memberDobForm: Form[models.MemberDateOfBirth], name:String, edit: Boolean)(implicit request: Request[_], messages: Messages, formInstance: Option[Form[models.MemberDateOfBirth]] = None, appConfig: ApplicationConfig)
+@(memberDobForm: Form[models.MemberDateOfBirth], name:String, edit: Boolean)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form, dateFieldsFreeInlineLegend}
 
@@ -24,7 +24,6 @@
 <a class="link-back" href="@routes.MemberDOBController.back(edit)"
    data-journey-click="navigation - link:What is their DOB?:Back">@messages("back")</a>
 
-<!--@views.html.helpers.errorSummary(memberDobForm, "What is their DOB?")-->
 @(if(memberDobForm.hasErrors) errorSummary(Messages("generic.errors_heading"), memberDobForm))
 
 @form(action = routes.MemberDOBController.post(edit)) {
@@ -34,8 +33,6 @@
         <header class="page-header">
             <h1 id="header" class="heading-xlarge">@messages("member.dob.page.header",name)</h1>
         </header>
-
-
     </legend>
 
 

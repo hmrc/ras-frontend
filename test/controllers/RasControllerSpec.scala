@@ -17,19 +17,18 @@
 package controllers
 
 import config.ApplicationConfig
-import helpers.RasTestHelper
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{SessionService, ShortLivedCache}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,13 +39,9 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
 
   val testController: RasController = new RasController {
-    override val appConfig: ApplicationConfig = new ApplicationConfig
-    override val sessionService: SessionService = mockSessionService
-    override val shortLivedCache: ShortLivedCache = mockShortLivedCache
-
+    override val appConfig: ApplicationConfig = mockAppConfig
     override def authConnector: AuthConnector = mockAuthConnector
   }
-
 
   "Ras Controller" should {
 
@@ -59,7 +54,7 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
         when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest)
+        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
         val result = authorisedResult flatMap {
           case Right(res) => res
         }
@@ -76,7 +71,7 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         when(mockAuthConnector.authorise[NoActiveSession](any[Predicate], any[Retrieval[NoActiveSession]])
           (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest)
+        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
         val result = authorisedResult flatMap {
           case Left(res) => await(res)
         }
@@ -94,7 +89,7 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         when(mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])
           (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest)
+        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
         val result = authorisedResult flatMap {
           case Left(res) => await(res) }
 
@@ -109,7 +104,7 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         when(mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])
           (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest)
+        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
         val result = authorisedResult flatMap {
           case Left(res) => await(res) }
 

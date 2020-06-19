@@ -18,6 +18,6 @@ package models
 
 trait UserInput {
 
-  def hasAValue() : Boolean
+  def hasAValue: Boolean
 
 }

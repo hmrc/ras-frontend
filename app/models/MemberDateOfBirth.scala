@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class MemberDateOfBirth(dateOfBirth: RasDate) extends UserInput {
 
@@ -24,5 +24,5 @@ case class MemberDateOfBirth(dateOfBirth: RasDate) extends UserInput {
 
 }
   object MemberDateOfBirth {
-    implicit val formats = Json.format[MemberDateOfBirth]
+    implicit val formats: OFormat[MemberDateOfBirth] = Json.format[MemberDateOfBirth]
 }

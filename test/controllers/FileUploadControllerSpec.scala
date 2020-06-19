@@ -16,7 +16,6 @@
 
 package controllers
 
-import helpers.{I18nHelper, RasTestHelper}
 import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
@@ -24,16 +23,18 @@ import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
 import play.api.http.Status.OK
+import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class FileUploadControllerSpec extends UnitSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
@@ -50,7 +51,7 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
-  val TestFileUploadController: FileUploadController = new FileUploadController(mockFileUploadConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+  val TestFileUploadController: FileUploadController = new FileUploadController(mockFileUploadConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
@@ -97,7 +98,6 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(false))
       val result = await(TestFileUploadController.get.apply(fakeRequest))
       status(result) shouldBe OK
-      doc(result).getElementById("header").text shouldBe Messages("file.upload.page.header")
     }
 
     "redirect to global error page" when {
@@ -163,28 +163,6 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
         when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
         val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
         status(result) shouldBe OK
-        doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
-      }
-    }
-
-    "successful upload page" should {
-      "contain the correct content" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-        when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-        when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
-        val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
-        doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
-        doc(result).getElementById("first-description").text shouldBe Messages("upload.success.first-description")
-        doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
-        doc(result).getElementById("continue").text shouldBe Messages("continue")
-      }
-
-      "contains the correct ga events" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-        when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-        when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
-        val result = await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
-        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:Your file has been uploaded:Continue"
       }
     }
 
@@ -206,76 +184,6 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
 
   "rendered file upload page" should {
 
-    "contain a back link" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementsByClass("link-back").text shouldBe Messages("back")
-    }
-
-    "contain 'upload file' title and header" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).title() shouldBe Messages("file.upload.page.title")
-      doc(result).getElementById("header").text shouldBe Messages("file.upload.page.header")
-    }
-
-    "contain sub-header" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("sub-header").html shouldBe Messages("file.upload.page.sub-header")
-    }
-
-    "contain 'choose file' button" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("choose-file") shouldNot be(null)
-    }
-
-    "contain an upload button" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("continue").text shouldBe Messages("continue")
-    }
-
-    "contain an uploading help link that opens new window when clicked" in {
-
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("upload-help-link").text shouldBe Messages("get.help.uploading.link")
-      doc(result).getElementById("upload-help-link").attr("target") shouldBe "_blank"
-    }
-
-    "contains the correct ga events" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:Upload a file:Continue"
-      doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:Upload a file:Back"
-      doc(result).getElementById("choose-file").attr("data-journey-click") shouldBe "button - click:Upload a file:Choose file"
-      doc(result).getElementById("upload-help-link").attr("data-journey-click") shouldBe "link - click:Upload a file:Get help formatting your file"
-    }
-
-    "the get help link should be correct" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = TestFileUploadController.get().apply(fakeRequest)
-      doc(result).getElementById("upload-help-link").attr("href") shouldBe "http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members"
-    }
-
-    "contain empty file error if present in session cache" in {
-      val uploadResponse = UploadResponse("400",Some(Messages("file.upload.empty.file.reason")))
-      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe Messages("file.empty.error")
-    }
-
     "redirect to problem uploading file if a bad request has been submitted" in {
       val uploadResponse = UploadResponse("400",None)
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("123456")))
@@ -290,7 +198,7 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       val result = await(TestFileUploadController.get().apply(fakeRequest))
-      doc(result).getElementById("upload-error").text shouldBe Messages("file.large.error")
+      doc(result).getElementById("upload-error").text shouldBe "file.large.error"
     }
 
     "redirect to problem uploading file if envelope not found in session cache" in {
@@ -357,20 +265,9 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       val result = await(TestFileUploadController.get().apply(fakeRequest))
       redirectLocation(result).get should include("/global-error")
     }
-
-
   }
 
   "cannot upload another file page" should {
-    "contains the right title" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
-      doc(result).title() shouldBe Messages("cannot.upload.another.file.page.title")
-    }
-
     "return global error if there is no file session" in  {
       val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -390,42 +287,6 @@ class FileUploadControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("file-ready")
-    }
-
-    "contains the right header" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
-      doc(result).getElementById("page-header").text shouldBe Messages("cannot.upload.another.file.page.header")
-    }
-
-    "contains a clarification paragraph" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
-      doc(result).getElementById("page-clarification").text shouldBe Messages("cannot.upload.another.file.page.clarification")
-    }
-
-    "contains a 'choose something else to do' button" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contains the correct ga events" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockShortLivedCache.isFileInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestFileUploadController.uploadInProgress().apply(fakeRequest)
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You cannot upload another file:Choose something else to do"
     }
   }
 }

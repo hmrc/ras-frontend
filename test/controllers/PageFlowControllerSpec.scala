@@ -17,19 +17,16 @@
 package controllers
 
 import config.ApplicationConfig
-import helpers.{I18nHelper, RasTestHelper}
 import models._
 import play.api.test.Helpers._
-import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
-class PageFlowControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class PageFlowControllerSpec extends UnitSpec with RasTestHelper {
 
   object TestPageFlowController extends PageFlowController{
     override val authConnector: AuthConnector = mockAuthConnector
-		override val shortLivedCache: ShortLivedCache = mockShortLivedCache
-		override val sessionService: SessionService = mockSessionService
 		override val appConfig: ApplicationConfig = mockAppConfig
   }
 

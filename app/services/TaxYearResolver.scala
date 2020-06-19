@@ -32,50 +32,51 @@ package services
  * limitations under the License.
  */
 
+import org.joda.time.{DateTime, DateTimeZone, Interval, LocalDate}
 import uk.gov.hmrc.time.DateTimeUtils
 
 trait TaxYearResolver {
 
-  import org.joda.time.{Interval, LocalDate, DateTimeZone, DateTime}
+	import org.joda.time.{Interval, LocalDate, DateTimeZone, DateTime}
 
-  lazy val now: () => DateTime = ???
+	lazy val now: () => DateTime = ???
 
-  private val ukTime : DateTimeZone = DateTimeZone.forID("Europe/London")
+	private val ukTime : DateTimeZone = DateTimeZone.forID("Europe/London")
 
-  def taxYearFor(dateToResolve: LocalDate): Int = {
-    val year = dateToResolve.year.get
+	def taxYearFor(dateToResolve: LocalDate): Int = {
+		val year = dateToResolve.year.get
 
-    if (dateToResolve.isBefore(new LocalDate(year, 4, 6)))
-      year - 1
-    else
-      year
-  }
+		if (dateToResolve.isBefore(new LocalDate(year, 4, 6)))
+			year - 1
+		else
+			year
+	}
 
-  def fallsInThisTaxYear(currentDate: LocalDate): Boolean = {
-    val earliestDateForCurrentTaxYear = new LocalDate(taxYearFor(now().toLocalDate), 4, 6)
-    earliestDateForCurrentTaxYear.isBefore(currentDate) || earliestDateForCurrentTaxYear.isEqual(currentDate)
-  }
+	def fallsInThisTaxYear(currentDate: LocalDate): Boolean = {
+		val earliestDateForCurrentTaxYear = new LocalDate(taxYearFor(now().toLocalDate), 4, 6)
+		earliestDateForCurrentTaxYear.isBefore(currentDate) || earliestDateForCurrentTaxYear.isEqual(currentDate)
+	}
 
-  def currentTaxYear: Int = taxYearFor(new LocalDate(now(), ukTime))
+	def currentTaxYear: Int = taxYearFor(new LocalDate(now(), ukTime))
 
-  def currentTaxYearYearsRange: Seq[Int] = currentTaxYear to currentTaxYear + 1
+	def currentTaxYearYearsRange: Seq[Int] = currentTaxYear to currentTaxYear + 1
 
-  def startOfTaxYear(year: Int) = new LocalDate(year, 4, 6)
+	def startOfTaxYear(year: Int) = new LocalDate(year, 4, 6)
 
-  def endOfTaxYear(year: Int) = new LocalDate(year + 1, 4, 5)
+	def endOfTaxYear(year: Int) = new LocalDate(year + 1, 4, 5)
 
-  def endOfLastTaxYear: LocalDate = endOfTaxYear(currentTaxYear - 1)
+	def endOfLastTaxYear: LocalDate = endOfTaxYear(currentTaxYear - 1)
 
-  def startOfCurrentTaxYear: LocalDate = startOfTaxYear(currentTaxYear)
+	def startOfCurrentTaxYear: LocalDate = startOfTaxYear(currentTaxYear)
 
-  def endOfCurrentTaxYear: LocalDate = endOfTaxYear(currentTaxYear)
+	def endOfCurrentTaxYear: LocalDate = endOfTaxYear(currentTaxYear)
 
-  def startOfNextTaxYear: LocalDate = startOfTaxYear(currentTaxYear + 1)
+	def startOfNextTaxYear: LocalDate = startOfTaxYear(currentTaxYear + 1)
 
-  def taxYearInterval: Interval = new Interval(startOfCurrentTaxYear.toDateTimeAtStartOfDay(ukTime),
-    startOfNextTaxYear.toDateTimeAtStartOfDay(ukTime))
+	def taxYearInterval: Interval = new Interval(startOfCurrentTaxYear.toDateTimeAtStartOfDay(ukTime),
+		startOfNextTaxYear.toDateTimeAtStartOfDay(ukTime))
 }
 
 object TaxYearResolver extends TaxYearResolver {
-  override lazy val now = () => DateTimeUtils.now
+	override lazy val now: () => DateTime = () => DateTimeUtils.now
 }

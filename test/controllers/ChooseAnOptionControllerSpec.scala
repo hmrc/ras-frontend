@@ -18,7 +18,6 @@ package controllers
 
 import java.io.ByteArrayInputStream
 
-import helpers.{I18nHelper, RasTestHelper}
 import models._
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
@@ -32,15 +31,15 @@ import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.Future
 
 
-class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class ChooseAnOptionControllerSpec extends UnitSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   val currentTaxYear: Int = TaxYearResolver.currentTaxYear
-
 
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
@@ -53,7 +52,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
 
-  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(mockResidencyStatusAPIConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(mockResidencyStatusAPIConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
 
     when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.NoFileSession))
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
@@ -62,8 +61,6 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
 
-  private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
-
   "get" when {
 
     "for any status" should {
@@ -71,153 +68,6 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
         val result = TestChooseAnOptionController.get(fakeRequest)
         status(result) shouldBe OK
       }
-
-      "contain the correct title and header" in {
-        val result = TestChooseAnOptionController
-                     .get(fakeRequest)
-        doc(result).title shouldBe Messages("chooseAnOption.page.title", Messages("filestatus.NoFileSession"))
-        doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("chooseAnOption.page.header")
-      }
-
-      "contain the single member h2" in {
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
-      }
-
-      "contain the enter a members detail link" in {
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementById("single-member-link").text shouldBe Messages("enter.members.details")
-        doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
-        doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Enter a members details"
-      }
-
-      "contain the Multiple members h2" in {
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
-      }
-    }
-
-    "for NoFileSession only" should {
-
-      "contain an Upload a file link" in {
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementById("upload-link").text() shouldBe Messages("upload.file")
-        doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
-        doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
-
-      }
-    }
-
-    "for Ready Only" should {
-      "contain a download your results link" in {
-
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("download.results")
-        doc(result).getElementById("download-result-link").attr("href") should include("/residency-status-added")
-        doc(result).getElementById("download-result-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Download your results"
-
-      }
-
-      "contain a File ready Icon" in {
-
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("task-completed").text shouldBe "FILE READY"
-      }
-
-      "contain File ready paragraph" in {
-        val date = new DateTime(mockExpiryTimeStamp)
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.Ready))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("H:mma").toLowerCase()} on ${date.toString("EEEE d MMMM yyyy")}")
-      }
-    }
-
-    "for Processing Only" should {
-      "contain a Processing icon" in {
-
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("task-completed").text shouldBe Messages("file.processing")
-
-      }
-
-      "contain File processing paragraphs with todays date" in {
-        val date = new DateTime(fileSession.uploadTimeStamp.get)
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("today"), date.toString("h:mma").toLowerCase()))
-        doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
-        doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
-
-      }
-
-      "contain File processing paragraphs with yesterday date" in {
-        val date = DateTime.now().minusDays(1).getMillis
-        val fs = fileSession.copy(uploadTimeStamp = Some(date))
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fs))
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.InProgress))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-          Messages("formatted.upload.timestamp", Messages("yesterday"), new DateTime(date).toString("h:mma").toLowerCase()))
-        doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
-        doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
-
-      }
-    }
-
-    "for UploadError Only" should {
-      "contain an upload your file again link" in {
-
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
-        doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
-        doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
-      }
-
-      "contain a File problem icon" in {
-
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROBLEM"
-
-      }
-
-      "contain File problem paragraphs" in {
-
-        when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.UploadError))
-        val result = TestChooseAnOptionController.get(fakeRequest)
-        doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph", Messages("upload.file.again"))
-      }
-    }
-
-      "for TimeExpiryError Only" should {
-        "contain an upload your file again link" in {
-
-          when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.TimeExpiryError))
-          val result = TestChooseAnOptionController.get(fakeRequest)
-          doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
-          doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
-          doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
-        }
-
-        "contain a File problem icon" in {
-
-          when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.TimeExpiryError))
-          val result = TestChooseAnOptionController.get(fakeRequest)
-          doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROBLEM"
-
-        }
-
-        "contain File problem paragraphs" in {
-
-          when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.TimeExpiryError))
-          val result = TestChooseAnOptionController.get(fakeRequest)
-          doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph", Messages("upload.file.again"))
-        }
     }
   }
 
@@ -235,146 +85,15 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
       redirectLocation(result).get should include("/global-error")
     }
 
-    "contain the correct page title" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).title shouldBe Messages("upload.result.page.title")
-    }
-
-    "contain a back link pointing to" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("back").attr("href") should include("/")
-    }
-
-    "contain the correct page header" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("page-header").text shouldBe Messages("upload.result.page.header")
-    }
-
-    "contain a icon file image" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("attachment-1").children().first().attr("src") should include("icon-file-download.png")
-    }
-
-    "contain a result link with the correct file name" in {
-      val fileName = "originalFileName"
-      val fileMetadata = FileMetadata("", Some(fileName), None)
-      val fs: FileSession = fileSession.copy(fileMetadata = Some(fileMetadata))
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fs))
-			when(mockShortLivedCache.getDownloadFileName(any())(any())).thenReturn(fileName)
-			val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("result-link").text shouldBe Messages("residency.status.result", fileName)
-    }
-
-    "contain a result link pointing to the results file" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("result-link").attr("href") should include(s"/results/${fileSession.userFile.get.fileId}")
-    }
-
-    "contain expiry date message" in {
-      val expiryDate = new DateTime(mockExpiryTimeStamp)
-      val formattedDate =  s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}"
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("expiry-date-message").text shouldBe Messages("expiry.date.message",formattedDate)
-    }
-
-    "contain a what to do next header" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("whatnext-header").text shouldBe Messages("match.found.what.happens.next")
-    }
-
-    "contain what to do next content" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("whatnext-content").text shouldBe Messages("upload.result.what.next", Messages("upload.result.member.contact"))
-    }
-
-    "contain an contact HMRC link" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("contact-hmrc-link").text shouldBe Messages("upload.result.member.contact")
-    }
-
-    "contains an HMRC link that opens help page in new tab" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("contact-hmrc-link").attr("href") shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers"
-      doc(result).getElementById("contact-hmrc-link").attr("target") shouldBe "_blank"
-    }
-
-    "contain a deletion message" in {
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("deletion-message").text shouldBe Messages("deletion.message")
-    }
-
-    "contain the correct ga events when upload date is 01/01/2018 (CY+1)" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
-      doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY & CY + 1:Choose something else to do"
-      doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
-    }
-
-    "contain a cy message when upload date is 06/04/2018" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-    }
-
-    "contain the correct ga events when upload date is 06/04/2018 (CY only)" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
-      doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY:Choose something else to do"
-      doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
-
-    }
-
-    "contain a cy message when upload date is 31/12/2018" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",None,Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-    }
-
-    "contain a button to choose something else to do" in {
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contain a button to choose something else to do which points to choose an option page" in {
-      val result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("href") should include("/")
-    }
-
-    "download a file containing the results" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
-      val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
+		"download a file containing the results" in {
+			val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
+			val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
+			val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
+			when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+			val result = await(TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
 				FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv")))
-      contentAsString(result) shouldBe row1
-    }
+			contentAsString(result) shouldBe row1
+		}
 
     "not be able to download a file containing the results when file name is incorrect" in {
       val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
@@ -435,43 +154,6 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
       val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
       redirectLocation(result).get should include("/cannot-upload-another-file")
     }
-
-    "contain the correct page title" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-      doc(result).title shouldBe Messages("file.ready.page.title")
-    }
-
-    "contain the correct page header" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-      doc(result).getElementById("header").text shouldBe Messages("file.ready.page.header")
-    }
-
-    "contain a back link pointing to /" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-      doc(result).getElementById("back").attr("href") should include("/")
-    }
-
-    "contains the correct sub header" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-      doc(result).getElementById("sub-header").text shouldBe Messages("file.ready.sub-header")
-    }
-
-    "the sub header contains a link that points to download results page" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-      doc(result).getElementById("sub-header-link").attr("href") should include("/residency-status-added")
-    }
-
-    "contain the correct ga events" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderFileReadyPage(fakeRequest))
-      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:File ready:Back"
-      doc(result).getElementById("sub-header-link").attr("data-journey-click") shouldBe "link - click:File ready:Download your file"
-    }
   }
 
   "renderResultsNotAvailableYetPage" should {
@@ -496,64 +178,6 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/no-results-available")
     }
-
-    "contain the correct page title" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).title shouldBe Messages("results.not.available.yet.page.title")
-    }
-
-    "contain the correct page header" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("header").text shouldBe Messages("results.not.available.yet.page.header")
-    }
-
-    "contain the correct sub header 1" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("sub-header1").text shouldBe Messages("results.not.available.yet.sub-header1")
-    }
-
-    "contain the correct sub header 2" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("sub-header2").text shouldBe Messages("results.not.available.yet.sub-header2")
-    }
-
-    "contain a back link pointing to /" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("back").attr("href") should include("/")
-    }
-
-    "contain a choose something else to do button" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contain a choose something else to do button that points to /" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("href") should include ("/")
-    }
-
-    "contain the correct ga events" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
-      val result = await(TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest))
-      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Results are still being added:Back"
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Results are still being added:Choose something else to do"
-    }
-
   }
 
   "renderNoResultsAvailablePage" should {
@@ -577,56 +201,6 @@ class ChooseAnOptionControllerSpec extends UnitSpec with I18nHelper with RasTest
       val result = await(TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/residency-status-added")
-    }
-
-    "contain the correct page title" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).title shouldBe Messages("no.results.available.page.title")
-    }
-
-    "contain the correct page header" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("header").text shouldBe Messages("no.results.available.page.header")
-    }
-
-    "contain the correct page content" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("sub-header").text shouldBe Messages("no.results.available.sub-header", Messages("no.results.available.link"))
-    }
-
-    "contain a back link pointing to /" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("back").attr("href") should include("/")
-    }
-
-    "contain a choose something else to do button" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contain a choose something else to do button that points to /" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("href") should include ("/")
-    }
-
-    "contain a link back to the upload a file page" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
-    }
-
-    "contain the correct ga events" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = await(TestChooseAnOptionController.renderNoResultAvailablePage.apply(fakeRequest))
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You have not uploaded a file:Choose something else to do"
-      doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:You have not uploaded a file:Back"
-      doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:You have not uploaded a file:Upload a file"
     }
   }
 

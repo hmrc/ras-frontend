@@ -16,23 +16,20 @@
 
 package services
 
-import helpers.RasTestHelper
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, argThat}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
-
-  implicit val hc:HeaderCarrier = HeaderCarrier()
 
 	class TestService extends AuditService {
 		override val connector: DefaultAuditConnector = mockAuditConnector

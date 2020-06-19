@@ -19,17 +19,23 @@ package controllers
 import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache, TaxYearResolver}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
+import scala.concurrent.ExecutionContext
 
 class ResultsController @Inject()(val authConnector: AuthConnector,
 																	val shortLivedCache: ShortLivedCache,
 																	val sessionService: SessionService,
+																	val mcc: MessagesControllerComponents,
 																	implicit val appConfig: ApplicationConfig
-																 ) extends PageFlowController {
+																 ) extends FrontendController(mcc) with PageFlowController {
 
-def matchFound: Action[AnyContent] = Action.async {
+	implicit val ec: ExecutionContext = mcc.executionContext
+
+	def matchFound: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>

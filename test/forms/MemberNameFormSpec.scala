@@ -17,13 +17,13 @@
 package forms
 
 import forms.MemberNameForm._
-import helpers.I18nHelper
-import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
-class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
+class MemberNameFormSpec extends UnitSpec with RasTestHelper {
 
   val MAX_NAME_LENGTH = 35
 
@@ -42,7 +42,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "",
         "lastName" -> "Esfandiari")
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("firstName", List(Messages("error.mandatory.name", Messages("first.name"))))))
+      assert(validatedForm.errors.contains(FormError("firstName", List("error.mandatory.firstName"))))
     }
 
     "return an error when last name field is empty" in {
@@ -50,7 +50,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "Ramin",
         "lastName" -> "")
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("lastName", List(Messages("error.mandatory.name", Messages("last.name"))))))
+      assert(validatedForm.errors.contains(FormError("lastName", List("error.mandatory.lastName"))))
     }
 
     "return error when first name is longer max allowed length" in {
@@ -58,7 +58,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "r" * (MAX_NAME_LENGTH + 1),
         "lastName" -> "Esfandiari")
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("firstName", List(Messages("error.length.firstName", Messages("first.name").capitalize, MAX_NAME_LENGTH)))))
+      assert(validatedForm.errors.contains(FormError("firstName", List("error.length.firstName"))))
     }
 
     "return error when last name is longer max allowed length" in {
@@ -66,7 +66,7 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "Ramin",
         "lastName" -> "e" * (MAX_NAME_LENGTH + 1))
       val validatedForm = form.bind(formData)
-      assert(validatedForm.errors.contains(FormError("lastName", List(Messages("error.length.lastName", Messages("last.name").capitalize, MAX_NAME_LENGTH)))))
+      assert(validatedForm.errors.contains(FormError("lastName", List("error.length.lastName"))))
     }
 
     "return no error when first name is of minimum allowed length" in {
@@ -110,8 +110,8 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "Ramin",
         "lastName" -> "Esfandiar3i")
       val validatedForm2 = form.bind(formData2)
-      assert(validatedForm1.errors.contains(FormError("firstName", List(Messages("error.name.invalid", Messages("first.name"))))))
-      assert(validatedForm2.errors.contains(FormError("lastName", List(Messages("error.name.invalid", Messages("last.name"))))))
+      assert(validatedForm1.errors.contains(FormError("firstName", List("error.firstName.invalid"))))
+      assert(validatedForm2.errors.contains(FormError("lastName", List("error.lastName.invalid"))))
     }
 
     "allow apostrophes" in {
@@ -144,8 +144,8 @@ class MemberNameFormSpec extends UnitSpec with I18nHelper with OneAppPerSuite {
         "firstName" -> "Ramin",
         "lastName" -> "Esfan@diari")
       val validatedForm2 = form.bind(formData2)
-      assert(validatedForm1.errors.contains(FormError("firstName", List(Messages("error.name.invalid", Messages("first.name"))))))
-      assert(validatedForm2.errors.contains(FormError("lastName", List(Messages("error.name.invalid", Messages("last.name"))))))
+      assert(validatedForm1.errors.contains(FormError("firstName", List("error.firstName.invalid"))))
+      assert(validatedForm2.errors.contains(FormError("lastName", List("error.lastName.invalid"))))
     }
 
     "allow whitespace" in {

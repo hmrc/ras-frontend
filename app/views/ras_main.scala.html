@@ -14,9 +14,10 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html.layouts
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
 @import config.ApplicationConfig
+
 @(title: String,
   sidebarLinks: Option[Html] = None,
   contentHeader: Option[Html] = None,
@@ -38,7 +39,7 @@
 
 @sidebar = {
     @if(sidebarLinks.isDefined) {
-        @layouts.sidebar(sidebarLinks.get, Some("sidebar"))
+        @uiLayouts.sidebar(sidebarLinks.get, Some("sidebar"))
     }
 }
 
@@ -74,7 +75,7 @@
                sidebar = sidebar,
                getHelpForm = getHelpForm,
                contentHeader = contentHeader,
-               mainContent = layouts.article(mainContent),
+               mainContent = uiLayouts.article(mainContent),
                serviceInfoContent = serviceInfoContent,
                scriptElem = Some(scriptElement),
                signOutEnabled = signOutEnabled,

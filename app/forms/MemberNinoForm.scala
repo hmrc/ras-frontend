@@ -16,14 +16,13 @@
 
 package forms
 
-import helpers.I18nHelper
 import models.MemberNino
 import play.api.data.Form
 import play.api.data.Forms._
 import validators.NinoValidator
 
-object MemberNinoForm extends I18nHelper {
+object MemberNinoForm {
   def apply(name: Option[String] = None) = Form(
-    mapping("nino" -> text.verifying(NinoValidator.ninoConstraint(name.getOrElse(Messages("member")))))(MemberNino.apply)(MemberNino.unapply)
+    mapping("nino" -> text.verifying(NinoValidator.ninoConstraint(name.getOrElse("member"))))(MemberNino.apply)(MemberNino.unapply)
   )
 }

@@ -17,9 +17,8 @@
 package metrics
 
 import com.codahale.metrics.{MetricRegistry, Timer}
-trait Metrics {val responseTimer : Timer}
 
-object Metrics extends Metrics {
+object Metrics {
   val registry: MetricRegistry = new MetricRegistry
-  override val responseTimer: Timer = registry.timer("ras-frontend-status-retrieval-timer")
+	val responseTimer: Timer = registry.timer("ras-frontend-status-retrieval-timer")
 }

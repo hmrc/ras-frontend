@@ -20,21 +20,21 @@ import java.io.{BufferedReader, InputStreamReader}
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import helpers.RasTestHelper
 import models._
 import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito.when
-import play.api.libs.ws.{DefaultWSResponseHeaders, StreamedResponse, WSRequest}
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import play.api.libs.ws.ahc.AhcWSResponse
+import play.api.libs.ws.{StandaloneWSResponse, WSRequest, WSResponse}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ResidencyStatusAPIConnectorSpec extends UnitSpec with RasTestHelper {
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+class ResidencyStatusAPIConnectorSpec extends UnitSpec with utils.RasTestHelper {
 
   def createTestConnector(apiVersion: ApiVersion): ResidencyStatusAPIConnector = new ResidencyStatusAPIConnector(mockHttp, mockAppConfig) {
     override lazy val residencyStatusVersion: ApiVersion = apiVersion
@@ -60,72 +60,56 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with RasTestHelper {
   }
 
   "Residency Status API connector" should {
-
     "send a get request to residency status service" when {
       Seq(ApiV1_0, ApiV2_0) foreach { testApiVersion =>
         s"api version is $testApiVersion" in {
-
           val memberDetails = MemberDetails(MemberName("John", "Smith"), "AB123456C", RasDate(Some("21"), Some("09"), Some("1970")))
-
-          val expectedResponse = ResidencyStatus("scotResident", Some("otherUKResident"))
-
+					val expectedResponse = ResidencyStatus("scotResident", Some("otherUKResident"))
           val testConnector = createTestConnector(apiVersion = testApiVersion)
-
           when(mockHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(
             any(), any(), argThat(headerCarrierMatcher(testApiVersion)), any())
           ).thenReturn(Future.successful(expectedResponse))
 
           val result = testConnector.getResidencyStatus(memberDetails)
-
           await(result) shouldBe expectedResponse
         }
       }
 
       "the date is between 1st January and 5th April" in {
-
         val memberDetails = MemberDetails(MemberName("John", "Smith"), "AB123456C", RasDate(Some("21"), Some("09"), Some("1970")))
-
         val expectedResponse = ResidencyStatus("scotResident", Some("otherUKResident"))
-
         when(mockHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
-
-        val result = testConnector.getResidencyStatus(memberDetails)
-
+				val result = testConnector.getResidencyStatus(memberDetails)
         await(result) shouldBe expectedResponse
-
       }
 
       "the date is between 6th April and 31st December" in {
-
         val memberDetails = MemberDetails(MemberName("John", "Smith"), "AB123456C", RasDate(Some("21"), Some("09"), Some("1970")))
-
         val expectedResponse = ResidencyStatus("scotResident", None)
-
         when(mockHttp.POST[MemberDetails, ResidencyStatus](any(), any(), any())(any(), any(), any(), any())).thenReturn(Future.successful(expectedResponse))
-
         val result = testConnector.getResidencyStatus(memberDetails)
-
         await(result) shouldBe expectedResponse
       }
     }
   }
 
   "getFile" should {
-
     "return an StreamedResponse from ras-api service" in {
-			val mockWSRequest = mock[WSRequest]
 
-      val streamResponse: StreamedResponse = StreamedResponse(DefaultWSResponseHeaders(200, Map("CONTENT_TYPE" -> Seq("application/octet-stream"))),
-        Source.apply[ByteString](Seq(ByteString("Test"), ByteString("\r\n"), ByteString("Passed")).to[scala.collection.immutable.Iterable]))
+			val mockR = mock[StandaloneWSResponse]
+			val mockWSRequest = mock[WSRequest]
+			lazy val bodyAsSourceResponse: Source[ByteString, _] = Source.apply[ByteString](Seq(ByteString("Test"), ByteString("\n"), ByteString("Passed")).to[scala.collection.immutable.Iterable])
 
       when(mockHttp.buildRequest(any(), any())(any())).thenReturn(Future.successful(mockWSRequest))
-			when(mockWSRequest.stream()).thenReturn(Future.successful(streamResponse))
-
+			when(mockWSRequest.stream()).thenReturn(Future.successful(AhcWSResponse(mockR)))
+			when(mockR.bodyAsSource).thenAnswer(
+				new Answer[Source[ByteString, _]] {
+					override def answer(invocation: InvocationOnMock): Source[ByteString, _] = bodyAsSourceResponse
+				}
+			)
 
 			val result = await(testConnector.getFile("file1", "A1234567"))
-
       val reader = new BufferedReader(new InputStreamReader(result.get))
-
       (Iterator continually reader.readLine takeWhile (_ != null) toList) should contain theSameElementsAs List("Test", "Passed")
 
     }
@@ -133,19 +117,14 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with RasTestHelper {
 
   "deleteFile" should {
     "return a 200 when a file has been successfully deleted" in {
-
       when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200)))
-
       val result = testConnector.deleteFile("file-name", "userId")
-
       await(result).status shouldBe 200
     }
 
     "return a 500 when a file has not been deleted" in {
       when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(500)))
-
       val result = testConnector.deleteFile("file-name", "userId")
-
       await(result).status shouldBe 500
     }
   }

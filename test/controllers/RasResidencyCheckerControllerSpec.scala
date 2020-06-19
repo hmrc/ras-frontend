@@ -18,14 +18,14 @@ package controllers
 
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import helpers.{I18nHelper, RasTestHelper}
 import models._
-import services.{SessionService, ShortLivedCache}
+import services.SessionService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
-class RasResidencyCheckerControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class RasResidencyCheckerControllerSpec extends UnitSpec with RasTestHelper {
 
   def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController = new RasResidencyCheckerController {
     override val authConnector: AuthConnector = mockAuthConnector
@@ -33,7 +33,6 @@ class RasResidencyCheckerControllerSpec extends UnitSpec with I18nHelper with Ra
     override val sessionService: SessionService = mockSessionService
     override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockResidencyStatusAPIConnector
     override val apiVersion: ApiVersion = version
-		override val shortLivedCache: ShortLivedCache = mockShortLivedCache
 		override val appConfig: ApplicationConfig = mockAppConfig
   }
 
@@ -42,9 +41,9 @@ class RasResidencyCheckerControllerSpec extends UnitSpec with I18nHelper with Ra
       "extract the result into the correct messages" in {
         val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV1_0)
 
-        testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe Messages("scottish.taxpayer")
+        testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe "Scotland"
         testRasResidencyCheckerController.extractResidencyStatus(WELSH) shouldBe ""
-        testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe Messages("non.scottish.taxpayer")
+        testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe "England, Northern Ireland or Wales"
         testRasResidencyCheckerController.extractResidencyStatus("") shouldBe ""
       }
     }
@@ -52,9 +51,9 @@ class RasResidencyCheckerControllerSpec extends UnitSpec with I18nHelper with Ra
       "extract the result into the correct messages" in {
         val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV2_0)
 
-        testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe Messages("scottish.taxpayer")
-        testRasResidencyCheckerController.extractResidencyStatus(WELSH) shouldBe Messages("welsh.taxpayer")
-        testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe Messages("non.scottish.taxpayer")
+        testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe "Scotland"
+        testRasResidencyCheckerController.extractResidencyStatus(WELSH) shouldBe "Wales"
+        testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe "England, Northern Ireland or Wales"
         testRasResidencyCheckerController.extractResidencyStatus("") shouldBe ""
       }
     }

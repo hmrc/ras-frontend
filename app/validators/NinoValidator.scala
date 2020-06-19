@@ -16,7 +16,6 @@
 
 package validators
 
-import forms.MemberNameForm.Messages
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 trait NinoValidator {
@@ -31,13 +30,13 @@ trait NinoValidator {
     text =>
       val ninoText = text.replaceAll("\\s", "")
       if (ninoText.length == 0)
-        Invalid(Seq(ValidationError(Messages("error.withName.mandatory", name, Messages("nino")))))
+        Invalid(Seq(ValidationError("error.withName.mandatory", name, "National Insurance number")))
       else if (!NinoValidator.containsNoSpecialCharacters(ninoText.toUpperCase()))
-        Invalid(Seq(ValidationError(Messages("error.nino.special.character", name))))
+        Invalid(Seq(ValidationError("error.nino.special.character", name)))
       else if (ninoText.length < 8 || ninoText.length > 9)
-        Invalid(Seq(ValidationError(Messages("error.nino.length"))))
+        Invalid(Seq(ValidationError("error.nino.length")))
       else if (!NinoValidator.isValid(ninoText.toUpperCase()))
-        Invalid(Seq(ValidationError(Messages("error.nino.invalid"))))
+        Invalid(Seq(ValidationError("error.nino.invalid")))
       else
         Valid
   })

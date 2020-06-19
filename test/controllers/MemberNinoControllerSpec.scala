@@ -16,25 +16,21 @@
 
 package controllers
 
-import helpers.{I18nHelper, RandomNino, RasTestHelper}
 import models._
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
 import play.api.http.Status.OK
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.Upstream4xxResponse
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-
-class MemberNinoControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
 
   val memberName: MemberName = MemberName("Jackie", "Chan")
   val memberNino: MemberNino = MemberNino("AB123456C")
@@ -47,7 +43,7 @@ class MemberNinoControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
   private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val TestMemberNinoController: MemberNinoController = new MemberNinoController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+  val TestMemberNinoController: MemberNinoController = new MemberNinoController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
 
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -67,36 +63,6 @@ class MemberNinoControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
         status(result) shouldBe OK
       }
     }
-
-    "contain correct page elements and content" when {
-      "rendered" in {
-        val result = TestMemberNinoController.get()(fakeRequest)
-        doc(result).title shouldBe Messages("member.nino.page.title")
-        doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", "Jackie Chan")
-        doc(result).getElementById("nino_hint").text shouldBe Messages("nino.hint")
-        assert(doc(result).getElementById("nino").attr("input") != null)
-        doc(result).getElementById("continue").text shouldBe Messages("continue")
-      }
-
-      "rendered but no cached data exists" in {
-        when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
-        val result = TestMemberNinoController.get()(fakeRequest)
-        doc(result).title shouldBe Messages("member.nino.page.title")
-        doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", Messages("member"))
-      }
-
-      "contain the correct ga data when edit mode is false" in {
-        val result = TestMemberNinoController.get()(fakeRequest)
-        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue"
-        doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their NINO?:Back"
-      }
-
-      "contain the correct ga data when edit mode is true" in {
-        val result = TestMemberNinoController.get(true)(fakeRequest)
-        doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue and submit"
-      }
-    }
-
   }
 
   "MemberNinoController post" should {
@@ -107,7 +73,6 @@ class MemberNinoControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
         "nino" -> RandomNino.generate.substring(3))
       val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
-      doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", "Jackie Chan")
     }
 
     "return bad request with member as name when form error is present and session contains no name" in {
@@ -116,7 +81,6 @@ class MemberNinoControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
         "nino" -> RandomNino.generate.substring(3))
       val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
-      doc(result).getElementById("header").text shouldBe Messages("member.nino.page.header", Messages("member"))
     }
 
     "return bad request when form error present with special characters" in {
@@ -184,7 +148,4 @@ class MemberNinoControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
     status(result) shouldBe SEE_OTHER
     redirectLocation(result).get should include("global-error")
   }
-
-  private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
-
 }

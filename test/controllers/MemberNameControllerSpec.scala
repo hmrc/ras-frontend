@@ -16,26 +16,22 @@
 
 package controllers
 
-import helpers.{I18nHelper, RasTestHelper}
 import models._
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class MemberNameControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   private val enrolments = Enrolments(Set(enrolment))
@@ -47,14 +43,12 @@ class MemberNameControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
   val postData: JsObject = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
 
 
-  val TestMemberNameController: MemberNameController = new MemberNameController(mockAuthConnector, mockAuditConnector, mockResidencyStatusAPIConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+  val TestMemberNameController: MemberNameController = new MemberNameController(mockAuthConnector, mockAuditConnector, mockResidencyStatusAPIConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
 
     when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
-
-  private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
   "MemberNameController" should {
 
@@ -73,58 +67,6 @@ class MemberNameControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       val result = TestMemberNameController.get()(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
-    }
-  }
-
-  "member name page" should {
-
-    "contain correct title and header" in {
-      val result = TestMemberNameController.get()(fakeRequest)
-      doc(result).title shouldBe Messages("member.name.page.title")
-      doc(result).getElementById("header").text shouldBe Messages("member.name.page.header")
-    }
-
-    "contain correct field labels" in {
-      val result = TestMemberNameController.get()(fakeRequest)
-      doc(result).getElementById("firstName_label").text shouldBe Messages("first.name").capitalize
-      doc(result).getElementById("lastName_label").text shouldBe Messages("last.name").capitalize
-    }
-
-    "contain correct input fields" in {
-      val result = TestMemberNameController.get()(fakeRequest)
-      assert(doc(result).getElementById("firstName").attr("input") != null)
-      assert(doc(result).getElementById("lastName").attr("input") != null)
-    }
-
-    "contain continue button" in {
-      val result = TestMemberNameController.get()(fakeRequest)
-      doc(result).getElementById("continue").text shouldBe Messages("continue")
-    }
-
-    "fill in form if cache data is returned" in {
-      val result = TestMemberNameController.get()(fakeRequest)
-      doc(result).getElementById("firstName").value.toString should include(memberName.firstName)
-      doc(result).getElementById("lastName").value.toString should include(memberName.lastName)
-    }
-
-    "present empty form when no cached data exists" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
-      val result = await(TestMemberNameController.get()(fakeRequest))
-      assert(doc(result).getElementById("firstName").attr("value").equals(""))
-      assert(doc(result).getElementById("lastName").attr("value").equals(""))
-    }
-
-    "contain the correct ga data when edit mode is false" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
-      val result = await(TestMemberNameController.get()(fakeRequest))
-      assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue"))
-      assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their name?:Back"))
-    }
-
-    "contain the correct ga data when edit mode is true" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
-      val result = await(TestMemberNameController.get(true)(fakeRequest))
-      assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue and submit"))
     }
   }
 
@@ -195,6 +137,5 @@ class MemberNameControllerSpec extends UnitSpec with I18nHelper with RasTestHelp
       status(result) shouldBe SEE_OTHER
       redirectLocation(result).get should include("/no-residency-status-displayed")
     }
-
   }
 }

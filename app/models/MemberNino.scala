@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class MemberNino(nino :String) extends UserInput {
 
@@ -25,5 +25,5 @@ case class MemberNino(nino :String) extends UserInput {
 }
 
 object MemberNino {
-  implicit val formats = Json.format[MemberNino]
+  implicit val formats: OFormat[MemberNino] = Json.format[MemberNino]
 }

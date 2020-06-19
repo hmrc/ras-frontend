@@ -16,13 +16,13 @@
 
 package controllers
 
-import helpers.{I18nHelper, RandomNino, RasTestHelper}
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
+import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -30,10 +30,11 @@ import play.api.test.Helpers.{contentAsString, _}
 import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-class ResultsControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class ResultsControllerSpec extends UnitSpec with RasTestHelper {
 
   override val fakeRequest = FakeRequest("GET", "/")
   val currentTaxYear: Int = TaxYearResolver.currentTaxYear
@@ -54,7 +55,7 @@ class ResultsControllerSpec extends UnitSpec with I18nHelper with RasTestHelper 
   val rasSession: RasSession = RasSession(name, nino, memberDob, Some(residencyStatusResult), None)
 
 
-  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockAppConfig) {
+  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
@@ -87,180 +88,6 @@ class ResultsControllerSpec extends UnitSpec with I18nHelper with RasTestHelper 
       val result = TestResultsController.noMatchFound(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
-    }
-
-    "contain correct title when match found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-          Some(ResidencyStatusResult(
-            NON_SCOTTISH, Some(NON_SCOTTISH),
-            currentTaxYear.toString, (currentTaxYear + 1).toString,
-            name.firstName + " " + name.lastName,
-            memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-            "")),None))
-      ))
-      val result = TestResultsController.matchFound(fakeRequest)
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title shouldBe Messages("match.found.page.title")
-    }
-
-    "contain correct title when match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
-      val result = TestResultsController.noMatchFound(fakeRequest)
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title shouldBe Messages("match.not.found.page.title")
-    }
-
-    "contain customer details and residency status when match found and CY and CY+1 is present" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              SCOTTISH, Some(NON_SCOTTISH),
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
-      ))
-      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-
-      doc(result).getElementById("top-content").text shouldBe Messages("match.found.top")
-      doc(result).getElementById("sub-header").text shouldBe Messages("match.found.what.happens.next")
-      doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
-      doc(result).getElementById("ny-residency-status").text shouldBe Messages("non.scottish.taxpayer")
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contain correct ga events when match found and CY and CY+1 is present" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              SCOTTISH, Some(NON_SCOTTISH),
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
-      ))
-      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status added CY & CY + 1:Choose something else to do"
-      doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:Residency status added CY & CY + 1:Look up another member"
-    }
-
-    "contain customer details and residency status when match found and only CY is present" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              SCOTTISH, None,
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
-      ))
-      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      val formattedName = name.firstName.capitalize + " " + name.lastName.capitalize
-
-      doc(result).getElementById("top-content").text shouldBe Messages("match.found.top")
-      doc(result).getElementById("sub-header").text shouldBe Messages("match.found.what.happens.next")
-      doc(result).getElementById("bottom-content-cy").text shouldBe Messages("match.found.bottom.current-year.bottom", (currentTaxYear + 1).toString, formattedName, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-      doc(result).getElementById("cy-residency-status").text shouldBe Messages("scottish.taxpayer")
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contain correct ga event when match found and only CY is present" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              SCOTTISH, None,
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
-      ))
-      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status added CY:Choose something else to do"
-      doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:Residency status added CY:Look up another member"
-    }
-
-    "display correct residency status for UK UK" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              NON_SCOTTISH, Some(NON_SCOTTISH),
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              "")),None))
-      ))
-      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-
-      doc(result).getElementById("cy-residency-status").text shouldBe Messages("non.scottish.taxpayer")
-      doc(result).getElementById("ny-residency-status").text shouldBe Messages("non.scottish.taxpayer")
-    }
-
-    "contain a look up another member link when match found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-            Some(ResidencyStatusResult(
-              SCOTTISH, None,
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
-              ""))))
-      ))
-      val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("look-up-another-member-link").attr("href") shouldBe "/relief-at-source/check-another-member/member-name?cleanSession=true"
-    }
-
-    "contain customer details and residency status when match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob, None ,None))
-      ))
-      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("match-not-found").text shouldBe Messages("member.details.not.found", "Jim McGill")
-      doc(result).getElementById("subheader").text shouldBe Messages("match.not.found.subheader","Jim McGill")
-      doc(result).getElementById("change-name").text shouldBe Messages("change.name") + " " + Messages("change")
-      doc(result).getElementById("name").text shouldBe "Jim McGill"
-      doc(result).getElementById("change-nino").text shouldBe Messages("change.nino") + " " + Messages("change")
-      doc(result).getElementById("nino").text shouldBe nino.nino
-      doc(result).getElementById("change-dob").text shouldBe Messages("change.dob") + " " + Messages("change")
-      doc(result).getElementById("dob").text shouldBe memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
-      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-    }
-
-    "contain a member must contact HMRC to update their personal details link which opens a new tab when clicked" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob,
-            None,None))
-      ))
-      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("contact-hmrc-link").attr("href") shouldBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers"
-      doc(result).getElementById("contact-hmrc-link").attr("target") shouldBe "_blank"
-    }
-
-    "contain what to do next section when match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(RasSession(name, nino, memberDob, None, None))))
-      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("what-to-do").text shouldBe Messages("match.not.found.what.to.do", Messages("contact.hmrc", "Jim McGill"))
-    }
-
-    "contain a look up another member link when match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(
-          RasSession(name, nino, memberDob, None, None))
-      ))
-      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("look-up-another-member-link").attr("href") shouldBe "/relief-at-source/check-another-member/member-name?cleanSession=true"
-    }
-
-    "contain ga event data when match not found " in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(RasSession(name, nino, memberDob, None, None))))
-      val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Users details not found:Back"
-      doc(result).getElementById("change-name-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change Name"
-      doc(result).getElementById("change-nino-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change NINO"
-      doc(result).getElementById("change-dob-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change DOB"
-      doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:User details not found:Choose something else to do"
-      doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:User details not found:Look up another member"
     }
 
     "redirect to global error page when no session data is returned on match found" in {

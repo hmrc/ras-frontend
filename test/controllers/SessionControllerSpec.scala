@@ -16,7 +16,6 @@
 
 package controllers
 
-import helpers.{I18nHelper, RandomNino, RasTestHelper}
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -24,10 +23,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, _}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
+import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-class SessionControllerSpec extends UnitSpec with I18nHelper with RasTestHelper {
+class SessionControllerSpec extends UnitSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -36,7 +36,7 @@ class SessionControllerSpec extends UnitSpec with I18nHelper with RasTestHelper 
   val memberDob = MemberDateOfBirth(dob)
   val rasSession = RasSession(MemberName("Jim", "McGill"),nino, memberDob,None,None)
 
-  val TestSessionController = new SessionController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockAppConfig)
+  val TestSessionController = new SessionController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig)
 
   "SessionController" should {
     "redirect to target" when {

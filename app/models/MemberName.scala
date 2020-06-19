@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class MemberName(firstName: String, lastName: String) extends UserInput {
 
@@ -25,5 +25,5 @@ case class MemberName(firstName: String, lastName: String) extends UserInput {
 }
 
 object MemberName {
-  implicit val format = Json.format[MemberName]
+  implicit val format: OFormat[MemberName] = Json.format[MemberName]
 }

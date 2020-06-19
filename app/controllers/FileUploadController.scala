@@ -23,21 +23,24 @@ import connectors.FileUploadConnector
 import javax.inject.Inject
 import models.{Envelope, UploadResponse}
 import play.Logger
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.UnanchoredRegex
 
 class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
 																		 val authConnector: DefaultAuthConnector,
 																		 val shortLivedCache: ShortLivedCache,
 																		 val sessionService: SessionService,
+																		 val mcc: MessagesControllerComponents,
 																		 implicit val appConfig: ApplicationConfig
-																		) extends PageFlowController {
+																		) extends FrontendController(mcc) with RasController with PageFlowController {
+
+	implicit val ec: ExecutionContext = mcc.executionContext
 
   def get: Action[AnyContent] = Action.async {
     implicit request =>
@@ -55,7 +58,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                     case Some(url) =>
                       Logger.info(s"[FileUploadController][get] form url created successfully for userId ($userId)")
                       val error = extractErrorReason(session.uploadResponse)
-                      if(error == Messages("upload.failed.error")){
+                      if(error == "upload.failed.error"){
                         sessionService.cacheUploadResponse(UploadResponse("",None)).map {
                           case Some(_) =>
                             Redirect(routes.ErrorController.renderProblemUploadingFilePage())
@@ -181,7 +184,6 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
   def uploadError: Action[AnyContent] = Action.async { implicit request =>
     isAuthorised.flatMap {
       case Right(_) =>
-
         val errorCode: String = request.getQueryString("errorCode").getOrElse("")
         val errorReason: String = request.getQueryString("reason").getOrElse("")
         val errorResponse: UploadResponse = UploadResponse(errorCode, Some(errorReason))
@@ -223,33 +225,35 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
   }
 
   private def extractErrorReason(uploadResponse: Option[UploadResponse]):String ={
-    uploadResponse match {
+		val fileUploadEmptyFileReason= "Envelope does not allow zero length files, and submitted file has length 0"
+
+		uploadResponse match {
       case Some(response) =>
         response.code match {
-          case "400" if response.reason.getOrElse("").contains(Messages("file.upload.empty.file.reason")) =>
+          case "400" if response.reason.getOrElse("").contains(fileUploadEmptyFileReason) =>
             Logger.error("[FileUploadController][extractErrorReason] empty file")
-            Messages("file.empty.error")
+            "file.empty.error"
           case "400" =>
             Logger.error("[FileUploadController][extractErrorReason] bad request")
-            Messages("upload.failed.error")
+            "upload.failed.error"
           case "404" =>
             Logger.error("[FileUploadController][extractErrorReason] envelope not found")
-            Messages("upload.failed.error")
+            "upload.failed.error"
           case "413" =>
             Logger.error("[FileUploadController][extractErrorReason] file too large")
-            Messages("file.large.error")
+            "file.large.error"
           case "415" =>
             Logger.error("[FileUploadController][extractErrorReason] file type other than the supported type")
-            Messages("upload.failed.error")
+            "upload.failed.error"
           case "423" =>
             Logger.error("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
-            Messages("upload.failed.error")
+            "upload.failed.error"
           case "" =>
             Logger.error("[FileUploadController][extractErrorReason] no error code returned")
             ""
           case _ =>
             Logger.error("[FileUploadController][extractErrorReason] unknown cause")
-            Messages("upload.failed.error")
+            "upload.failed.error"
         }
       case _ => ""
     }
