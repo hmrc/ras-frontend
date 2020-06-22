@@ -25,7 +25,7 @@
 
     <a class="link-back" href="@routes.FileUploadController.back" data-journey-click="navigation - link:Upload a file:Back">@messages("back")</a>
 
-    <div id="errors" class="validation-summary error-summary" role="group" tabindex="-1" @if(error==""){ style="display:none;" }>
+    <div id="error-summary-heading" class="validation-summary error-summary" role="group" tabindex="-1" @if(error==""){ style="display:none;" }>
         <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@messages("generic.errors_heading")</h2>
 
         <ul class="error-summary-list">
