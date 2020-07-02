@@ -262,6 +262,9 @@ input.form-control-error[type="text"] {
     text-decoration: underline;
 }
 
+    .govuk-box-highlight {
+        background-color: #00703c;
+    }
 
 
 
