@@ -168,7 +168,7 @@ class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
       if (fileSession.isDefined) {
 				fileSession.get.resultsFile.isDefined || !hasBeen24HoursSinceTheUpload(fileSession.get.uploadTimeStamp.get)
 			} else {
-				Logger.error("[ShortLivedCache][isFileInProgress] fileSession not defined for " + userId)
+				Logger.warn(s"[ShortLivedCache][isFileInProgress] fileSession not defined for $userId")
 				false
 			}).recover {
       case ex: Throwable =>
