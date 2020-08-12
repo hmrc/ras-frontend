@@ -23,7 +23,7 @@ import play.api.data.Forms._
 object MemberNameForm {
 
   val MAX_LENGTH = 35
-  val NAME_REGEX = """^[a-zA-Z &`\-\'^ôéàëŵŷáîïâêûü]+$"""
+  val NAME_REGEX = "^[a-zA-Z &`\\-\\'^]+$"
 
   val form = Form(
     mapping(
