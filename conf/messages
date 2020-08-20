@@ -173,11 +173,13 @@ label.thanks_for_your_feedback=Thanks for your feedback
 ##timeoutDialog
 
 ras.timeoutDialog.title= You are about to be signed out
+ras.timeoutDialog.second= second
 ras.timeoutDialog.seconds= seconds
 ras.timeoutDialog.minutes= minutes
 ras.timeoutDialog.minute= minute
 ras.timeoutDialog.button= Stay signed in
 ras.timeoutDialog.p1 = For security reasons, you will be signed out of this service in:
+ras.timeoutDialog.signout= Sign out
 
 ###### WDYWTDP ######################################################################################
 
