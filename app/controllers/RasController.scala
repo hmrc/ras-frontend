@@ -48,7 +48,7 @@ trait RasController extends AuthorisedFunctions {
   }
 
   def unAuthorise(ex: AuthorisationException): Future[Result] = {
-    Logger.error(s"[RasController][unAuthorise] User not authorised - $ex")
+    Logger.warn(s"[RasController][unAuthorise] User not authorised - $ex")
     Future.successful(Redirect(routes.ErrorController.notAuthorised()))
   }
 
