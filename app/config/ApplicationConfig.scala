@@ -31,6 +31,7 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val analyticsToken: String = loadConfig(s"google-analytics.token")
 	lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
 	lazy val hoursToWaitForReUpload: Int = config.getConfInt(s"re-upload.wait.time.hours", 24)
+	lazy val googleTagManagerId = loadConfig(s"google-tag-manager.id")
 
   private lazy val logoutCallback: String = config.getConfString("gg-urls.logout-callback.url", "/relief-at-source/")
   private lazy val signOutBaseUrl: String = s"$caFrontendHost/gg/sign-out?continue="
