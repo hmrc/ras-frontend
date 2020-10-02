@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, _}
+import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.{RandomNino, RasTestHelper}
@@ -35,10 +36,17 @@ class SessionControllerSpec extends UnitSpec with RasTestHelper {
   val dob = RasDate(Some("1"), Some("1"), Some("1999"))
   val memberDob = MemberDateOfBirth(dob)
   val rasSession = RasSession(MemberName("Jim", "McGill"),nino, memberDob,None,None)
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+  private val enrolments = Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
   val TestSessionController = new SessionController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig)
 
   "SessionController" should {
+
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
+
     "redirect to target" when {
 
       "redirect is called with member-name in edit mode" in {
