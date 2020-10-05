@@ -19,6 +19,7 @@ package controllers
 import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.Logger
+import play.api.Logger.logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -42,32 +43,38 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
 
   def redirect(target:String, cleanSession:Boolean, edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      if(cleanSession){
-        sessionService.resetRasSession() map {
-          case Some(_) =>
-            target match {
-              case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get())
-              case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
-              case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
-              case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
+      isAuthorised().flatMap {
+        case Right(_) =>
+          if (cleanSession) {
+            sessionService.resetRasSession() map {
+              case Some(_) =>
+                target match {
+                  case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get())
+                  case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
+                  case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
+                  case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
+                  case _ =>
+                    Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
+                    Redirect(routes.ErrorController.renderGlobalErrorPage())
+                }
               case _ =>
-                Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
+                Logger.error("[SessionController][cleanAndRedirect] No session found")
                 Redirect(routes.ErrorController.renderGlobalErrorPage())
             }
-          case _ =>
-            Logger.error("[SessionController][cleanAndRedirect] No session found")
-            Redirect(routes.ErrorController.renderGlobalErrorPage())
-        }
-      } else {
-        target match {
-          case CHOOSE_AN_OPTION => Future.successful(Redirect(routes.ChooseAnOptionController.get()))
-          case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get(edit)))
-          case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
-          case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
-          case _ =>
-            Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
-            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
-        }
+          } else {
+            target match {
+              case CHOOSE_AN_OPTION => Future.successful(Redirect(routes.ChooseAnOptionController.get()))
+              case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get(edit)))
+              case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
+              case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
+              case _ =>
+                Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
+                Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+            }
+          }
+        case Left(resp) =>
+          logger.warn("[SessionController][cleanAndRedirect] User is unauthenticated")
+          resp
       }
   }
   def keepAlive(): Action[AnyContent] = Action.async {
