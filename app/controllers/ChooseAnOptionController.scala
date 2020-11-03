@@ -88,7 +88,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     } else {
       "yesterday"
     }
-		s"$todayOrYesterday at ${uploadDate.toString("h:mma").toLowerCase()}}"
+		s"$todayOrYesterday at ${uploadDate.toString("h:mma").toLowerCase()}"
   }
 
   def renderUploadResultsPage: Action[AnyContent] = Action.async {
