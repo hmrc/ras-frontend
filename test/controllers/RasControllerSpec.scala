@@ -77,7 +77,7 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         }
 
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some("http://localhost:9025/gg/sign-in?continue=%2Frelief-at-source%2F&origin=ras-frontend")
+        redirectLocation(result) shouldBe Some("http://localhost:9025/gg/sign-in?continue_url=%2Frelief-at-source%2F&origin=ras-frontend")
       }
     }
 
