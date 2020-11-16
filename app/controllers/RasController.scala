@@ -56,7 +56,7 @@ trait RasController extends AuthorisedFunctions {
 		Redirect(
       appConfig.loginURL,
 			Map(
-				"continue" -> Seq(continueUrl),
+				"continue_url" -> Seq(continueUrl),
 				"origin"   -> Seq("ras-frontend")
 			)
 		)

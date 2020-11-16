@@ -27,6 +27,7 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val contactHost: String = loadConfig("contact-frontend.host")
   private lazy val contactFormServiceIdentifier: String = "RAS"
 	lazy val caFrontendHost: String = loadConfig("ca-frontend.host")
+	lazy val basGatewayHost: String = loadConfig("bas-gateway.host")
 
 	lazy val analyticsToken: String = loadConfig(s"google-analytics.token")
 	lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
@@ -34,11 +35,11 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val googleTagManagerId = loadConfig(s"google-tag-manager.id")
 
   private lazy val logoutCallback: String = config.getConfString("gg-urls.logout-callback.url", "/relief-at-source/")
-  private lazy val signOutBaseUrl: String = s"$caFrontendHost/gg/sign-out?continue="
+	private lazy val signOutBaseUrl: String = s"$basGatewayHost/bas-gateway/sign-out-without-state?continue="
   private lazy val continueCallback =  config.getConfString("gg-urls.continue-callback.url", "/relief-at-source/")
 
-	lazy val companyAuthHost: String = s"${config.getConfString("auth.company-auth.host", "")}"
-	lazy val loginURL: String = s"$companyAuthHost/gg/sign-in"
+	lazy val basAuthHost: String = s"${config.getConfString("auth.bas-gateway.host", "")}"
+	lazy val loginURL: String = s"$basAuthHost/bas-gateway/sign-in"
 
 	lazy val reportAProblemUrl: String = s"$contactHost/contact/problem_reports"
 	lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
