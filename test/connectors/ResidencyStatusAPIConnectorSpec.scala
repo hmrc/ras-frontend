@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import play.api.libs.ws.ahc.AhcWSResponse
-import play.api.libs.ws.{StandaloneWSResponse, WSRequest, WSResponse}
+import play.api.libs.ws.{StandaloneWSResponse, WSRequest}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -117,13 +117,13 @@ class ResidencyStatusAPIConnectorSpec extends UnitSpec with utils.RasTestHelper 
 
   "deleteFile" should {
     "return a 200 when a file has been successfully deleted" in {
-      when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200)))
+      when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(status = 200, body = "")))
       val result = testConnector.deleteFile("file-name", "userId")
       await(result).status shouldBe 200
     }
 
     "return a 500 when a file has not been deleted" in {
-      when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(500)))
+      when(mockHttp.DELETE[HttpResponse](any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(status = 500, body = "")))
       val result = testConnector.deleteFile("file-name", "userId")
       await(result).status shouldBe 500
     }

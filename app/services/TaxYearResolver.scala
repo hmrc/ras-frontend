@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import org.joda.time.{DateTime, DateTimeZone, Interval, LocalDate}
 import uk.gov.hmrc.time.DateTimeUtils
 
 trait TaxYearResolver {
-
-	import org.joda.time.{Interval, LocalDate, DateTimeZone, DateTime}
 
 	lazy val now: () => DateTime = ???
 

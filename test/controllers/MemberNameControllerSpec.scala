@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,10 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
-  val memberName = MemberName("Jackie", "Chan")
-  val memberNino = MemberNino("AB123456C")
-  val memberDob = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
-  val rasSession = RasSession(memberName, memberNino, memberDob, None, None)
+  val memberName: MemberName = MemberName("Jackie", "Chan")
+  val memberNino: MemberNino = MemberNino("AB123456C")
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
+  val rasSession: RasSession = RasSession(memberName, memberNino, memberDob, None, None)
   val postData: JsObject = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,6 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
       }
   }
   def keepAlive(): Action[AnyContent] = Action.async {
-    implicit request => Future.successful(Ok("OK"))
+     Future.successful(Ok("OK"))
   }
 }

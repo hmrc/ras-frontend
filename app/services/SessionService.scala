@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
     }
   }
 
-  def getDownloadFileName(fileSession: FileSession)(implicit hc: HeaderCarrier): String = {
+  def getDownloadFileName(fileSession: FileSession): String = {
     val name = fileSession.fileMetadata.flatMap(_.name).getOrElse(defaultDownloadName)
     if (name.indexOf(".") > 0)
       name.take(name.lastIndexOf("."))

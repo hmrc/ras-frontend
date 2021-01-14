@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,11 @@ class FileUploadConnectorSpec extends UnitSpec with RasTestHelper {
       s"api version is $testApiVersion" when {
         "calling file upload service create envelope endpoint" should {
           "return service response to caller" in {
-            val response = HttpResponse(201, None, Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653")), None)
+            val response = HttpResponse.apply(
+              status = 201,
+              body = "",
+              headers = Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653"))
+            )
             when(mockHttp.POST[JsValue, HttpResponse](any(), argThat(bodyMatcher(testApiVersion)), any())(any(), any(), any(), any())).thenReturn(Future.successful(response))
             val result = await(testConnector(testApiVersion).createEnvelope(""))
             result shouldBe response
