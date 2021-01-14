@@ -18,7 +18,6 @@ package forms
 
 import forms.MemberNameForm._
 import play.api.data.FormError
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper

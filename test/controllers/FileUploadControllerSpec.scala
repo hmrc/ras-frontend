@@ -23,7 +23,6 @@ import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
 import play.api.http.Status.OK
-import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
@@ -40,14 +39,18 @@ class FileUploadControllerSpec extends UnitSpec with RasTestHelper {
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
-  val memberName = MemberName("Jackie","Chan")
-  val memberNino = MemberNino("AB123456C")
-  val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
-  val rasSession = RasSession(memberName, memberNino, memberDob, None)
-  val connectorResponse = HttpResponse(201,None,Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653")),None)
+  val memberName: MemberName = MemberName("Jackie","Chan")
+  val memberNino: MemberNino = MemberNino("AB123456C")
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("12"),Some("12"),Some("2012")))
+  val rasSession: RasSession = RasSession(memberName, memberNino, memberDob, None)
+  val connectorResponse: HttpResponse = HttpResponse.apply(
+    status = 201,
+    body = "",
+    headers = Map("Location" -> List("localhost:8898/file-upload/envelopes/0b215e97-11d4-4006-91db-c067e74fc653"))
+  )
 
   val mockUploadTimeStamp: Long = new DateTime().minusDays(10).getMillis
-  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",Some(DateTime.now().getMillis),None)
+  val fileSession: FileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",Some(DateTime.now().getMillis),None)
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 

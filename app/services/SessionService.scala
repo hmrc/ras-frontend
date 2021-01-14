@@ -155,7 +155,7 @@ class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
     }
   }
 
-  def getDownloadFileName(fileSession: FileSession)(implicit hc: HeaderCarrier): String = {
+  def getDownloadFileName(fileSession: FileSession): String = {
     val name = fileSession.fileMetadata.flatMap(_.name).getOrElse(defaultDownloadName)
     if (name.indexOf(".") > 0)
       name.take(name.lastIndexOf("."))

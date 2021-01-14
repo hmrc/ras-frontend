@@ -17,16 +17,12 @@
 package controllers
 
 import models._
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
-import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers._
 import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.test.UnitSpec
@@ -58,8 +54,6 @@ class ResultsControllerSpec extends UnitSpec with RasTestHelper {
   val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
-
-  private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
   "Results Controller" should {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)

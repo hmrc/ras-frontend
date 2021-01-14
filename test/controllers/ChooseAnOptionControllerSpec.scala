@@ -20,11 +20,8 @@ import java.io.ByteArrayInputStream
 
 import models._
 import org.joda.time.DateTime
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
 import play.api.test.{FakeRequest, Helpers}
 import services.TaxYearResolver

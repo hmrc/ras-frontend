@@ -17,11 +17,11 @@
 package services
 
 import models._
-import org.mockito.ArgumentMatchers.{any, argThat}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.{RandomNino, RasTestHelper}
 
@@ -31,13 +31,13 @@ import scala.concurrent.{Await, Future}
 
 class SessionServiceSpec extends UnitSpec with RasTestHelper {
 
-  val name = MemberName("John", "Johnson")
-  val nino = MemberNino(RandomNino.generate)
-  val memberDob = MemberDateOfBirth(RasDate(Some("12"),Some("12"), Some("2012")))
-  val memberDetails = MemberDetails(name,RandomNino.generate,RasDate(Some("1"),Some("1"),Some("1999")))
-  val uploadResponse = UploadResponse("111",Some("error error"))
-  val envelope = Envelope("someEnvelopeId1234")
-  val rasSession = RasSession(name,nino,memberDob,None)
+  val name: MemberName = MemberName("John", "Johnson")
+  val nino: MemberNino = MemberNino(RandomNino.generate)
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("12"),Some("12"), Some("2012")))
+  val memberDetails: MemberDetails = MemberDetails(name,RandomNino.generate,RasDate(Some("1"),Some("1"),Some("1999")))
+  val uploadResponse: UploadResponse = UploadResponse("111",Some("error error"))
+  val envelope: Envelope = Envelope("someEnvelopeId1234")
+  val rasSession: RasSession = RasSession(name,nino,memberDob,None)
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

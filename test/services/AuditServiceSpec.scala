@@ -20,14 +20,12 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
 
@@ -48,7 +46,7 @@ trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
 
     "build an audit event with the correct mandatory details" in new TestService {
 
-      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      audit(fakeAuditType, fakeEndpoint, auditDataMap)
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
       verify(mockAuditConnector).sendEvent(captor.capture())(any(), any())
@@ -61,7 +59,7 @@ trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
 
     "build an audit event with the correct tags" in new TestService {
 
-      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      audit(fakeAuditType, fakeEndpoint, auditDataMap)
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
       verify(mockAuditConnector).sendEvent(captor.capture())(any(), any())
@@ -75,7 +73,7 @@ trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
 
     "build an audit event with the correct detail" in new TestService {
 
-      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      audit(fakeAuditType, fakeEndpoint, auditDataMap)
       val captor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
       verify(mockAuditConnector).sendEvent(captor.capture())(any(), any())
@@ -89,7 +87,7 @@ trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
 
     "send an event via the audit connector" in new TestService {
 
-      val result: Future[AuditResult] = audit(fakeAuditType, fakeEndpoint, auditDataMap)
+      audit(fakeAuditType, fakeEndpoint, auditDataMap)
       verify(mockAuditConnector).sendEvent(any())(any(), any())
     }
   }

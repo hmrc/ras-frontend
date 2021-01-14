@@ -23,7 +23,6 @@ import forms.{MemberDateOfBirthForm => form}
 import models.RasDate
 import org.joda.time.LocalDate
 import play.api.data.FormError
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper
