@@ -24,7 +24,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.http.Upstream4xxResponse
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.{RandomNino, RasTestHelper}
 
@@ -59,6 +59,12 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
 
     "return ok" when {
       "called" in {
+        val result = TestMemberNinoController.get()(fakeRequest)
+        status(result) shouldBe OK
+      }
+
+      "called without an existing ras session" in {
+        when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
         val result = TestMemberNinoController.get()(fakeRequest)
         status(result) shouldBe OK
       }
@@ -110,7 +116,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
-      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(Upstream4xxResponse("Member not found", 403, 403)))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(UpstreamErrorResponse("Member not found", 403, 403)))
 
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)

@@ -27,7 +27,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.domain.{Generator, PsaId}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper
 
@@ -74,6 +74,12 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
 
     "return ok" when {
       "called" in {
+        val result = TestMemberDobController.get()(fakeRequest)
+        status(result) shouldBe OK
+      }
+
+      "called without a ras session" in {
+        when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
         val result = TestMemberDobController.get()(fakeRequest)
         status(result) shouldBe OK
       }
@@ -195,11 +201,8 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
 
     "redirect to no match found page" when {
       "matching failed is returned from the connector" in {
-
-        val errorResponse = UpstreamErrorResponse("Member not found", 403, 403)
-        val upstream4XXResponse = UpstreamErrorResponse.Upstream4xxResponse.unapply(errorResponse).get
         when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(
-          Future.failed(upstream4XXResponse))
+          Future.failed(UpstreamErrorResponse("Member not found", 403, 403)))
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         status(result) should equal(SEE_OTHER)
@@ -211,9 +214,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
 
     "redirect to global error page" when {
       "an exception is thrown by submitResidencyStatus" in {
-        val errorResponse = UpstreamErrorResponse("Unknown Error", 500, 500)
-        val upstream5XXResponse = UpstreamErrorResponse.Upstream5xxResponse.unapply(errorResponse).get
-        when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(upstream5XXResponse))
+        when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(UpstreamErrorResponse("Unknown Error", 500, 500)))
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         status(result) should equal(SEE_OTHER)

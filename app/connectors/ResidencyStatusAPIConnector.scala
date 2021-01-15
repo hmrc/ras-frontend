@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
-																						val appConfig: ApplicationConfig) {
+                                            val appConfig: ApplicationConfig) {
 
   lazy val serviceUrl: String = appConfig.rasApiBaseUrl
   lazy val residencyStatusUrl: String = appConfig.rasApiResidencyStatusEndpoint
@@ -79,7 +79,7 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
         case 400 => Logger.error("[ResidencyStatusAPIConnector][responseHandler] Data sent to the API was not sent in the correct format.")
                     throw new InternalServerException("Internal Server Error")
         case 403 => Logger.info("[ResidencyStatusAPIConnector][responseHandler] Member not found.")
-                    throw Upstream4xxResponse("Member not found", 403, 403, response.allHeaders)
+                    throw UpstreamErrorResponse("Member not found", 403, 403, response.headers)
         case _ => Logger.error(s"[ResidencyStatusAPIConnector][responseHandler] ${response.status} status code received from RAS-API.")
                   throw new InternalServerException("Internal Server Error")
       }

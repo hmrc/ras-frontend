@@ -63,7 +63,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
       }
   }
 
-  private def getHelpDate(fileStatus: FileUploadStatus.Value, fileSession: Option[FileSession]): Option[String] = {
+  private[controllers] def getHelpDate(fileStatus: FileUploadStatus.Value, fileSession: Option[FileSession]): Option[String] = {
     fileSession match {
       case Some(fileSession) =>
         fileStatus match {
