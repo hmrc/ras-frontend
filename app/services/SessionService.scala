@@ -30,9 +30,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SessionService @Inject()(val http: DefaultHttpClient,
-															 val sessionCache: RasSessionCache,
-															 appConfig: ApplicationConfig
-															) {
+                               val sessionCache: RasSessionCache,
+                               appConfig: ApplicationConfig
+                              ) {
 
   private object CacheKeys extends Enumeration {
     val All, Name, Nino, Dob, StatusResult, UploadResponse, Envelope = Value
@@ -90,13 +90,13 @@ class SessionService @Inject()(val http: DefaultHttpClient,
 
 
 class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
-																appConfig: ApplicationConfig,
-																applicationCrypto: ApplicationCrypto
-															 ) {
+                                appConfig: ApplicationConfig,
+                                applicationCrypto: ApplicationCrypto
+                               ) {
 
-	implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
+  implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
 
-	private val source = "ras"
+  private val source = "ras"
   lazy val hoursToWaitForReUpload: Int = appConfig.hoursToWaitForReUpload
 
   val STATUS_AVAILABLE: String = "AVAILABLE"
@@ -148,9 +148,9 @@ class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
         userFile.status match {
           case STATUS_AVAILABLE => false
           case _ =>
-						removeFileSessionFromCache(fileSession.userId)
-						true
-				}
+            removeFileSessionFromCache(fileSession.userId)
+            true
+        }
       case _ => false
     }
   }
@@ -166,11 +166,11 @@ class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
   def isFileInProgress(userId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     fetchFileSession(userId).map(fileSession =>
       if (fileSession.isDefined) {
-				fileSession.get.resultsFile.isDefined || !hasBeen24HoursSinceTheUpload(fileSession.get.uploadTimeStamp.get)
-			} else {
-				Logger.warn(s"[ShortLivedCache][isFileInProgress] fileSession not defined for $userId")
-				false
-			}).recover {
+        fileSession.get.resultsFile.isDefined || !hasBeen24HoursSinceTheUpload(fileSession.get.uploadTimeStamp.get)
+      } else {
+        Logger.warn(s"[ShortLivedCache][isFileInProgress] fileSession not defined for $userId")
+        false
+      }).recover {
       case ex: Throwable =>
         Logger.error(s"[ShortLivedCache][isFileInProgress] unable to fetch FileSession from cache to check isFileInProgress => $userId , Exception is ${ex.getMessage}")
         false

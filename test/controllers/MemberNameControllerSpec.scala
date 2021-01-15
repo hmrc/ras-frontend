@@ -68,6 +68,13 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }
+
+    "return HTML when there is no ras session" in {
+      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
+      val result = TestMemberNameController.get()(fakeRequest)
+      contentType(result) shouldBe Some("text/html")
+      charset(result) shouldBe Some("utf-8")
+    }
   }
 
   "Member name controller form submission" should {

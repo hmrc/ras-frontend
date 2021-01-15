@@ -19,7 +19,7 @@ package controllers
 import java.io.ByteArrayInputStream
 
 import models._
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.Helpers.{OK, contentAsString, _}
@@ -43,8 +43,8 @@ class ChooseAnOptionControllerSpec extends UnitSpec with RasTestHelper {
   val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
   val mockUploadTimeStamp: Long = new DateTime().minusDays(10).getMillis
   val mockExpiryTimeStamp: Long = new DateTime().minusDays(7).getMillis
-  val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-  val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(DateTime.now().getMillis),None)
+  val mockResultsFileMetadata: ResultsFileMetaData = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
+  val fileSession: FileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(DateTime.now().getMillis),None)
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
@@ -56,6 +56,34 @@ class ChooseAnOptionControllerSpec extends UnitSpec with RasTestHelper {
     when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
     when(mockResidencyStatusAPIConnector.getFile(any(), any())(any())).thenReturn(Future.successful(Some(inputStream)))
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
+  }
+
+  "getHelpDate" should {
+    import models.FileUploadStatus._
+    val testTimeStamp: Long = new LocalDate(2013, 4, 5).toDate.getTime
+    val currentTime = new DateTime(2014, 4, 6, 0, 0, 0, 0, DateTimeZone.forID("Europe/London"))
+    val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(testTimeStamp),1,1L)
+    val optionalFileSession = Some(FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(currentTime.getMillis),None))
+
+    "return the expiry date format message" in {
+      val result = TestChooseAnOptionController.getHelpDate(Ready, optionalFileSession)
+     result shouldBe Some("0:00am on Monday 8 April 2013")
+    }
+
+    "return the upload date format message" in {
+      val result = TestChooseAnOptionController.getHelpDate(InProgress, optionalFileSession)
+      result shouldBe Some("yesterday at 12:00am")
+    }
+
+    "return None when there fileStatus is not Ready or InProgress" in {
+      val result = TestChooseAnOptionController.getHelpDate(NoFileSession, optionalFileSession)
+      result shouldBe None
+    }
+
+    "return None when there is no File session" in {
+      val result = TestChooseAnOptionController.getHelpDate(Ready, None)
+      result shouldBe None
+    }
   }
 
   "get" when {

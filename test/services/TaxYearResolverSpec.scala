@@ -226,6 +226,10 @@ class TaxYearResolverSpec extends WordSpecLike with Matchers {
     "return true when PXX8 issue date is 1st Jan of the next year" in {
       TaxYearResolverForTest.fallsInThisTaxYear(new LocalDate(currentYear+1, 1, 1)) shouldBe true
     }
+
+    "return true when earliestDateForCurrentTaxYear is the same as the current date" in {
+      TaxYearResolverForTest.fallsInThisTaxYear(new LocalDate(currentYear, 3, 31)) shouldBe true
+    }
   }
 
   "Requesting end of the last tax year" should {

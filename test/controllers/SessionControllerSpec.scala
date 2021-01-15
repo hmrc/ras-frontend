@@ -32,10 +32,10 @@ class SessionControllerSpec extends UnitSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  val nino = MemberNino(RandomNino.generate)
-  val dob = RasDate(Some("1"), Some("1"), Some("1999"))
-  val memberDob = MemberDateOfBirth(dob)
-  val rasSession = RasSession(MemberName("Jim", "McGill"),nino, memberDob,None,None)
+  val nino: MemberNino = MemberNino(RandomNino.generate)
+  val dob: RasDate = RasDate(Some("1"), Some("1"), Some("1999"))
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(dob)
+  val rasSession: RasSession = RasSession(MemberName("Jim", "McGill"),nino, memberDob,None,None)
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   private val enrolments = Enrolments(Set(enrolment))
@@ -48,6 +48,12 @@ class SessionControllerSpec extends UnitSpec with RasTestHelper {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
     "redirect to target" when {
+
+      "redirect is called with choose-an-option" in {
+        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("choose-an-option", cleanSession = false)(FakeRequest()))
+        redirectLocation(result).get should include("relief-at-source")
+      }
 
       "redirect is called with member-name in edit mode" in {
         when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -71,6 +77,12 @@ class SessionControllerSpec extends UnitSpec with RasTestHelper {
         when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-name", cleanSession = true)(FakeRequest()))
         redirectLocation(result).get should include("member-name")
+      }
+
+      "redirect is called with choose-an-option in a clean session" in {
+        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        val result = await(TestSessionController.redirect("choose-an-option", cleanSession = true, edit = true)(FakeRequest()))
+        redirectLocation(result).get should include("relief-at-source")
       }
 
       "redirect is called with member-nino and clean" in {
