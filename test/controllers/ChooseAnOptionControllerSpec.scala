@@ -61,7 +61,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with RasTestHelper {
   "getHelpDate" should {
     import models.FileUploadStatus._
     val testTimeStamp: Long = new LocalDate(2013, 4, 5).toDate.getTime
-    val currentTime = new DateTime(2014, 4, 6, 0, 0, 0, 0, DateTimeZone.forID("Europe/London"))
+    val currentTime = new DateTime(2014, 4, 6, 0, 0, 0, 0)
     val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(testTimeStamp),1,1L)
     val optionalFileSession = Some(FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(currentTime.getMillis),None))
 
