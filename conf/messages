@@ -98,7 +98,7 @@ ur.banner.text = Get involved in making government services better (opens in a n
 ur.banner.dismiss.text = No thanks
 
 ##### OTHER ######################################################################################
-upload.result.member.contact = the member must contact HMRC to update their personal details
+upload.result.member.contact = the member must contact HMRC to update their personal details (opens in a new tab)
 upload.result.what.next = If no residency status is shown, and you have checked that everything is correct, {0}.
 continue = Continue
 member = member
