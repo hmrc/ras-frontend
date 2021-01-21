@@ -218,7 +218,10 @@ input:focus {
 }
 
 input:focus {
-    outline: 3px solid #ffdd00;
+    outline: 3px solid #fd0;
+    outline-offset: 0;
+    -webkit-box-shadow: inset 0 0 0 2px;
+    box-shadow: inset 0 0 0 2px;
 }
 
 a:focus {
