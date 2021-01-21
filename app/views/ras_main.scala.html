@@ -43,6 +43,8 @@
     }
 }
 
+<script src='@controllers.routes.Assets.at("javascript/timeoutDialog.js")'></script>
+
 @linkElement = {
     <link rel="stylesheet" href='@controllers.routes.Assets.at("stylesheets/ras.css")'/>
 }
@@ -52,15 +54,15 @@
     @scriptElem
     <script>
         @if(hasTimeOut && appConfig.enableRefresh) {
-        $.timeoutDialog({
+        timeoutDialog({
                 timeout: @appConfig.timeOutSeconds,
                 countdown: @appConfig.timeOutCountDownSeconds,
-                keep_alive_url: '@controllers.routes.SessionController.keepAlive',
+                keepAliveUrl: '@controllers.routes.SessionController.keepAlive',
                 title: "@Messages("ras.timeoutDialog.title")",
-                logout_url: "@appConfig.signOutUrl",
+                signOutUrl: "@appConfig.signOutUrl",
                 message: "@Messages("ras.timeoutDialog.p1")",
-                keep_alive_button_text: "@Messages("ras.timeoutDialog.button")",
-                sign_out_button_text: "@Messages("ras.timeoutDialog.signout")",
+                keepAliveButtonText: "@Messages("ras.timeoutDialog.button")",
+                signOutButtonText: "@Messages("ras.timeoutDialog.signout")",
                 properties: {
                     seconds: "@Messages("ras.timeoutDialog.seconds")",
                     second: "@Messages("ras.timeoutDialog.second")",
