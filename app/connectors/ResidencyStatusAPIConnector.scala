@@ -65,7 +65,7 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
 
   def deleteFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
-    http.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl/$fileName/$userId")(implicitly, hc, ec)
+    http.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl$fileName/$userId")(implicitly, hc, ec)
   }
 
   private val responseHandler = new HttpReads[ResidencyStatus] {
