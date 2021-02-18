@@ -19,7 +19,7 @@ lazy val playSettings: Seq[Setting[_]] = Seq.empty
 val compile: Seq[ModuleID] = Seq(
   ws,
   "uk.gov.hmrc" %% "bootstrap-play-26"   % "2.3.0",
-  "uk.gov.hmrc" %% "govuk-template"      % "5.61.0-play-26",
+  "uk.gov.hmrc" %% "govuk-template"      % "5.63.0-play-26",
   "uk.gov.hmrc" %% "play-ui"             % "8.21.0-play-26",
   "uk.gov.hmrc" %% "play-partials"       % "7.1.0-play-26",
   "uk.gov.hmrc" %% "auth-client"         % "3.3.0-play-26",
@@ -35,7 +35,7 @@ val test: Seq[ModuleID] = Seq(
   "com.typesafe.play"      %% "play-test"          % PlayVersion.current,
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.3",
   "org.mockito"            % "mockito-core"        % "3.7.7",
-  "org.scalacheck"         %% "scalacheck"         % "1.15.2",
+  "org.scalacheck"         %% "scalacheck"         % "1.15.3",
   "uk.gov.hmrc"            %% "domain"             % "5.10.0-play-26"
 ).map(_ % "test")
 

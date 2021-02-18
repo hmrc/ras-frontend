@@ -92,8 +92,6 @@ trait RasTestHelper extends MockitoSugar with WithFakeApplication {  this: Suite
 	when(mockAppConfig.timeOutCountDownSeconds).thenReturn(120)
 	when(mockAppConfig.signOutUrl).thenReturn("signOutUrl")
 	when(mockAppConfig.signOutAndContinueUrl).thenReturn("signOutAndContinueUrl")
-	when(mockAppConfig.analyticsToken).thenReturn("analyticsToken")
-	when(mockAppConfig.analyticsHost).thenReturn("analyticsHost")
 	when(mockAppConfig.urBannerEnabled).thenReturn(false)
 	when(mockAppConfig.urBannerLinkUrl).thenReturn("urBannerLinkUrl")
 	when(mockAppConfig.rasFrontendBaseUrl).thenReturn("http://localhost:9673")
