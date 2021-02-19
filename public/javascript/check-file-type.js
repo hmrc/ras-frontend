@@ -75,16 +75,11 @@ function showError(message){
     $('#upload-error').empty();
     $('#upload-error').html(message);
     $('#errors').focus();
-    ga("send", "event", "There is a problem - view", "Upload a file", message);
 }
 
 $(function() {
     var errors = $('#errors');
     if(errors.length > 0 && errors.css('display') !== 'none') {
         $('#errors').focus();
-        var errorLink = $('.error-summary-list li a');
-        if (errorLink.length > 0) {
-            ga("send", "event", "There is a problem - view", "Upload a file", errorLink.text());
-        }
     }
 });
