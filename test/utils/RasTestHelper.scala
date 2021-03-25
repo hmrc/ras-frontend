@@ -38,6 +38,7 @@ import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.test.WithFakeApplication
+import views.html._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -101,5 +102,25 @@ trait RasTestHelper extends MockitoSugar with WithFakeApplication {  this: Suite
 	when(mockAppConfig.loginCallback).thenReturn("/relief-at-source/")
 	when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
 
+	val cannotUploadAnotherFileView: cannot_upload_another_file = fakeApplication.injector.instanceOf[cannot_upload_another_file]
+	val chooseAnOptionView: choose_an_option = fakeApplication.injector.instanceOf[choose_an_option]
+	val fileNotAvailableView: file_not_available = fakeApplication.injector.instanceOf[file_not_available]
+	val fileReadyView: file_ready = fakeApplication.injector.instanceOf[file_ready]
+	val fileUploadView: file_upload = fakeApplication.injector.instanceOf[file_upload]
+	val fileUploadSuccessfulView: file_upload_successful = fakeApplication.injector.instanceOf[file_upload_successful]
+	val globalErrorView: global_error = fakeApplication.injector.instanceOf[global_error]
+	val globalPageNotFoundView: global_page_not_found = fakeApplication.injector.instanceOf[global_page_not_found]
+	val matchFoundView: match_found = fakeApplication.injector.instanceOf[match_found]
+	val matchNotFoundView: match_not_found = fakeApplication.injector.instanceOf[match_not_found]
+	val memberDobView: member_dob = fakeApplication.injector.instanceOf[member_dob]
+	val memberNameView: member_name = fakeApplication.injector.instanceOf[member_name]
+	val memberNinoView: member_nino = fakeApplication.injector.instanceOf[member_nino]
+	val noResultsAvailableView: no_results_available = fakeApplication.injector.instanceOf[no_results_available]
+	val problemUploadingFileView: problem_uploading_file = fakeApplication.injector.instanceOf[problem_uploading_file]
+	val resultsNotAvailableYetView: results_not_available_yet = fakeApplication.injector.instanceOf[results_not_available_yet]
+	val unauthorisedView: unauthorised = fakeApplication.injector.instanceOf[unauthorised]
+	val uploadResultView: upload_result = fakeApplication.injector.instanceOf[upload_result]
+	val feedbackQuestionnaireView: feedback.feedbackQuestionaire = fakeApplication.injector.instanceOf[feedback.feedbackQuestionaire]
+	val thanksFeedbackQuestionnaireView: feedback.thanks = fakeApplication.injector.instanceOf[feedback.thanks]
 
 }

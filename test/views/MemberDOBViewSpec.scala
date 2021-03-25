@@ -30,10 +30,10 @@ class MemberDOBViewSpec extends UnitSpec with RasTestHelper {
 	"member dob page" should {
 		"contain correct page elements and content" when {
 			"rendered" in {
-				val result = views.html.member_dob(memberDOBForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
+				val result = memberDobView(memberDOBForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).title shouldBe Messages("member.dob.page.title")
-				doc(result).getElementById("header").text shouldBe Messages("member.dob.page.header", "Jackie Chan")
-				doc(result).getElementsByClass("form-hint").text shouldBe Messages("dob.hint")
+				doc(result).getElementsByClass("govuk-fieldset__legend--xl").text shouldBe Messages("member.dob.page.header", "Jackie Chan")
+				doc(result).getElementsByClass("govuk-hint").text shouldBe Messages("dob.hint")
 				doc(result).getElementById("continue").text shouldBe Messages("continue")
 				doc(result).getElementById("dateOfBirth.day").previousElementSibling().text() shouldBe "Day"
 				doc(result).getElementById("dateOfBirth.month").previousElementSibling().text() shouldBe "Month"
@@ -41,20 +41,20 @@ class MemberDOBViewSpec extends UnitSpec with RasTestHelper {
 			}
 
 			"contain the correct ga data when edit mode is false" in {
-				val result = views.html.member_dob(memberDOBForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
+				val result = memberDobView(memberDOBForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue"
-				doc(result).getElementsByClass("link-back").attr("data-journey-click") shouldBe "navigation - link:What is their DOB?:Back"
+				doc(result).getElementsByClass("govuk-back-link").attr("data-journey-click") shouldBe "navigation - link:What is their DOB?:Back"
 			}
 
 			"contain the correct ga data when edit mode is true" in {
-				val result = views.html.member_dob(memberDOBForm, "Jackie Chan", edit = true)(fakeRequest, testMessages, mockAppConfig)
+				val result = memberDobView(memberDOBForm, "Jackie Chan", edit = true)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their DOB?:Continue and submit"
 			}
 		}
 
 		"fill in form" when {
 			"details returned from session cache" in {
-				val result = views.html.member_dob(memberDOBForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
+				val result = memberDobView(memberDOBForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("dateOfBirth.year").value.toString should include("2000")
 				doc(result).getElementById("dateOfBirth.month").value.toString should include("1")
 				doc(result).getElementById("dateOfBirth.day").value.toString should include("1")
@@ -65,7 +65,7 @@ class MemberDOBViewSpec extends UnitSpec with RasTestHelper {
 			"no details returned from session cache" in {
 				val emptyForm:Form[MemberDateOfBirth] = MemberDateOfBirthForm(Some("Jackie Chan")).bind(Map("dateOfBirth.day" -> "", "dateOfBirth.month" -> "", "dateOfBirth.year" -> ""))
 
-				val result = views.html.member_dob(emptyForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
+				val result = memberDobView(emptyForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
 				assert(doc(result).getElementById("dateOfBirth.year").attr("value").isEmpty)
 				assert(doc(result).getElementById("dateOfBirth.month").attr("value").isEmpty)
 				assert(doc(result).getElementById("dateOfBirth.day").attr("value").isEmpty)

@@ -36,7 +36,8 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
                                      val shortLivedCache: ShortLivedCache,
                                      val sessionService: SessionService,
 																		 val mcc: MessagesControllerComponents,
-                                     implicit val appConfig: ApplicationConfig
+                                     implicit val appConfig: ApplicationConfig,
+                                     memberNinoView: views.html.member_nino
                                     ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
@@ -49,9 +50,9 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(views.html.member_nino(form(Some(name)).fill(session.nino), name, edit))
+              Ok(memberNinoView(form(Some(name)).fill(session.nino), name, edit))
             case _ =>
-              Ok(views.html.member_nino(form(), "member", edit))
+              Ok(memberNinoView(form(), "member", edit))
           }
         case Left(resp) =>
           Logger.warn("[NinoController][get] user Not authorised")
@@ -67,7 +68,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
             form(Some(name)).bindFromRequest.fold(
               formWithErrors => {
                 Logger.warn("[NinoController][post] Invalid form field passed")
-                Future.successful(BadRequest(views.html.member_nino(formWithErrors, name, edit)))
+                Future.successful(BadRequest(memberNinoView(formWithErrors, name, edit)))
               },
               memberNino => {
                 sessionService.cacheNino(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", ""))) flatMap {

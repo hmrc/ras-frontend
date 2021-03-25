@@ -58,7 +58,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
   private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val TestMemberDobController: MemberDOBController = new MemberDOBController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
+  val TestMemberDobController: MemberDOBController = new MemberDOBController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, memberDobView) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }

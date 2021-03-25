@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit messages: Messages)
+const submitButton = document.querySelector('button')
+submitButton.disabled = true;
 
-@import views.html.helper._
-@import play.api.i18n._
-@elements = @{ new FieldElements(field.id, field, null, args.toMap, messages) }
-
-@if(elements.hasErrors) {
-    @elements.errors.zipWithIndex.map { case (error, index) =>
-        <span id="@(field.name)-error-@index">@Messages(error)</span>
+const fileInput = document.querySelector('input');
+fileInput.addEventListener('input', () => {
+    if(fileInput.checkValidity()) {
+        submitButton.disabled = false;
     }
-}
+})

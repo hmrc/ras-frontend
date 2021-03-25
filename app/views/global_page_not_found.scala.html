@@ -14,20 +14,20 @@
  * limitations under the License.
  *@
 
-@import play.api.i18n.Messages
-
 @import config.ApplicationConfig
+@import play.api.i18n.Messages
+@this(govuk_wrapper: views.html.govuk_wrapper)
 @()(implicit messages: Messages, request: Request[_], appConfig: ApplicationConfig)
 
 @anchor(serviceName: String, email: String) = {
-    <a href="mailto:@email">@serviceName</a>
+    <a class="govuk-link" href="mailto:@email">@serviceName</a>
 }
 
-@ras_main(title = messages("error.page_not_found.tabtitle")) {
-    <h1>@messages("error.page_not_found.heading")</h1>
-    <p>@messages("error.page.not.found.error.check.web.address.correct")</p>
-    <p>@messages("error.page.not.found.error.check.web.address.full")</p>
-    <p>@messages("error.page.not.found.error.contact")
+@govuk_wrapper(pageTitle = messages("error.page_not_found.tabtitle")) {
+    <h1 class="govuk-heading-xl">@messages("error.page_not_found.heading")</h1>
+    <p class="govuk-body">@messages("error.page.not.found.error.check.web.address.correct")</p>
+    <p class="govuk-body">@messages("error.page.not.found.error.check.web.address.full")</p>
+    <p class="govuk-body">@messages("error.page.not.found.error.contact")
         @anchor(messages("error.page.not.found.error.ras.email"), messages("error.page.not.found.error.ras.email"))
         @messages("error.page.not.found.error.contact.end")
     </p>

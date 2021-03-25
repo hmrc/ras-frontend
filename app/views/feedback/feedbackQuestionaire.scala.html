@@ -15,67 +15,149 @@
  *@
 
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        hmrcPageHeading: HmrcPageHeading,
+        formWithCSRF: PlayFrontendFormWithCSRF,
+        govukRadios: GovukRadios,
+        govukTextarea: GovukTextarea,
+        govukButton: GovukButton,
+        govukErrorSummary: GovukErrorSummary
+)
 @(questionnaireForm: Form[models.Questionnaire])(implicit request : Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 
-@views.html.ras_main(title = "Relief at Source Feedback Questionnaire - Look up residency status for relief at source - GOV.UK", bodyClasses = None, contentHeader = None, signOutEnabled = false, hasTimeOut = false){
+@govuk_wrapper(pageTitle = "Relief at Source Feedback Questionnaire - Look up residency status for relief at source - GOV.UK"){
 
+    @hmrcPageHeading(PageHeading(
+        text = messages("label.youre_signed_out")
+    ))
 
-    <h1 class="heading-xlarge" id="heading">@Messages("label.youre_signed_out")</h1>
-
-    <h2 class="heading-medium" id="satisfaction-survey-heading">@Messages("label.satisfaction_survey")</h2>
-
-    <p class="ras-bottom-margin-big">@Messages("label.feedback.use")</p>
-
-    @helpers.form(action = controllers.routes.QuestionnaireController.submitQuestionnaire, 'class -> "satisfactionSurveyForm") {
-
-        <div class="form-group">
-            <div class="ras-bottom-margin-big">
-            @radioGroup(
-                questionnaireForm("easyToUse"),
-                Seq(
-                    "4" -> "4" -> Messages("label.very_easy"),
-                    "3" -> "3" -> Messages("label.easy"),
-                    "2" -> "2" -> Messages("label.neither_easy_or_difficult"),
-                    "1" -> "1" -> Messages("label.difficult"),
-                    "0" -> "0" -> Messages("label.very_difficult")
-                ),
-                '_legend -> Messages("label.how_easy_was_the_service_to_use"),
-                '_fieldsetAttributes -> "id=easyToUseFieldset"
-            )
-            </div>
-
-            <div class="ras-bottom-margin-big">
-            @radioGroup(
-                questionnaireForm("satisfactionLevel"),
-                Seq(
-                    "4" -> "4" -> Messages("label.very_satisfied"),
-                    "3" -> "3" -> Messages("label.satisfied"),
-                    "2" -> "2" -> Messages("label.neither_satisfied_or_dissatisfied"),
-                    "1" -> "1" -> Messages("label.dissatisfied"),
-                    "0" -> "0" -> Messages("label.very_dissatisfied")
-                ),
-                '_legend -> Messages("label.how_satisfied_were_you_with_the_service"),
-                '_fieldsetAttributes -> "id=satisfactionLevelFieldset"
-            )
-            </div>
-
-            <label class="form-label" for="whyGiveThisRating">
-                <h3 class="heading-large">@Messages("label.why_did_you_give_this_rating")</h3>
-            </label>
-
-            <span class="form-hint">
-                @Messages("label.please_dont_include_any_personal_or_financial_information")
-            </span>
-
-            <textarea class="form-control form-control-3-4 ras-bottom-margin" name="whyGiveThisRating" id="whyGiveThisRating" rows="9"></textarea>
-
-            <button id="submit" type="submit" class="button">@Messages("label.send_feedback")</button>
-        </div>
-
+    @if(questionnaireForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary(
+            title = Text(messages("generic.errors_heading")),
+            errorList = questionnaireForm.errors.asTextErrorLinks
+        ))
     }
 
+    <h2 class="govuk-heading-m" id="satisfaction-survey-heading">@messages("label.satisfaction_survey")</h2>
+
+    <p class="govuk-!-margin-bottom-6 govuk-body">@messages("label.feedback.use")</p>
+
+    @formWithCSRF(action = controllers.routes.QuestionnaireController.submitQuestionnaire, 'class -> "satisfactionSurveyForm") {
+
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("label.how_easy_was_the_service_to_use")),
+                    classes = "govuk-fieldset__legend--m",
+                    isPageHeading = false
+                )),
+                attributes = Map("id" -> "easyToUseFieldset")
+            )),
+            name = "easyToUse",
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("label.very_easy")),
+                    value = Some("4"),
+                    id = Some("easyToUse-4")
+                ),
+                RadioItem(
+                    content = Text(messages("label.easy")),
+                    value = Some("3"),
+                    id = Some("easyToUse-3")
+                ),
+                RadioItem(
+                    content = Text(messages("label.neither_easy_or_difficult")),
+                    value = Some("2"),
+                    id = Some("easyToUse-2")
+                ),
+                RadioItem(
+                    content = Text(messages("label.difficult")),
+                    value = Some("1"),
+                    id = Some("easyToUse-1")
+                ),
+                RadioItem(
+                    content = Text(messages("label.very_difficult")),
+                    value = Some("0"),
+                    id = Some("easyToUse-0")
+                ),
+            ),
+            errorMessage = if(questionnaireForm("easyToUse").hasErrors) {
+                Some(ErrorMessage(
+                    content = Text(messages(questionnaireForm("easyToUse").errors.head.message))
+                ))
+            } else { None },
+            attributes = Map("id" -> "easyToUse")
+        ))
+
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("label.how_satisfied_were_you_with_the_service")),
+                    classes = "govuk-fieldset__legend--m",
+                    isPageHeading = false
+                )),
+                attributes = Map("id" -> "satisfactionLevelFieldset")
+            )),
+            name = "satisfactionLevel",
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("label.very_easy")),
+                    value = Some("4"),
+                    id = Some("satisfactionLevel-4")
+                ),
+                RadioItem(
+                    content = Text(messages("label.easy")),
+                    value = Some("3"),
+                    id = Some("satisfactionLevel-3")
+                ),
+                RadioItem(
+                    content = Text(messages("label.neither_easy_or_difficult")),
+                    value = Some("2"),
+                    id = Some("satisfactionLevel-2")
+                ),
+                RadioItem(
+                    content = Text(messages("label.difficult")),
+                    value = Some("1"),
+                    id = Some("satisfactionLevel-1")
+                ),
+                RadioItem(
+                    content = Text(messages("label.very_difficult")),
+                    value = Some("0"),
+                    id = Some("satisfactionLevel-0")
+                )
+            ),
+            errorMessage = if(questionnaireForm("satisfactionLevel").hasErrors) {
+                Some(ErrorMessage(
+                    content = Text(messages(questionnaireForm("satisfactionLevel").errors.head.message))
+                ))
+            } else { None },
+            attributes = Map("id" -> "satisfactionLevel")
+        ))
+
+        @govukTextarea(Textarea(
+            id = "whyGiveThisRating",
+            name = "whyGiveThisRating",
+            rows = 9,
+            label = Label(
+                isPageHeading = false,
+                classes = "govuk-label--m",
+                content = Text(messages("label.why_did_you_give_this_rating"))
+            ),
+            hint = Some(Hint(
+                content = Text(messages("label.please_dont_include_any_personal_or_financial_information"))
+            ))
+        ))
+
+        @govukButton(Button(
+            inputType = Some("submit"),
+            classes = "button",
+            content = Text(messages("label.send_feedback")),
+            attributes = Map("id" -> "submit")
+        ))
+    }
 }

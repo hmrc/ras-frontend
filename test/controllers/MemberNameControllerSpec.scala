@@ -43,7 +43,7 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
   val postData: JsObject = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
 
 
-  val TestMemberNameController: MemberNameController = new MemberNameController(mockAuthConnector, mockAuditConnector, mockResidencyStatusAPIConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
+  val TestMemberNameController: MemberNameController = new MemberNameController(mockAuthConnector, mockAuditConnector, mockResidencyStatusAPIConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, memberNameView) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
 
     when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))

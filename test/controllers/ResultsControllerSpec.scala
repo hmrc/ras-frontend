@@ -51,7 +51,7 @@ class ResultsControllerSpec extends UnitSpec with RasTestHelper {
   val rasSession: RasSession = RasSession(name, nino, memberDob, Some(residencyStatusResult), None)
 
 
-  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
+  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, matchFoundView, matchNotFoundView) {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 

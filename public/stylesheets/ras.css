@@ -1,4 +1,3 @@
-
 .attachment--title {
     margin-bottom: 2em;
 }
@@ -17,93 +16,11 @@
     margin-top: -8px;
 }
 
-.ras-top-margin-small {
-    margin-top: 0.5em;
-}
-
-.ras-top-margin-big {
-    margin-top: 1.5em;
-}
-
-.form-field--error{
-  border-left: 5px solid #b10e1e;
-  padding-bottom: 0px;
-  padding-top: 0px;
-}
-
-.validation-summary{
-  border: 5px solid #b10e1e;
-  font-weight: bold;
-  font-size:19px;
-}
-
-
-input:focus {
-    outline-offset: 0;
-}
-
-.continue-div{
-  padding-top: 20px;
-}
-
-.common-error {
-    color: #A80F1C;
-    font-weight: bold;
-}
-
-.no-bottom-margin {
-    margin-bottom: 0px;
-}
-
-.ras-remove-left-grid {
-    margin: 0 0px;
-}
-
-.ras-align-text-left {
-    padding: 0 0px;
-}
-
-.ras-align-right {
-    text-align: right;
-}
-
-.ras-div-table-divider {
-    border-bottom: 1px solid #bfc1c3;
-    padding-bottom: .5em;
-    margin-bottom: .5em;
-}
-
-.ras-column-one-sixth {
-    float: left;
-    width: 16.66%;
-}
-
-.ras-bottom-margin {
-    margin-bottom: 2em;
-}
-
-.ras-bottom-margin-big {
-    margin-bottom: 3em;
-}
-
-@media (min-width: 641px)
-.ras-form-group {
-    margin-bottom: 15px;
-}
-
-.ras-form-group {
-    margin-bottom: 15px;
-    box-sizing: border-box;
-}
-
-.small-margin-top {
-    margin-top: .2em;
-}
-
-@media (min-width: 641px)
-.task-list-section {
-    font-size: 24px;
-    line-height: 1.25;
+@media (min-width: 641px) {
+    .task-list-section {
+        font-size: 24px;
+        line-height: 1.25;
+    }
 }
 
 .task-list-section {
@@ -125,9 +42,10 @@ input:focus {
     margin-top: 0px;
 }
 
-@media (min-width: 641px)
-.task-list {
-    margin-top: 60px;
+@media (min-width: 641px) {
+    .task-list {
+        margin-top: 60px;
+    }
 }
 
 .task-list {
@@ -146,15 +64,17 @@ input:focus {
     float: left;
 }
 
-@media (min-width: 641px)
-.column-minimum {
-    min-width: 600px;
+@media (min-width: 641px) {
+    .column-minimum {
+        min-width: 600px;
+    }
 }
 
-@media (min-width: 641px)
-.task-list-section {
-   font-size: 24px;
-   line-height: 1.25;
+@media (min-width: 641px) {
+    .task-list-section {
+        font-size: 24px;
+        line-height: 1.25;
+    }
 }
 
 .task-completed {
@@ -177,98 +97,9 @@ input:focus {
     padding-top: 3px;
 }
 
-@media (min-width: 641px)
-.task-completed {
-    font-size: 16px;
-    line-height: 1.25;
-}
-
-#dateOfBirth-day-input{
-    border-left: 0px;
-    padding-left: 15px;
-    border-left: 0px solid;
-    padding-left: 0px;
-}
-
-#dateOfBirth-day-error {
-    display: none;
-}
-
-#dateOfBirth-month-input{
-    border-left: 0px;
-    padding-left: 15px;
-    border-left: 0px solid;
-    padding-left: 0px;
-}
-
-#dateOfBirth-month-error {
-    display: none;
-}
-
-
-#dateOfBirth-year-input{
-    border-left: 0px;
-    padding-left: 15px;
-    border-left: 0px solid;
-    padding-left: 0px;
-}
-
-#dateOfBirth-year-error {
-    display: none;
-}
-
-input:focus {
-    outline: 3px solid #fd0;
-    outline-offset: 0;
-    -webkit-box-shadow: inset 0 0 0 2px;
-    box-shadow: inset 0 0 0 2px;
-}
-
-a:focus {
-    background-color: #ffdd00;
-    outline: 3px solid #ffdd00;
-    color: #0b0c0c !important;
-}
-
-.button:focus {
-  border-bottom-color: black;
-  color: #0b0c0c;
-  background-color: #fd0;
-  -webkit-box-shadow: 0 2px 0 #0b0c0c;
-  box-shadow: 0 2px 0 #0b0c0c;
-  outline: none;
-}
-
-.error-summary {
-    border: 5px solid #d4351c;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    padding: 20px 15px 15px
-}
-
-.common-error {
-    color: #d4351c;
-    font-weight: bold;
-}
-
-.form-group-error {
-    border-left: 4px solid #d4351c;
-}
-
-input.form-control-error[type="text"] {
-    border: 4px solid #d4351c;
-}
-
-.error-summary .error-summary-list a {
-    color: #d4351c;
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-    .govuk-box-highlight {
-        background-color: #00703c;
+@media (min-width: 641px) {
+    .task-completed {
+        font-size: 16px;
+        line-height: 1.25;
     }
-
-
-
-
+}

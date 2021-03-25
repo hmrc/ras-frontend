@@ -25,7 +25,7 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
   private def loadConfig(key: String) = config.getString(key)
 
 	lazy val contactHost: String = loadConfig("contact-frontend.host")
-  private lazy val contactFormServiceIdentifier: String = "RAS"
+  private lazy val contactFormServiceIdentifier: String = loadConfig("contact-frontend.serviceId")
 	lazy val caFrontendHost: String = loadConfig("ca-frontend.host")
 	lazy val basGatewayHost: String = loadConfig("bas-gateway.host")
 

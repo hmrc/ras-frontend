@@ -30,7 +30,9 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
                                   val shortLivedCache: ShortLivedCache,
                                   val sessionService: SessionService,
                                   val mcc: MessagesControllerComponents,
-                                  implicit val appConfig: ApplicationConfig
+                                  implicit val appConfig: ApplicationConfig,
+                                  matchFoundView: views.html.match_found,
+                                  matchNotFoundView: views.html.match_not_found,
                                  ) extends FrontendController(mcc) with PageFlowController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -54,7 +56,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
                   sessionService.resetRasSession()
 
                   Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
-                  Ok(views.html.match_found(
+                  Ok(matchFoundView(
                     name, dateOfBirth, nino,
                     currentYearResidencyStatus,
                     nextYearResidencyStatus,
@@ -89,7 +91,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
                     val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
 
                     Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
-                    Ok(views.html.match_not_found(name, dateOfBirth, nino))
+                    Ok(matchNotFoundView(name, dateOfBirth, nino))
 
                   case Some(_) =>
                     Logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")

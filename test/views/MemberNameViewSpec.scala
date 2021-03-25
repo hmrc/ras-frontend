@@ -31,30 +31,30 @@ class MemberNameViewSpec extends UnitSpec with RasTestHelper {
 	"member name page" should {
 
 		"contain correct title and header" in {
-			val result = views.html.member_name(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
+			val result = memberNameView(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("member.name.page.title")
-			doc(result).getElementById("header").text shouldBe Messages("member.name.page.header")
+			doc(result).getElementsByClass("govuk-fieldset__legend--xl").text shouldBe Messages("member.name.page.header")
 		}
 
 		"contain correct field labels" in {
-			val result = views.html.member_name(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("firstName_label").text shouldBe "First name"
-			doc(result).getElementById("lastName_label").text shouldBe "Last name"
+			val result = memberNameView(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
+			doc(result).getElementsByClass("govuk-label").get(0).text shouldBe "First name line 1 of 2"
+			doc(result).getElementsByClass("govuk-label").get(1).text shouldBe "Last name line 2 of 2"
 		}
 
 		"contain correct input fields" in {
-			val result = views.html.member_name(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
+			val result = memberNameView(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
 			assert(doc(result).getElementById("firstName").attr("input") != null)
 			assert(doc(result).getElementById("lastName").attr("input") != null)
 		}
 
 		"contain continue button" in {
-			val result = views.html.member_name(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
+			val result = memberNameView(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("continue").text shouldBe Messages("continue")
 		}
 
 		"fill in form if cache data is returned" in {
-			val result = views.html.member_name(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
+			val result = memberNameView(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("firstName").value.toString should include(memberName.firstName)
 			doc(result).getElementById("lastName").value.toString should include(memberName.lastName)
 		}
@@ -62,19 +62,19 @@ class MemberNameViewSpec extends UnitSpec with RasTestHelper {
 		"present empty form when no cached data exists" in {
 			val emptyForm:Form[MemberName] = MemberNameForm.form.bind(Map("firstName" -> "", "lastName" -> ""))
 
-			val result = await(views.html.member_name(emptyForm, edit = false)(fakeRequest, testMessages, mockAppConfig))
+			val result = await(memberNameView(emptyForm, edit = false)(fakeRequest, testMessages, mockAppConfig))
 			assert(doc(result).getElementById("firstName").attr("value").equals(""))
 			assert(doc(result).getElementById("lastName").attr("value").equals(""))
 		}
 
 		"contain the correct ga data when edit mode is false" in {
-			val result = await(views.html.member_name(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig))
+			val result = await(memberNameView(memberNameForm, edit = false)(fakeRequest, testMessages, mockAppConfig))
 			assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue"))
-			assert(doc(result).getElementsByClass("link-back").attr("data-journey-click").equals("navigation - link:What is their name?:Back"))
+			assert(doc(result).getElementsByClass("govuk-back-link").attr("data-journey-click").equals("navigation - link:What is their name?:Back"))
 		}
 
 		"contain the correct ga data when edit mode is true" in {
-			val result = await(views.html.member_name(memberNameForm, edit = true)(fakeRequest, testMessages, mockAppConfig))
+			val result = await(memberNameView(memberNameForm, edit = true)(fakeRequest, testMessages, mockAppConfig))
 			assert(doc(result).getElementById("continue").attr("data-journey-click").equals("button - click:What is their name?:Continue and submit"))
 		}
 	}

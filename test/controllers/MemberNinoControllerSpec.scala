@@ -43,7 +43,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
   private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val TestMemberNinoController: MemberNinoController = new MemberNinoController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
+  val TestMemberNinoController: MemberNinoController = new MemberNinoController(mockAuthConnector, mockResidencyStatusAPIConnector, mockAuditConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, memberNinoView) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
 
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))

@@ -27,20 +27,20 @@ class ProblemUploadingFileViewSpec extends UnitSpec with RasTestHelper{
 	"problem uploading file page" should {
 
 		"contain correct title and header when problem uploading file" in {
-			val result = views.html.problem_uploading_file()(fakeRequest, testMessages, mockAppConfig)
+			val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))
 			doc.title shouldBe Messages("problem.uploading.file.title")
-			doc.getElementById("back").attr("href") should include("/upload-a-file")
+			doc.getElementsByClass("govuk-back-link").attr("href") should include("/upload-a-file")
 			doc.getElementById("header").text shouldBe Messages("problem.uploading.file.header")
-			doc.getElementById("try-again").text shouldBe Messages("upload.file.again")
+			doc.getElementById("try-again").text shouldBe Messages("upload.file.again").capitalize
 			doc.getElementById("check-file").text shouldBe Messages("check.file")
 			doc.getElementById("return-to-upload").text shouldBe Messages("return.to.upload")
 		}
 
 		"contain correct ga events when problem uploading file" in {
-			val result = views.html.problem_uploading_file()(fakeRequest, testMessages, mockAppConfig)
+			val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))
-			doc.getElementById("back").attr("data-journey-click") shouldBe "navigation - link:There has been a problem uploading your file:Back"
+			doc.getElementsByClass("govuk-back-link").attr("data-journey-click") shouldBe "navigation - link:There has been a problem uploading your file:Back"
 			doc.getElementById("return-to-upload").attr("data-journey-click") shouldBe "button - click:There has been a problem uploading your file:Return to upload a file"
 		}
 	}

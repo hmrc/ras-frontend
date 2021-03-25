@@ -15,58 +15,54 @@
  *@
 
 @import config.ApplicationConfig
-@(fileStatus: FileUploadStatus.Value, formattedDate: Option[String])(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
-
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 @import models.FileUploadStatus._
 
-@ras_main(title = messages("chooseAnOption.page.title", messages("filestatus." + fileStatus))) {
+@this(govuk_wrapper: views.html.govuk_wrapper)
 
-    <header class="page-header">
-        <h1 class="heading-xlarge">@messages("chooseAnOption.page.header")</h1>
-    </header>
+@(fileStatus: FileUploadStatus.Value, formattedDate: Option[String])(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-    <h2 class="task-list-section">@messages("single.member.subheading")</h2>
+@govuk_wrapper(pageTitle = messages("chooseAnOption.page.title", messages("filestatus." + fileStatus))) {
+
+    <h1 class="govuk-heading-xl">@messages("chooseAnOption.page.header")</h1>
+
+    <h2 class="task-list-section govuk-heading-m">@messages("single.member.subheading")</h2>
         <div>
             <div class="task-list-item">
-                <a class="task-name" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:Choose option to get residency status:Enter a members details">@messages("enter.members.details")</a>
+                <a class="task-name govuk-link govuk-body" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:Choose option to get residency status:Enter a members details">@messages("enter.members.details")</a>
             </div>
         </div>
 
-    <h2 class="task-list-section">@messages("multiple.members.subheading")</h2>
+    <h2 class="task-list-section govuk-heading-m">@messages("multiple.members.subheading")</h2>
         <div>
             @if(fileStatus==NoFileSession){
                 <div class="task-list-item">
-                    <a class="task-name" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("Upload a file")</a>
+                    <a class="task-name govuk-link govuk-body" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("Upload a file")</a>
                 </div>
             }
 
             @if(fileStatus==InProgress){
                 <div class="task-list-item">
-                    <p class="paragraph-info "><strong class="task-completed" id="file-processing">@messages("file.processing")</strong>@messages("file.upload.time", formattedDate.get)</p>
-                    <p class="paragraph-info ">@messages("file.size.info")</p>
-                    <p class="paragraph-info no-bottom-margin">@messages("processing.file")</p>
+                    <p class="paragraph-info govuk-body"><strong class="task-completed" id="file-processing">@messages("file.processing")</strong>@messages("file.upload.time", formattedDate.get)</p>
+                    <p class="paragraph-info govuk-body">@messages("file.size.info")</p>
+                    <p class="paragraph-info govuk-body govuk-!-margin-bottom-0">@messages("processing.file")</p>
                 </div>
             }
 
             @if(fileStatus==Ready){
                 <div class="task-list-item">
-                    <p><strong class="task-completed" id="download-result">@messages("file.ready")</strong>
-                        <a class="task-name" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@messages("download.results")</a></p>
-                    <p class="paragraph-info no-bottom-margin small-margin-top">@messages("result.timescale", formattedDate.get)</p>
+                    <p><strong class="task-completed govuk-body" id="download-result">@messages("file.ready")</strong>
+                        <a class="task-name govuk-link govuk-body" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@messages("download.results")</a></p>
+                    <p class="paragraph-info govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-4">@messages("result.timescale", formattedDate.get)</p>
                 </div>
             }
 
-            @if(fileStatus==UploadError || fileStatus==TimeExpiryError ){
+            @if(fileStatus==UploadError || fileStatus==TimeExpiryError){
                 <div class="task-list-item">
-                    <p class="paragraph info"><strong class="task-completed" id="file-problem">@messages("file.problem")</strong>@messages("problem.getting.result")</p>
-                    <p class="paragraph-info no-bottom-margin small-margin-top">
-                        @Html(
-                        messages(
-                        "file.problem.paragraph",
-                        "<a id='file-problem-link' class='file-problem-link' href='" + routes.FileUploadController.get() + "' data-journey-click='link - click:Choose option to get residency status:Upload a file'>" + messages("upload.file.again") + "</a>"
-                        ))
+                    <p class="paragraph info govuk-body"><strong class="task-completed" id="file-problem">@messages("file.problem")</strong>@messages("problem.getting.result")</p>
+                    <p class="paragraph-info govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-4">
+                        @messages("file.problem.paragraph.start")
+                        <a id='file-problem-link' class='file-problem-link govuk-link govuk-body' href='@routes.FileUploadController.get()' data-journey-click='link - click:Choose option to get residency status:Upload a file'>@messages("upload.file.again")</a>
+                        @messages("file.problem.paragraph.end")
                     </p>
                 </div>
             }
