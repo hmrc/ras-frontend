@@ -36,11 +36,16 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAPIConnector,
-																				 val authConnector: DefaultAuthConnector,
-																				 val shortLivedCache: ShortLivedCache,
-																				 val sessionService: SessionService,
-																				 val mcc: MessagesControllerComponents,
-																				 implicit val appConfig: ApplicationConfig
+                                         val authConnector: DefaultAuthConnector,
+                                         val shortLivedCache: ShortLivedCache,
+                                         val sessionService: SessionService,
+                                         val mcc: MessagesControllerComponents,
+                                         implicit val appConfig: ApplicationConfig,
+                                         chooseAnOptionView: views.html.choose_an_option,
+                                         fileReadyView: views.html.file_ready,
+                                         uploadResultView: views.html.upload_result,
+                                         resultsNotAvailableYetView: views.html.results_not_available_yet,
+                                         noResultsAvailableView: views.html.no_results_available
 																				) extends FrontendController(mcc) with PageFlowController {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
@@ -54,7 +59,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
             shortLivedCache.determineFileStatus(userId).flatMap {
               fileStatus =>
                 Logger.info(s"[ChooseAnOptionController][get] determine file status returned $fileStatus")
-                Future.successful(Ok(views.html.choose_an_option(fileStatus, getHelpDate(fileStatus, fileSession))))
+                Future.successful(Ok(chooseAnOptionView(fileStatus, getHelpDate(fileStatus, fileSession))))
             }
           }
         case Left(resp) =>
@@ -105,7 +110,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                         case Some(callbackData) =>
                           val currentTaxYear = TaxYearResolver.currentTaxYear
                           val filename = shortLivedCache.getDownloadFileName(fileSession)
-                          Ok(views.html.upload_result(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
+                          Ok(uploadResultView(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
                         case _ =>
                           Logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.ErrorController.renderGlobalErrorPage())
@@ -144,7 +149,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
               }
             case _ =>
               Logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] rendering no result available page")
-              Future.successful(Ok(views.html.no_results_available()))
+              Future.successful(Ok(noResultsAvailableView()))
           }
         case Left(resp) =>
           Logger.warn("[ChooseAnOptionController][renderNotResultAvailablePage] user not authorised")
@@ -164,7 +169,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                   Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage()))
                 case _ =>
                   Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] rendering results not available page")
-                  Future.successful(Ok(views.html.results_not_available_yet()))
+                  Future.successful(Ok(resultsNotAvailableYetView()))
               }
             case _ =>
               Logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to results not available")
@@ -184,7 +189,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
             case Some(fileSession) =>
               fileSession.resultsFile match {
                 case Some(_) =>
-                  Future.successful(Ok(views.html.file_ready()))
+                  Future.successful(Ok(fileReadyView()))
                 case _ =>
                   Logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
                   Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))

@@ -36,7 +36,8 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 																		val shortLivedCache: ShortLivedCache,
 																		val sessionService: SessionService,
 																		val mcc: MessagesControllerComponents,
-																		implicit val appConfig: ApplicationConfig
+																		implicit val appConfig: ApplicationConfig,
+                                    memberDobView: views.html.member_dob
 																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
@@ -49,8 +50,8 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
           sessionService.fetchRasSession() map {
             case Some(session) =>
               val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(views.html.member_dob(form(Some(name)).fill(session.dateOfBirth), name, edit))
-            case _ => Ok(views.html.member_dob(form(), "member", edit))
+              Ok(memberDobView(form(Some(name)).fill(session.dateOfBirth), name, edit))
+            case _ => Ok(memberDobView(form(), "member", edit))
           }
         case Left(resp) =>
           Logger.warn("[DobController][get] user Not authorised")
@@ -66,7 +67,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
             form(Some(name)).bindFromRequest.fold(
               formWithErrors => {
                 Logger.warn("[DobController][post] Invalid form field passed")
-                Future.successful(BadRequest(views.html.member_dob(formWithErrors, name, edit)))
+                Future.successful(BadRequest(memberDobView(formWithErrors, name, edit)))
               },
               dateOfBirth => {
                 sessionService.cacheDob(dateOfBirth) flatMap {

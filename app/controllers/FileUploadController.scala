@@ -37,7 +37,10 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
 																		 val shortLivedCache: ShortLivedCache,
 																		 val sessionService: SessionService,
 																		 val mcc: MessagesControllerComponents,
-																		 implicit val appConfig: ApplicationConfig
+																		 implicit val appConfig: ApplicationConfig,
+                                     fileUploadView: views.html.file_upload,
+                                     fileUploadSuccessView: views.html.file_upload_successful,
+                                     cannotUploadAnotherView: views.html.cannot_upload_another_file
 																		) extends FrontendController(mcc) with RasController with PageFlowController {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
@@ -69,7 +72,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                       }
                       else {
                         sessionService.resetCacheUploadResponse()
-                        Future.successful(Ok(views.html.file_upload(url,error)))
+                        Future.successful(Ok(fileUploadView(url,error)))
                       }
                     case _ =>
                       Logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
@@ -81,7 +84,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
               createFileUploadUrl(None, userId)(request, hc).flatMap {
                 case Some(url) =>
                   Logger.info(s"[FileUploadController][get] stored new envelope id successfully for userId ($userId)")
-                  Future.successful(Ok(views.html.file_upload(url,"")))
+                  Future.successful(Ok(fileUploadView(url,"")))
                 case _ =>
                   Logger.error(s"[FileUploadController][get] failed to obtain a form url using new envelope for userId ($userId)")
                   Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
@@ -161,7 +164,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 shortLivedCache.createFileSession(userId,envelope.id).map {
                   case true =>
                     Logger.info(s"[FileUploadController][uploadSuccess] upload has been successful for userId ($userId)")
-                    Ok(views.html.file_upload_successful())
+                    Ok(fileUploadSuccessView())
                   case _ =>
                     Logger.error(s"[FileUploadController][uploadSuccess] failed to create file session for userId ($userId)")
                     Redirect(routes.ErrorController.renderGlobalErrorPage())
@@ -211,7 +214,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 Future.successful(Redirect(routes.ChooseAnOptionController.renderFileReadyPage()))
               case _ =>
                 Logger.info("[FileUploadController][uploadInProgress] calling cannot upload another file")
-                Future.successful(Ok(views.html.cannot_upload_another_file()))
+                Future.successful(Ok(cannotUploadAnotherView()))
             }
           case _ =>
             Logger.info("[FileUploadController][uploadInProgress] redirecting to global error")

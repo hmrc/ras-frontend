@@ -15,33 +15,41 @@
  *@
 
 @import config.ApplicationConfig
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukBackLink: GovukBackLink,
+        hmrcPageHeading: HmrcPageHeading,
+        govukButton: GovukButton
+)
 @(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int, filename: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @year = {@if(isBeforeApr6){CY & CY + 1}else{CY}}
 
-@ras_main(title = messages("upload.result.page.title"), showUrBanner = true) {
+@govuk_wrapper(pageTitle = messages("upload.result.page.title"), showUrBanner = true) {
 
-      <a id="back" class="link-back"
-         href="@routes.ChooseAnOptionController.get"
-         data-journey-click="navigation - link:Residency status upload added @year:Back">
-          @messages("back")
-      </a>
+    @govukBackLink(BackLink(
+        href = routes.ChooseAnOptionController.get.absoluteURL(),
+        attributes = Map(
+            "id" -> "back",
+            "data-journey-click" -> s"navigation - link:Residency status upload added ${year}:Back"
+        ),
+        content = Text(messages("back")),
+    ))
 
-      <header class="page-header">
-          <h1 id="page-header" class="heading-xlarge">@messages("upload.result.page.header")</h1>
-      </header>
-
+    @hmrcPageHeading(PageHeading(
+        text = messages("upload.result.page.header")
+    ))
 
     <div aria-labelledby="document-title" id="document-title">
         <div class="govuk-govspeak direction-ltr">
             <section class="attachment embedded">
                 <div class="attachment--title">
                     <div class="icon--file" id="attachment-1">
-                        <img alt="" src="@routes.Assets.at("images/icon-file-download.png")">
+                        <img alt="" src="@routes.Assets.versioned("images/icon-file-download.png")">
                     </div>
                     <div class="attachment-details">
-                        <p>
-                            <a id="result-link"
+                        <p class="govuk-body">
+                            <a id="result-link" class="govuk-link"
                                href="@routes.ChooseAnOptionController.getResultsFile(fileId)"
                                data-journey-click="link - click:Residency status upload added @year:ResidencyStatusResults @year CSV">
                                 @messages("residency.status.result", filename)
@@ -49,30 +57,28 @@
                         </p>
                     </div>
                 </div>
-                <p id="deletion-message">@messages("deletion.message")</p>
-                <p id="expiry-date-message">@messages("expiry.date.message", expiryDate)</p>
+                <p id="deletion-message" class="govuk-body">@messages("deletion.message")</p>
+                <p id="expiry-date-message" class="govuk-body">@messages("expiry.date.message", expiryDate)</p>
             </section>
-            <h2 id="whatnext-header" class="heading-medium">@messages("match.found.what.happens.next")</h2>
-            <p id="whatnext-content">
+            <h2 id="whatnext-header" class="govuk-heading-m">@messages("match.found.what.happens.next")</h2>
+            <p id="whatnext-content" class="govuk-body">
                 @Html(messages("upload.result.what.next",
-                "<a id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target='_blank' data-journey-click='link - click:Residency status upload added " + year + ":Member must contact HMRC'>" + messages("upload.result.member.contact") + "</a>"
+                "<a id='contact-hmrc-link' class='govuk-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target='_blank' data-journey-click='link - click:Residency status upload added " + year + ":Member must contact HMRC'>" + messages("upload.result.member.contact") + "</a>"
                 ))
             </p>
             @if(!isBeforeApr6){
-            <p id="cy-message">@messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+            <p id="cy-message" class="govuk-body">@messages("cy.message", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
             }
         </div>
     </div>
 
-
-<div class="continue-div">
-  <a id="choose-something-else"
-     class="button"
-     href="@routes.ChooseAnOptionController.get"
-     data-journey-click="button - click:Residency status upload added @year:Choose something else to do">
-      @messages("choose.something.else")
-  </a>
-</div>
-
-
+    @govukButton(Button(
+        classes = "button",
+        content = Text(messages("choose.something.else")),
+        attributes = Map(
+            "id" -> "choose-something-else",
+            "data-journey-click" -> s"button - click:Residency status upload added ${year}:Choose something else to do"
+        ),
+        href = Some(routes.ChooseAnOptionController.get.absoluteURL())
+    ))
 }

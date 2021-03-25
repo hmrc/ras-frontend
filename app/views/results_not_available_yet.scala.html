@@ -15,21 +15,40 @@
  *@
 
 @import config.ApplicationConfig
-@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)@ras_main(title = messages("results.not.available.yet.page.title")) {
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukBackLink: GovukBackLink,
+        hmrcPageHeading: HmrcPageHeading,
+        govukButton: GovukButton
+)
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+@govuk_wrapper(pageTitle = messages("results.not.available.yet.page.title")) {
 
-   <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:Results are still being added:Back">@messages("back")</a>
+    @govukBackLink(BackLink(
+        href = routes.ChooseAnOptionController.get.absoluteURL(),
+        attributes = Map(
+            "id" -> "back",
+            "data-journey-click" -> "navigation - link:Results are still being added:Back"
+        ),
+        content = Text(messages("back"))
+    ))
 
-   <div class="row">
-    <h1 id="header" class="heading-xlarge">@messages("results.not.available.yet.page.header")</h1>
+    @hmrcPageHeading(PageHeading(
+        text = messages("results.not.available.yet.page.header")
+    ))
+
+   <div>
+    <p id="sub-header1" class="govuk-body">@messages("results.not.available.yet.sub-header1")</p>
+    <p id="sub-header2" class="govuk-body">@messages("results.not.available.yet.sub-header2")</p>
    </div>
 
-   <div class="row ras-bottom-margin">
-    <p id="sub-header1">@messages("results.not.available.yet.sub-header1")</p>
-    <p id="sub-header2">@messages("results.not.available.yet.sub-header2")</p>
-   </div>
-
-   <div class="row">
-    <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:Results are still being added:Choose something else to do">@messages("choose.something.else")</a>
-   </div>
-
+    @govukButton(Button(
+        classes = "button",
+        content = Text(messages("choose.something.else")),
+        attributes = Map(
+            "id" -> "choose-something-else",
+            "data-journey-click" -> "button - click:Results are still being added:Choose something else to do"
+        ),
+        href = Some(routes.ChooseAnOptionController.get.absoluteURL())
+    ))
 }

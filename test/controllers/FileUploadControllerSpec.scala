@@ -54,7 +54,7 @@ class FileUploadControllerSpec extends UnitSpec with RasTestHelper {
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 
-  val TestFileUploadController: FileUploadController = new FileUploadController(mockFileUploadConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
+  val TestFileUploadController: FileUploadController = new FileUploadController(mockFileUploadConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, fileUploadView, fileUploadSuccessfulView, cannotUploadAnotherFileView) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }

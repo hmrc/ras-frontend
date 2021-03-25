@@ -20,11 +20,10 @@ val compile: Seq[ModuleID] = Seq(
   ws,
   "uk.gov.hmrc" %% "bootstrap-play-26"   % "2.3.0",
   "uk.gov.hmrc" %% "govuk-template"      % "5.63.0-play-26",
-  "uk.gov.hmrc" %% "play-ui"             % "8.21.0-play-26",
-  "uk.gov.hmrc" %% "play-partials"       % "7.1.0-play-26",
   "uk.gov.hmrc" %% "auth-client"         % "3.3.0-play-26",
   "uk.gov.hmrc" %% "http-caching-client" % "9.2.0-play-26",
-  "uk.gov.hmrc" %% "time"                % "3.19.0"
+  "uk.gov.hmrc" %% "time"                % "3.19.0",
+  "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.54.0-play-26"
 )
 
 val test: Seq[ModuleID] = Seq(
@@ -71,3 +70,10 @@ lazy val microservice = Project(appName, file("."))
       Resolver.jcenterRepo
     )
   )
+
+TwirlKeys.templateImports ++= Seq(
+  "uk.gov.hmrc.govukfrontend.views.html.components._",
+  "uk.gov.hmrc.govukfrontend.views.html.helpers._",
+  "uk.gov.hmrc.hmrcfrontend.views.html.components._",
+  "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
+)

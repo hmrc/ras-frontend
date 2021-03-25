@@ -15,23 +15,36 @@
  *@
 
 @import config.ApplicationConfig
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukBackLink: GovukBackLink,
+        govukButton: GovukButton
+)
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
-	@ras_main(title = messages("problem.uploading.file.title")) {
+	@govuk_wrapper(pageTitle = messages("problem.uploading.file.title")) {
 
-
-    <a class="link-back" id="back" href="@routes.FileUploadController.get" data-journey-click="navigation - link:There has been a problem uploading your file:Back">@messages("back")</a>
-
-   <div class="row">
-    <h1 id="header" class="heading-xlarge">@messages("problem.uploading.file.header")</h1>
-   </div>
-
-   <div class="row ras-bottom-margin">
-    <p id="try-again">@messages("upload.file.again")</p>
-    <p id="check-file">@messages("check.file")</p>
-   </div>
+    @govukBackLink(BackLink(
+        href = routes.FileUploadController.get.absoluteURL(),
+        content = Text(messages("back")),
+        attributes = Map("data-journey-click" -> "navigation - link:There has been a problem uploading your file:Back")
+    ))
 
    <div class="row">
-    <a id="return-to-upload" class="button" href="@routes.FileUploadController.get" data-journey-click="button - click:There has been a problem uploading your file:Return to upload a file">@messages("return.to.upload")</a>
+    <h1 id="header" class="govuk-heading-xl">@messages("problem.uploading.file.header")</h1>
    </div>
 
+   <div class="row govuk-!-margin-bottom-6">
+    <p id="try-again" class="govuk-body">@messages("upload.file.again").capitalize</p>
+    <p id="check-file" class="govuk-body">@messages("check.file")</p>
+   </div>
+
+    @govukButton(Button(
+        classes = "button",
+        content = Text(messages("return.to.upload")),
+        attributes = Map(
+            "id" -> "return-to-upload",
+            "data-journey-click" -> "button - click:There has been a problem uploading your file:Return to upload a file"
+        ),
+        href = Some(routes.FileUploadController.get.absoluteURL())
+    ))
 }

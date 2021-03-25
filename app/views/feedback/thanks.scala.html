@@ -15,13 +15,22 @@
  *@
 
 @import config.ApplicationConfig
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        hmrcPageHeading: HmrcPageHeading
+)
 @()(implicit request : Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@views.html.ras_main(title = "Thanks for your feedback - Look up residency status for relief at source - GOV.UK", bodyClasses = None, signOutEnabled = false, hasTimeOut = false) {
+@govuk_wrapper(pageTitle = "Thanks for your feedback - Look up residency status for relief at source - GOV.UK") {
 
-    <h1 class="heading-xlarge">@messages("label.thanks_for_your_feedback")</h1>
-    <p>
-        <a href="http://www.gov.uk">@messages("label.explore_gov_uk")</a>
+    @hmrcPageHeading(PageHeading(
+        text = messages("label.thanks_for_your_feedback")
+    ))
+
+    <p class="govuk-body">@messages("label.thanks_for_your_feedback.body")</p>
+
+    <p class="govuk-body govuk-!-margin-top-6">
+        <a class="govuk-link" href="http://www.gov.uk">@messages("label.explore_gov_uk")</a>
     </p>
 
 }

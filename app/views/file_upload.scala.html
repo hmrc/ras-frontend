@@ -15,55 +15,71 @@
  *@
 
 @import config.ApplicationConfig
+@import views.html.helper.form
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukBackLink: GovukBackLink,
+        govukErrorSummary: GovukErrorSummary,
+        govukFileUpload: GovukFileUpload,
+        govukButton: GovukButton,
+        hmrcPageHeading: HmrcPageHeading
+)
 @(fileUploadUrl: String, error: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @scriptElem = {
-<script type="text/javascript" src='@controllers.routes.Assets.at("javascript/check-file-type.js")'></script>
+    <script type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/file-upload.js")'></script>
 }
 
-@ras_main(title = messages("file.upload.page.title"),scriptElem = Some(scriptElem)) {
+@govuk_wrapper(pageTitle = messages("file.upload.page.title"), scriptElem = Some(scriptElem)) {
 
-    <a class="link-back" href="@routes.FileUploadController.back" data-journey-click="navigation - link:Upload a file:Back">@messages("back")</a>
+    @govukBackLink(BackLink(
+        href = routes.FileUploadController.back.absoluteURL(),
+        content = Text(messages("back")),
+        attributes = Map("data-journey-click" -> "navigation - link:Upload a file:Back")
+    ))
 
-    <div id="errors" class="validation-summary error-summary" role="group" tabindex="-1" @if(error==""){ style="display:none;" }>
-        <h2 class="heading-medium error-summary-heading" id="error-summary-heading">@messages("generic.errors_heading")</h2>
+    @hmrcPageHeading(PageHeading(
+        text = messages("file.upload.page.header")
+    ))
 
-        <ul class="js-error-summary-messages">
-            <li><a id="error" href="#choose-file" data-focuses="choose-file">@if(error==""){messages("error.select.csv")}else{@messages(error)}</a></li>
-        </ul>
-    </div>
-
-    <input type="hidden" id="temp-error"/>
-
-    <header class="page-header">
-        <h1 id="header" class="heading-xlarge">@messages("file.upload.page.header")</h1>
-    </header>
-
-    <p id="sub-header">@Html(messages("file.upload.page.sub-header"))</p>
-
-    <!-- div is closed early due to styling restrictions -->
-    @if(error==""){
-        <div id="file-upload" class="form-group">
-    }else{
-        <div id="file-upload-with-error" class="form-group form-field--error">
+    @if(error.nonEmpty) {
+        @govukErrorSummary(ErrorSummary(
+            title = Text(messages("generic.errors_heading")),
+            errorList =
+            Seq(
+                ErrorLink(
+                    content = Text(messages(error)),
+                    href = Some("#choose-file"),
+                    attributes = Map("id" -> "upload-error")
+                )
+            )
+        ))
     }
-            <form
-                    id="upload-form"
-                    action="@fileUploadUrl"
-                    enctype="multipart/form-data"
-                    method="post"
-                    onsubmit="return checkFileType(this)">
 
-                <label for="choose-file" id="upload-label">
-                    <span class="form-label visually-hidden">Upload a file</span>
-                    <span id="upload-error" class="common-error">@messages(error)</span>
-                </label>
+    <p id="upload-info" class="govuk-body">@messages("file.upload.page.sub-header")</p>
 
-                <input id="choose-file" name="file" type="file" size="40" data-journey-click="button - click:Upload a file:Choose file" onchange="enableContinue()"/>
-                <p class="ras-bottom-margin"><a href="http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members" target="_blank" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@messages("get.help.uploading.link")</a></p>
-                <button class="button" type="submit" id="continue" data-journey-click="button - click:Upload a file:Continue">@messages("continue")</button>
-            </form>
-        </div>
+    @form(Call("POST", fileUploadUrl), 'enctype -> "multipart/form-data", 'id -> "upload-form") {
 
+        @govukFileUpload(FileUpload(
+            name = "file",
+            id = "choose-file",
+            label = Label(
+                content = Text("Upload a file")
+            ),
+            attributes = Map(
+                "type" -> "file",
+                "accept" -> ".csv",
+                "multiple" -> "false",
+                "data-journey-click" -> "button - click:Upload a file:Choose file")
+        ))
+
+        <p class="govuk-body govuk-!-margin-bottom-6"><a class="govuk-link" href="http://www.gov.uk/guidance/find-the-relief-at-source-residency-statuses-of-multiple-members" target="_blank" id="upload-help-link" data-journey-click="link - click:Upload a file:Get help formatting your file">@messages("get.help.uploading.link")</a></p>
+
+        @govukButton(Button(
+            inputType = Some("submit"),
+            classes = "button",
+            content = Text(messages("continue")),
+            attributes = Map("data-journey-click" -> "button - click:Upload a file:Continue", "id" -> "continue")
+        ))
+    }
 }
-

@@ -26,9 +26,9 @@ import utils.RasTestHelper
 class QuestionnaireControllerSpec extends UnitSpec with RasTestHelper {
 
   override val fakeRequest = FakeRequest("GET", "/")
-  val fakePostRequest = FakeRequest("POST", "/signed-out")
+  val fakePostRequest = FakeRequest("POST", "/relief-at-source/signed-out")
 
-  val TestController = new QuestionnaireController(mockAuditConnector, mockMCC, mockAppConfig)
+  val TestController = new QuestionnaireController(mockAuditConnector, mockMCC, mockAppConfig, feedbackQuestionnaireView, thanksFeedbackQuestionnaireView)
 
   "Calling the QuestionnaireController.showQuestionnaire" should {
     "respond with OK" in {
@@ -39,7 +39,8 @@ class QuestionnaireControllerSpec extends UnitSpec with RasTestHelper {
 
   "Calling the QuestionnaireController.submitQuestionnaire" should {
     "respond with OK" in {
-      val result = TestController.submitQuestionnaire(fakePostRequest)
+      val postData = Json.obj("easyToUse" -> 1, "satisfactionLevel" -> 1, "whyGiveThisRating" -> "whyGiveThisRating", "referer" -> "referer")
+      val result = TestController.submitQuestionnaire(fakePostRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe Status.SEE_OTHER
     }
   }

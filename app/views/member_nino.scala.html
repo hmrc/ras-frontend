@@ -15,37 +15,81 @@
  *@
 
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+
+@this(
+    govuk_wrapper: views.html.govuk_wrapper,
+    govukBackLink : GovukBackLink,
+    govukErrorSummary : GovukErrorSummary,
+    govukInput : GovukInput,
+    govukFieldset : GovukFieldset,
+    formWithCSRF: PlayFrontendFormWithCSRF,
+    govukButton : GovukButton
+)
+
 @(memberNinoForm: Form[models.MemberNino], name:String, edit: Boolean)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
+@govuk_wrapper(pageTitle = messages("member.nino.page.title")) {
 
-@ras_main(title = messages("member.nino.page.title")) {
+    @govukBackLink(BackLink(
+        href = routes.MemberNinoController.back(edit).absoluteURL(),
+        content = Text(messages("back")),
+        attributes = Map("class" -> "link-back", "data-journey-click" -> "navigation - link:What is their NINO?:Back")
+    ))
 
-    <a class="link-back" href="@routes.MemberNinoController.back(edit)"
-           data-journey-click="navigation - link:What is their NINO?:Back">@messages("back")</a>
-
-	@(if(memberNinoForm.hasErrors) errorSummary(Messages("generic.errors_heading"), memberNinoForm))
-
-	<header class="page-header">
-        <h1 id="header" class="heading-xlarge">@messages("member.nino.page.header", name)</h1>
-    </header>
-
-    @form(action = routes.MemberNinoController.post(edit)) {
-
-        <div class="form-group">
-
-            @rasInput(memberNinoForm("nino"),
-            '_id -> "nino",
-            '_hintText -> messages("nino.hint"),
-            '_spellcheck -> "false")
-
-        </div>
-
-    <button class="button" type="submit" id="continue"
-            data-journey-click="button - click:What is their NINO?:Continue@if(edit){ and submit}">
-        @messages("continue")
-    </button>
+    @if(memberNinoForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary(
+            errorList = memberNinoForm.errors.asTextErrorLinks,
+            title = Text(messages("generic.errors_heading"))
+        ))
     }
 
+    @formWithCSRF(action = routes.MemberNinoController.post(edit)) {
+        @govukFieldset(Fieldset(
+            legend = Some(Legend(
+                content = Text(messages("member.nino.page.header", name)),
+                classes = "govuk-fieldset__legend--xl",
+                isPageHeading = true
+            )),
+            html = innerFieldsetHtml
+        ))
+
+        <div class="govuk-form-submit">
+        @govukButton(Button(
+            inputType = Some("submit"),
+            classes = "button",
+            content = Text(messages("continue")),
+            attributes =
+                    if(edit) {
+                        Map("id" -> "continue", "data-journey-click" -> "button - click:What is their NINO?:Continue and submit")
+                    } else {
+                        Map("id" -> "continue", "data-journey-click" -> "button - click:What is their NINO?:Continue")
+                    }
+        ))
+        </div>
+    }
+}
+
+@innerFieldsetHtml = {
+    @govukInput(Input(
+        name = "nino",
+        id = "nino",
+        classes = "govuk-input--width-10",
+        value = (memberNinoForm("nino").value),
+        spellcheck = Some(false),
+        label = Label(
+            isPageHeading = false,
+            content = HtmlContent("""National Insurance number <span class="govuk-visually-hidden">line 1 of 1</span>""")
+        ),
+        errorMessage = if(memberNinoForm("nino").hasErrors) {
+            Some(ErrorMessage(
+                attributes = Map("data-journey-click" -> "ras:error:nino"),
+                content = Text(messages(memberNinoForm("nino").errors.head.message, name, messages("nino")))
+            ))
+        } else { None },
+        hint = Some(Hint(
+            content = Text(messages("nino.hint"))
+        ))
+    ))
 }

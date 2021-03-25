@@ -21,6 +21,7 @@ import org.joda.time.DateTime
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper
+import views.html.choose_an_option
 
 
 class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
@@ -46,39 +47,39 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 	"choose an option page" when {
 		"the file status is NoFileSession" should {
 			"contain an Upload a file link" in {
-				val result = views.html.choose_an_option(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementById("upload-link").text() shouldBe Messages("upload.file")
+				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
+				doc(result).getElementById("upload-link").text() shouldBe Messages("Upload a file")
 				doc(result).getElementById("upload-link").attr("href") should include("/upload-a-file")
 				doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
 			}
 
 			"contain the correct title and header" in {
-				val result = views.html.choose_an_option(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).title shouldBe Messages("chooseAnOption.page.title", Messages("filestatus.NoFileSession"))
-				doc(result).getElementsByClass("heading-xlarge").text shouldBe Messages("chooseAnOption.page.header")
+				doc(result).getElementsByClass("govuk-heading-xl").text shouldBe Messages("chooseAnOption.page.header")
 			}
 
 			"contain the single member h2" in {
-				val result = views.html.choose_an_option(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
 			}
 
 			"contain the enter a members detail link" in {
-				val result = views.html.choose_an_option(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("single-member-link").text shouldBe Messages("enter.members.details")
 				doc(result).getElementById("single-member-link").attr("href") should include("/member-name")
 				doc(result).getElementById("single-member-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Enter a members details"
 			}
 
 			"contain the Multiple members h2" in {
-				val result = views.html.choose_an_option(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
 			}
 		}
 
 		"the file status is Ready" should {
 			"contain a download your results link" in {
-				val result = views.html.choose_an_option(Ready, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(Ready, Some("None"))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("download.results")
 				doc(result).getElementById("download-result-link").attr("href") should include("/residency-status-added")
 				doc(result).getElementById("download-result-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Download your results"
@@ -86,27 +87,27 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 			}
 
 			"contain a File ready Icon" in {
-				val result = views.html.choose_an_option(Ready, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("task-completed").text shouldBe "FILE READY"
+				val result = chooseAnOptionView(Ready, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				doc(result).getElementsByClass("task-completed").text shouldBe Messages("file.ready")
 			}
 
 			"contain File ready paragraph" in {
 				val date = new DateTime(mockExpiryTimeStamp)
-				val result = views.html.choose_an_option(Ready, formattedExpiryDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(Ready, formattedExpiryDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("H:mma").toLowerCase()} on ${date.toString("EEEE d MMMM yyyy")}")
 			}
 		}
 
 		"for Processing Only" should {
 			"contain a Processing icon" in {
-				val result = views.html.choose_an_option(InProgress, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(InProgress, Some("None"))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("task-completed").text shouldBe Messages("file.processing")
 
 			}
 
 			"contain File processing paragraphs with todays date" in {
 				val date = DateTime.now().minusDays(1)
-				val result = views.html.choose_an_option(InProgress, formattedUploadDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(InProgress, formattedUploadDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
 					s"${Messages("today")} at ${date.toString("h:mma").toLowerCase()}")
 				doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
@@ -116,7 +117,7 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 
 			"contain File processing paragraphs with yesterday date" in {
 				val date = DateTime.now().minusDays(1)
-				val result = views.html.choose_an_option(InProgress, formattedUploadDate(date.getMillis))(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(InProgress, formattedUploadDate(date.getMillis))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
 					s"${Messages("yesterday")} at ${date.toString("h:mma").toLowerCase()}")
 				doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
@@ -126,40 +127,40 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 
 		"for UploadError Only" should {
 			"contain an upload your file again link" in {
-				val result = views.html.choose_an_option(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
-				doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
-				doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
+				val result = chooseAnOptionView(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				doc(result).getElementById("file-problem-link").text() shouldBe Messages("upload.file.again")
+				doc(result).getElementById("file-problem-link").attr("href") should include("/upload-a-file")
+				doc(result).getElementById("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
 			}
 
 			"contain a File problem icon" in {
-				val result = views.html.choose_an_option(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROBLEM"
+				val result = chooseAnOptionView(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				doc(result).getElementsByClass("task-completed").text shouldBe Messages("file.problem")
 			}
 
 			"contain File problem paragraphs" in {
-				val result = views.html.choose_an_option(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph", Messages("upload.file.again"))
+				val result = chooseAnOptionView(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph.start") + " " + Messages("upload.file.again") + " " + Messages("file.problem.paragraph.end")
 			}
 		}
 
 		"for TimeExpiryError Only" should {
 			"contain an upload your file again link" in {
-				val result = views.html.choose_an_option(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				val result = chooseAnOptionView(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")
 				doc(result).getElementsByClass("file-problem-link").attr("href") should include("/upload-a-file")
 				doc(result).getElementsByClass("file-problem-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
 			}
 
 			"contain a File problem icon" in {
-				val result = views.html.choose_an_option(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("task-completed").text shouldBe "FILE PROBLEM"
+				val result = chooseAnOptionView(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				doc(result).getElementsByClass("task-completed").text shouldBe Messages("file.problem")
 
 			}
 
 			"contain File problem paragraphs" in {
-				val result = views.html.choose_an_option(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph", Messages("upload.file.again"))
+				val result = chooseAnOptionView(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
+				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph.start") + " " + Messages("upload.file.again") + " " + Messages("file.problem.paragraph.end")
 			}
 		}
 	}
