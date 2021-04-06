@@ -33,7 +33,7 @@
 @govuk_wrapper(pageTitle = messages("member.name.page.title")) {
 
     @govukBackLink(BackLink(
-        href = routes.MemberNameController.back(edit).absoluteURL(),
+        href = routes.MemberNameController.back(edit).url,
         content = Text(messages("back")),
         attributes = Map("class" -> "link-back", "data-journey-click" -> "navigation - link:What is their name?:Back")
     ))

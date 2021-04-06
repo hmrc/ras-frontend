@@ -25,7 +25,7 @@
 @govuk_wrapper(pageTitle = messages("results.not.available.yet.page.title")) {
 
     @govukBackLink(BackLink(
-        href = routes.ChooseAnOptionController.get.absoluteURL(),
+        href = routes.ChooseAnOptionController.get.url,
         attributes = Map(
             "id" -> "back",
             "data-journey-click" -> "navigation - link:Results are still being added:Back"
@@ -49,6 +49,6 @@
             "id" -> "choose-something-else",
             "data-journey-click" -> "button - click:Results are still being added:Choose something else to do"
         ),
-        href = Some(routes.ChooseAnOptionController.get.absoluteURL())
+        href = Some(routes.ChooseAnOptionController.get.url)
     ))
 }

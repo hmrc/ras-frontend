@@ -26,7 +26,7 @@
 @govuk_wrapper(pageTitle = messages("match.not.found.page.title"), showUrBanner = true) {
 
     @govukBackLink(BackLink(
-        href = routes.ResultsController.back.absoluteURL(),
+        href = routes.ResultsController.back.url,
         content = Text(messages("back")),
         attributes = Map("data-journey-click" -> "navigation - link:Users details not found:Back")
     ))
@@ -46,7 +46,7 @@
                 actions = Some(Actions(
                     items = Seq(
                         ActionItem(
-                            href = routes.SessionController.redirect("member-name", cleanSession = false, edit = true).absoluteURL(),
+                            href = routes.SessionController.redirect("member-name", cleanSession = false, edit = true).url,
                             visuallyHiddenText = Some(messages("change.name")),
                             content = Text(messages("change").capitalize),
                             attributes = Map(
@@ -67,7 +67,7 @@
                 actions = Some(Actions(
                     items = Seq(
                         ActionItem(
-                            href = routes.SessionController.redirect("member-nino", cleanSession = false, edit = true).absoluteURL(),
+                            href = routes.SessionController.redirect("member-nino", cleanSession = false, edit = true).url,
                             visuallyHiddenText = Some(messages("change.nino")),
                             content = Text(messages("change").capitalize),
                             attributes = Map(
@@ -88,7 +88,7 @@
                 actions = Some(Actions(
                     items = Seq(
                         ActionItem(
-                            href = routes.SessionController.redirect("member-dob", cleanSession = false, edit = true).absoluteURL(),
+                            href = routes.SessionController.redirect("member-dob", cleanSession = false, edit = true).url,
                             visuallyHiddenText = Some(messages("change.dob")),
                             content = Text(messages("change").capitalize),
                             attributes = Map(
@@ -119,7 +119,7 @@
                 "id" -> "choose-something-else-link",
                 "data-journey-click" -> "button - click:User details not found:Choose something else to do"
             ),
-            href = Some(routes.SessionController.redirect("choose-an-option", cleanSession = false).absoluteURL())
+            href = Some(routes.SessionController.redirect("choose-an-option", cleanSession = false).url)
         ))
     </div>
 }

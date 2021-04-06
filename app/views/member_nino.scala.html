@@ -33,7 +33,7 @@
 @govuk_wrapper(pageTitle = messages("member.nino.page.title")) {
 
     @govukBackLink(BackLink(
-        href = routes.MemberNinoController.back(edit).absoluteURL(),
+        href = routes.MemberNinoController.back(edit).url,
         content = Text(messages("back")),
         attributes = Map("class" -> "link-back", "data-journey-click" -> "navigation - link:What is their NINO?:Back")
     ))

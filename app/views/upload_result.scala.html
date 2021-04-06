@@ -28,7 +28,7 @@
 @govuk_wrapper(pageTitle = messages("upload.result.page.title"), showUrBanner = true) {
 
     @govukBackLink(BackLink(
-        href = routes.ChooseAnOptionController.get.absoluteURL(),
+        href = routes.ChooseAnOptionController.get.url,
         attributes = Map(
             "id" -> "back",
             "data-journey-click" -> s"navigation - link:Residency status upload added ${year}:Back"
@@ -79,6 +79,6 @@
             "id" -> "choose-something-else",
             "data-journey-click" -> s"button - click:Residency status upload added ${year}:Choose something else to do"
         ),
-        href = Some(routes.ChooseAnOptionController.get.absoluteURL())
+        href = Some(routes.ChooseAnOptionController.get.url)
     ))
 }

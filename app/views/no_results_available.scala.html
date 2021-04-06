@@ -25,7 +25,7 @@
 	@govuk_wrapper(pageTitle = messages("no.results.available.page.title")) {
 
     @govukBackLink(BackLink(
-        href = routes.ChooseAnOptionController.get.absoluteURL(),
+        href = routes.ChooseAnOptionController.get.url,
         content = Text(messages("back")),
         attributes = Map("id" -> "back", "data-journey-click" -> "navigation - link:You have not uploaded a file:Back")
     ))
@@ -52,7 +52,7 @@
             "id" -> "choose-something-else",
             "data-journey-click" -> "button - click:You have not uploaded a file:Choose something else to do"
         ),
-        href = Some(routes.ChooseAnOptionController.get.absoluteURL())
+        href = Some(routes.ChooseAnOptionController.get.url)
 
     ))
 }

@@ -32,7 +32,7 @@
 @govuk_wrapper(pageTitle = messages("member.dob.page.title")) {
 
     @govukBackLink(BackLink(
-        href = routes.MemberDOBController.back(edit).absoluteURL(),
+        href = routes.MemberDOBController.back(edit).url,
         content = Text(messages("back")),
         attributes = Map("class" -> "link-back", "data-journey-click" -> "navigation - link:What is their DOB?:Back")
     ))

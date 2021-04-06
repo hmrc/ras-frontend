@@ -16,7 +16,7 @@
 
 package views
 
-import controllers.routes
+import controllers.{ChooseAnOptionController, routes}
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper
@@ -37,7 +37,7 @@ class FileNotAvailableViewSpec extends UnitSpec with RasTestHelper {
 
 		"contain a back link pointing to choose-an-option" in {
 			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("back").attr("href") shouldBe s"${routes.ChooseAnOptionController.get().absoluteURL()(fakeRequest)}"
+			doc(result).getElementById("back").attr("href") shouldBe s"${routes.ChooseAnOptionController.get().url}"
 		}
 
 		"contain the correct content paragraph" in {
@@ -47,7 +47,7 @@ class FileNotAvailableViewSpec extends UnitSpec with RasTestHelper {
 
 		"contain the correct link in the content paragraph" in {
 			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("sub-header-link").attr("href") shouldBe s"${routes.ChooseAnOptionController.get()}"
+			doc(result).getElementById("sub-header-link").attr("href") shouldBe s"${routes.ChooseAnOptionController.get().url}"
 		}
 
 		"contain the correct ga events" in {

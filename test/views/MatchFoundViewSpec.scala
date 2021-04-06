@@ -40,7 +40,6 @@ class MatchFoundViewSpec extends UnitSpec with RasTestHelper {
 
 		"contain customer details and residency status when match found and CY and CY+1 is present" in {
 			val result = matchFoundView("Jim Mcgill", dob.toString("d MMMM yyyy"), "AA123456A", SCOTTISH, Some(NON_SCOTTISH), 1000, 1001)(fakeRequest, testMessages, mockAppConfig)
-			val x = doc(result)
 			doc(result).getElementById("what-happens-next-content").text shouldBe Messages("match.found.top")
 			doc(result).getElementById("what-happens-next-sub-header").text shouldBe Messages("match.found.what.happens.next")
 			doc(result).getElementById("cy-residency-status").text shouldBe SCOTTISH

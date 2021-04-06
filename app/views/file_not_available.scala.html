@@ -23,7 +23,7 @@
 	@govuk_wrapper(pageTitle = messages("file.not.available.page.title")) {
 
     @govukBackLink(BackLink(
-        href = routes.ChooseAnOptionController.get.absoluteURL(),
+        href = routes.ChooseAnOptionController.get.url,
         content = Text(messages("back")),
         attributes = Map("id" -> "back", "class" -> "link-back", "data-journey-click" -> "navigation - link:File not available:Back")
     ))
