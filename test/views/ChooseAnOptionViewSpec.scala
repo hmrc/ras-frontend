@@ -21,7 +21,6 @@ import org.joda.time.DateTime
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper
-import views.html.choose_an_option
 
 
 class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
@@ -140,7 +139,8 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 
 			"contain File problem paragraphs" in {
 				val result = chooseAnOptionView(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph.start") + " " + Messages("upload.file.again") + " " + Messages("file.problem.paragraph.end")
+				doc(result).getElementsByClass("paragraph-info").get(0).text shouldBe Messages("file.problem") + Messages("problem.getting.result")
+				doc(result).getElementsByClass("paragraph-info").get(1).text shouldBe Messages("file.problem.paragraph.start") + " " + Messages("upload.file.again") + " " + Messages("file.problem.paragraph.end")
 			}
 		}
 
@@ -160,7 +160,8 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 
 			"contain File problem paragraphs" in {
 				val result = chooseAnOptionView(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("file.problem.paragraph.start") + " " + Messages("upload.file.again") + " " + Messages("file.problem.paragraph.end")
+				doc(result).getElementsByClass("paragraph-info").get(0).text shouldBe Messages("file.problem") + Messages("problem.getting.result")
+				doc(result).getElementsByClass("paragraph-info").get(1).text shouldBe Messages("file.problem.paragraph.start") + " " + Messages("upload.file.again") + " " + Messages("file.problem.paragraph.end")
 			}
 		}
 	}

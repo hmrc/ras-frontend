@@ -28,11 +28,11 @@
         attributes = Map("id" -> "back", "class" -> "link-back", "data-journey-click" -> "navigation - link:File not available:Back")
     ))
 
-    <div class="row">
+    <div>
         <h1 id="header" class="govuk-heading-xl">@messages("file.not.available.page.header")</h1>
     </div>
 
-    <div class="row">
+    <div>
         <p id="sub-header" class="govuk-body govuk-!-margin-bottom-8">
            @messages("file.not.available.sub-header")
             <a id='sub-header-link' class='govuk-body govuk-link' href='@routes.ChooseAnOptionController.get' data-journey-click='link - click:File not available:Choose something else to do'>@messages("file.not.available.link")</a>
