@@ -25,14 +25,14 @@ class FileUploadSuccessfulViewSpec extends UnitSpec with RasTestHelper {
 	"file upload success page" should {
 		"display file upload successful page" when {
 			"file has been uploaded successfully" in {
-				val result = views.html.file_upload_successful()(fakeRequest, testMessages, mockAppConfig)
+				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
 			}
 		}
 
 		"successful upload page" should {
 			"contain the correct content" in {
-				val result = views.html.file_upload_successful()(fakeRequest, testMessages, mockAppConfig)
+				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
 				doc(result).getElementById("first-description").text shouldBe Messages("upload.success.first-description")
 				doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
@@ -40,7 +40,7 @@ class FileUploadSuccessfulViewSpec extends UnitSpec with RasTestHelper {
 			}
 
 			"contains the correct ga events" in {
-				val result = views.html.file_upload_successful()(fakeRequest, testMessages, mockAppConfig)
+				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:Your file has been uploaded:Continue"
 			}
 		}

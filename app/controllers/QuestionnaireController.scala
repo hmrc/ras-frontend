@@ -29,18 +29,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class QuestionnaireController @Inject()(val connector: DefaultAuditConnector,
 																				val mcc: MessagesControllerComponents,
-																				implicit val appConfig: ApplicationConfig
+																				implicit val appConfig: ApplicationConfig,
+                                        feedbackQuestionaireView: views.html.feedback.feedbackQuestionaire,
+                                        feedbackThankYouView: views.html.feedback.thanks
 																			 ) extends FrontendController(mcc) with AuditService {
 	implicit val ec: ExecutionContext = mcc.executionContext
 
   def showQuestionnaire: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.feedback.feedbackQuestionaire(Questionnaire.form)))
+    Future.successful(Ok(feedbackQuestionaireView(Questionnaire.form)))
   }
 
   def submitQuestionnaire: Action[AnyContent] = Action.async { implicit request =>
       Questionnaire.form.bindFromRequest.fold(
         formWithErrors => {
-          Future.successful(BadRequest(views.html.feedback.feedbackQuestionaire(formWithErrors))
+          Future.successful(BadRequest(feedbackQuestionaireView(formWithErrors))
           )
         },
         data => {
@@ -51,13 +53,13 @@ class QuestionnaireController @Inject()(val connector: DefaultAuditConnector,
   }
 
   def feedbackThankyou: Action[AnyContent] = Action.async { implicit request =>
-      Future.successful(Ok(views.html.feedback.thanks()))
+      Future.successful(Ok(feedbackThankYouView()))
   }
 
   private def CreateQuestionnaireAudit(survey: Questionnaire): Map[String, String] = {
     Map(
-      "easyToUse" -> survey.easyToUse.mkString,
-      "satisfactionLevel" -> survey.satisfactionLevel.mkString,
+      "easyToUse" -> survey.easyToUse.toString,
+      "satisfactionLevel" -> survey.satisfactionLevel.toString,
       "whyGiveThisRating" -> survey.whyGiveThisRating.mkString
     )
   }

@@ -15,6 +15,11 @@
  *@
 
 @import config.ApplicationConfig
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukPanel: GovukPanel,
+        govukButton: GovukButton
+)
 @(name: String,
   dateOfBirth: String,
   nino: String,
@@ -23,38 +28,41 @@
   currentTaxYear: Int,
   nextTaxYear: Int)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@ras_main(title = messages("match.found.page.title"), showUrBanner = true) {
+@panelContent = {
+    @if(nextYearResidencyStatus.nonEmpty) {
+        <p>@messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)<br><strong id='cy-residency-status'>@messages(currentYearResidencyStatus)</strong></p><p>@messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)<br><strong id='ny-residency-status'>@messages(nextYearResidencyStatus.get)</strong></p>
+    } else {
+        <p>@messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)<br><strong id='cy-residency-status'>@messages(currentYearResidencyStatus)</strong></p>
+    }
+}
 
-    <div class="govuk-box-highlight">
-        <h1 class="heading-large">@messages("match.found.header",name)</h1>
-            <p role="text" class="lede">@messages("tax.year.period", currentTaxYear.toString, (currentTaxYear + 1).toString)
-                <span class="bold body-text" id="cy-residency-status">@messages(currentYearResidencyStatus)</span></p>
-            @if(nextYearResidencyStatus.nonEmpty) {
-            <p role="text" class="lede">@messages("tax.year.period", (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)
-                <span class="bold body-text" id="ny-residency-status">@messages(nextYearResidencyStatus.get)</span></p>
-            }
+@govuk_wrapper(pageTitle = messages("match.found.page.title"), showUrBanner = true) {
+
+    @govukPanel(Panel(
+        title = Text(messages("match.found.header", name)),
+        content = HtmlContent(panelContent)
+    ))
+
+    <div class="govuk-!-margin-top-6" id="what-happens-next">
+        <h2 class="govuk-heading-m" id="what-happens-next-sub-header">@messages("match.found.what.happens.next")</h2>
+
+        <p class="govuk-body" id="what-happens-next-content">@messages("match.found.top")</p>
+
+        @if(nextYearResidencyStatus.isEmpty) {
+            <p class="govuk-body" id="bottom-content-cy">@messages("match.found.bottom.current-year.bottom", (currentTaxYear + 1).toString, name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
+        }
     </div>
 
-    <h2 class="heading-medium" id="sub-header">@messages("match.found.what.happens.next")</h2>
+    <div class="govuk-!-margin-bottom-6" id="look-up-another-member">
+        <a class="govuk-body govuk-link" id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name",cleanSession = true)' data-journey-click="link - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Look up another member">@messages("look.up.another.member")</a>
+    </div>
 
-    <p id="top-content">@messages("match.found.top")</p>
-
-
-    @if(nextYearResidencyStatus.isEmpty) {
-        <p id="bottom-content-cy">@messages("match.found.bottom.current-year.bottom", (currentTaxYear + 1).toString, name, (currentTaxYear + 1).toString, (currentTaxYear + 2).toString)</p>
-    }
-
-    <div class="grid-row">
-        <div class ="column-two-thirds ras-top-margin-small">
-            <div class="ras-bottom-margin">
-                <a id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name",cleanSession = true)' data-journey-click="link - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Look up another member">@messages("look.up.another.member")</a>
-            </div>
-
-            <a id="choose-something-else"
-               class="button"
-               href='@routes.SessionController.redirect("choose-an-option",cleanSession = true)'
-               data-journey-click='button - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Choose something else to do'
-            >@messages("choose.something.else")</a>
-        </div>
+    <div id="choose-something-else">
+    @govukButton(Button(
+        classes = "button",
+        content = Text(messages("choose.something.else")),
+        attributes = if(nextYearResidencyStatus) Map("id" -> "choose-something-else-link", "data-journey-click" -> "button - click:Residency status added CY & CY + 1:Choose something else to do") else Map("id" -> "choose-something-else-link", "data-journey-click" -> "button - click:Residency status added CY:Choose something else to do"),
+        href = Some(routes.SessionController.redirect("choose-an-option",cleanSession = true).url)
+    ))
     </div>
 }

@@ -16,41 +16,42 @@
 
 package views
 
+import controllers.{ChooseAnOptionController, routes}
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.RasTestHelper
 
-class FileNotAuthorisedViewSpec extends UnitSpec with RasTestHelper {
+class FileNotAvailableViewSpec extends UnitSpec with RasTestHelper {
 
 	"file not available page" should {
 
 		"contain the correct page title" in {
-			val result = views.html.file_not_available()(fakeRequest, testMessages, mockAppConfig)
+			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("file.not.available.page.title")
 		}
 
 		"contain the correct page header" in {
-			val result = views.html.file_not_available()(fakeRequest, testMessages, mockAppConfig)
+			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("header").text shouldBe Messages("file.not.available.page.header")
 		}
 
-		"contain a back link pointing to /relief-at-source" in {
-			val result = views.html.file_not_available()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("back").attr("href") shouldBe "/relief-at-source"
+		"contain a back link pointing to choose-an-option" in {
+			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
+			doc(result).getElementById("back").attr("href") shouldBe s"${routes.ChooseAnOptionController.get().url}"
 		}
 
 		"contain the correct content paragraph" in {
-			val result = views.html.file_not_available()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("sub-header").text shouldBe Messages("file.not.available.sub-header", Messages("file.not.available.link"))
+			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
+			doc(result).getElementById("sub-header").text shouldBe Messages("file.not.available.sub-header") + " " + Messages("file.not.available.link")
 		}
 
 		"contain the correct link in the content paragraph" in {
-			val result = views.html.file_not_available()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("sub-header-link").attr("href") shouldBe "/relief-at-source"
+			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
+			doc(result).getElementById("sub-header-link").attr("href") shouldBe s"${routes.ChooseAnOptionController.get().url}"
 		}
 
 		"contain the correct ga events" in {
-			val result = views.html.file_not_available()(fakeRequest, testMessages, mockAppConfig)
+			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:File not available:Back"
 			doc(result).getElementById("sub-header-link").attr("data-journey-click") shouldBe "link - click:File not available:Choose something else to do"
 		}

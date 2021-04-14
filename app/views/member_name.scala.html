@@ -15,43 +15,95 @@
  *@
 
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukBackLink : GovukBackLink,
+        govukErrorSummary : GovukErrorSummary,
+        govukInput : GovukInput,
+        govukFieldset : GovukFieldset,
+        formWithCSRF: PlayFrontendFormWithCSRF,
+        govukButton : GovukButton
+)
+
 @(memberNameForm: Form[models.MemberName], edit: Boolean)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
+@govuk_wrapper(pageTitle = messages("member.name.page.title")) {
 
-@ras_main(title = messages("member.name.page.title")) {
+    @govukBackLink(BackLink(
+        href = routes.MemberNameController.back(edit).url,
+        content = Text(messages("back")),
+        attributes = Map("class" -> "link-back", "data-journey-click" -> "navigation - link:What is their name?:Back")
+    ))
 
-    <a class="link-back" href="@routes.MemberNameController.back(edit)"
-       data-journey-click="navigation - link:What is their name?:Back">@messages("back")</a>
-
-	@(if(memberNameForm.hasErrors) errorSummary(Messages("generic.errors_heading"), memberNameForm))
-
-    @form(action = routes.MemberNameController.post(edit)) {
-
-    <fieldset>
-        <legend>
-            <header class="page-header">
-                <h1 id="header" class="heading-xlarge">@messages("member.name.page.header")</h1>
-            </header>
-        </legend>
-
-        @rasInput(memberNameForm("firstName"),
-        '_label -> Html("first name".capitalize),
-        '_id -> "firstName")
-
-        @rasInput(memberNameForm("lastName"),
-        '_label -> Html("last name".capitalize),
-        '_id -> "lastName")
-
-    </fieldset>
-
-    <div>
-        <button class="button" type="submit" id="continue"
-                data-journey-click="button - click:What is their name?:Continue@if(edit){ and submit}">
-            @messages("continue")
-        </button>
-    </div>
+    @if(memberNameForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary(
+            errorList = memberNameForm.errors.asTextErrorLinks,
+            title = Text(messages("generic.errors_heading"))
+        ))
     }
 
+    @formWithCSRF(action = routes.MemberNameController.post(edit)) {
+
+        @govukFieldset(Fieldset(
+            legend = Some(Legend(
+                content = Text("What is the member’s name?"),
+                classes = "govuk-fieldset__legend--xl",
+                isPageHeading = true
+            )),
+            html = innerFieldsetHtml
+        ))
+
+        <div class="govuk-form-submit">
+            @govukButton(Button(
+                inputType = Some("submit"),
+                classes = "button",
+                content = Text(messages("continue")),
+                attributes =
+                        if(edit) {
+                            Map("id" -> "continue", "data-journey-click" -> "button - click:What is their name?:Continue and submit")
+                        } else {
+                            Map("id" -> "continue", "data-journey-click" -> "button - click:What is their name?:Continue")
+                        }
+            ))
+        </div>
+    }
+}
+
+@innerFieldsetHtml = {
+    @govukInput(Input(
+        id = "firstName",
+        name = "firstName",
+        classes = "govuk-input--width-10",
+        value = (memberNameForm("firstName").value),
+        label = Label(
+            isPageHeading = false,
+            content = HtmlContent("""First name <span class="govuk-visually-hidden">line 1 of 2</span>""")
+        ),
+        errorMessage = if(memberNameForm("firstName").hasErrors) {
+            Some(ErrorMessage(
+                attributes = Map("data-journey-click" -> "ras:error:firstName"),
+                content = Text(messages(memberNameForm("firstName").errors.head.message))
+            ))
+        } else { None }
+    ))
+
+    @govukInput(Input(
+        id = "lastName",
+        name = "lastName",
+        classes = "govuk-input--width-10",
+        value = (memberNameForm("lastName").value),
+        label = Label(
+            isPageHeading = false,
+            content = HtmlContent("""Last name <span class="govuk-visually-hidden">line 2 of 2</span>""")
+        ),
+        errorMessage = if(memberNameForm("lastName").hasErrors) {
+            Some(ErrorMessage(
+                attributes = Map("data-journey-click" -> "ras:error:lastName"),
+                content = Text(messages(memberNameForm("lastName").errors.head.message))
+            ))
+        } else { None }
+    ))
 }

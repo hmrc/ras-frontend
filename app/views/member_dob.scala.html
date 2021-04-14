@@ -15,66 +15,87 @@
  *@
 
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukBackLink : GovukBackLink,
+        govukErrorSummary : GovukErrorSummary,
+        formWithCSRF: PlayFrontendFormWithCSRF,
+        govukButton : GovukButton,
+        govukDateInput : GovukDateInput
+)
+
 @(memberDobForm: Form[models.MemberDateOfBirth], name:String, edit: Boolean)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form, input}
+@govuk_wrapper(pageTitle = messages("member.dob.page.title")) {
 
-@ras_main(title = messages("member.dob.page.title")) {
+    @govukBackLink(BackLink(
+        href = routes.MemberDOBController.back(edit).url,
+        content = Text(messages("back")),
+        attributes = Map("class" -> "link-back", "data-journey-click" -> "navigation - link:What is their DOB?:Back")
+    ))
 
-<a class="link-back" href="@routes.MemberDOBController.back(edit)"
-   data-journey-click="navigation - link:What is their DOB?:Back">@messages("back")</a>
+    @if(memberDobForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary(
+            errorList = memberDobForm.errors.asTextErrorLinks,
+            title = Text(messages("generic.errors_heading"))
+        ))
+    }
 
-@(if(memberDobForm.hasErrors) errorSummary(Messages("generic.errors_heading"), memberDobForm))
+    @formWithCSRF(action = routes.MemberDOBController.post(edit)) {
 
-@form(action = routes.MemberDOBController.post(edit)) {
-<div class ='@{if(memberDobForm.hasErrors) "form-field--error"}'>
+        @govukDateInput(DateInput(
+            id = "dateOfBirth",
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("member.dob.page.header", name)),
+                    classes = "govuk-fieldset__legend--xl",
+                    isPageHeading = true
+                ))
+            )),
+            items = Seq(
+                InputItem(
+                    name = "dateOfBirth.day",
+                    id = "dateOfBirth.day",
+                    autocomplete = Some("bday-day"),
+                    classes = if(memberDobForm("dateOfBirth.day").hasErrors) "govuk-input--width-2 govuk-input--error" else "govuk-input--width-2",
+                    value = memberDobForm("dateOfBirth.day").value,
+                    label = Some(messages("day").capitalize)
+                ),
+                InputItem(
+                    name = "dateOfBirth.month",
+                    id = "dateOfBirth.month",
+                    autocomplete = Some("bday-month"),
+                    classes = if(memberDobForm("dateOfBirth.month").hasErrors) "govuk-input--width-2 govuk-input--error" else "govuk-input--width-2",
+                    value = memberDobForm("dateOfBirth.month").value,
+                    label = Some(messages("month").capitalize)
+                ),
+                InputItem(
+                    name = "dateOfBirth.year",
+                    id = "dateOfBirth.year",
+                    autocomplete = Some("bday-year"),
+                    classes = if(memberDobForm("dateOfBirth.year").hasErrors) "govuk-input--width-4 govuk-input--error" else "govuk-input--width-4",
+                    value = memberDobForm("dateOfBirth.year").value,
+                    label = Some(messages("year").capitalize)
+                )
+            ),
+            hint = Some(Hint(
+                content = Text(messages("dob.hint"))
+            )),
+            errorMessage = if (memberDobForm.hasErrors) Some(memberDobForm.errors.head).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+            else None,
+         ))
 
-<fieldset class='inline form-date form-group' aria-describedby="dob-hint">
-    <legend>
-        <header class="page-header">
-            <h1 id="header" class="heading-xlarge">@messages("member.dob.page.header",name)</h1>
-        </header>
-    </legend>
-
-    <div id="dob-hint" class="form-hint">@Messages("dob.hint")</div>
-
-    @memberDobForm.errors.map { error => <span class="error-notification">@Messages(error.message, error.args: _*)</span>}
-    @input(
-    memberDobForm("dateOfBirth.day"),
-    '_label -> Messages("date.fields.day"),
-    '_labelClass -> "form-group form-group-day",
-    '_inputClass -> "form-control input--xsmall",
-    '_emptyValueText -> " ",
-    '_hideErrors -> " ",
-    '_hideBar -> " "
-    )
-    @input(
-    memberDobForm("dateOfBirth.month"),
-    '_label -> Messages("date.fields.month"),
-    '_labelClass -> "form-group form-group-month",
-    '_inputClass -> "form-control input--xsmall",
-    '_emptyValueText -> " ",
-    '_hideErrors -> " ",
-    '_hideBar -> " "
-    )
-    @input(
-    memberDobForm("dateOfBirth.year"),
-    '_label -> Messages("date.fields.year"),
-    '_labelClass -> "form-group form-group-year",
-    '_inputClass -> "form-control input--xsmall",
-    '_emptyValueText -> " ",
-    '_hideErrors -> " ",
-    '_hideBar -> " "
-    )
-
-</fieldset>
-</div>
-
-
-<button class="button" type="submit" id="continue"
-        data-journey-click="button - click:What is their DOB?:Continue@if(edit){ and submit}">
-    @messages("continue")
-</button>
-}
-
+        <div class="govuk-form-submit">
+        @govukButton(Button(
+            inputType = Some("submit"),
+            classes = "button",
+            content = Text(messages("continue")),
+            attributes = if(edit) Map("id" -> "continue", "data-journey-click" -> "button - click:What is their DOB?:Continue and submit")
+            else Map("id" -> "continue", "data-journey-click" -> "button - click:What is their DOB?:Continue")
+        ))
+        </div>
+    }
 }

@@ -15,27 +15,44 @@
  *@
 
 @import config.ApplicationConfig
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukBackLink: GovukBackLink,
+        hmrcPageHeading: HmrcPageHeading,
+        govukButton: GovukButton
+)
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
-	@ras_main(title = messages("no.results.available.page.title")) {
+	@govuk_wrapper(pageTitle = messages("no.results.available.page.title")) {
 
-   <a class="link-back" id="back" href="@routes.ChooseAnOptionController.get" data-journey-click="navigation - link:You have not uploaded a file:Back">@messages("back")</a>
+    @govukBackLink(BackLink(
+        href = routes.ChooseAnOptionController.get.url,
+        content = Text(messages("back")),
+        attributes = Map("id" -> "back", "data-journey-click" -> "navigation - link:You have not uploaded a file:Back")
+    ))
 
-   <div class="row">
-    <h1 id="header" class="heading-xlarge">@messages("no.results.available.page.header")</h1>
-   </div>
-   <div class="row ras-bottom-margin">
-    <p id="sub-header">
+    @hmrcPageHeading(PageHeading(
+        text = messages("no.results.available.page.header")
+    ))
+
+   <div class="govuk-!-margin-bottom-6">
+    <p id="sub-header" class="govuk-body">
     @Html(
      messages(
       "no.results.available.sub-header",
-      "<a id='upload-link' href='" + routes.FileUploadController.get + "' data-journey-click='link - click:You have not uploaded a file:Upload a file'>" + messages("no.results.available.link") + "</a>"
+      "<a id='upload-link' class='govuk-link' href='" + routes.FileUploadController.get + "' data-journey-click='link - click:You have not uploaded a file:Upload a file'>" + messages("no.results.available.link") + "</a>"
      )
     )
     </p>
    </div>
 
-   <div class="row">
-    <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:You have not uploaded a file:Choose something else to do">@messages("choose.something.else")</a>
-   </div>
+    @govukButton(Button(
+        classes = "button",
+        content = Text(messages("choose.something.else")),
+        attributes = Map(
+            "id" -> "choose-something-else",
+            "data-journey-click" -> "button - click:You have not uploaded a file:Choose something else to do"
+        ),
+        href = Some(routes.ChooseAnOptionController.get.url)
 
+    ))
 }

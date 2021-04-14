@@ -49,7 +49,7 @@ class ChooseAnOptionControllerSpec extends UnitSpec with RasTestHelper {
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
 
-  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(mockResidencyStatusAPIConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig) {
+  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(mockResidencyStatusAPIConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, chooseAnOptionView, fileReadyView, uploadResultView, resultsNotAvailableYetView, noResultsAvailableView) {
 
     when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.NoFileSession))
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)

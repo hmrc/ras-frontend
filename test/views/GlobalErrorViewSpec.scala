@@ -29,11 +29,11 @@ class GlobalErrorViewSpec extends UnitSpec with RasTestHelper {
 	"global error page" should {
 
 		"contain correct title and header" in {
-			val result = views.html.global_error()(fakeRequest, testMessages, mockAppConfig)
+			val result = globalErrorView()(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))
 			doc.title shouldBe Messages("global.error.page.title")
-			doc.getElementById("header").text shouldBe Messages("global.error.header")
-			doc.getElementById("message").text shouldBe Messages("global.error.message")
+			doc.getElementsByClass("govuk-heading-l").text shouldBe Messages("global.error.header")
+			doc.getElementsByClass("govuk-body").text shouldBe Messages("global.error.message")
 		}
 	}
 }

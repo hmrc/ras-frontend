@@ -36,8 +36,8 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
 																		 val shortLivedCache: ShortLivedCache,
 																		 val sessionService: SessionService,
 																		 val mcc: MessagesControllerComponents,
-																		 implicit val appConfig: ApplicationConfig
-																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
+																		 implicit val appConfig: ApplicationConfig,
+                                     memberNameView: views.html.member_name) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
@@ -47,8 +47,8 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
       isAuthorised.flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
-            case Some(session) => Ok(views.html.member_name(form.fill(session.name), edit))
-            case _ => Ok(views.html.member_name(form, edit))
+            case Some(session) => Ok(memberNameView(form.fill(session.name), edit))
+            case _ => Ok(memberNameView(form, edit))
           }
         case Left(resp) =>
           Logger.warn("[NameController][get] user Not authorised")
@@ -62,7 +62,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
       form.bindFromRequest.fold(
         formWithErrors => {
           Logger.warn("[NameController][post] Invalid form field passed")
-          Future.successful(BadRequest(views.html.member_name(formWithErrors, edit)))
+          Future.successful(BadRequest(memberNameView(formWithErrors, edit)))
         },
         memberName => {
           sessionService.cacheName(memberName) flatMap {

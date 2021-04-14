@@ -15,16 +15,23 @@
  *@
 
 @import config.ApplicationConfig
+@this(
+        govuk_wrapper: views.html.govuk_wrapper,
+        govukButton: GovukButton)
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
-	@ras_main(title = messages("cannot.upload.another.file.page.title")) {
+	@govuk_wrapper(pageTitle = messages("cannot.upload.another.file.page.title")) {
 
-    <div class="row ras-bottom-margin">
-        <h1 id="page-header" class="heading-xlarge">@messages("cannot.upload.another.file.page.header")</h1>
-        <p id="page-clarification">@messages("cannot.upload.another.file.page.clarification")</p>
+    <div id="cannot-upload-another-file" class="govuk-!-margin-bottom-6">
+        <h1 id="page-header" class="govuk-heading-xl">@messages("cannot.upload.another.file.page.header")</h1>
+        <p id="page-clarification" class="govuk-body">@messages("cannot.upload.another.file.page.clarification")</p>
     </div>
 
-    <div class="row">
-        <a id="choose-something-else" class="button" href="@routes.ChooseAnOptionController.get" data-journey-click="button - click:You cannot upload another file:Choose something else to do">@messages("choose.something.else")</a>
-    </div>
-
+    @govukButton(Button(
+        classes = "button",
+        content = Text(messages("choose.something.else")),
+        attributes = Map(
+            "id" -> "choose-something-else",
+            "data-journey-click" -> "button - click:You cannot upload another file:Choose something else to do"
+        )
+    ))
 }

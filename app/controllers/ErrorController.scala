@@ -30,7 +30,11 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 																val shortLivedCache: ShortLivedCache,
 																val sessionService: SessionService,
 																val mcc: MessagesControllerComponents,
-																implicit val appConfig: ApplicationConfig) extends FrontendController(mcc) with RasController {
+																implicit val appConfig: ApplicationConfig,
+                                globalErrorView: views.html.global_error,
+                                problemUploadingFileView: views.html.problem_uploading_file,
+                                fileNotAvailableView: views.html.file_not_available,
+                                unauthorisedView: views.html.unauthorised) extends FrontendController(mcc) with RasController {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -39,7 +43,7 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
       isAuthorised.flatMap {
         case Right(_) =>
           Logger.info("[ErrorController][renderGlobalErrorPage] rendering global error page")
-          Future.successful(InternalServerError(views.html.global_error()))
+          Future.successful(InternalServerError(globalErrorView()))
         case Left(resp) =>
           Logger.warn("[ErrorController][renderGlobalErrorPage] user not authorised")
           resp
@@ -51,7 +55,7 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
       isAuthorised.flatMap {
         case Right(_) =>
           Logger.info("[ErrorController][renderProblemUploadingFilePage] rendering problem uploading file page")
-          Future.successful(InternalServerError(views.html.problem_uploading_file()))
+          Future.successful(InternalServerError(problemUploadingFileView()))
         case Left(resp) =>
           Logger.warn("[ErrorController][renderProblemUploadingFilePage] user not authorised")
           resp
@@ -63,7 +67,7 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
       isAuthorised.flatMap {
         case Right(_) =>
           Logger.info("[ErrorController][fileNotAvailable] rendering file not available page")
-          Future.successful(InternalServerError(views.html.file_not_available()))
+          Future.successful(InternalServerError(fileNotAvailableView()))
         case Left(resp) =>
           Logger.warn("[ErrorController][fileNotAvailable] user not authorised")
           resp
@@ -72,6 +76,6 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 
   def notAuthorised: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(views.html.unauthorised()))
+      Future.successful(Ok(unauthorisedView()))
   }
 }

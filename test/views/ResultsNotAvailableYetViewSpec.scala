@@ -25,42 +25,42 @@ class ResultsNotAvailableYetViewSpec extends UnitSpec with RasTestHelper {
 
 	"results not available yet page" should {
 		"contain the correct page title" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("results.not.available.yet.page.title")
 		}
 
 		"contain the correct page header" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("header").text shouldBe Messages("results.not.available.yet.page.header")
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
+			doc(result).getElementsByClass("govuk-heading-xl").text shouldBe Messages("results.not.available.yet.page.header")
 		}
 
 		"contain the correct sub header 1" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("sub-header1").text shouldBe Messages("results.not.available.yet.sub-header1")
 		}
 
 		"contain the correct sub header 2" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("sub-header2").text shouldBe Messages("results.not.available.yet.sub-header2")
 		}
 
 		"contain a back link pointing to /" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("href") should include("/")
 		}
 
 		"contain a choose something else to do button" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
 		}
 
 		"contain a choose something else to do button that points to /" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("choose-something-else").attr("href") should include("/")
 		}
 
 		"contain the correct ga events" in {
-			val result = views.html.results_not_available_yet()(fakeRequest, testMessages, mockAppConfig)
+			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Results are still being added:Back"
 			doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Results are still being added:Choose something else to do"
 		}

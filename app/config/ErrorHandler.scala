@@ -23,14 +23,15 @@ import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
-														 implicit val appConfig: ApplicationConfig
-														) extends FrontendErrorHandler with I18nSupport {
+														 implicit val appConfig: ApplicationConfig,
+														 errorPageView: views.html.error,
+														 pageNotFoundView: views.html.global_page_not_found) extends FrontendErrorHandler with I18nSupport {
 
 	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html = {
-		views.html.error(pageTitle, heading, message)
+		errorPageView(pageTitle, heading, message)
 	}
 
 	override def notFoundTemplate(implicit rh: Request[_]): Html = {
-		views.html.global_page_not_found()
+		pageNotFoundView()
 	}
 }

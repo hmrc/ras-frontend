@@ -24,27 +24,27 @@ class CannotUploadAnotherFileViewSpec extends UnitSpec with RasTestHelper {
 
 	"cannot upload another file page" should {
 		"contains the right title" in {
-			val result = views.html.cannot_upload_another_file()(fakeRequest, testMessages, mockAppConfig)
+			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title() shouldBe Messages("cannot.upload.another.file.page.title")
 		}
 
 		"contains the right header" in {
-			val result = views.html.cannot_upload_another_file()(fakeRequest, testMessages, mockAppConfig)
+			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("page-header").text shouldBe Messages("cannot.upload.another.file.page.header")
 		}
 
 		"contains a clarification paragraph" in {
-			val result = views.html.cannot_upload_another_file()(fakeRequest, testMessages, mockAppConfig)
+			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("page-clarification").text shouldBe Messages("cannot.upload.another.file.page.clarification")
 		}
 
 		"contains a 'choose something else to do' button" in {
-			val result = views.html.cannot_upload_another_file()(fakeRequest, testMessages, mockAppConfig)
+			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
 		}
 
 		"contains the correct ga events" in {
-			val result = views.html.cannot_upload_another_file()(fakeRequest, testMessages, mockAppConfig)
+			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You cannot upload another file:Choose something else to do"
 		}
 	}
