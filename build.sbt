@@ -12,9 +12,9 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 val appName = "ras-frontend"
 
 lazy val plugins: Seq[Plugins] =
-  Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
+  Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
 
-lazy val playSettings: Seq[Setting[_]] = Seq.empty
+val silencerVersion = "1.7.1"
 
 val compile: Seq[ModuleID] = Seq(
   ws,
@@ -23,7 +23,9 @@ val compile: Seq[ModuleID] = Seq(
   "uk.gov.hmrc" %% "auth-client"         % "3.3.0-play-26",
   "uk.gov.hmrc" %% "http-caching-client" % "9.2.0-play-26",
   "uk.gov.hmrc" %% "time"                % "3.19.0",
-  "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.54.0-play-26"
+  "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.54.0-play-26",
+  compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+  "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
 )
 
 val test: Seq[ModuleID] = Seq(
@@ -54,7 +56,6 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(plugins: _*)
   .settings(
     majorVersion := 0,
-    playSettings,
     scoverageSettings,
     publishingSettings,
     defaultSettings(),
@@ -65,10 +66,6 @@ lazy val microservice = Project(appName, file("."))
     retrieveManaged := true,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     routesGenerator := InjectedRoutesGenerator,
-    resolvers ++= Seq(
-      Resolver.bintrayRepo("hmrc", "releases"),
-      Resolver.jcenterRepo
-    )
   )
 
 TwirlKeys.templateImports ++= Seq(
@@ -76,4 +73,8 @@ TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.govukfrontend.views.html.helpers._",
   "uk.gov.hmrc.hmrcfrontend.views.html.components._",
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
+)
+
+scalacOptions ++= Seq(
+  "-P:silencer:pathFilters=views;routes"
 )
