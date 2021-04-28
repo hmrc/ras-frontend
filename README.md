@@ -1,8 +1,5 @@
 # ras-frontend
 
-[![Build Status](https://travis-ci.org/hmrc/ras-frontend.svg)](https://travis-ci.org/hmrc/ras-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/ras-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/ras-frontend/_latestVersion)
-
-
 This service is designed for Pension Scheme Administrators and Pension Scheme Practitioners to get residency status
 of a pension scheme member.
 
