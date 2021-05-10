@@ -17,8 +17,8 @@
 package controllers
 
 import config.ApplicationConfig
-import play.api.Logger
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.Logging
+import play.api.mvc.Result
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
@@ -27,11 +27,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait RasController extends AuthorisedFunctions {
+trait RasController extends AuthorisedFunctions with Logging {
 
 	val appConfig: ApplicationConfig
 
-	def isAuthorised()(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
+	def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
     authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
     ).retrieve(authorisedEnrolments) {
 			enrolments =>
@@ -43,12 +43,12 @@ trait RasController extends AuthorisedFunctions {
   }
 
   def notLogged(e: NoActiveSession): Future[Result] = {
-    Logger.warn(s"[RasController][notLogged] No Active Session - $e")
+    logger.warn(s"[RasController][notLogged] No Active Session - $e")
     Future.successful(toGGLogin(appConfig.loginCallback))
   }
 
   def unAuthorise(ex: AuthorisationException): Future[Result] = {
-    Logger.warn(s"[RasController][unAuthorise] User not authorised - $ex")
+    logger.warn(s"[RasController][unAuthorise] User not authorised - $ex")
     Future.successful(Redirect(routes.ErrorController.notAuthorised()))
   }
 

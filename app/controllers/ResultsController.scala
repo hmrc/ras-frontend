@@ -18,11 +18,11 @@ package controllers
 
 import config.ApplicationConfig
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache, TaxYearResolver}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
 
@@ -33,7 +33,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
                                   implicit val appConfig: ApplicationConfig,
                                   matchFoundView: views.html.match_found,
                                   matchNotFoundView: views.html.match_not_found,
-                                 ) extends FrontendController(mcc) with PageFlowController {
+                                 ) extends FrontendController(mcc) with PageFlowController with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -55,7 +55,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
 
                   sessionService.resetRasSession()
 
-                  Logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
+                  logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
                   Ok(matchFoundView(
                     name, dateOfBirth, nino,
                     currentYearResidencyStatus,
@@ -63,15 +63,15 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
                     currentTaxYear, nextTaxYear))
 
                 case _ =>
-                  Logger.info("[ResultsController][matchFound] Session does not contain residency status result - wrong result")
+                  logger.info("[ResultsController][matchFound] Session does not contain residency status result - wrong result")
                   Redirect(routes.ChooseAnOptionController.get())
               }
             case _ =>
-              Logger.error("[ResultsController][matchFound] failed to retrieve ras session")
+              logger.error("[ResultsController][matchFound] failed to retrieve ras session")
               Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) =>
-          Logger.warn("[ResultsController][matchFound] user Not authorised")
+          logger.warn("[ResultsController][matchFound] user Not authorised")
           res
       }
   }
@@ -82,7 +82,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) =>
-              if (session.name.hasAValue() && session.nino.hasAValue() && session.dateOfBirth.hasAValue()) {
+              if (session.name.hasAValue && session.nino.hasAValue && session.dateOfBirth.hasAValue) {
                 session.residencyStatusResult match {
                   case None =>
 
@@ -90,23 +90,23 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
                     val nino = session.nino.nino
                     val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
 
-                    Logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
+                    logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
                     Ok(matchNotFoundView(name, dateOfBirth, nino))
 
                   case Some(_) =>
-                    Logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
+                    logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
                     Redirect(routes.ChooseAnOptionController.get())
                 }
               } else {
-                Logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
+                logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
                 Redirect(routes.ChooseAnOptionController.get())
               }
             case _ =>
-              Logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
+              logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
               Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) =>
-          Logger.warn("[ResultsController][matchFound] user Not authorised")
+          logger.warn("[ResultsController][matchFound] user Not authorised")
           res
       }
   }
@@ -120,7 +120,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) =>
-          Logger.warn("[ResultsController][back] user Not authorised")
+          logger.warn("[ResultsController][back] user Not authorised")
           res
       }
   }

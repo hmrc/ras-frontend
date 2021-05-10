@@ -16,18 +16,20 @@
 
 package views
 
+import akka.util.Helpers.Requiring
 import forms.MemberDateOfBirthForm
 import models.MemberDateOfBirth
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class MemberDOBViewSpec extends UnitSpec with RasTestHelper {
+class MemberDOBViewSpec extends WordSpecLike with RasTestHelper {
 
 	val memberDOBForm:Form[MemberDateOfBirth] = MemberDateOfBirthForm(Some("Jackie Chan")).bind(Map("dateOfBirth.day" -> "1", "dateOfBirth.month" -> "1", "dateOfBirth.year" -> "2000"))
 
-	"member dob page" should {
+	"member dob page" must {
 		"contain correct page elements and content" when {
 			"rendered" in {
 				val result = memberDobView(memberDOBForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)

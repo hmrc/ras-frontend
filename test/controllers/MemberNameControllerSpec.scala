@@ -19,17 +19,18 @@ package controllers
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, equal, include}
 import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
+class MemberNameControllerSpec extends WordSpecLike with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
@@ -50,7 +51,7 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
-  "MemberNameController" should {
+  "MemberNameController" must {
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
@@ -77,7 +78,7 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
     }
   }
 
-  "Member name controller form submission" should {
+  "Member name controller form submission" must {
 
     "return bad request when form error present" in {
       val postData = Json.obj(
@@ -97,7 +98,7 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
       when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(session)))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
-      redirectLocation(result).get should include("/member-national-insurance-number")
+      redirectLocation(result) should include("/member-national-insurance-number")
     }
 
     "redirect to match found page when edit mode is true and matching successful" in {
@@ -107,17 +108,17 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
       status(result) should equal(SEE_OTHER)
-      redirectLocation(result).get should include("/member-residency-status")
+      redirectLocation(result) should include("/member-residency-status")
 
       verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
-      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(Upstream4xxResponse("Member not found", 403, 403)))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(UpstreamErrorResponse("Member not found", 403, 403)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
-      redirectLocation(result).get should include("/no-residency-status-displayed")
+      redirectLocation(result) should include("/no-residency-status-displayed")
 
       verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
     }
@@ -126,23 +127,23 @@ class MemberNameControllerSpec extends UnitSpec with RasTestHelper {
       when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(None))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
   }
 
-  "Member name controller back" should {
+  "Member name controller back" must {
 
     "return to chooseAnOption page when back link is clicked and edit mode is false" in {
       val result = TestMemberNameController.back().apply(fakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/")
+      redirectLocation(result) should include("/")
     }
 
     "return to match not found page when back link is clicked and edit mode is true" in {
       val result = TestMemberNameController.back(true).apply(fakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/no-residency-status-displayed")
+      redirectLocation(result) should include("/no-residency-status-displayed")
     }
   }
 }

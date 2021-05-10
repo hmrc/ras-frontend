@@ -28,7 +28,7 @@ To run a single unit test/spec
 
 1. `cd $workspace`
 2. `sbt`
-3. `test-only *SpecToUse*` - Example being the class name of your UnitSpec
+3. `test-only *SpecToUse*` - Example being the class name of your WordSpecLike
 
 #### Test Coverage
 To run the test coverage suite `scoverage`

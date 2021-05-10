@@ -19,18 +19,19 @@ package controllers
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, equal, include}
 import play.api.http.Status.OK
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
+class MemberNinoControllerSpec extends WordSpecLike with RasTestHelper {
 
   val memberName: MemberName = MemberName("Jackie", "Chan")
   val memberNino: MemberNino = MemberNino("AB123456C")
@@ -50,7 +51,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
     when(mockSessionService.cacheNino(any())(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
-  "MemberNinoController get" should {
+  "MemberNinoController get" must {
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
@@ -71,7 +72,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
     }
   }
 
-  "MemberNinoController post" should {
+  "MemberNinoController post" must {
 
     "return bad request with session name when form error is present and session contains a name" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -100,7 +101,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("member-date-of-birth")
+      redirectLocation(result) should include("member-date-of-birth")
     }
 
     "redirect to match found page when edit mode is true and matching successful" in {
@@ -110,7 +111,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
       status(result) should equal(SEE_OTHER)
-      redirectLocation(result).get should include("/member-residency-status")
+      redirectLocation(result) should include("/member-residency-status")
 
       verify(mockSessionService, atLeastOnce()).cacheNino(any())(any())
     }
@@ -120,7 +121,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
 
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
-      redirectLocation(result).get should include("/no-residency-status-displayed")
+      redirectLocation(result) should include("/no-residency-status-displayed")
 
       verify(mockSessionService, atLeastOnce()).cacheNino(any())(any())
     }
@@ -129,7 +130,7 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
       when(mockSessionService.cacheNino(any())(any())).thenReturn(Future.successful(None))
       val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
   }
@@ -138,20 +139,20 @@ class MemberNinoControllerSpec extends UnitSpec with RasTestHelper {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
     val result = TestMemberNinoController.back().apply(FakeRequest())
     status(result) shouldBe SEE_OTHER
-    redirectLocation(result).get should include("/member-name")
+    redirectLocation(result) should include("/member-name")
   }
 
   "return to match not found page when back link is clicked and edit mode is true" in {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
     val result = TestMemberNinoController.back(true).apply(FakeRequest())
     status(result) shouldBe SEE_OTHER
-    redirectLocation(result).get should include("/no-residency-status-displayed")
+    redirectLocation(result) should include("/no-residency-status-displayed")
   }
 
   "redirect to global error page navigating back with no session" in {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
     val result = TestMemberNinoController.back().apply(FakeRequest())
     status(result) shouldBe SEE_OTHER
-    redirectLocation(result).get should include("global-error")
+    redirectLocation(result) should include("global-error")
   }
 }

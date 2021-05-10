@@ -20,14 +20,13 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter
+import org.scalatest.Matchers.{contain, convertToAnyShouldWrapper}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
+trait AuditServiceSpec extends WordSpecLike with RasTestHelper with BeforeAndAfter {
 
 	class TestService extends AuditService {
 		override val connector: DefaultAuditConnector = mockAuditConnector
@@ -37,7 +36,7 @@ trait AuditServiceSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
     reset(mockAuditConnector)
   }
 
-  "AuditService" should {
+  "AuditService" must {
 
     val fakeAuditType = "fake-audit-type"
     val fakeEndpoint = "/fake-endpoint"

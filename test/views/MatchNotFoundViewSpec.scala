@@ -18,18 +18,19 @@ package views
 
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class MatchNotFoundViewSpec extends UnitSpec with RasTestHelper {
+class MatchNotFoundViewSpec extends WordSpecLike with RasTestHelper {
 
 	val nino: String = "AA123456A"
 	val dob: String = new LocalDate(1999, 1, 1).toString("d MMMM yyyy")
 
-	"match not found page" should {
+	"match not found page" must {
 		"contain correct title when match not found" in {
 			val result = matchNotFoundView("Jim McGill", dob, nino)(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))

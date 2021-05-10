@@ -16,14 +16,15 @@
 
 package views
 
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class ResultsNotAvailableYetViewSpec extends UnitSpec with RasTestHelper {
+class ResultsNotAvailableYetViewSpec extends WordSpecLike with RasTestHelper {
 
-	"results not available yet page" should {
+	"results not available yet page" must {
 		"contain the correct page title" in {
 			val result = resultsNotAvailableYetView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("results.not.available.yet.page.title")

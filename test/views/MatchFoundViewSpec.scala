@@ -18,20 +18,21 @@ package views
 
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
 import play.api.test.Helpers.contentAsString
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 import play.api.test.Helpers._
 
 
-class MatchFoundViewSpec extends UnitSpec with RasTestHelper {
+class MatchFoundViewSpec extends WordSpecLike with RasTestHelper {
 
 	override val SCOTTISH = "Scotland"
 	val NON_SCOTTISH = "England, Northern Ireland or Wales"
 
 	val dob: LocalDate = new LocalDate(1999, 1, 1)
-	"match found page" should {
+	"match found page" must {
 		"contain correct title when match found" in {
 			val result = matchFoundView("Jim Mcgill", dob.toString("d MMMM yyyy"), "AA123456A", NON_SCOTTISH, Some(SCOTTISH), 1000, 1001)(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))

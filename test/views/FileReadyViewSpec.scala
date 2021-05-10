@@ -16,14 +16,15 @@
 
 package views
 
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class FileReadyViewSpec extends UnitSpec with RasTestHelper {
+class FileReadyViewSpec extends WordSpecLike with RasTestHelper {
 
-	"file ready page" should {
+	"file ready page" must {
 		"contain the correct page title" in {
 			val result = fileReadyView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("file.ready.page.title")

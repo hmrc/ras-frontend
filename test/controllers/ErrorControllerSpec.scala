@@ -19,16 +19,17 @@ package controllers
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class ErrorControllerSpec extends UnitSpec with RasTestHelper {
+class ErrorControllerSpec extends WordSpecLike with RasTestHelper {
 
   override val fakeRequest = FakeRequest("GET", "/")
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
@@ -41,7 +42,7 @@ class ErrorControllerSpec extends UnitSpec with RasTestHelper {
   }
 
 
-  "ErrorController" should {
+  "ErrorController" must {
     "return error when global error endpoint is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR

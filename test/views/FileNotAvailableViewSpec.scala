@@ -17,13 +17,14 @@
 package views
 
 import controllers.{ChooseAnOptionController, routes}
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class FileNotAvailableViewSpec extends UnitSpec with RasTestHelper {
+class FileNotAvailableViewSpec extends WordSpecLike with RasTestHelper {
 
-	"file not available page" should {
+	"file not available page" must {
 
 		"contain the correct page title" in {
 			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)

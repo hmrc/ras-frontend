@@ -16,28 +16,29 @@
 
 package controllers
 
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.libs.json._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class QuestionnaireControllerSpec extends UnitSpec with RasTestHelper {
+class QuestionnaireControllerSpec extends WordSpecLike with RasTestHelper {
 
   override val fakeRequest = FakeRequest("GET", "/")
   val fakePostRequest = FakeRequest("POST", "/relief-at-source/signed-out")
 
   val TestController = new QuestionnaireController(mockAuditConnector, mockMCC, mockAppConfig, feedbackQuestionnaireView, thanksFeedbackQuestionnaireView)
 
-  "Calling the QuestionnaireController.showQuestionnaire" should {
+  "Calling the QuestionnaireController.showQuestionnaire" must {
     "respond with OK" in {
       val result = TestController.showQuestionnaire(fakeRequest)
       status(result) shouldBe Status.OK
     }
   }
 
-  "Calling the QuestionnaireController.submitQuestionnaire" should {
+  "Calling the QuestionnaireController.submitQuestionnaire" must {
     "respond with OK" in {
       val postData = Json.obj("easyToUse" -> 1, "satisfactionLevel" -> 1, "whyGiveThisRating" -> "whyGiveThisRating", "referer" -> "referer")
       val result = TestController.submitQuestionnaire(fakePostRequest.withJsonBody(Json.toJson(postData)))
@@ -45,14 +46,14 @@ class QuestionnaireControllerSpec extends UnitSpec with RasTestHelper {
     }
   }
 
-  "Calling the QuestionnaireController.feedbackThankyou" should {
+  "Calling the QuestionnaireController.feedbackThankyou" must {
     "respond with OK" in {
       val result = TestController.feedbackThankyou(fakeRequest)
       status(result) shouldBe Status.OK
     }
   }
 
-  "Questionnaire form submission" should {
+  "Questionnaire form submission" must {
 
     "return bad request when form error present" in {
       val postData = Json.obj(

@@ -21,6 +21,7 @@ import models._
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -29,7 +30,7 @@ class UserDetailsConnector @Inject()(val http: DefaultHttpClient) {
 	implicit val userDetailsFormats: OFormat[UserDetails] = Json.format[UserDetails]
 
 	def getUserDetails(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserDetails] = {
-    http.GET[UserDetails](url)(implicitly, hc, ec)
+    http.GET[UserDetails](url)
   }
 
 }

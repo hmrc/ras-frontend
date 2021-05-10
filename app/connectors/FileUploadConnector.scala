@@ -22,6 +22,7 @@ import models.ApiVersion
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -58,7 +59,7 @@ class FileUploadConnector @Inject()(val http: DefaultHttpClient,
 
     http.POST[JsValue, HttpResponse](
       s"$fileUploadBaseUrl/$fileUploadUrlSuffix", requestBody, Seq()
-    )(implicitly, implicitly, hc, ec)
+    )
 
   }
 }

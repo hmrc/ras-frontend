@@ -16,25 +16,25 @@
 
 package models
 
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 
-class MemberNameSpec extends UnitSpec {
+class MemberNameSpec extends WordSpecLike {
 
-  "hasValue" should {
+  "hasValue" must {
 
     "return false if first name is empty" in {
       val name = MemberName("", "last name")
-      assert(!name.hasAValue())
+      assert(!name.hasAValue)
     }
 
     "return false if firstName & lastName are empty" in {
       val name = MemberName ("", "")
-      assert(!name.hasAValue())
+      assert(!name.hasAValue)
     }
 
     "return true if firstName & lastName contain values" in {
       val name = MemberName ("Jim", "Jimson")
-      assert(name.hasAValue())
+      assert(name.hasAValue)
     }
   }
 }

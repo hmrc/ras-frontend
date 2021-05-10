@@ -24,17 +24,17 @@ import akka.stream.scaladsl.StreamConverters
 import config.ApplicationConfig
 import javax.inject.Inject
 import models.{ApiVersion, MemberDetails, ResidencyStatus}
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
-                                            val appConfig: ApplicationConfig) {
+                                            val appConfig: ApplicationConfig) extends Logging {
 
   lazy val serviceUrl: String = appConfig.rasApiBaseUrl
   lazy val residencyStatusUrl: String = appConfig.rasApiResidencyStatusEndpoint
@@ -42,22 +42,20 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
   lazy val residencyStatusVersion: ApiVersion = appConfig.rasApiVersion
 
   def getResidencyStatus(memberDetails: MemberDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ResidencyStatus] = {
-
     val rasUri = s"$serviceUrl/$residencyStatusUrl"
-
     val headerCarrier = hc.withExtraHeaders("Accept" -> s"application/vnd.hmrc.$residencyStatusVersion+json", "Content-Type" -> "application/json" )
+    logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
 
-    Logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
-
-    http.POST[JsValue, ResidencyStatus](rasUri, memberDetails.asCustomerDetailsPayload)(implicitly, rds = responseHandler, headerCarrier, ec)
+    http.POST[JsValue, ResidencyStatus](rasUri, memberDetails.asCustomerDetailsPayload)(implicitly, responseHandler, headerCarrier, ec)
   }
 
-  def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier): Future[Option[InputStream]] = {
+  def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[InputStream]] = {
     implicit val system: ActorSystem = ActorSystem()
     implicit val materializer: ActorMaterializer = ActorMaterializer()
+    val allHeaders = hc.headers(HeaderNames.explicitlyIncludedHeaders) ++ hc.extraHeaders ++ hc.otherHeaders
 
-    Logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
-    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName").stream().map { res =>
+    logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
+    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName", allHeaders).stream().map { res =>
       Some(res.bodyAsSource.runWith(StreamConverters.asInputStream()))
     }
 
@@ -65,24 +63,22 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
 
   def deleteFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
-    http.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl$fileName/$userId")(implicitly, hc, ec)
+    http.DELETE[HttpResponse](s"$serviceUrl$fileDeletionUrl$fileName/$userId")
   }
 
-  private val responseHandler = new HttpReads[ResidencyStatus] {
-    override def read(method: String, url: String, response: HttpResponse): ResidencyStatus = {
-      response.status match {
-        case 200 => Try(response.json.validate[ResidencyStatus]) match {
-          case Success(JsSuccess(payload, _)) => payload
-          case _ => Logger.error("[ResidencyStatusAPIConnector][responseHandler] There was a problem parsing the response json.")
-                    throw new InternalServerException("ResidencyStatusAPIConnector responseHandler | Response json could not be parsed.")
-        }
-        case 400 => Logger.error("[ResidencyStatusAPIConnector][responseHandler] Data sent to the API was not sent in the correct format.")
-                    throw new InternalServerException("Internal Server Error")
-        case 403 => Logger.info("[ResidencyStatusAPIConnector][responseHandler] Member not found.")
-                    throw UpstreamErrorResponse("Member not found", 403, 403, response.headers)
-        case _ => Logger.error(s"[ResidencyStatusAPIConnector][responseHandler] ${response.status} status code received from RAS-API.")
-                  throw new InternalServerException("Internal Server Error")
+  private val responseHandler: HttpReads[ResidencyStatus] = (method: String, url: String, response: HttpResponse) => {
+    response.status match {
+      case 200 => Try(response.json.validate[ResidencyStatus]) match {
+        case Success(JsSuccess(payload, _)) => payload
+        case _ => logger.error("[ResidencyStatusAPIConnector][responseHandler] There was a problem parsing the response json.")
+          throw new InternalServerException("ResidencyStatusAPIConnector responseHandler | Response json could not be parsed.")
       }
+      case 400 => logger.error("[ResidencyStatusAPIConnector][responseHandler] Data sent to the API was not sent in the correct format.")
+        throw new InternalServerException("Internal Server Error")
+      case 403 => logger.info("[ResidencyStatusAPIConnector][responseHandler] Member not found.")
+        throw UpstreamErrorResponse("Member not found", 403, 403, response.headers)
+      case _ => logger.error(s"[ResidencyStatusAPIConnector][responseHandler] ${response.status} status code received from RAS-API.")
+        throw new InternalServerException("Internal Server Error")
     }
   }
 }

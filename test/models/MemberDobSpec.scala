@@ -16,20 +16,20 @@
 
 package models
 
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 
-class MemberDobSpec extends UnitSpec {
+class MemberDobSpec extends WordSpecLike {
 
-  "hasValue" should {
+  "hasValue" must {
 
     "return false if dateOfBirth is empty" in {
         val dob = MemberDateOfBirth(RasDate(None, None, None))
-        assert(!dob.hasAValue())
+        assert(!dob.hasAValue)
     }
 
     "return true if dateOfBirth contains values" in {
       val dob = MemberDateOfBirth(RasDate(Some("1"), Some("1"), Some("1990")))
-      assert(dob.hasAValue())
+      assert(dob.hasAValue)
     }
   }
 }

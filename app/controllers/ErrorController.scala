@@ -18,11 +18,11 @@ package controllers
 
 import config.ApplicationConfig
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,7 +34,7 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
                                 globalErrorView: views.html.global_error,
                                 problemUploadingFileView: views.html.problem_uploading_file,
                                 fileNotAvailableView: views.html.file_not_available,
-                                unauthorisedView: views.html.unauthorised) extends FrontendController(mcc) with RasController {
+                                unauthorisedView: views.html.unauthorised) extends FrontendController(mcc) with RasController with Logging {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -42,10 +42,10 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
-          Logger.info("[ErrorController][renderGlobalErrorPage] rendering global error page")
+          logger.info("[ErrorController][renderGlobalErrorPage] rendering global error page")
           Future.successful(InternalServerError(globalErrorView()))
         case Left(resp) =>
-          Logger.warn("[ErrorController][renderGlobalErrorPage] user not authorised")
+          logger.warn("[ErrorController][renderGlobalErrorPage] user not authorised")
           resp
       }
   }
@@ -54,10 +54,10 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
-          Logger.info("[ErrorController][renderProblemUploadingFilePage] rendering problem uploading file page")
+          logger.info("[ErrorController][renderProblemUploadingFilePage] rendering problem uploading file page")
           Future.successful(InternalServerError(problemUploadingFileView()))
         case Left(resp) =>
-          Logger.warn("[ErrorController][renderProblemUploadingFilePage] user not authorised")
+          logger.warn("[ErrorController][renderProblemUploadingFilePage] user not authorised")
           resp
       }
   }
@@ -66,10 +66,10 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
     implicit request =>
       isAuthorised.flatMap {
         case Right(_) =>
-          Logger.info("[ErrorController][fileNotAvailable] rendering file not available page")
+          logger.info("[ErrorController][fileNotAvailable] rendering file not available page")
           Future.successful(InternalServerError(fileNotAvailableView()))
         case Left(resp) =>
-          Logger.warn("[ErrorController][fileNotAvailable] user not authorised")
+          logger.warn("[ErrorController][fileNotAvailable] user not authorised")
           resp
       }
   }

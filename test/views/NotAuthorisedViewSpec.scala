@@ -16,13 +16,14 @@
 
 package views
 
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class NotAuthorisedViewSpec extends UnitSpec with RasTestHelper {
+class NotAuthorisedViewSpec extends WordSpecLike with RasTestHelper {
 
-	"not authorised page" should {
+	"not authorised page" must {
 		"contain the correct page title" in {
 			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("unauthorised.error.page.title")

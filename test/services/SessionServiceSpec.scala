@@ -19,17 +19,18 @@ package services
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 
-class SessionServiceSpec extends UnitSpec with RasTestHelper {
+class SessionServiceSpec extends WordSpecLike with RasTestHelper {
 
   val name: MemberName = MemberName("John", "Johnson")
   val nino: MemberNino = MemberNino(RandomNino.generate)
@@ -41,11 +42,11 @@ class SessionServiceSpec extends UnitSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  val TestSessionService: SessionService = new SessionService(mockHttp, mockRasSessionCache, mockAppConfig)
+  val TestSessionService: SessionService = new SessionService(mockHttp, mockRasSessionCache)
 	val TestShortLivedCache = new ShortLivedCache(mockRasShortLivedHttpCache, mockAppConfig, mockAppCrypto)
 
 
-	"Session service" should {
+	"Session service" must {
 
     "cache Name" when {
       "no session is retrieved" in {
@@ -230,12 +231,12 @@ class SessionServiceSpec extends UnitSpec with RasTestHelper {
     }
   }
 
-  "ShortLivedCache" should {
+  "ShortLivedCache" must {
     "return error in file upload" when {
       "Status is not equal to Available" in {
         val fileSession = FileSession(Some(CallbackData("", "someFileId", "ERROR", None)), None, "1234", None, None)
 
-				when(mockRasShortLivedHttpCache.remove(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200)))
+				when(mockRasShortLivedHttpCache.remove(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, "")))
 				TestShortLivedCache.errorInFileUpload(fileSession) shouldBe true
 
 				verify(mockRasShortLivedHttpCache, times(1)).remove(any())(any(), any())

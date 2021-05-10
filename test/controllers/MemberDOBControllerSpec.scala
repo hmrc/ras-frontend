@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalacheck.Gen
 import org.scalatest.BeforeAndAfter
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, equal, include}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -28,13 +29,13 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.domain.{Generator, PsaId}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 import scala.util.Random
 
-class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAndAfter {
+class MemberDOBControllerSpec extends WordSpecLike with RasTestHelper with BeforeAndAfter {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -63,7 +64,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
-  "MemberDobController get" should {
+  "MemberDobController get" must {
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
@@ -86,7 +87,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
     }
   }
 
-  "Member dob controller form submission" should {
+  "Member dob controller form submission" must {
 
     "return bad request with session name when form error present and session has a name" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -116,7 +117,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
       when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.successful(ResidencyStatus("", Some(OTHER_UK))))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(SEE_OTHER)
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
     "save details to cache" in {
@@ -131,42 +132,42 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
       when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.successful(ResidencyStatus("blah", Some(OTHER_UK))))
       val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
     "redirect to technical error page if customer matching fails to return a response" in {
       when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(new Exception()))
-      val result = await(TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
     "redirect to technical error page if ras fails to return a response" in {
       when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(new Exception()))
-      val result = await(TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
+      val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
     "return to member nino page when back link is clicked and edit is false" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestMemberDobController.back().apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/member-national-insurance-number")
+      redirectLocation(result) should include("/member-national-insurance-number")
     }
 
     "return to not found page when back link is clicked and edit is true" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestMemberDobController.back(true).apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/no-residency-status-displayed")
+      redirectLocation(result) should include("/no-residency-status-displayed")
     }
 
     "redirect to global error page navigating back with no session" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestMemberDobController.back().apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
     "redirect to match found page" when {
@@ -179,7 +180,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
         status(result) should equal(SEE_OTHER)
-        redirectLocation(result).get should include("/member-residency-status")
+        redirectLocation(result) should include("/member-residency-status")
 
         verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
       }
@@ -193,7 +194,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
         status(result) should equal(SEE_OTHER)
-        redirectLocation(result).get should include("/member-residency-status")
+        redirectLocation(result) should include("/member-residency-status")
 
         verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
       }
@@ -206,7 +207,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         status(result) should equal(SEE_OTHER)
-        redirectLocation(result).get should include("/no-residency-status-displayed")
+        redirectLocation(result) should include("/no-residency-status-displayed")
 
         verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
       }
@@ -218,7 +219,7 @@ class MemberDOBControllerSpec extends UnitSpec with RasTestHelper with BeforeAnd
 
         val result = TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
         status(result) should equal(SEE_OTHER)
-        redirectLocation(result).get should include("/global-error")
+        redirectLocation(result) should include("/global-error")
 
         verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
       }

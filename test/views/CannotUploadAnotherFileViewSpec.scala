@@ -16,13 +16,14 @@
 
 package views
 
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class CannotUploadAnotherFileViewSpec extends UnitSpec with RasTestHelper {
+class CannotUploadAnotherFileViewSpec extends WordSpecLike with RasTestHelper {
 
-	"cannot upload another file page" should {
+	"cannot upload another file page" must {
 		"contains the right title" in {
 			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title() shouldBe Messages("cannot.upload.another.file.page.title")
