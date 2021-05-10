@@ -22,12 +22,12 @@ import config.ApplicationConfig
 import connectors.FileUploadConnector
 import javax.inject.Inject
 import models.{Envelope, UploadResponse}
-import play.Logger
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.Logging
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.UnanchoredRegex
@@ -41,7 +41,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                                      fileUploadView: views.html.file_upload,
                                      fileUploadSuccessView: views.html.file_upload_successful,
                                      cannotUploadAnotherView: views.html.cannot_upload_another_file
-																		) extends FrontendController(mcc) with RasController with PageFlowController {
+																		) extends FrontendController(mcc) with RasController with PageFlowController with Logging {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -53,20 +53,20 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
             case Some(session) =>
               shortLivedCache.isFileInProgress(userId).flatMap {
                 case true =>
-                  Logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
+                  logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
                     s"so another could not be uploaded")
                   Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
                 case _ =>
-                  createFileUploadUrl(session.envelope, userId)(request, hc).flatMap {
+                  createFileUploadUrl(session.envelope, userId).flatMap {
                     case Some(url) =>
-                      Logger.info(s"[FileUploadController][get] form url created successfully for userId ($userId)")
+                      logger.info(s"[FileUploadController][get] form url created successfully for userId ($userId)")
                       val error = extractErrorReason(session.uploadResponse)
                       if(error == "upload.failed.error"){
                         sessionService.cacheUploadResponse(UploadResponse("",None)).map {
                           case Some(_) =>
                             Redirect(routes.ErrorController.renderProblemUploadingFilePage())
                           case _ =>
-                            Logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
+                            logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
                             Redirect(routes.ErrorController.renderGlobalErrorPage())
                         }
                       }
@@ -75,32 +75,32 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                         Future.successful(Ok(fileUploadView(url,error)))
                       }
                     case _ =>
-                      Logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
+                      logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
                         s"for userId ($userId)")
                       Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
                   }
               }
             case _ =>
-              createFileUploadUrl(None, userId)(request, hc).flatMap {
+              createFileUploadUrl(None, userId).flatMap {
                 case Some(url) =>
-                  Logger.info(s"[FileUploadController][get] stored new envelope id successfully for userId ($userId)")
+                  logger.info(s"[FileUploadController][get] stored new envelope id successfully for userId ($userId)")
                   Future.successful(Ok(fileUploadView(url,"")))
                 case _ =>
-                  Logger.error(s"[FileUploadController][get] failed to obtain a form url using new envelope for userId ($userId)")
+                  logger.error(s"[FileUploadController][get] failed to obtain a form url using new envelope for userId ($userId)")
                   Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
               }
           }.recover {
             case e: Throwable =>
-              Logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId) - $e")
+              logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId) - $e")
               Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(resp) =>
-          Logger.warn("[FileUploadController][get] user not authorised")
+          logger.warn("[FileUploadController][get] user not authorised")
           resp
       }
   }
 
-  def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit request: Request[_], hc:HeaderCarrier): Future[Option[String]] = {
+  def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit hc:HeaderCarrier): Future[Option[String]] = {
     lazy val rasFrontendBaseUrl: String = appConfig.rasFrontendBaseUrl
     lazy val rasFrontendUrlSuffix: String = appConfig.rasFrontendUrlSuffix
     lazy val fileUploadFrontendBaseUrl: String = appConfig.fileUploadFrontendBaseUrl
@@ -122,25 +122,25 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 case envelopeIdPattern(id) =>
                   sessionService.cacheEnvelope(Envelope(id)).map {
                     case Some(_) =>
-                      Logger.info(s"[UploadService][createFileUploadUrl] Envelope id obtained and cached for userId ($userId)")
+                      logger.info(s"[UploadService][createFileUploadUrl] Envelope id obtained and cached for userId ($userId)")
                       val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
                       val completeFileUploadUrl = s"$fileUploadUrl?$successRedirectUrl&$errorRedirectUrl"
                       Some(completeFileUploadUrl)
                     case _ =>
-                      Logger.error(s"[FileUploadController][get] failed to retrieve cache after storing the envelope for userId ($userId)")
+                      logger.error(s"[FileUploadController][get] failed to retrieve cache after storing the envelope for userId ($userId)")
                       None
                   }
                 case _ =>
-                  Logger.error(s"[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header for userId ($userId)")
+                  logger.error(s"[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header for userId ($userId)")
                   Future.successful(None)
               }
             case _ =>
-              Logger.error(s"[UploadService][createFileUploadUrl] Failed to find a location header in the response for userId ($userId)")
+              logger.error(s"[UploadService][createFileUploadUrl] Failed to find a location header in the response for userId ($userId)")
               Future.successful(None)
           }
         }.recover {
           case e: Throwable =>
-            Logger.error(s"[UploadService][createFileUploadUrl] Failed to create envelope. ${e.getMessage}", e)
+            logger.error(s"[UploadService][createFileUploadUrl] Failed to create envelope. ${e.getMessage}", e)
             None
         }
     }
@@ -163,22 +163,22 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
               case Some(envelope) =>
                 shortLivedCache.createFileSession(userId,envelope.id).map {
                   case true =>
-                    Logger.info(s"[FileUploadController][uploadSuccess] upload has been successful for userId ($userId)")
+                    logger.info(s"[FileUploadController][uploadSuccess] upload has been successful for userId ($userId)")
                     Ok(fileUploadSuccessView())
                   case _ =>
-                    Logger.error(s"[FileUploadController][uploadSuccess] failed to create file session for userId ($userId)")
+                    logger.error(s"[FileUploadController][uploadSuccess] failed to create file session for userId ($userId)")
                     Redirect(routes.ErrorController.renderGlobalErrorPage())
                 }
               case _ =>
-                Logger.error(s"[FileUploadController][uploadSuccess] no envelope exists in the session for userId ($userId)")
+                logger.error(s"[FileUploadController][uploadSuccess] no envelope exists in the session for userId ($userId)")
                 Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
             }
           case _ =>
-            Logger.error(s"[FileUploadController][uploadSuccess] session could not be retrieved for userId ($userId)")
+            logger.error(s"[FileUploadController][uploadSuccess] session could not be retrieved for userId ($userId)")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
       case Left(resp) =>
-        Logger.warn("[FileUploadController][uploadSuccess] user not authorised")
+        logger.warn("[FileUploadController][uploadSuccess] user not authorised")
         resp
     }
   }
@@ -198,7 +198,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
         }
 
       case Left(resp) =>
-        Logger.warn("[FileUploadController][uploadError] user not authorised")
+        logger.warn("[FileUploadController][uploadError] user not authorised")
         resp
     }
   }
@@ -210,18 +210,18 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
           case Some(fileSession) =>
             fileSession.resultsFile match {
               case Some(_) =>
-                Logger.info("[FileUploadController][uploadInProgress] redirecting to file ready page")
+                logger.info("[FileUploadController][uploadInProgress] redirecting to file ready page")
                 Future.successful(Redirect(routes.ChooseAnOptionController.renderFileReadyPage()))
               case _ =>
-                Logger.info("[FileUploadController][uploadInProgress] calling cannot upload another file")
+                logger.info("[FileUploadController][uploadInProgress] calling cannot upload another file")
                 Future.successful(Ok(cannotUploadAnotherView()))
             }
           case _ =>
-            Logger.info("[FileUploadController][uploadInProgress] redirecting to global error")
+            logger.info("[FileUploadController][uploadInProgress] redirecting to global error")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
         }
       case Left(resp) =>
-        Logger.warn("[FileUploadController][uploadInProgress] user not authorised")
+        logger.warn("[FileUploadController][uploadInProgress] user not authorised")
         resp
     }
   }
@@ -233,28 +233,28 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
       case Some(response) =>
         response.code match {
           case "400" if response.reason.getOrElse("").contains(fileUploadEmptyFileReason) =>
-            Logger.error("[FileUploadController][extractErrorReason] empty file")
+            logger.error("[FileUploadController][extractErrorReason] empty file")
             "file.empty.error"
           case "400" =>
-            Logger.error("[FileUploadController][extractErrorReason] bad request")
+            logger.error("[FileUploadController][extractErrorReason] bad request")
             "upload.failed.error"
           case "404" =>
-            Logger.error("[FileUploadController][extractErrorReason] envelope not found")
+            logger.error("[FileUploadController][extractErrorReason] envelope not found")
             "upload.failed.error"
           case "413" =>
-            Logger.error("[FileUploadController][extractErrorReason] file too large")
+            logger.error("[FileUploadController][extractErrorReason] file too large")
             "file.large.error"
           case "415" =>
-            Logger.error("[FileUploadController][extractErrorReason] file type other than the supported type")
+            logger.error("[FileUploadController][extractErrorReason] file type other than the supported type")
             "upload.failed.error"
           case "423" =>
-            Logger.error("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
+            logger.error("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
             "upload.failed.error"
           case "" =>
-            Logger.error("[FileUploadController][extractErrorReason] no error code returned")
+            logger.error("[FileUploadController][extractErrorReason] no error code returned")
             ""
           case _ =>
-            Logger.error("[FileUploadController][extractErrorReason] unknown cause")
+            logger.error("[FileUploadController][extractErrorReason] unknown cause")
             "upload.failed.error"
         }
       case _ => ""

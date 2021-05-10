@@ -25,8 +25,9 @@ import org.jsoup.nodes.Document
 import org.mockito.Mockito.when
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n
+import play.api.{Application, i18n}
 import play.api.i18n.{MessagesApi, MessagesImpl}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -37,13 +38,25 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.play.test.WithFakeApplication
 import views.html._
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration.{Duration, DurationInt}
 
-trait RasTestHelper extends MockitoSugar with WithFakeApplication {  this: Suite =>
+trait RasTestHelper extends MockitoSugar {  this: Suite =>
+
+	def fakeApplicationCreation: Application =
+		GuiceApplicationBuilder()
+			.configure("metrics.enabled" -> "false")
+			.build()
+
+	val fakeApplication: Application = fakeApplicationCreation
+
+	def await[A](future: Future[A], timeout: Duration = 20.seconds): A = Await.result(future, timeout)
+
+	def redirectLocation(result: Result): String = result.header.headers("Location")
+
+	def redirectLocation(result: Future[Result], timeout: Duration = 20.seconds): String = Await.result(result, timeout).header.headers("Location")
 
 	def doc(result: Html): Document = Jsoup.parse(contentAsString(result))
 
@@ -65,6 +78,7 @@ trait RasTestHelper extends MockitoSugar with WithFakeApplication {  this: Suite
 	implicit val actorSystem: ActorSystem = ActorSystem()
 	implicit val materializer: ActorMaterializer = ActorMaterializer()
 	implicit val hc: HeaderCarrier = HeaderCarrier()
+	implicit val ec: ExecutionContext = mockMCC.executionContext
 
 	val SCOTTISH = "scotResident"
 	val WELSH = "welshResident"

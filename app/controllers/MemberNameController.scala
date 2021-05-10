@@ -21,12 +21,12 @@ import connectors.ResidencyStatusAPIConnector
 import forms.MemberNameForm._
 import javax.inject.Inject
 import models.ApiVersion
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,7 +37,8 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
 																		 val sessionService: SessionService,
 																		 val mcc: MessagesControllerComponents,
 																		 implicit val appConfig: ApplicationConfig,
-                                     memberNameView: views.html.member_name) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
+                                     memberNameView: views.html.member_name) 
+  extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
@@ -51,7 +52,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
             case _ => Ok(memberNameView(form, edit))
           }
         case Left(resp) =>
-          Logger.warn("[NameController][get] user Not authorised")
+          logger.warn("[NameController][get] user Not authorised")
           resp
       }
   }
@@ -61,7 +62,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
       case Right(userId) =>
       form.bindFromRequest.fold(
         formWithErrors => {
-          Logger.warn("[NameController][post] Invalid form field passed")
+          logger.warn("[NameController][post] Invalid form field passed")
           Future.successful(BadRequest(memberNameView(formWithErrors, edit)))
         },
         memberName => {
@@ -77,7 +78,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
         }
       )
       case Left(res) =>
-        Logger.warn("[NameController][post] user Not authorised")
+        logger.warn("[NameController][post] user Not authorised")
         res
     }
   }
@@ -87,7 +88,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
       isAuthorised.flatMap {
         case Right(_) => Future.successful(previousPage("MemberNameController", edit))
         case Left(res) =>
-          Logger.warn("[NameController][back] user Not authorised")
+          logger.warn("[NameController][back] user Not authorised")
           res
       }
   }

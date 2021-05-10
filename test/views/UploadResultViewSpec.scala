@@ -17,12 +17,13 @@
 package views
 
 import org.joda.time.DateTime
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class UploadResultViewSpec extends UnitSpec with RasTestHelper {
+class UploadResultViewSpec extends WordSpecLike with RasTestHelper {
 
 	private def isBeforeApr6(timestamp: Long) : Boolean = {
 		val uploadDate = new DateTime(timestamp)
@@ -36,7 +37,7 @@ class UploadResultViewSpec extends UnitSpec with RasTestHelper {
 
 	val now: Long = DateTime.now().getMillis
 
-	"upload result page" should {
+	"upload result page" must {
 		"contain the correct page title" in {
 			val result = uploadResultView("fileId", formattedExpiryDate(now), isBeforeApr6(now), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("upload.result.page.title")

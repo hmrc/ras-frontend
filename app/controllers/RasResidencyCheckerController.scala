@@ -19,7 +19,7 @@ package controllers
 import connectors.ResidencyStatusAPIConnector
 import metrics.Metrics
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{AnyContent, Request, Result}
 import services.{AuditService, SessionService, TaxYearResolver}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
@@ -28,7 +28,7 @@ import play.api.http.Status.FORBIDDEN
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait RasResidencyCheckerController extends RasController with AuditService {
+trait RasResidencyCheckerController extends RasController with AuditService with Logging{
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
   val apiVersion: ApiVersion
@@ -50,11 +50,11 @@ trait RasResidencyCheckerController extends RasController with AuditService {
       val nyResidencyStatus: Option[String] =
         rasResponse.nextYearForecastResidencyStatus.map(extractResidencyStatus)
       if (cyResidencyStatus.isEmpty) {
-        Logger.error("[RasResidencyCheckerController][post] An unknown residency status was returned")
+        logger.error("[RasResidencyCheckerController][post] An unknown residency status was returned")
         Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
       }
       else {
-        Logger.info("[RasResidencyCheckerController][post] Match found")
+        logger.info("[RasResidencyCheckerController][post] Match found")
 
         timer.stop()
 
@@ -80,13 +80,13 @@ trait RasResidencyCheckerController extends RasController with AuditService {
       case e: Upstream4xxResponse if e.upstreamResponseCode == FORBIDDEN =>
         auditResponse(failureReason = Some("MATCHING_FAILED"), nino = Some(memberDetails.nino),
           residencyStatus = None, userId = userId)
-        Logger.info("[RasResidencyCheckerController][getResult] No match found from customer matching")
+        logger.info("[RasResidencyCheckerController][getResult] No match found from customer matching")
         timer.stop()
         Redirect(routes.ResultsController.noMatchFound())
       case e: Throwable =>
         auditResponse(failureReason = Some("INTERNAL_SERVER_ERROR"), nino = Some(memberDetails.nino),
           residencyStatus = None, userId = userId)
-        Logger.error(s"[RasResidencyCheckerController][getResult] Customer Matching failed: ${e.getMessage}")
+        logger.error(s"[RasResidencyCheckerController][getResult] Customer Matching failed: ${e.getMessage}")
         Redirect(routes.ErrorController.renderGlobalErrorPage())
     }
   }

@@ -18,12 +18,13 @@ package views
 
 import models.FileUploadStatus._
 import org.joda.time.DateTime
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
+class ChooseAnOptionViewSpec extends WordSpecLike with RasTestHelper {
 
 	val mockExpiryTimeStamp: Long = new DateTime().getMillis
 
@@ -44,7 +45,7 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 	}
 
 	"choose an option page" when {
-		"the file status is NoFileSession" should {
+		"the file status is NoFileSession" must {
 			"contain an Upload a file link" in {
 				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("upload-link").text() shouldBe Messages("Upload a file")
@@ -76,7 +77,7 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 			}
 		}
 
-		"the file status is Ready" should {
+		"the file status is Ready" must {
 			"contain a download your results link" in {
 				val result = chooseAnOptionView(Ready, Some("None"))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("task-name").get(1).html() shouldBe Messages("download.results")
@@ -97,7 +98,7 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 			}
 		}
 
-		"for Processing Only" should {
+		"for Processing Only" must {
 			"contain a Processing icon" in {
 				val result = chooseAnOptionView(InProgress, Some("None"))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("task-completed").text shouldBe Messages("file.processing")
@@ -124,7 +125,7 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 			}
 		}
 
-		"for UploadError Only" should {
+		"for UploadError Only" must {
 			"contain an upload your file again link" in {
 				val result = chooseAnOptionView(UploadError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("file-problem-link").text() shouldBe Messages("upload.file.again")
@@ -144,7 +145,7 @@ class ChooseAnOptionViewSpec extends UnitSpec with RasTestHelper {
 			}
 		}
 
-		"for TimeExpiryError Only" should {
+		"for TimeExpiryError Only" must {
 			"contain an upload your file again link" in {
 				val result = chooseAnOptionView(TimeExpiryError, Some("None"))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("file-problem-link").text() shouldBe Messages("upload.file.again")

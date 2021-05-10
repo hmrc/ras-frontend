@@ -16,13 +16,15 @@
 
 package views
 
+import org.scalatest.Matchers.{be, convertToAnyShouldWrapper}
+import org.scalatest.MustMatchers.convertToAnyMustWrapper
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class FileUploadViewSpec extends UnitSpec with RasTestHelper {
+class FileUploadViewSpec extends WordSpecLike with RasTestHelper {
 
-	"file upload page" should {
+	"file upload page" when {
 		"contain a back link" in {
 			val result = fileUploadView("fileUploadUrl", "errorMessage")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementsByClass("govuk-back-link").text shouldBe Messages("back")
@@ -41,7 +43,7 @@ class FileUploadViewSpec extends UnitSpec with RasTestHelper {
 
 		"contain 'choose file' button" in {
 			val result = fileUploadView("fileUploadUrl", "errorMessage")(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-file") shouldNot be(null)
+			doc(result).getElementById("choose-file") mustNot be(null)
 		}
 
 		"contain an upload button" in {

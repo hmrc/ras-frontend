@@ -32,7 +32,7 @@ package services
  * limitations under the License.
  */
 
-import org.joda.time.{DateTime, DateTimeZone, Interval, LocalDate}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import uk.gov.hmrc.time.DateTimeUtils
 
 trait TaxYearResolver {

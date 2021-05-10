@@ -17,12 +17,12 @@
 package validators
 
 import org.scalatest.Matchers
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RandomNino
 
-class NinoValidatorSpec extends UnitSpec with Matchers {
+class NinoValidatorSpec extends WordSpecLike with Matchers {
 
-  "The validation of a nino" should {
+  "The validation of a nino" must {
 
     "pass with valid NINO" in {
       validateNino(RandomNino.generate) should equal(true)

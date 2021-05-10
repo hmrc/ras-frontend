@@ -19,6 +19,7 @@ package controllers
 import config.ApplicationConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -27,14 +28,13 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class RasControllerSpec extends UnitSpec with RasTestHelper {
+class RasControllerSpec extends WordSpecLike with RasTestHelper {
 
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
 
@@ -43,7 +43,7 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
     override def authConnector: AuthConnector = mockAuthConnector
   }
 
-  "Ras Controller" should {
+  "Ras Controller" must {
 
     "successful retrieval of enrolment when authorising" when {
 
@@ -54,8 +54,8 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
         when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
-        val result = authorisedResult flatMap {
+        val authorisedResult = testController.isAuthorised()
+        val result = authorisedResult.map {
           case Right(res) => res
         }
 
@@ -71,13 +71,12 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         when(mockAuthConnector.authorise[NoActiveSession](any[Predicate], any[Retrieval[NoActiveSession]])
           (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
-        val result = authorisedResult flatMap {
+        val authorisedResult = testController.isAuthorised()
+        val result = authorisedResult.map {
           case Left(res) => await(res)
         }
-
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some("http://localhost:9025/gg/sign-in?continue_url=%2Frelief-at-source%2F&origin=ras-frontend")
+        redirectLocation(result) shouldBe "http://localhost:9025/gg/sign-in?continue_url=%2Frelief-at-source%2F&origin=ras-frontend"
       }
     }
 
@@ -89,12 +88,12 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         when(mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])
           (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
-        val result = authorisedResult flatMap {
-          case Left(res) => await(res) }
-
+        val authorisedResult = testController.isAuthorised()
+        val result = authorisedResult.map {
+          case Left(res) => await(res)
+        }
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some("/relief-at-source/not-authorised")
+        redirectLocation(result) shouldBe "/relief-at-source/not-authorised"
         }
       }
 
@@ -104,12 +103,12 @@ class RasControllerSpec extends UnitSpec with RasTestHelper {
         when(mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])
           (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
 
-        val authorisedResult = testController.isAuthorised()(fakeRequest, hc, ExecutionContext.global)
-        val result = authorisedResult flatMap {
-          case Left(res) => await(res) }
-
+        val authorisedResult = testController.isAuthorised()
+        val result = authorisedResult.map {
+          case Left(res) => await(res)
+        }
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some("/relief-at-source/not-authorised")
+        redirectLocation(result) shouldBe "/relief-at-source/not-authorised"
       }
     }
 

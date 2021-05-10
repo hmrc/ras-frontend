@@ -19,13 +19,14 @@ package controllers
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import models._
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import services.SessionService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class RasResidencyCheckerControllerSpec extends UnitSpec with RasTestHelper {
+class RasResidencyCheckerControllerSpec extends WordSpecLike with RasTestHelper {
 
   def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController = new RasResidencyCheckerController {
     override val authConnector: AuthConnector = mockAuthConnector
@@ -37,7 +38,7 @@ class RasResidencyCheckerControllerSpec extends UnitSpec with RasTestHelper {
   }
 
   "RasResidencyCheckerController extractResidencyStatus" when {
-    "version 1.0 of the API is used" should {
+    "version 1.0 of the API is used" must {
       "extract the result into the correct messages" in {
         val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV1_0)
 
@@ -47,7 +48,7 @@ class RasResidencyCheckerControllerSpec extends UnitSpec with RasTestHelper {
         testRasResidencyCheckerController.extractResidencyStatus("") shouldBe ""
       }
     }
-    "version 2.0 of the API is used" should {
+    "version 2.0 of the API is used" must {
       "extract the result into the correct messages" in {
         val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV2_0)
 

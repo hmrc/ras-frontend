@@ -16,20 +16,20 @@
 
 package models
 
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 
-class MemberNinoSpec extends UnitSpec {
+class MemberNinoSpec extends WordSpecLike {
 
-  "hasValue" should {
+  "hasValue" must {
 
     "return false if nino is empty" in {
         val nino = MemberNino("")
-        assert(!nino.hasAValue())
+        assert(!nino.hasAValue)
     }
 
     "return true if nino has a value" in {
       val nino = MemberNino("LE241311C")
-      assert(nino.hasAValue())
+      assert(nino.hasAValue)
     }
   }
 }

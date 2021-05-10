@@ -19,18 +19,19 @@ package controllers
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-class ResultsControllerSpec extends UnitSpec with RasTestHelper {
+class ResultsControllerSpec extends WordSpecLike with RasTestHelper {
 
   override val fakeRequest = FakeRequest("GET", "/")
   val currentTaxYear: Int = TaxYearResolver.currentTaxYear
@@ -55,7 +56,7 @@ class ResultsControllerSpec extends UnitSpec with RasTestHelper {
     when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
-  "Results Controller" should {
+  "Results Controller" must {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
 
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).
@@ -88,28 +89,28 @@ class ResultsControllerSpec extends UnitSpec with RasTestHelper {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
     "redirect to homepage when session data is returned with no result for match found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get shouldBe "/relief-at-source"
+      redirectLocation(result) shouldBe "/relief-at-source"
     }
 
     "redirect to global error page when no session data is returned on match not found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("global-error")
+      redirectLocation(result) should include("global-error")
     }
 
     "redirect to homepage when session data is returned with no result for match not found" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
-      redirectLocation(result).get should include("/relief-at-source")
+      redirectLocation(result) should include("/relief-at-source")
     }
 
     "return to member dob page when back link is clicked" in {
@@ -124,14 +125,14 @@ class ResultsControllerSpec extends UnitSpec with RasTestHelper {
       ))
       val result = TestResultsController.back.apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/member-date-of-birth")
+      redirectLocation(result) should include("/member-date-of-birth")
     }
 
     "redirect to global error when no session and back link is clicked" in {
       when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.back.apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include("/global-error")
+      redirectLocation(result) should include("/global-error")
     }
   }
 }

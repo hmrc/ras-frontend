@@ -21,12 +21,12 @@ import connectors.ResidencyStatusAPIConnector
 import forms.{MemberNinoForm => form}
 import javax.inject.Inject
 import models.ApiVersion
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +38,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
 																		 val mcc: MessagesControllerComponents,
                                      implicit val appConfig: ApplicationConfig,
                                      memberNinoView: views.html.member_nino
-                                    ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
+                                    ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
   lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
@@ -55,7 +55,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
               Ok(memberNinoView(form(), "member", edit))
           }
         case Left(resp) =>
-          Logger.warn("[NinoController][get] user Not authorised")
+          logger.warn("[NinoController][get] user Not authorised")
           resp
       }
   }
@@ -67,7 +67,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
           getFullName() flatMap { name =>
             form(Some(name)).bindFromRequest.fold(
               formWithErrors => {
-                Logger.warn("[NinoController][post] Invalid form field passed")
+                logger.warn("[NinoController][post] Invalid form field passed")
                 Future.successful(BadRequest(memberNinoView(formWithErrors, name, edit)))
               },
               memberNino => {
@@ -85,7 +85,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
           }
         case Left(resp)
         =>
-          Logger.warn("[NinoController][post] user Not authorised")
+          logger.warn("[NinoController][post] user Not authorised")
           resp
       }
   }
@@ -99,7 +99,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) =>
-          Logger.warn("[NinoController][back] user Not authorised")
+          logger.warn("[NinoController][back] user Not authorised")
           res
       }
   }

@@ -20,7 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class MemberName(firstName: String, lastName: String) extends UserInput {
 
-  def hasAValue(): Boolean = firstName != "" && lastName != ""
+  def hasAValue: Boolean = firstName.nonEmpty && lastName.nonEmpty
 
 }
 

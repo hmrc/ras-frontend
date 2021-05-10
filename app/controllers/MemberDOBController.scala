@@ -21,12 +21,12 @@ import connectors.ResidencyStatusAPIConnector
 import forms.{MemberDateOfBirthForm => form}
 import javax.inject.Inject
 import models.ApiVersion
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +38,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 																		val mcc: MessagesControllerComponents,
 																		implicit val appConfig: ApplicationConfig,
                                     memberDobView: views.html.member_dob
-																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController {
+																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
@@ -54,7 +54,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
             case _ => Ok(memberDobView(form(), "member", edit))
           }
         case Left(resp) =>
-          Logger.warn("[DobController][get] user Not authorised")
+          logger.warn("[DobController][get] user Not authorised")
           resp
       }
   }
@@ -66,7 +66,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
           getFullName() flatMap { name =>
             form(Some(name)).bindFromRequest.fold(
               formWithErrors => {
-                Logger.warn("[DobController][post] Invalid form field passed")
+                logger.warn("[DobController][post] Invalid form field passed")
                 Future.successful(BadRequest(memberDobView(formWithErrors, name, edit)))
               },
               dateOfBirth => {
@@ -78,7 +78,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
             )
           }
         case Left(res) =>
-          Logger.warn("[DobController][back] user Not authorised")
+          logger.warn("[DobController][back] user Not authorised")
           res
       }
   }
@@ -92,7 +92,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
             case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
           }
         case Left(res) =>
-          Logger.warn("[DobController][back] user Not authorised")
+          logger.warn("[DobController][back] user Not authorised")
           res
       }
   }

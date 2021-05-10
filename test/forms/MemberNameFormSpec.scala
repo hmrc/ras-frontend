@@ -19,20 +19,21 @@ package forms
 import forms.MemberNameForm._
 import play.api.data.FormError
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class MemberNameFormSpec extends UnitSpec with RasTestHelper {
+class MemberNameFormSpec extends WordSpecLike with RasTestHelper {
 
   val MAX_NAME_LENGTH = 35
+  val fromJsonMaxChars: Long = 102400
 
-  "Find member details form" should {
+  "Find member details form" must {
 
     "return no error when valid data is entered" in {
       val formData = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "Esfandiari")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
 
@@ -40,7 +41,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "",
         "lastName" -> "Esfandiari")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.contains(FormError("firstName", List("error.mandatory.firstName"))))
     }
 
@@ -48,7 +49,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.contains(FormError("lastName", List("error.mandatory.lastName"))))
     }
 
@@ -56,7 +57,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "r" * (MAX_NAME_LENGTH + 1),
         "lastName" -> "Esfandiari")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.contains(FormError("firstName", List("error.length.firstName"))))
     }
 
@@ -64,7 +65,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "e" * (MAX_NAME_LENGTH + 1))
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.contains(FormError("lastName", List("error.length.lastName"))))
     }
 
@@ -72,7 +73,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "r",
         "lastName" -> "Esfandiari")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
 
@@ -80,7 +81,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "E")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
 
@@ -88,7 +89,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "r" * MAX_NAME_LENGTH,
         "lastName" -> "Esfandiari")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
 
@@ -96,7 +97,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "E" * MAX_NAME_LENGTH)
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
 
@@ -104,11 +105,11 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData1 = Json.obj(
         "firstName" -> "Ramin1",
         "lastName" -> "Esfandiari")
-      val validatedForm1 = form.bind(formData1)
+      val validatedForm1 = form.bind(formData1, fromJsonMaxChars)
       val formData2 = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "Esfandiar3i")
-      val validatedForm2 = form.bind(formData2)
+      val validatedForm2 = form.bind(formData2, fromJsonMaxChars)
       assert(validatedForm1.errors.contains(FormError("firstName", List("error.firstName.invalid"))))
       assert(validatedForm2.errors.contains(FormError("lastName", List("error.lastName.invalid"))))
     }
@@ -117,11 +118,11 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData1 = Json.obj(
         "firstName" -> "R'n",
         "lastName" -> "Esfandiari")
-      val validatedForm1 = form.bind(formData1)
+      val validatedForm1 = form.bind(formData1, fromJsonMaxChars)
       val formData2 = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "Esfa'ndiari")
-      val validatedForm2 = form.bind(formData2)
+      val validatedForm2 = form.bind(formData2, fromJsonMaxChars)
       assert(validatedForm1.errors.isEmpty)
       assert(validatedForm2.errors.isEmpty)
     }
@@ -130,7 +131,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "Ram-in",
         "lastName" -> "Esfa-ndiari")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
 
@@ -138,11 +139,11 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData1 = Json.obj(
         "firstName" -> "Ra$min",
         "lastName" -> "Esfandiari")
-      val validatedForm1 = form.bind(formData1)
+      val validatedForm1 = form.bind(formData1, fromJsonMaxChars)
       val formData2 = Json.obj(
         "firstName" -> "Ramin",
         "lastName" -> "Esfan@diari")
-      val validatedForm2 = form.bind(formData2)
+      val validatedForm2 = form.bind(formData2, fromJsonMaxChars)
       assert(validatedForm1.errors.contains(FormError("firstName", List("error.firstName.invalid"))))
       assert(validatedForm2.errors.contains(FormError("lastName", List("error.lastName.invalid"))))
     }
@@ -151,7 +152,7 @@ class MemberNameFormSpec extends UnitSpec with RasTestHelper {
       val formData = Json.obj(
         "firstName" -> "Ra min",
         "lastName" -> "Esfand iari")
-      val validatedForm = form.bind(formData)
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
   }

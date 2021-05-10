@@ -17,16 +17,17 @@
 package views
 
 import org.jsoup.Jsoup
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
 import play.api.test.Helpers.contentAsString
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 import play.api.test.Helpers._
 
 
-class GlobalErrorViewSpec extends UnitSpec with RasTestHelper {
+class GlobalErrorViewSpec extends WordSpecLike with RasTestHelper {
 
-	"global error page" should {
+	"global error page" must {
 
 		"contain correct title and header" in {
 			val result = globalErrorView()(fakeRequest, testMessages, mockAppConfig)

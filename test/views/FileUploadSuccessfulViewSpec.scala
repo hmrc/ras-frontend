@@ -16,13 +16,14 @@
 
 package views
 
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class FileUploadSuccessfulViewSpec extends UnitSpec with RasTestHelper {
+class FileUploadSuccessfulViewSpec extends WordSpecLike with RasTestHelper {
 
-	"file upload success page" should {
+	"file upload success page" must {
 		"display file upload successful page" when {
 			"file has been uploaded successfully" in {
 				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
@@ -30,7 +31,7 @@ class FileUploadSuccessfulViewSpec extends UnitSpec with RasTestHelper {
 			}
 		}
 
-		"successful upload page" should {
+		"successful upload page" must {
 			"contain the correct content" in {
 				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")

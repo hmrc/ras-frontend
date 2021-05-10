@@ -17,14 +17,15 @@
 package views
 
 import org.jsoup.Jsoup
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class ProblemUploadingFileViewSpec extends UnitSpec with RasTestHelper{
+class ProblemUploadingFileViewSpec extends WordSpecLike with RasTestHelper{
 
-	"problem uploading file page" should {
+	"problem uploading file page" must {
 
 		"contain correct title and header when problem uploading file" in {
 			val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)

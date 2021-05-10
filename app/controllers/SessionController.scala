@@ -18,12 +18,11 @@ package controllers
 
 import config.ApplicationConfig
 import javax.inject.Inject
-import play.api.Logger
-import play.api.Logger.logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,7 +31,7 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
 																	val sessionService: SessionService,
 																	val mcc: MessagesControllerComponents,
 																	val appConfig: ApplicationConfig
-																 ) extends FrontendController(mcc) with RasController {
+																 ) extends FrontendController(mcc) with RasController with Logging {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -54,11 +53,11 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
                   case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
                   case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
                   case _ =>
-                    Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
+                    logger.error(s"[SessionController][redirect] Invalid redirect target $target")
                     Redirect(routes.ErrorController.renderGlobalErrorPage())
                 }
               case _ =>
-                Logger.error("[SessionController][cleanAndRedirect] No session found")
+                logger.error("[SessionController][redirect] No session found")
                 Redirect(routes.ErrorController.renderGlobalErrorPage())
             }
           } else {
@@ -68,12 +67,12 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
               case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
               case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
               case _ =>
-                Logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
+                logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
                 Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
             }
           }
         case Left(resp) =>
-          logger.warn("[SessionController][cleanAndRedirect] User is unauthenticated")
+          logger.warn("[SessionController][redirect] User is unauthenticated")
           resp
       }
   }

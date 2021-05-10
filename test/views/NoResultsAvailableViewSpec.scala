@@ -16,14 +16,15 @@
 
 package views
 
+import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class NoResultsAvailableViewSpec extends UnitSpec with RasTestHelper {
+class NoResultsAvailableViewSpec extends WordSpecLike with RasTestHelper {
 
-	"renderNoResultsAvailablePage" should {
+	"renderNoResultsAvailablePage" must {
 		"contain the correct page title" in {
 			val result = noResultsAvailableView()(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("no.results.available.page.title")

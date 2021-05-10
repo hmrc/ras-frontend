@@ -21,16 +21,16 @@ import models.{CallbackData, FileSession, ResultsFileMetaData}
 import org.joda.time.DateTime
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.libs.json.{JsValue, Json, Writes}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ShortLivedServiceSpec extends UnitSpec with RasTestHelper {
+class ShortLivedServiceSpec extends WordSpecLike with RasTestHelper {
   val fileId = "file-id-1"
   val fileStatus = "AVAILABLE"
   val reason: Option[String] = None
@@ -45,7 +45,7 @@ class ShortLivedServiceSpec extends UnitSpec with RasTestHelper {
 
 	val TestShortLivedCache: ShortLivedCache = new ShortLivedCache(mockRasShortLivedHttpCache, mockAppConfig, mockAppCrypto) {
 
-    when(mockRasShortLivedHttpCache.remove(any())(any(), any())).thenReturn(Future.successful(Future.successful(HttpResponse(200))))
+    when(mockRasShortLivedHttpCache.remove(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, "")))
 
     when(mockRasShortLivedHttpCache.fetchAndGetEntry[FileSession] (any(), any(),any())
       (any(),any(), any()))
@@ -56,7 +56,7 @@ class ShortLivedServiceSpec extends UnitSpec with RasTestHelper {
       .thenReturn(Future.successful(CacheMap("sessionValue", Map("1234" -> json))))
   }
 
-  "ShortLivedService" should {
+  "ShortLivedService" must {
     "cache fileSession in sav4later" in {
       val res = await(TestShortLivedCache.createFileSession("1234","56789"))
       res shouldBe true
@@ -112,7 +112,7 @@ class ShortLivedServiceSpec extends UnitSpec with RasTestHelper {
       res shouldBe false
     }
     "removes fileSession from cache" in {
-      when(mockRasShortLivedHttpCache.remove ("56789")).thenReturn(Future.successful(HttpResponse(202)))
+      when(mockRasShortLivedHttpCache.remove ("56789")).thenReturn(Future.successful(HttpResponse(202, "")))
       val res = await(TestShortLivedCache.removeFileSessionFromCache("56789"))
       res shouldBe 202
     }
@@ -159,7 +159,7 @@ class ShortLivedServiceSpec extends UnitSpec with RasTestHelper {
     }
   }
 
-  "failedProcessingUploadedFile" should {
+  "failedProcessingUploadedFile" must {
 
     "return true if it has been 24 hours since upload and no results file exists" in {
       val fileSession = FileSession(Some(callbackData), None, "userId", Some(DateTime.now().minusDays(2)getMillis), None)

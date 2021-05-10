@@ -18,9 +18,9 @@ package validators
 
 import models.RasDate
 import org.scalatest.Matchers
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.WordSpecLike
 
-class DateValidatorSpec extends UnitSpec with Matchers {
+class DateValidatorSpec extends WordSpecLike with Matchers {
 
   "date validator" should{
 
