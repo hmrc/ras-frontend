@@ -55,7 +55,8 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
     val allHeaders = hc.headers(HeaderNames.explicitlyIncludedHeaders) ++ hc.extraHeaders ++ hc.otherHeaders
 
     logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
-    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName", allHeaders).stream().map { res =>
+    logger.error(s"HEADERS HERE ----> $allHeaders")
+    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName", Seq.empty).stream().map { res =>
       Some(res.bodyAsSource.runWith(StreamConverters.asInputStream()))
     }
 
