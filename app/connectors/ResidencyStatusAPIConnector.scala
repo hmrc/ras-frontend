@@ -52,10 +52,10 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
   def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[InputStream]] = {
     implicit val system: ActorSystem = ActorSystem()
     implicit val materializer: ActorMaterializer = ActorMaterializer()
-    val allHeaders = hc.headers(HeaderNames.explicitlyIncludedHeaders) ++ hc.extraHeaders ++ hc.otherHeaders
+    val requiredHeaders = hc.headers(HeaderNames.explicitlyIncludedHeaders)
 
     logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
-    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName", allHeaders).stream().map { res =>
+    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName", requiredHeaders).stream().map { res =>
       Some(res.bodyAsSource.runWith(StreamConverters.asInputStream()))
     }
 
