@@ -29,6 +29,7 @@ import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
@@ -56,7 +57,8 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
 
     logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
     logger.error(s"HEADERS HERE ----> $allHeaders")
-    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName", Seq.empty).stream().map { res =>
+    logger.error(s"We're only sending ----> ${hc.headers(HeaderNames.explicitlyIncludedHeaders)}")
+    http.buildRequest(s"$serviceUrl/ras-api/file/getFile/$fileName", hc.headers(HeaderNames.explicitlyIncludedHeaders)).stream().map { res =>
       Some(res.bodyAsSource.runWith(StreamConverters.asInputStream()))
     }
 
