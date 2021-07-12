@@ -18,8 +18,7 @@
 @this(
         govuk_wrapper: views.html.govuk_wrapper,
         govukBackLink: GovukBackLink,
-        govukSummaryList: GovukSummaryList,
-        govukButton: GovukButton
+        govukSummaryList: GovukSummaryList
 )
 @(name: String, dateOfBirth: String, nino: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
@@ -111,15 +110,13 @@
         <a class="govuk-link govuk-body" id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name", cleanSession = true)' data-journey-click="link - click:User details not found:Look up another member">@messages("look.up.another.member")</a>
     </div>
 
-    <div id="choose-something-else">
-        @govukButton(Button(
-            classes = "button",
-            content = Text(messages("choose.something.else")),
-            attributes = Map(
-                "id" -> "choose-something-else-link",
-                "data-journey-click" -> "button - click:User details not found:Choose something else to do"
-            ),
-            href = Some(routes.SessionController.redirect("choose-an-option", cleanSession = false).url)
-        ))
-    </div>
+    <p class="govuk-body" id="choose-something-else">
+        <a href="@routes.SessionController.redirect("choose-an-option", cleanSession = false)" class="govuk-link" id="choose-something-else-link" data-journey-click="Choose something else to do">
+            @Html(messages("choose.something.else"))
+        </a>
+    </p>
+
+    <p id="feedback-link" class="govuk-body">
+        <a href='@appConfig.feedbackUrl' class="govuk-link">@messages("feedback.link")</a> @messages("feedback.text")
+    </p>
 }

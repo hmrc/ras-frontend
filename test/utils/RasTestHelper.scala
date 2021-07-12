@@ -115,6 +115,7 @@ trait RasTestHelper extends MockitoSugar {  this: Suite =>
 	when(mockAppConfig.fileUploadFrontendSuffix).thenReturn("file-upload/upload/envelopes")
 	when(mockAppConfig.loginCallback).thenReturn("/relief-at-source/")
 	when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
+	when(mockAppConfig.feedbackUrl).thenReturn("http://localhost:9514/feedback/ras")
 
 	val cannotUploadAnotherFileView: cannot_upload_another_file = fakeApplication.injector.instanceOf[cannot_upload_another_file]
 	val chooseAnOptionView: choose_an_option = fakeApplication.injector.instanceOf[choose_an_option]

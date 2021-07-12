@@ -82,4 +82,6 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val sessionCacheBaseUri: String = config.baseUrl("keystore")
 	lazy val sessionCacheDomain: String = config.getString(s"microservice.services.cachable.session-cache.domain")
 
+	lazy val feedbackBaseUrl: String = config.getString("feedback-link-base")
+	val feedbackUrl: String = s"$feedbackBaseUrl/feedback/ras"
 }
