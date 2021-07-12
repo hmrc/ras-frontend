@@ -19,11 +19,10 @@ package views
 import org.joda.time.DateTime
 import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
-import utils.RasTestHelper
+import views.helpers.ViewSpecHelper
 
 
-class UploadResultViewSpec extends WordSpecLike with RasTestHelper {
+class UploadResultViewSpec extends ViewSpecHelper {
 
 	private def isBeforeApr6(timestamp: Long) : Boolean = {
 		val uploadDate = new DateTime(timestamp)
@@ -38,6 +37,9 @@ class UploadResultViewSpec extends WordSpecLike with RasTestHelper {
 	val now: Long = DateTime.now().getMillis
 
 	"upload result page" must {
+		behave like pageWithFeedbackLink(
+			uploadResultView("fileId", formattedExpiryDate(now), isBeforeApr6(now), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig))
+
 		"contain the correct page title" in {
 			val result = uploadResultView("fileId", formattedExpiryDate(now), isBeforeApr6(now), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).title shouldBe Messages("upload.result.page.title")
@@ -104,7 +106,7 @@ class UploadResultViewSpec extends WordSpecLike with RasTestHelper {
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
 			doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
-			doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY & CY + 1:Choose something else to do"
+			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
 			doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
 		}
 
@@ -119,7 +121,7 @@ class UploadResultViewSpec extends WordSpecLike with RasTestHelper {
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
 			doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
-			doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:Residency status upload added CY:Choose something else to do"
+			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
 			doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
 
 		}
@@ -137,7 +139,7 @@ class UploadResultViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contain a button to choose something else to do which points to choose an option page" in {
 			val result = uploadResultView("fileId", formattedExpiryDate(now), isBeforeApr6(now), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else").attr("href") should include("/")
+			doc(result).getElementById("choose-something-else-link").attr("href") should include("/")
 		}
 	}
 }

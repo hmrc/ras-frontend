@@ -23,14 +23,18 @@ import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import org.scalatest.WordSpecLike
 import utils.RasTestHelper
+import views.helpers.ViewSpecHelper
 
 
-class MatchNotFoundViewSpec extends WordSpecLike with RasTestHelper {
+class MatchNotFoundViewSpec extends ViewSpecHelper {
 
 	val nino: String = "AA123456A"
 	val dob: String = new LocalDate(1999, 1, 1).toString("d MMMM yyyy")
 
 	"match not found page" must {
+
+		behave like pageWithFeedbackLink(matchNotFoundView("Jim McGill", dob, nino)(fakeRequest, testMessages, mockAppConfig))
+
 		"contain correct title when match not found" in {
 			val result = matchNotFoundView("Jim McGill", dob, nino)(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))
@@ -72,7 +76,7 @@ class MatchNotFoundViewSpec extends WordSpecLike with RasTestHelper {
 			doc(result).getElementById("change-name-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change Name"
 			doc(result).getElementById("change-nino-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change NINO"
 			doc(result).getElementById("change-dob-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change DOB"
-			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "button - click:User details not found:Choose something else to do"
+			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
 			doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:User details not found:Look up another member"
 		}
 	}

@@ -208,3 +208,6 @@ filestatus.Ready = File ready -
 filestatus.InProgress = File processing - 
 filestatus.UploadError = File problem - 
 filestatus.TimeExpiryError = File problem - 
+
+feedback.link = What did you think of this service?
+feedback.text = (takes 30 seconds)

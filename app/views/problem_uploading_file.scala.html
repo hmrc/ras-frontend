@@ -33,18 +33,15 @@
     <h1 id="header" class="govuk-heading-xl">@messages("problem.uploading.file.header")</h1>
    </div>
 
-   <div class="row govuk-!-margin-bottom-6">
+   <div class="row govuk-!-margin-bottom-4">
     <p id="try-again" class="govuk-body">@messages("upload.file.again").capitalize</p>
     <p id="check-file" class="govuk-body">@messages("check.file")</p>
    </div>
 
-    @govukButton(Button(
-        classes = "button",
-        content = Text(messages("return.to.upload")),
-        attributes = Map(
-            "id" -> "return-to-upload",
-            "data-journey-click" -> "button - click:There has been a problem uploading your file:Return to upload a file"
-        ),
-        href = Some(routes.FileUploadController.get.url)
-    ))
+    <p class="govuk-body" id="return-to-upload">
+        <a href="@routes.FileUploadController.get" class="govuk-link" id="return-to-upload-link" data-journey-click="Return to upload a file">
+        @Html(messages("return.to.upload"))
+        </a>
+    </p>
+
 }

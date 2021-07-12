@@ -80,10 +80,6 @@ trait DateValidator {
     }
   })
 
-  def checkForNumber(value: String): Boolean = {
-    value forall Character.isDigit
-  }
-
   def checkDayRange(date: RasDate): Boolean = {
 
     try {
