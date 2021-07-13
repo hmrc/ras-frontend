@@ -46,7 +46,7 @@ class CannotUploadAnotherFileViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contains the correct ga events" in {
 			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else").attr("data-journey-click") shouldBe "button - click:You cannot upload another file:Choose something else to do"
+			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
 		}
 	}
 }

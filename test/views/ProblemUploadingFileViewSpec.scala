@@ -42,7 +42,7 @@ class ProblemUploadingFileViewSpec extends WordSpecLike with RasTestHelper{
 			val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))
 			doc.getElementsByClass("govuk-back-link").attr("data-journey-click") shouldBe "navigation - link:There has been a problem uploading your file:Back"
-			doc.getElementById("return-to-upload").attr("data-journey-click") shouldBe "button - click:There has been a problem uploading your file:Return to upload a file"
+			doc.getElementById("return-to-upload-link").attr("data-journey-click") shouldBe "Return to upload a file"
 		}
 	}
 

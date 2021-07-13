@@ -101,16 +101,16 @@
         )
     ))
 
-    <p id="what-to-do" class="govuk-body govuk-!-margin-bottom-6">
+    <p id="what-to-do" class="govuk-body govuk-!-margin-bottom-4">
         @messages("match.not.found.what.to.do")
         <a class='govuk-link' id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target='_blank' data-journey-click='link - click:User details not found:Contact HMRC link'>@messages("contact.hmrc", name)</a>
     </p>
 
-    <div id="look-up-another-member" class="govuk-!-margin-bottom-6">
+    <div id="look-up-another-member" class="govuk-!-margin-bottom-4">
         <a class="govuk-link govuk-body" id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name", cleanSession = true)' data-journey-click="link - click:User details not found:Look up another member">@messages("look.up.another.member")</a>
     </div>
 
-    <p class="govuk-body" id="choose-something-else">
+    <p class="govuk-body govuk-!-margin-bottom-4" id="choose-something-else">
         <a href="@routes.SessionController.redirect("choose-an-option", cleanSession = false)" class="govuk-link" id="choose-something-else-link" data-journey-click="Choose something else to do">
             @Html(messages("choose.something.else"))
         </a>

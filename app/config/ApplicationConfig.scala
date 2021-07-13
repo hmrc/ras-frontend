@@ -31,8 +31,8 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 
 	lazy val hoursToWaitForReUpload: Int = config.getConfInt(s"re-upload.wait.time.hours", 24)
 
-  private lazy val logoutCallback: String = config.getConfString("gg-urls.logout-callback.url", "/relief-at-source/")
 	private lazy val signOutBaseUrl: String = s"$basGatewayHost/bas-gateway/sign-out-without-state?continue="
+	private lazy val signOutWithoutContinue: String = s"$basGatewayHost/bas-gateway/sign-out-without-state"
   private lazy val continueCallback =  config.getConfString("gg-urls.continue-callback.url", "/relief-at-source/")
 
 	lazy val basAuthHost: String = s"${config.getConfString("auth.bas-gateway.host", "")}"
@@ -41,7 +41,7 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val reportAProblemUrl: String = s"$contactHost/contact/problem_reports"
 	lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
 	lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-	lazy val signOutUrl: String = s"$signOutBaseUrl$logoutCallback"
+	lazy val signOutUrl: String = s"$signOutWithoutContinue"
 	lazy val signOutAndContinueUrl: String = s"$signOutBaseUrl$continueCallback"
 	lazy val loginCallback: String = config.getConfString("gg-urls.login-callback.url","/relief-at-source/")
 	lazy val fileUploadCallBack: String = loadConfig("file-upload-ras-callback-url")
