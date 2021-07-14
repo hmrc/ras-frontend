@@ -207,12 +207,12 @@ class ChooseAnOptionControllerSpec extends WordSpecLike with RasTestHelper {
     }
   }
 
-  "renderNoResultsAvailablePage" must {
+  "renderNoResultAvailablePage" must {
     "return ok when called" in {
       when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
-      val result = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) should include("/no-results-available")
+      val result = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
+      status(result) shouldBe OK
+      await(await(result).body.consumeData).utf8String should include("You have not uploaded a file")
     }
 
     "redirect to results-not-avilable when there is a file session with a file in progress" in {

@@ -135,7 +135,5 @@ trait RasTestHelper extends MockitoSugar {  this: Suite =>
 	val resultsNotAvailableYetView: results_not_available_yet = fakeApplication.injector.instanceOf[results_not_available_yet]
 	val unauthorisedView: unauthorised = fakeApplication.injector.instanceOf[unauthorised]
 	val uploadResultView: upload_result = fakeApplication.injector.instanceOf[upload_result]
-	val feedbackQuestionnaireView: feedback.feedbackQuestionaire = fakeApplication.injector.instanceOf[feedback.feedbackQuestionaire]
-	val thanksFeedbackQuestionnaireView: feedback.thanks = fakeApplication.injector.instanceOf[feedback.thanks]
 
 }
