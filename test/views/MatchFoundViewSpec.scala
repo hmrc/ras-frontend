@@ -20,19 +20,21 @@ import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
-import play.api.test.Helpers.contentAsString
-import org.scalatest.WordSpecLike
-import utils.RasTestHelper
-import play.api.test.Helpers._
+import play.api.test.Helpers.{contentAsString, _}
+import views.helpers.ViewSpecHelper
 
 
-class MatchFoundViewSpec extends WordSpecLike with RasTestHelper {
+class MatchFoundViewSpec extends ViewSpecHelper {
 
 	override val SCOTTISH = "Scotland"
 	val NON_SCOTTISH = "England, Northern Ireland or Wales"
 
 	val dob: LocalDate = new LocalDate(1999, 1, 1)
 	"match found page" must {
+
+		behave like pageWithFeedbackLink(
+			matchFoundView("Jim Mcgill", dob.toString("d MMMM yyyy"), "AA123456A", NON_SCOTTISH, Some(SCOTTISH), 1000, 1001)(fakeRequest, testMessages, mockAppConfig))
+
 		"contain correct title when match found" in {
 			val result = matchFoundView("Jim Mcgill", dob.toString("d MMMM yyyy"), "AA123456A", NON_SCOTTISH, Some(SCOTTISH), 1000, 1001)(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))
@@ -50,7 +52,7 @@ class MatchFoundViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contain correct ga events when match found and CY and CY+1 is present" in {
 			val result = matchFoundView("Jim Mcgill", dob.toString("d MMMM yyyy"), "AA123456A", NON_SCOTTISH, Some(SCOTTISH), 1000, 1001)(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "button - click:Residency status added CY & CY + 1:Choose something else to do"
+			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
 			doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:Residency status added CY & CY + 1:Look up another member"
 		}
 
@@ -65,7 +67,7 @@ class MatchFoundViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contain correct ga event when match found and only CY is present" in {
 			val result = matchFoundView("Jim Mcgill", dob.toString("d MMMM yyyy"), "AA123456A", NON_SCOTTISH, None, 1000, 1001)(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "button - click:Residency status added CY:Choose something else to do"
+			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
 			doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:Residency status added CY:Look up another member"
 		}
 

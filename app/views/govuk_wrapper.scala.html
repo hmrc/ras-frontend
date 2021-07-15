@@ -32,7 +32,7 @@
     <meta name="format-detection" content="telephone=no" />
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/ras.css")'/>
     @hmrcTimeoutDialogHelper(
-        signOutUrl = appConfig.signOutUrl,
+        signOutUrl = appConfig.signOutAndContinueUrl,
         timeout = Some(appConfig.timeOutSeconds),
         countdown = Some(appConfig.timeOutCountDownSeconds)
     )
@@ -43,7 +43,7 @@
         <div class="content__body">
             @contentBlock
         </div>
-        <div class="govuk-!-margin-top-5" id="report-technical-issue">
+        <div class="govuk-!-margin-top-9" id="report-technical-issue">
             @hmrcReportTechnicalIssueHelper()
         </div>
     </div>
@@ -55,7 +55,7 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceName = Some(messages("service.name")),
         serviceUrl = Some(controllers.routes.ChooseAnOptionController.get().url),
-        signOutUrl = Some(appConfig.signOutUrl),
+        signOutUrl = Some(appConfig.signOutAndContinueUrl),
         userResearchBanner = if(showUrBanner && appConfig.urBannerEnabled) Some(UserResearchBanner(url = appConfig.urBannerLinkUrl)) else None
     )),
     beforeContentBlock = beforeContentHtml,

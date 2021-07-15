@@ -17,8 +17,7 @@
 @import config.ApplicationConfig
 @this(
         govuk_wrapper: views.html.govuk_wrapper,
-        govukPanel: GovukPanel,
-        govukButton: GovukButton
+        govukPanel: GovukPanel
 )
 @(name: String,
   dateOfBirth: String,
@@ -53,16 +52,20 @@
         }
     </div>
 
-    <div class="govuk-!-margin-bottom-6" id="look-up-another-member">
+    <div class="govuk-!-margin-bottom-4" id="look-up-another-member">
         <a class="govuk-body govuk-link" id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name",cleanSession = true)' data-journey-click="link - click:Residency status added CY@if(nextYearResidencyStatus.nonEmpty){ & CY + 1}:Look up another member">@messages("look.up.another.member")</a>
     </div>
 
-    <div id="choose-something-else">
-    @govukButton(Button(
-        classes = "button",
-        content = Text(messages("choose.something.else")),
-        attributes = if(nextYearResidencyStatus) Map("id" -> "choose-something-else-link", "data-journey-click" -> "button - click:Residency status added CY & CY + 1:Choose something else to do") else Map("id" -> "choose-something-else-link", "data-journey-click" -> "button - click:Residency status added CY:Choose something else to do"),
-        href = Some(routes.SessionController.redirect("choose-an-option",cleanSession = true).url)
-    ))
-    </div>
+    <p class="govuk-body govuk-!-margin-bottom-4" id="choose-something-else">
+        <a href="@routes.SessionController.redirect("choose-an-option", cleanSession = true)"
+        class="govuk-link" id="choose-something-else-link"
+        data-journey-click="Choose something else to do">
+            @Html(messages("choose.something.else"))
+        </a>
+    </p>
+
+    <p id="feedback-link" class="govuk-body">
+        <a href='@appConfig.feedbackUrl' class="govuk-link">@messages("feedback.link")</a> @messages("feedback.text")
+    </p>
+
 }

@@ -18,11 +18,11 @@ val silencerVersion = "1.7.1"
 
 val compile: Seq[ModuleID] = Seq(
   ws,
-  "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "5.2.0",
-  "uk.gov.hmrc" %% "govuk-template"             % "5.66.0-play-27",
-  "uk.gov.hmrc" %% "http-caching-client"        % "9.4.0-play-27",
+  "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "5.7.0",
+  "uk.gov.hmrc" %% "govuk-template"             % "5.69.0-play-27",
+  "uk.gov.hmrc" %% "http-caching-client"        % "9.5.0-play-27",
   "uk.gov.hmrc" %% "time"                       % "3.19.0",
-  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "0.60.0-play-27",
+  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "0.83.0-play-27",
   compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
   "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
 )
@@ -34,7 +34,7 @@ val test: Seq[ModuleID] = Seq(
   "com.typesafe.play"      %% "play-test"          % PlayVersion.current,
   "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3",
   "org.mockito"            %  "mockito-core"       % "3.7.7",
-  "org.scalacheck"         %% "scalacheck"         % "1.15.3",
+  "org.scalacheck"         %% "scalacheck"         % "1.15.4",
   "uk.gov.hmrc"            %% "domain"             % "5.11.0-play-27"
 ).map(_ % "test")
 

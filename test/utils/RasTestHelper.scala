@@ -105,7 +105,6 @@ trait RasTestHelper extends MockitoSugar {  this: Suite =>
 	when(mockAppConfig.reportAProblemNonJSUrl).thenReturn("reportAProblemNonJSUrl")
 	when(mockAppConfig.timeOutSeconds).thenReturn(780)
 	when(mockAppConfig.timeOutCountDownSeconds).thenReturn(120)
-	when(mockAppConfig.signOutUrl).thenReturn("signOutUrl")
 	when(mockAppConfig.signOutAndContinueUrl).thenReturn("signOutAndContinueUrl")
 	when(mockAppConfig.urBannerEnabled).thenReturn(false)
 	when(mockAppConfig.urBannerLinkUrl).thenReturn("urBannerLinkUrl")
@@ -115,6 +114,7 @@ trait RasTestHelper extends MockitoSugar {  this: Suite =>
 	when(mockAppConfig.fileUploadFrontendSuffix).thenReturn("file-upload/upload/envelopes")
 	when(mockAppConfig.loginCallback).thenReturn("/relief-at-source/")
 	when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
+	when(mockAppConfig.feedbackUrl).thenReturn("http://localhost:9514/feedback/ras")
 
 	val cannotUploadAnotherFileView: cannot_upload_another_file = fakeApplication.injector.instanceOf[cannot_upload_another_file]
 	val chooseAnOptionView: choose_an_option = fakeApplication.injector.instanceOf[choose_an_option]
@@ -134,7 +134,5 @@ trait RasTestHelper extends MockitoSugar {  this: Suite =>
 	val resultsNotAvailableYetView: results_not_available_yet = fakeApplication.injector.instanceOf[results_not_available_yet]
 	val unauthorisedView: unauthorised = fakeApplication.injector.instanceOf[unauthorised]
 	val uploadResultView: upload_result = fakeApplication.injector.instanceOf[upload_result]
-	val feedbackQuestionnaireView: feedback.feedbackQuestionaire = fakeApplication.injector.instanceOf[feedback.feedbackQuestionaire]
-	val thanksFeedbackQuestionnaireView: feedback.thanks = fakeApplication.injector.instanceOf[feedback.thanks]
 
 }

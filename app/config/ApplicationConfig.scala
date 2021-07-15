@@ -31,7 +31,6 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 
 	lazy val hoursToWaitForReUpload: Int = config.getConfInt(s"re-upload.wait.time.hours", 24)
 
-  private lazy val logoutCallback: String = config.getConfString("gg-urls.logout-callback.url", "/relief-at-source/")
 	private lazy val signOutBaseUrl: String = s"$basGatewayHost/bas-gateway/sign-out-without-state?continue="
   private lazy val continueCallback =  config.getConfString("gg-urls.continue-callback.url", "/relief-at-source/")
 
@@ -41,7 +40,6 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val reportAProblemUrl: String = s"$contactHost/contact/problem_reports"
 	lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
 	lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-	lazy val signOutUrl: String = s"$signOutBaseUrl$logoutCallback"
 	lazy val signOutAndContinueUrl: String = s"$signOutBaseUrl$continueCallback"
 	lazy val loginCallback: String = config.getConfString("gg-urls.login-callback.url","/relief-at-source/")
 	lazy val fileUploadCallBack: String = loadConfig("file-upload-ras-callback-url")
@@ -82,4 +80,6 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val sessionCacheBaseUri: String = config.baseUrl("keystore")
 	lazy val sessionCacheDomain: String = config.getString(s"microservice.services.cachable.session-cache.domain")
 
+	lazy val feedbackBaseUrl: String = config.getString("feedback-link-base")
+	val feedbackUrl: String = s"$feedbackBaseUrl/feedback/ras"
 }

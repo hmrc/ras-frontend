@@ -72,13 +72,16 @@
         </div>
     </div>
 
-    @govukButton(Button(
-        classes = "button",
-        content = Text(messages("choose.something.else")),
-        attributes = Map(
-            "id" -> "choose-something-else",
-            "data-journey-click" -> s"button - click:Residency status upload added ${year}:Choose something else to do"
-        ),
-        href = Some(routes.ChooseAnOptionController.get.url)
-    ))
+    <p class="govuk-body govuk-!-margin-bottom-4" id="choose-something-else">
+        <a href="@routes.ChooseAnOptionController.get"
+        class="govuk-link" id="choose-something-else-link"
+        data-journey-click="Choose something else to do">
+        @Html(messages("choose.something.else"))
+        </a>
+    </p>
+
+    <p id="feedback-link" class="govuk-body govuk-!-margin-bottom-4">
+        <a href='@appConfig.feedbackUrl' class="govuk-link">@messages("feedback.link")</a> @messages("feedback.text")
+    </p>
+
 }
