@@ -61,7 +61,7 @@ class ChooseAnOptionViewSpec extends WordSpecLike with RasTestHelper {
 
 			"contain the single member h2" in {
 				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("task-list-section").get(0).html() shouldBe Messages("single.member.subheading")
+				doc(result).getElementsByClass("app-task-list__section").get(0).html() shouldBe Messages("single.member.subheading")
 			}
 
 			"contain the enter a members detail link" in {
@@ -73,7 +73,7 @@ class ChooseAnOptionViewSpec extends WordSpecLike with RasTestHelper {
 
 			"contain the Multiple members h2" in {
 				val result = chooseAnOptionView(NoFileSession, None)(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("task-list-section").get(1).html() shouldBe Messages("multiple.members.subheading")
+				doc(result).getElementsByClass("app-task-list__section").get(1).html() shouldBe Messages("multiple.members.subheading")
 			}
 		}
 

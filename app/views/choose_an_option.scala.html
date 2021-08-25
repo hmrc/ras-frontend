@@ -25,23 +25,23 @@
 
     <h1 class="govuk-heading-xl">@messages("chooseAnOption.page.header")</h1>
 
-    <h2 class="task-list-section govuk-heading-m">@messages("single.member.subheading")</h2>
+    <h2 class="app-task-list__section">@messages("single.member.subheading")</h2>
         <div>
-            <div class="task-list-item">
+            <div class="app-task-list__item">
                 <a class="task-name govuk-link govuk-body" id="single-member-link" href="@routes.MemberNameController.get()"  data-journey-click="link - click:Choose option to get residency status:Enter a members details">@messages("enter.members.details")</a>
             </div>
         </div>
 
-    <h2 class="task-list-section govuk-heading-m">@messages("multiple.members.subheading")</h2>
+    <h2 class="app-task-list__section">@messages("multiple.members.subheading")</h2>
         <div>
             @if(fileStatus==NoFileSession){
-                <div class="task-list-item">
+                <div class="app-task-list__item">
                     <a class="task-name govuk-link govuk-body" id="upload-link" href="@routes.FileUploadController.get()" data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("Upload a file")</a>
                 </div>
             }
 
             @if(fileStatus==InProgress){
-                <div class="task-list-item">
+                <div class="app-task-list__item">
                     <p class="paragraph-info govuk-body"><strong class="task-completed" id="file-processing">@messages("file.processing")</strong>@messages("file.upload.time", formattedDate.get)</p>
                     <p class="paragraph-info govuk-body">@messages("file.size.info")</p>
                     <p class="paragraph-info govuk-body govuk-!-margin-bottom-0">@messages("processing.file")</p>
@@ -49,7 +49,7 @@
             }
 
             @if(fileStatus==Ready){
-                <div class="task-list-item">
+                <div class="app-task-list__item">
                     <p><strong class="task-completed govuk-body" id="download-result">@messages("file.ready")</strong>
                         <a class="task-name govuk-link govuk-body" id="download-result-link" href="@routes.ChooseAnOptionController.renderUploadResultsPage" data-journey-click="link - click:Choose option to get residency status:Download your results">@messages("download.results")</a></p>
                     <p class="paragraph-info govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-4">@messages("result.timescale", formattedDate.get)</p>
@@ -57,7 +57,7 @@
             }
 
             @if(fileStatus==UploadError || fileStatus==TimeExpiryError){
-                <div class="task-list-item">
+                <div class="app-task-list__item">
                     <p class="paragraph-info govuk-body"><strong class="task-completed" id="file-problem">@messages("file.problem")</strong>@messages("problem.getting.result")</p>
                     <p class="paragraph-info govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-4">
                         @messages("file.problem.paragraph.start")
