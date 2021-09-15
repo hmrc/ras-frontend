@@ -19,10 +19,9 @@ val silencerVersion = "1.7.1"
 val compile: Seq[ModuleID] = Seq(
   ws,
   "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "5.7.0",
-  "uk.gov.hmrc" %% "govuk-template"             % "5.69.0-play-27",
   "uk.gov.hmrc" %% "http-caching-client"        % "9.5.0-play-27",
   "uk.gov.hmrc" %% "time"                       % "3.19.0",
-  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "0.83.0-play-27",
+  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "1.9.0-play-27",
   compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
   "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
 )
@@ -65,7 +64,6 @@ lazy val microservice = Project(appName, file("."))
 
 TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.govukfrontend.views.html.components._",
-  "uk.gov.hmrc.govukfrontend.views.html.helpers._",
   "uk.gov.hmrc.hmrcfrontend.views.html.components._",
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
 )
