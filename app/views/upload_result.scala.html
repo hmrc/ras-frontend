@@ -63,7 +63,7 @@
             <h2 id="whatnext-header" class="govuk-heading-m">@messages("match.found.what.happens.next")</h2>
             <p id="whatnext-content" class="govuk-body">
                 @Html(messages("upload.result.what.next",
-                "<a id='contact-hmrc-link' class='govuk-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target='_blank' data-journey-click='link - click:Residency status upload added " + year + ":Member must contact HMRC'>" + messages("upload.result.member.contact") + "</a>"
+                "<a id='contact-hmrc-link' class='govuk-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target='_blank' rel='noreferrer noopener' data-journey-click='link - click:Residency status upload added " + year + ":Member must contact HMRC'>" + messages("upload.result.member.contact") + "</a>"
                 ))
             </p>
             @if(!isBeforeApr6){
