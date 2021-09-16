@@ -55,7 +55,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                 case true =>
                   logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
                     s"so another could not be uploaded")
-                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
+                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress))
                 case _ =>
                   createFileUploadUrl(session.envelope, userId).flatMap {
                     case Some(url) =>
@@ -64,10 +64,10 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                       if(error == "upload.failed.error"){
                         sessionService.cacheUploadResponse(UploadResponse("",None)).map {
                           case Some(_) =>
-                            Redirect(routes.ErrorController.renderProblemUploadingFilePage())
+                            Redirect(routes.ErrorController.renderProblemUploadingFilePage)
                           case _ =>
                             logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
-                            Redirect(routes.ErrorController.renderGlobalErrorPage())
+                            Redirect(routes.ErrorController.renderGlobalErrorPage)
                         }
                       }
                       else {
@@ -77,7 +77,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                     case _ =>
                       logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
                         s"for userId ($userId)")
-                      Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                      Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                   }
               }
             case _ =>
@@ -87,12 +87,12 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                   Future.successful(Ok(fileUploadView(url,"")))
                 case _ =>
                   logger.error(s"[FileUploadController][get] failed to obtain a form url using new envelope for userId ($userId)")
-                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                  Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
               }
           }.recover {
             case e: Throwable =>
               logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId) - $e")
-              Redirect(routes.ErrorController.renderGlobalErrorPage())
+              Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(resp) =>
           logger.warn("[FileUploadController][get] user not authorised")
@@ -167,15 +167,15 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                     Ok(fileUploadSuccessView())
                   case _ =>
                     logger.error(s"[FileUploadController][uploadSuccess] failed to create file session for userId ($userId)")
-                    Redirect(routes.ErrorController.renderGlobalErrorPage())
+                    Redirect(routes.ErrorController.renderGlobalErrorPage)
                 }
               case _ =>
                 logger.error(s"[FileUploadController][uploadSuccess] no envelope exists in the session for userId ($userId)")
-                Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
             }
           case _ =>
             logger.error(s"[FileUploadController][uploadSuccess] session could not be retrieved for userId ($userId)")
-            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
         }
       case Left(resp) =>
         logger.warn("[FileUploadController][uploadSuccess] user not authorised")
@@ -192,9 +192,9 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
 
         sessionService.cacheUploadResponse(errorResponse).flatMap {
           case Some(_) =>
-            Future.successful(Redirect(routes.FileUploadController.get()))
+            Future.successful(Redirect(routes.FileUploadController.get))
           case _ =>
-            Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage()))
+            Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage))
         }
 
       case Left(resp) =>
@@ -211,14 +211,14 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
             fileSession.resultsFile match {
               case Some(_) =>
                 logger.info("[FileUploadController][uploadInProgress] redirecting to file ready page")
-                Future.successful(Redirect(routes.ChooseAnOptionController.renderFileReadyPage()))
+                Future.successful(Redirect(routes.ChooseAnOptionController.renderFileReadyPage))
               case _ =>
                 logger.info("[FileUploadController][uploadInProgress] calling cannot upload another file")
                 Future.successful(Ok(cannotUploadAnotherView()))
             }
           case _ =>
             logger.info("[FileUploadController][uploadInProgress] redirecting to global error")
-            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
         }
       case Left(resp) =>
         logger.warn("[FileUploadController][uploadInProgress] user not authorised")

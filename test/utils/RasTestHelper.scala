@@ -17,7 +17,6 @@
 package utils
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import config.{ApplicationConfig, RasSessionCache, RasShortLivedHttpCaching}
 import connectors.{FileUploadConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
@@ -35,7 +34,7 @@ import play.twirl.api.Html
 import services.{AuditService, SessionService, ShortLivedCache}
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import views.html._
@@ -76,7 +75,6 @@ trait RasTestHelper extends MockitoSugar {  this: Suite =>
 
 	implicit lazy val testMessages: MessagesImpl = MessagesImpl(i18n.Lang("en"), mockMCC.messagesApi)
 	implicit val actorSystem: ActorSystem = ActorSystem()
-	implicit val materializer: ActorMaterializer = ActorMaterializer()
 	implicit val hc: HeaderCarrier = HeaderCarrier()
 	implicit val ec: ExecutionContext = mockMCC.executionContext
 

@@ -38,7 +38,7 @@ class FileNotAvailableViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contain a back link pointing to choose-an-option" in {
 			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("back").attr("href") shouldBe s"${routes.ChooseAnOptionController.get().url}"
+			doc(result).getElementById("back").attr("href") shouldBe s"${routes.ChooseAnOptionController.get.url}"
 		}
 
 		"contain the correct content paragraph" in {
@@ -48,7 +48,7 @@ class FileNotAvailableViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contain the correct link in the content paragraph" in {
 			val result = fileNotAvailableView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("sub-header-link").attr("href") shouldBe s"${routes.ChooseAnOptionController.get().url}"
+			doc(result).getElementById("sub-header-link").attr("href") shouldBe s"${routes.ChooseAnOptionController.get.url}"
 		}
 
 		"contain the correct ga events" in {

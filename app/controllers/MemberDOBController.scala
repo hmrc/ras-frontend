@@ -24,7 +24,7 @@ import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -72,7 +72,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
               dateOfBirth => {
                 sessionService.cacheDob(dateOfBirth) flatMap {
                   case Some(session) => submitResidencyStatus(session, userId)
-                  case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                  case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                 }
               }
             )
@@ -89,7 +89,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(_) => previousPage("MemberDOBController", edit)
-            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
+            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(res) =>
           logger.warn("[DobController][back] user Not authorised")

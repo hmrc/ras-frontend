@@ -48,27 +48,27 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
             sessionService.resetRasSession() map {
               case Some(_) =>
                 target match {
-                  case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get())
+                  case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get)
                   case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
                   case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
                   case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
                   case _ =>
                     logger.error(s"[SessionController][redirect] Invalid redirect target $target")
-                    Redirect(routes.ErrorController.renderGlobalErrorPage())
+                    Redirect(routes.ErrorController.renderGlobalErrorPage)
                 }
               case _ =>
                 logger.error("[SessionController][redirect] No session found")
-                Redirect(routes.ErrorController.renderGlobalErrorPage())
+                Redirect(routes.ErrorController.renderGlobalErrorPage)
             }
           } else {
             target match {
-              case CHOOSE_AN_OPTION => Future.successful(Redirect(routes.ChooseAnOptionController.get()))
+              case CHOOSE_AN_OPTION => Future.successful(Redirect(routes.ChooseAnOptionController.get))
               case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get(edit)))
               case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
               case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
               case _ =>
                 logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
-                Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
             }
           }
         case Left(resp) =>

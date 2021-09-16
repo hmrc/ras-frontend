@@ -22,7 +22,7 @@ import models._
 import org.scalatest.Matchers.convertToAnyShouldWrapper
 import services.SessionService
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 

@@ -64,11 +64,11 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
 
                 case _ =>
                   logger.info("[ResultsController][matchFound] Session does not contain residency status result - wrong result")
-                  Redirect(routes.ChooseAnOptionController.get())
+                  Redirect(routes.ChooseAnOptionController.get)
               }
             case _ =>
               logger.error("[ResultsController][matchFound] failed to retrieve ras session")
-              Redirect(routes.ErrorController.renderGlobalErrorPage())
+              Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(res) =>
           logger.warn("[ResultsController][matchFound] user Not authorised")
@@ -95,15 +95,15 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
 
                   case Some(_) =>
                     logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
-                    Redirect(routes.ChooseAnOptionController.get())
+                    Redirect(routes.ChooseAnOptionController.get)
                 }
               } else {
                 logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
-                Redirect(routes.ChooseAnOptionController.get())
+                Redirect(routes.ChooseAnOptionController.get)
               }
             case _ =>
               logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
-              Redirect(routes.ErrorController.renderGlobalErrorPage())
+              Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(res) =>
           logger.warn("[ResultsController][matchFound] user Not authorised")
@@ -117,7 +117,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(_) => previousPage("ResultsController")
-            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
+            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(res) =>
           logger.warn("[ResultsController][back] user Not authorised")
