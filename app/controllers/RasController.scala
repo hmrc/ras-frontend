@@ -49,7 +49,7 @@ trait RasController extends AuthorisedFunctions with Logging {
 
   def unAuthorise(ex: AuthorisationException): Future[Result] = {
     logger.warn(s"[RasController][unAuthorise] User not authorised - $ex")
-    Future.successful(Redirect(routes.ErrorController.notAuthorised()))
+    Future.successful(Redirect(routes.ErrorController.notAuthorised))
   }
 
 	def toGGLogin(continueUrl: String): Result = {

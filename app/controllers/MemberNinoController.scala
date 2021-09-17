@@ -24,7 +24,7 @@ import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -78,7 +78,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
                     } else {
                       Future.successful(Redirect(routes.MemberDOBController.get()))
                     }
-                  case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+                  case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                 }
               }
             )
@@ -96,7 +96,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(_) => previousPage("MemberNinoController", edit)
-            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage())
+            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(res) =>
           logger.warn("[NinoController][back] user Not authorised")

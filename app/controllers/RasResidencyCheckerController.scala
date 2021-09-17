@@ -51,7 +51,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
         rasResponse.nextYearForecastResidencyStatus.map(extractResidencyStatus)
       if (cyResidencyStatus.isEmpty) {
         logger.error("[RasResidencyCheckerController][post] An unknown residency status was returned")
-        Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+        Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
       }
       else {
         logger.info("[RasResidencyCheckerController][post] Match found")
@@ -73,7 +73,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
           _ <- sessionService.cacheResidencyStatusResult(residencyStatusResult)
         }
         yield {
-          Redirect(routes.ResultsController.matchFound())
+          Redirect(routes.ResultsController.matchFound)
         }
       }
     }.recover {
@@ -82,12 +82,12 @@ trait RasResidencyCheckerController extends RasController with AuditService with
           residencyStatus = None, userId = userId)
         logger.info("[RasResidencyCheckerController][getResult] No match found from customer matching")
         timer.stop()
-        Redirect(routes.ResultsController.noMatchFound())
+        Redirect(routes.ResultsController.noMatchFound)
       case e: Throwable =>
         auditResponse(failureReason = Some("INTERNAL_SERVER_ERROR"), nino = Some(memberDetails.nino),
           residencyStatus = None, userId = userId)
         logger.error(s"[RasResidencyCheckerController][getResult] Customer Matching failed: ${e.getMessage}")
-        Redirect(routes.ErrorController.renderGlobalErrorPage())
+        Redirect(routes.ErrorController.renderGlobalErrorPage)
     }
   }
 

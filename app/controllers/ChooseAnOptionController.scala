@@ -113,19 +113,19 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                           Ok(uploadResultView(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
                         case _ =>
                           logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
-                          Redirect(routes.ErrorController.renderGlobalErrorPage())
+                          Redirect(routes.ErrorController.renderGlobalErrorPage)
                       }
                     case _ =>
                       logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve upload timestamp")
-                      Redirect(routes.ErrorController.renderGlobalErrorPage())
+                      Redirect(routes.ErrorController.renderGlobalErrorPage)
                   }
                 case _ =>
                   logger.info("[ChooseAnOptionController][renderUploadResultsPage] file upload in progress")
-                  Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage())
+                  Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage)
               }
             case _ =>
               logger.info("[ChooseAnOptionController][renderUploadResultsPage] no results available")
-              Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage())
+              Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage)
           }
         case Left(resp) =>
           logger.warn("[ChooseAnOptionController][renderUploadResultsPage] user not authorised")
@@ -142,10 +142,10 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
               fileSession.resultsFile match {
                 case Some(_) =>
                   logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] there is a file ready, rendering results page")
-                  Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage()))
+                  Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage))
                 case _ =>
                   logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] there is a file in progress, rendering results-not-available page")
-                  Future.successful(Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage()))
+                  Future.successful(Redirect(routes.ChooseAnOptionController.renderNoResultsAvailableYetPage))
               }
             case _ =>
               logger.info("[ChooseAnOptionController][renderNotResultAvailablePage] rendering no result available page")
@@ -166,14 +166,14 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
               fileSession.resultsFile match {
                 case Some(_) =>
                   logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to results page")
-                  Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage()))
+                  Future.successful(Redirect(routes.ChooseAnOptionController.renderUploadResultsPage))
                 case _ =>
                   logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] rendering results not available page")
                   Future.successful(Ok(resultsNotAvailableYetView()))
               }
             case _ =>
               logger.info("[ChooseAnOptionController][renderNotResultAvailableYetPage] redirecting to results not available")
-              Future.successful(Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage()))
+              Future.successful(Redirect(routes.ChooseAnOptionController.renderNoResultAvailablePage))
           }
         case Left(resp) =>
           logger.warn("[ChooseAnOptionController][renderNotResultAvailableYetPage] user not authorised")
@@ -192,11 +192,11 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                   Future.successful(Ok(fileReadyView()))
                 case _ =>
                   logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
-                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress()))
+                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress))
               }
             case _ =>
               logger.error("[ChooseAnOptionController][renderFileReadyPage] failed to retrieve session")
-              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
           }
         case Left(resp) =>
           logger.warn("[ChooseAnOptionController][renderFileReadyPage] user not authorised")
@@ -218,15 +218,15 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                       getFile(fileName, userId, shortLivedCache.getDownloadFileName(fileSession))
                     case _ =>
                       logger.error("[ChooseAnOptionController][getResultsFile] filename empty")
-                      Future.successful(Redirect(routes.ErrorController.fileNotAvailable()))
+                      Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
                   }
                 case _ =>
                   logger.error("[ChooseAnOptionController][getResultsFile] no result file found")
-                  Future.successful(Redirect(routes.ErrorController.fileNotAvailable()))
+                  Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
               }
             case _ =>
               logger.error("[ChooseAnOptionController][getResultsFile] no file session for User Id")
-              Future.successful(Redirect(routes.ErrorController.fileNotAvailable()))
+              Future.successful(Redirect(routes.ErrorController.fileNotAvailable))
           }
         case Left(resp) =>
           logger.warn("[ChooseAnOptionController][getResultsFile] user not authorised")
@@ -252,7 +252,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
     }.recover {
       case ex: Throwable => logger.error("[ChooseAnOptionController][getFile] Request failed with Exception " + ex.getMessage + " for file -> " + fileName)
-        Redirect(routes.ErrorController.renderGlobalErrorPage())
+        Redirect(routes.ErrorController.renderGlobalErrorPage)
     }
   }
 

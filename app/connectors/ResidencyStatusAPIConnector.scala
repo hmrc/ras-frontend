@@ -51,7 +51,6 @@ class ResidencyStatusAPIConnector @Inject()(val http: DefaultHttpClient,
 
   def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[InputStream]] = {
     implicit val system: ActorSystem = ActorSystem()
-    implicit val materializer: ActorMaterializer = ActorMaterializer()
     val requiredHeaders = hc.headers(HeaderNames.explicitlyIncludedHeaders)
 
     logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")

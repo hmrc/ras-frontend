@@ -24,7 +24,7 @@ import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
-import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -73,7 +73,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
 							} else {
 								Future.successful(Redirect(routes.MemberNinoController.get()))
 							}
-						case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage()))
+						case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
           }
         }
       )
