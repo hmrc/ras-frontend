@@ -6,7 +6,7 @@ file.upload.successful.page.title = Your file is being processed - Relief At Sou
 chooseAnOption.page.title = Choose an option to get a residency status - {0}Look up residency status for relief at source - GOV.UK
 upload.result.page.title = The residency status has been added - Look up residency status for relief at source - GOV.UK
 cannot.upload.another.file.page.title = You must wait until the last file has uploaded - Relief At Source - GOV.UK
-member.name.page.title = What is the member’s name? - Look up residency status for relief at source - GOV.UK
+member.name.page.title = Enter the member’s name - Look up residency status for relief at source - GOV.UK
 member.nino.page.title = What is the member’s National Insurance number? - Look up residency status for relief at source - GOV.UK
 member.dob.page.title = What is the member’s date of birth? - Look up residency status for relief at source - GOV.UK
 match.found.page.title = Member’s residency status - Look up residency status for relief at source - GOV.UK
@@ -22,7 +22,7 @@ file.ready.page.title = The last file you uploaded is ready - Look up residency 
 
 chooseAnOption.page.header = Choose an option to get a residency status
 upload.result.page.header = Download your CSV results
-member.name.page.header = What is the member’s name?
+member.name.page.header = Enter the member’s name
 member.nino.page.header = What is {0}’s National Insurance number?
 member.dob.page.header = What is {0}’s date of birth?
 global.error.header = Sorry, there is a problem with the service
@@ -39,10 +39,16 @@ file.ready.page.header = The last file you uploaded is ready
 
 ###### SUB-HEADERS #################################################################################
 
-match.found.what.happens.next = What you must do next
+match.found.what.happens.next = What you need to do next
 match.found.top = Use this residency status for the whole tax year in your relief at source claims. You cannot change the residency status in your claims during the tax year.
 match.found.bottom.current-year.bottom = From January {0} use this service to get {1}’s residency status for the {2} to {3} tax year.
+
 file.upload.page.sub-header = The selected file must be a CSV. The selected file must be smaller than 2MB
+file.upload.page.sub-title = You can only upload:
+file.upload.page.point.one = one file at a time
+file.upload.page.point.two = a CSV
+file.upload.page.point.three = a file smaller than 2MB
+
 upload.success.first-description = If your file is larger than 1MB or if the service is busy it can take up to 24 hours.
 upload.success.second-description = The results will be available on the service for 3 calendar days before being deleted.
 match.not.found.subheader = You should check with {0} to make sure you have their correct details.
@@ -61,27 +67,34 @@ error.withName.mandatory = Enter {0}’s {1}
 error.withName.mandatory.date = Enter {0}’s {1} of birth
 error.mandatory.firstName = Enter the member’s first name
 error.mandatory.lastName = Enter the member’s last name
-error.firstName.invalid = First name must only include letters a to z
-error.lastName.invalid = Last name must only include letters a to z
+error.firstName.invalid = First name must only include letters A to Z, hyphens, spaces and apostrophes
+error.lastName.invalid = Last name must only include letters A to Z, hyphens, spaces and apostrophes
 error.length.firstName = Member’s first name must be 35 characters or less
 error.length.lastName = Member’s last name must be 35 characters or less
 error.nino.invalid = Enter a National Insurance number in the right format
 error.nino.length = Enter a valid National Insurance number using 8 or 9 characters
 error.nino.special.character =  {0}’s National Insurance number must only include letters a to z and numbers 0 to 9
+
 error.date.non.number.date = {0}’s {1} of birth must only include numbers 0 to 9
 error.day.invalid = Enter a day between 1 and 31
 error.day.invalid.feb = Enter a day between 1 and 28
 error.day.invalid.feb.leap = Enter a day between 1 and 29
 error.day.invalid.thirty = Enter a day between 1 and 30
+error.dob.missing.day.year = Enter the day and year of birth
+error.dob.missing.day.month = Enter the day and month of birth
 error.month.invalid = Enter a month between 1 and 12
 error.year.invalid.format = Enter a year in full using 4 numbers
-error.dob.invalid.future = {0}’s {1} must be before {2}
-error.dob.before.1900 = {0}’s {1} must be after 31 December 1899
+error.dob.invalid.future = Date of birth must be between 01/01/1900 and today
+error.dob.before.1900 = {0}’s {1} Date of birth must be between 01/01/1900 and today
+error.dob.missing = Enter the date of birth
+error.dob.missing.month.year = Enter the month and year of birth
+
 generic.errors_heading = There is a problem
+errors.title_prefix = Error: {0}
 file.large.error=CSV must be smaller than 2MB
 file.empty.error=This CSV is empty. Upload a CSV with data in it
-upload.failed.error=There was a problem uploading your file. Please try again
-error.select.csv = Select a CSV file
+upload.failed.error = There was a problem uploading your file. Try again.
+error.select.csv = The selected file must be a CSV
 
 error.page_not_found.tabtitle = Page not found - Look up residency status for relief at source - GOV.UK
 error.page_not_found.heading = Page not found
@@ -119,18 +132,20 @@ year = year
 dob.hint = For example, 21 2 1983
 nino.hint = It’s on your National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’.
 back = Back
-member.details.not.found = {0}’s residency status cannot be displayed
+member.details.not.found = We cannot display {0}’s residency status
 residency.status = Residency status
-tax.year.period = For the {0} to {1} tax year use
+tax.year.period = For 6 April {0} to 5 April {1}
 change = Change
 change.name = Change name
 change.nino = Change National Insurance number
 change.dob = Change date of birth
-match.not.found.what.to.do = If you have checked and everything is correct,
-contact.hmrc = {0} must contact HMRC to update their personal details.
-look.up.another.member = Look up another member
+match.not.found.what.to.do = If what you have is correct,
+contact.hmrc = contact HMRC to review {0}'s personal details
+look.up.another.member = go back and look up another member
+upload.to.check.multiple.members = upload a file to check the status of multiple members
 get.help.uploading.link = Get help formatting your file (opens in a new window or tab)
 upload = Upload
+upload.continue = Upload and continue
 no.results.available.link = upload a file
 file.not.available.link = upload a new file or download one that is waiting.
 nav.title = Look up residency status for relief at source
@@ -186,7 +201,7 @@ ras.timeoutDialog.signout= Sign out
 
 ###### WDYWTDP ######################################################################################
 
-enter.members.details = Enter a member’s details
+enter.members.details = Enter the member’s details
 upload.file = Upload a file
 download.results = Download your results
 file.ready = FILE READY

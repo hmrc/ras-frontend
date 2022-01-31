@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,29 @@
             )
         ))
     }
+    <p id="you-can-only-upload" class="govuk-body">
+    @messages("file.upload.page.sub-title")
+    </p>
+    <p id="upload-info" class="govuk-body">
+        <ul class="govuk-list govuk-list--bullet">
+            <li>
+                <div id="one-file-at-a-time" class="govuk-!-margin-bottom-4">
+                @messages("file.upload.page.point.one")
+                </div>
+            </li>
+            <li>
+                <div id="csv-file" class="govuk-!-margin-bottom-4">
+                    @messages("file.upload.page.point.two")
+                </div>
+            </li>
 
-    <p id="upload-info" class="govuk-body">@messages("file.upload.page.sub-header")</p>
+            <li>
+                <div id="smaller-than" class="govuk-!-margin-bottom-4">
+                    @messages("file.upload.page.point.three")
+                </div>
+            </li>
+        </ul>
+    </p>
 
     @form(Call("POST", fileUploadUrl), 'enctype -> "multipart/form-data", 'id -> "upload-form") {
 
@@ -78,7 +99,7 @@
         @govukButton(Button(
             inputType = Some("submit"),
             classes = "button",
-            content = Text(messages("continue")),
+            content = Text(messages("upload.continue")),
             attributes = Map("data-journey-click" -> "button - click:Upload a file:Continue", "id" -> "continue")
         ))
     }
