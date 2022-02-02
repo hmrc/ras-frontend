@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,9 @@ class FileUploadViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contain upload-info" in {
 			val result = fileUploadView("fileUploadUrl", "errorMessage")(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("upload-info").html shouldBe Messages("file.upload.page.sub-header")
+			doc(result).getElementById("one-file-at-a-time").html shouldBe Messages("file.upload.page.point.one")
+			doc(result).getElementById("csv-file").html shouldBe Messages("file.upload.page.point.two")
+			doc(result).getElementById("smaller-than").html shouldBe Messages("file.upload.page.point.three")
 		}
 
 		"contain 'choose file' button" in {
@@ -48,7 +50,7 @@ class FileUploadViewSpec extends WordSpecLike with RasTestHelper {
 
 		"contain an upload button" in {
 			val result = fileUploadView("fileUploadUrl", "errorMessage")(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("continue").text shouldBe Messages("continue")
+			doc(result).getElementById("continue").text shouldBe Messages("upload.continue")
 		}
 
 		"contain an uploading help link that opens new window when clicked" in {

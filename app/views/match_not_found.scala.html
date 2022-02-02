@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,15 +106,23 @@
         <a class='govuk-link' id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target="_blank" rel="noreferrer noopener" data-journey-click='link - click:User details not found:Contact HMRC link'>@messages("contact.hmrc", name)</a>
     </p>
 
-    <div id="look-up-another-member" class="govuk-!-margin-bottom-4">
-        <a class="govuk-link govuk-body" id="look-up-another-member-link" href='@routes.SessionController.redirect("member-name", cleanSession = true)' data-journey-click="link - click:User details not found:Look up another member">@messages("look.up.another.member")</a>
-    </div>
-
-    <p class="govuk-body govuk-!-margin-bottom-4" id="choose-something-else">
-        <a href="@routes.SessionController.redirect("choose-an-option", cleanSession = false)" class="govuk-link" id="choose-something-else-link" data-journey-click="Choose something else to do">
-            @Html(messages("choose.something.else"))
-        </a>
-    </p>
+    <p class="govuk-body">You can now:</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>
+            <div id="look-up-another-member" class="govuk-!-margin-bottom-4">
+            <a class="govuk-link govuk-body" id="look-up-another-member-link"
+               href='@routes.SessionController.redirect("member-name", cleanSession = true)'
+               data-journey-click="link - click:User details not found:Look up another member">@messages("look.up.another.member")</a>
+            </div>
+        </li>
+        <li>
+            <div id="upload-file" class="govuk-!-margin-bottom-4">
+                <a class="task-name govuk-link govuk-body" id="upload-link" href="@routes.FileUploadController.get"
+                   data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("upload.to.check.multiple.members")</a>
+            </div>
+        </li>
+        <br>
+    </ul>
 
     <p id="feedback-link" class="govuk-body">
         <a href='@appConfig.feedbackUrl' class="govuk-link">@messages("feedback.link")</a> @messages("feedback.text")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ class MatchNotFoundViewSpec extends ViewSpecHelper {
 			doc(result).getElementsByClass("govuk-summary-list__value").get(1).text shouldBe nino
 			doc(result).getElementById("change-dob-link").text shouldBe Messages("change") + " " + Messages("change.dob")
 			doc(result).getElementsByClass("govuk-summary-list__value").get(2).text shouldBe dob
-			doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
 		}
 
 		"contain a member must contact HMRC to update their personal details link which opens a new tab when clicked" in {
@@ -76,7 +75,6 @@ class MatchNotFoundViewSpec extends ViewSpecHelper {
 			doc(result).getElementById("change-name-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change Name"
 			doc(result).getElementById("change-nino-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change NINO"
 			doc(result).getElementById("change-dob-link").attr("data-journey-click") shouldBe "link - click:User details not found:Change DOB"
-			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
 			doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:User details not found:Look up another member"
 		}
 	}

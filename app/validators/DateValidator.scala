@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,35 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 trait DateValidator {
 
   val YEAR_FIELD_LENGTH: Int = 4
-  val year = "year"
-  val month = "month"
-  val day = "day"
+  val YEAR = "year"
+  val MONTH = "month"
+  val DAY = "day"
+
+  def dateFieldConstraint(name: String): Constraint[RasDate] = Constraint("")({
+    date =>
+      val day = date.day.collect { case x if x.trim.nonEmpty => x }
+      val month = date.month.collect { case x if x.trim.nonEmpty => x }
+      val year = date.year.collect { case x if x.trim.nonEmpty => x }
+
+      (day, month, year) match {
+        case (None, None, None) => Invalid(Seq(ValidationError("error.dob.missing")))
+
+        case (None, None, Some(_)) => Invalid(Seq(ValidationError("error.dob.missing.day.month")))
+        case (Some(_), None, None) => Invalid(Seq(ValidationError("error.dob.missing.month.year")))
+        case (None, Some(_), None) => Invalid(Seq(ValidationError("error.dob.missing.day.year")))
+
+        case (None, Some(_), Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", name, "day")))
+        case (Some(_), None, Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", name, "month")))
+        case (Some(_), Some(_), None) => Invalid(Seq(ValidationError("error.withName.mandatory.date", name, "year")))
+
+        case (Some(d), _, _) if !d.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date", name, "date")))
+        case (_, Some(m), _) if !m.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date", name, "month")))
+        case (_, _, Some(y)) if !y.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date", name, "year")))
+
+        case _ => Valid
+      }
+
+  })
 
   def rasDateConstraint(name: String): Constraint[MemberDateOfBirth] = Constraint("dateOfBirth")({
     memDob => {
@@ -44,29 +70,29 @@ trait DateValidator {
 
       if (!DateValidator.checkDayRange(date)) {
         if (date.month.getOrElse("0").toInt == 2 && leapYear)
-          Invalid(Seq(ValidationError("error.day.invalid.feb.leap", day)))
+          Invalid(Seq(ValidationError("error.day.invalid.feb.leap", DAY)))
         else if (date.month.getOrElse("0").toInt == 2)
-          Invalid(Seq(ValidationError("error.day.invalid.feb", day)))
+          Invalid(Seq(ValidationError("error.day.invalid.feb", DAY)))
         else if (List(4, 6, 9, 11).contains(date.month.getOrElse("0").toInt))
-          Invalid(Seq(ValidationError("error.day.invalid.thirty", day)))
+          Invalid(Seq(ValidationError("error.day.invalid.thirty", DAY)))
         else
-          Invalid(Seq(ValidationError("error.day.invalid", day)))
+          Invalid(Seq(ValidationError("error.day.invalid", DAY)))
       }
 
       else if (!DateValidator.checkMonthRange(date.month.getOrElse("0")))
-        Invalid(Seq(ValidationError("error.month.invalid", month)))
+        Invalid(Seq(ValidationError("error.month.invalid", MONTH)))
 
       else if (!DateValidator.checkYearLength(date.year.getOrElse("0")))
-        Invalid(Seq(ValidationError("error.year.invalid.format", year)))
+        Invalid(Seq(ValidationError("error.year.invalid.format", YEAR)))
 
       else {
         try {
           if (date.isInFuture) {
             val nextDay = DateTimeFormatter.ofPattern("dd MMMM uuuu").format(LocalDateTime.now().plusDays(1))
-            Invalid(Seq(ValidationError("error.dob.invalid.future", name, "date of birth", nextDay, day)))
+            Invalid(Seq(ValidationError("error.dob.invalid.future", name, "date of birth", nextDay, DAY)))
           }
           else if (!DateValidator.isAfter1900(date.year.getOrElse("0")))
-            Invalid(Seq(ValidationError("error.dob.before.1900", name, "date of birth", year)))
+            Invalid(Seq(ValidationError("error.dob.before.1900", name, "date of birth", YEAR)))
           else
             Valid
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,54 +42,49 @@ class MemberDateOfBirthFormSpec extends WordSpecLike with RasTestHelper {
     "return error when all fields are empty" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(None, None, None))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List("error.withName.mandatory.date"), Seq("Chris Bristow", "day"))))
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List("error.withName.mandatory.date"), Seq("Chris Bristow", "month"))))
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List("error.withName.mandatory.date"), Seq("Chris Bristow", "year"))))
-
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.dob.missing"))))
     }
 
     "return error when day is empty" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(None, Some("1"), Some("1999")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List("error.withName.mandatory.date"), Seq("Chris Bristow", "day"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.withName.mandatory.date"), Seq("Chris Bristow", "day"))))
     }
 
     "return error when month is empty" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"), None, Some("1999")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List("error.withName.mandatory.date"), Seq("Chris Bristow", "month"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.withName.mandatory.date"), Seq("Chris Bristow", "month"))))
     }
 
     "return error when year is empty" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("1"), None))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List("error.withName.mandatory.date"), Seq("Chris Bristow", "year"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.withName.mandatory.date"), Seq("Chris Bristow", "year"))))
     }
 
     "return error when all fields are not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("a"), Some("b"), Some("!")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List("error.date.non.number.date"), Seq("Chris Bristow", "day"))))
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List("error.date.non.number.date"), Seq("Chris Bristow", "month"))))
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List("error.date.non.number.date"), Seq("Chris Bristow", "year"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "date"))))
     }
 
     "return error when day is not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("a"), Some("2"), Some("1")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.day", List("error.date.non.number.date"), Seq("Chris Bristow", "day"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "date"))))
     }
 
     "return error when month is not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"), Some("a"), Some("1")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.month", List("error.date.non.number.date"), Seq("Chris Bristow", "month"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "month"))))
     }
 
     "return error when year is not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("2"), Some("a")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth.year", List("error.date.non.number.date"), Seq("Chris Bristow", "year"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "year"))))
     }
 
     "return error when non existing date is entered in month 2" in {

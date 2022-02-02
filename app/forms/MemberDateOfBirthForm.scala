@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,32 +22,21 @@ import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import validators.DateValidator
 
-object MemberDateOfBirthForm {
+object MemberDateOfBirthForm extends DateValidator {
 
 	val dateErrorKey = "error.withName.mandatory.date"
 	val nonNumberErrorKey = "error.date.non.number.date"
-  def apply(name: Option[String] = None) = Form(
-    "dateOfBirth" -> mapping(
-      "" -> mapping(
-        "day" -> optional(text)
-					.verifying(mandatoryCheckConstraint(dateErrorKey, mandatoryCheck, name.getOrElse("member"), "day"))
-					.verifying(mandatoryCheckConstraint(nonNumberErrorKey, mandatoryCheckNonNumber, name.getOrElse("member"), "day")),
-        "month" -> optional(text)
-					.verifying(mandatoryCheckConstraint(dateErrorKey, mandatoryCheck, name.getOrElse("member"), "month"))
-					.verifying(mandatoryCheckConstraint(nonNumberErrorKey, mandatoryCheckNonNumber, name.getOrElse("member"), "month")),
-        "year" -> optional(text)
-					.verifying(mandatoryCheckConstraint(dateErrorKey, mandatoryCheck, name.getOrElse("member"), "year"))
-					.verifying(mandatoryCheckConstraint(nonNumberErrorKey, mandatoryCheckNonNumber, name.getOrElse("member"), "year"))
-      )(RasDate.apply)(RasDate.unapply)
-    )(MemberDateOfBirth.apply)(MemberDateOfBirth.unapply).verifying(DateValidator.rasDateConstraint(name.getOrElse("member")))
-  )
+	def apply(name: Option[String] = None) = Form(
+		"dateOfBirth" -> mapping(
+			"" -> mapping(
+				"day" -> optional(text),
+				"month" -> optional(text),
+				"year" -> optional(text),
+			)(RasDate.apply)(RasDate.unapply)
+				.verifying(dateFieldConstraint(name.getOrElse("member")))
 
-  val mandatoryCheck: Option[String] => Boolean = input => input.getOrElse("").trim != ""
-  val mandatoryCheckNonNumber: Option[String] => Boolean = input => input.getOrElse("0") forall Character.isDigit
+		)(MemberDateOfBirth.apply)(MemberDateOfBirth.unapply)
 
-	def mandatoryCheckConstraint(errorKey: String, constraint: Option[String] => Boolean, name: String, key: String): Constraint[Option[String]] = {
-		Constraint { t: Option[String] =>
-			if (constraint(t)) Valid else Invalid(Seq(ValidationError(errorKey, name, key)))
-		}
-	}
+			.verifying(rasDateConstraint(name.getOrElse("member")))
+	)
 }
