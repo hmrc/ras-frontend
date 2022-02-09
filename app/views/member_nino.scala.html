@@ -85,7 +85,7 @@
         errorMessage = if(memberNinoForm("nino").hasErrors) {
             Some(ErrorMessage(
                 attributes = Map("data-journey-click" -> "ras:error:nino"),
-                content = Text(messages(memberNinoForm("nino").errors.head.message, name, messages("nino")))
+                content = Text(messages(memberNinoForm("nino").errors.head.message, messages("nino")))
             ))
         } else { None },
         hint = Some(Hint(
