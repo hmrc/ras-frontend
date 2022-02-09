@@ -38,13 +38,13 @@ class MemberNinoFormSpec extends WordSpecLike with RasTestHelper {
     "return an error when nino field is empty" in {
       val formData = Json.obj("nino" -> "")
       val validatedForm = form(Some("James Potter")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("nino", List("error.withName.mandatory"), Seq("James Potter", "National Insurance number"))))
+      assert(validatedForm.errors.contains(FormError("nino", List("error.withName.mandatory"), Seq("National Insurance number"))))
     }
 
     "return an error when nino field has special character" in {
       val formData = Json.obj("nino" -> "a!")
       val validatedForm = form(Some("James Potter")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("nino", List("error.nino.special.character"), Seq("James Potter"))))
+      assert(validatedForm.errors.contains(FormError("nino", List("error.nino.special.character"))))
     }
 
     "return an error when invalid nino is passed" in {

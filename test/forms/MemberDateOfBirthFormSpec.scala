@@ -66,25 +66,25 @@ class MemberDateOfBirthFormSpec extends WordSpecLike with RasTestHelper {
     "return error when all fields are not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("a"), Some("b"), Some("!")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "date"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"))))
     }
 
     "return error when day is not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("a"), Some("2"), Some("1")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "date"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"))))
     }
 
     "return error when month is not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("1"), Some("a"), Some("1")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "month"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"))))
     }
 
     "return error when year is not a number" in {
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("2"), Some("a")))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"), Seq("Chris Bristow", "year"))))
+      assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.date.non.number.date"))))
     }
 
     "return error when non existing date is entered in month 2" in {
