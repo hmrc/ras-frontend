@@ -63,8 +63,8 @@ multiple.members.subheading = Multiple members
 ###### ERRORS ######################################################################################
 
 error.mandatory = Enter a {0}
-error.withName.mandatory = Enter {0}’s {1}
-error.withName.mandatory.date = Enter {0}’s {1} of birth
+error.withName.mandatory = Enter the {0}
+error.withName.mandatory.date = Enter the {0} of birth
 error.mandatory.firstName = Enter the member’s first name
 error.mandatory.lastName = Enter the member’s last name
 error.firstName.invalid = First name must only include letters A to Z, hyphens, spaces and apostrophes
@@ -73,9 +73,9 @@ error.length.firstName = Member’s first name must be 35 characters or less
 error.length.lastName = Member’s last name must be 35 characters or less
 error.nino.invalid = Enter a National Insurance number in the right format
 error.nino.length = Enter a valid National Insurance number using 8 or 9 characters
-error.nino.special.character =  {0}’s National Insurance number must only include letters a to z and numbers 0 to 9
+error.nino.special.character = The National Insurance number must only include letters a to z and numbers 0 to 9
 
-error.date.non.number.date = {0}’s {1} of birth must only include numbers 0 to 9
+error.date.non.number.date = Date of birth must be a real date
 error.day.invalid = Enter a day between 1 and 31
 error.day.invalid.feb = Enter a day between 1 and 28
 error.day.invalid.feb.leap = Enter a day between 1 and 29
@@ -85,7 +85,7 @@ error.dob.missing.day.month = Enter the day and month of birth
 error.month.invalid = Enter a month between 1 and 12
 error.year.invalid.format = Enter a year in full using 4 numbers
 error.dob.invalid.future = Date of birth must be between 01/01/1900 and today
-error.dob.before.1900 = {0}’s {1} Date of birth must be between 01/01/1900 and today
+error.dob.before.1900 = Date of birth must be between 01/01/1900 and today
 error.dob.missing = Enter the date of birth
 error.dob.missing.month.year = Enter the month and year of birth
 

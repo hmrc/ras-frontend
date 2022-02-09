@@ -44,13 +44,13 @@ trait DateValidator {
         case (Some(_), None, None) => Invalid(Seq(ValidationError("error.dob.missing.month.year")))
         case (None, Some(_), None) => Invalid(Seq(ValidationError("error.dob.missing.day.year")))
 
-        case (None, Some(_), Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", name, "day")))
-        case (Some(_), None, Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", name, "month")))
-        case (Some(_), Some(_), None) => Invalid(Seq(ValidationError("error.withName.mandatory.date", name, "year")))
+        case (None, Some(_), Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", "day")))
+        case (Some(_), None, Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", "month")))
+        case (Some(_), Some(_), None) => Invalid(Seq(ValidationError("error.withName.mandatory.date", "year")))
 
-        case (Some(d), _, _) if !d.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date", name, "date")))
-        case (_, Some(m), _) if !m.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date", name, "month")))
-        case (_, _, Some(y)) if !y.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date", name, "year")))
+        case (Some(d), _, _) if !d.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date")))
+        case (_, Some(m), _) if !m.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date")))
+        case (_, _, Some(y)) if !y.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date")))
 
         case _ => Valid
       }
@@ -88,11 +88,10 @@ trait DateValidator {
       else {
         try {
           if (date.isInFuture) {
-            val nextDay = DateTimeFormatter.ofPattern("dd MMMM uuuu").format(LocalDateTime.now().plusDays(1))
-            Invalid(Seq(ValidationError("error.dob.invalid.future", name, "date of birth", nextDay, DAY)))
+            Invalid(Seq(ValidationError("error.dob.invalid.future")))
           }
           else if (!DateValidator.isAfter1900(date.year.getOrElse("0")))
-            Invalid(Seq(ValidationError("error.dob.before.1900", name, "date of birth", YEAR)))
+            Invalid(Seq(ValidationError("error.dob.before.1900")))
           else
             Valid
         }
