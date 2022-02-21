@@ -17,6 +17,8 @@
 @import config.ApplicationConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
 @this(
         govuk_wrapper: views.html.govuk_wrapper,
@@ -38,15 +40,34 @@
     ))
 
     @if(memberDobForm.hasErrors) {
-        @govukErrorSummary(ErrorSummary(
-            errorList = memberDobForm.errors.asTextErrorLinks,
+        <!--@govukErrorSummary(ErrorSummary(
+            errorList = Seq(memberDobForm.errors.asTextErrorLinks.head),
             title = Text(messages("generic.errors_heading"))
-        ))
+        ))-->
+
+    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+        <h2 class="govuk-error-summary__title" id="error-summary-title">
+            @messages("generic.errors_heading")
+        </h2>
+
+        <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+                <li>
+                    <a href="#@if(memberDobForm.errors.head.key == "dateOfBirth"){dateOfBirth.day}else{@memberDobForm.errors.head.key}">@messages(memberDobForm.errors.head.message)</a>
+                </li>
+            </ul>
+        </div>
+    </div>
     }
+
 
     @formWithCSRF(action = routes.MemberDOBController.post(edit)) {
 
+
         @govukDateInput(DateInput(
+            hint = Some(Hint(
+                content = Text(messages("dob.hint"))
+            )),
             id = "dateOfBirth",
             fieldset = Some(Fieldset(
                 legend = Some(Legend(
@@ -54,39 +75,8 @@
                     classes = "govuk-fieldset__legend--xl",
                     isPageHeading = true
                 ))
-            )),
-            items = Seq(
-                InputItem(
-                    name = "dateOfBirth.day",
-                    id = "dateOfBirth.day",
-                    autocomplete = Some("bday-day"),
-                    classes = if(memberDobForm("dateOfBirth.day").hasErrors) "govuk-input--width-2 govuk-input--error" else "govuk-input--width-2",
-                    value = memberDobForm("dateOfBirth.day").value,
-                    label = Some(messages("day").capitalize)
-                ),
-                InputItem(
-                    name = "dateOfBirth.month",
-                    id = "dateOfBirth.month",
-                    autocomplete = Some("bday-month"),
-                    classes = if(memberDobForm("dateOfBirth.month").hasErrors) "govuk-input--width-2 govuk-input--error" else "govuk-input--width-2",
-                    value = memberDobForm("dateOfBirth.month").value,
-                    label = Some(messages("month").capitalize)
-                ),
-                InputItem(
-                    name = "dateOfBirth.year",
-                    id = "dateOfBirth.year",
-                    autocomplete = Some("bday-year"),
-                    classes = if(memberDobForm("dateOfBirth.year").hasErrors) "govuk-input--width-4 govuk-input--error" else "govuk-input--width-4",
-                    value = memberDobForm("dateOfBirth.year").value,
-                    label = Some(messages("year").capitalize)
-                )
-            ),
-            hint = Some(Hint(
-                content = Text(messages("dob.hint"))
-            )),
-            errorMessage = if (memberDobForm.hasErrors) Some(memberDobForm.errors.head).map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
-            else None,
-         ))
+            ))
+        ).withFormField(memberDobForm("dateOfBirth")))
 
         <div class="govuk-form-submit">
         @govukButton(Button(

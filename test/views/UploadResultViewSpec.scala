@@ -106,7 +106,8 @@ class UploadResultViewSpec extends ViewSpecHelper {
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
 			doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
-			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
+			doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:User details not found:Look up another member"
+			doc(result).getElementById("upload-file").attr("data-journey-click") shouldBe "look-up-multiple"
 			doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:Member must contact HMRC"
 		}
 
@@ -121,7 +122,8 @@ class UploadResultViewSpec extends ViewSpecHelper {
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
 			doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
-			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
+			doc(result).getElementById("look-up-another-member-link").attr("data-journey-click") shouldBe "link - click:User details not found:Look up another member"
+			doc(result).getElementById("upload-link").attr("data-journey-click") shouldBe "link - click:Choose option to get residency status:Upload a file"
 			doc(result).getElementById("contact-hmrc-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:Member must contact HMRC"
 
 		}
@@ -132,14 +134,14 @@ class UploadResultViewSpec extends ViewSpecHelper {
 			doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (1000 + 1).toString, (1000 + 2).toString)
 		}
 
-		"contain a button to choose something else to do" in {
+		"contain a You can now section" in {
 			val result = uploadResultView("fileId", formattedExpiryDate(now), isBeforeApr6(now), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+			doc(result).getElementById("you-can-now").text shouldBe Messages("you.can.now")
 		}
 
-		"contain a button to choose something else to do which points to choose an option page" in {
+		"contain a link which points to choose an option page" in {
 			val result = uploadResultView("fileId", formattedExpiryDate(now), isBeforeApr6(now), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else-link").attr("href") should include("/")
+			doc(result).getElementById("look-up-another-member-link").attr("href") should include("/")
 		}
 	}
 }

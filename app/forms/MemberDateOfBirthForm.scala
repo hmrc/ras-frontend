@@ -24,19 +24,27 @@ import validators.DateValidator
 
 object MemberDateOfBirthForm extends DateValidator {
 
-	val dateErrorKey = "error.withName.mandatory.date"
 	val nonNumberErrorKey = "error.date.non.number.date"
 	def apply(name: Option[String] = None) = Form(
 		"dateOfBirth" -> mapping(
 			"" -> mapping(
-				"day" -> optional(text),
-				"month" -> optional(text),
-				"year" -> optional(text),
+				"day" -> optional(text)
+					.verifying("error.day.missing", mandatoryCheck)
+					.verifying(nonNumberErrorKey, mandatoryCheckNonNumber),
+				"month" -> optional(text)
+					.verifying("error.month.missing", mandatoryCheck)
+					.verifying(nonNumberErrorKey, mandatoryCheckNonNumber),
+				"year" -> optional(text)
+					.verifying("error.year.missing", mandatoryCheck)
+					.verifying(nonNumberErrorKey, mandatoryCheckNonNumber)
 			)(RasDate.apply)(RasDate.unapply)
-				.verifying(dateFieldConstraint(name.getOrElse("member")))
 
 		)(MemberDateOfBirth.apply)(MemberDateOfBirth.unapply)
 
 			.verifying(rasDateConstraint(name.getOrElse("member")))
 	)
+
+	val mandatoryCheck: Option[String] => Boolean = input => input.getOrElse("").trim != ""
+	val mandatoryCheckNonNumber: Option[String] => Boolean = input => input.getOrElse("0") forall Character.isDigit
+
 }

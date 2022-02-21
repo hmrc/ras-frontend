@@ -19,14 +19,17 @@ package controllers
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import forms.{MemberDateOfBirthForm => form}
+
 import javax.inject.Inject
-import models.ApiVersion
+import models.{ApiVersion, MemberDateOfBirth}
 import play.api.Logging
+import play.api.data.{Form, FormError}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import validators.DateValidator
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +41,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 																		val mcc: MessagesControllerComponents,
 																		implicit val appConfig: ApplicationConfig,
                                     memberDobView: views.html.member_dob
-																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging {
+																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with DateValidator {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
@@ -67,7 +70,8 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
             form(Some(name)).bindFromRequest.fold(
               formWithErrors => {
                 logger.warn("[DobController][post] Invalid form field passed")
-                Future.successful(BadRequest(memberDobView(formWithErrors, name, edit)))
+                val updatedFormWithErrors = updatedErrors(formWithErrors)
+                Future.successful(BadRequest(memberDobView(updatedFormWithErrors, name, edit)))
               },
               dateOfBirth => {
                 sessionService.cacheDob(dateOfBirth) flatMap {
