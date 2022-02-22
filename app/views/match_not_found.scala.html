@@ -101,22 +101,24 @@
         )
     ))
 
-    <p id="what-to-do" class="govuk-body govuk-!-margin-bottom-4">
+    <p id="what-to-do" class="govuk-body govuk-!-margin-bottom-5">
         @messages("match.not.found.what.to.do")
         <a class='govuk-link' id='contact-hmrc-link' href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-numbers' target="_blank" rel="noreferrer noopener" data-journey-click='link - click:User details not found:Contact HMRC link'>@messages("contact.hmrc", name)</a>
     </p>
+    <h2 class="govuk-heading-m">@messages("what.to.do.next")</h2>
 
-    <p class="govuk-body">You can now:</p>
+    <p id="you-can-now" class="govuk-body">@messages("you.can.now")</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>
-            <div id="look-up-another-member" class="govuk-!-margin-bottom-4">
+            <div id="look-up-another-member" style="width:700px;">
+                @messages("look.up.another.member.go.back")
             <a class="govuk-link govuk-body" id="look-up-another-member-link"
                href='@routes.SessionController.redirect("member-name", cleanSession = true)'
-               data-journey-click="link - click:User details not found:Look up another member">@messages("look.up.another.member")</a>
+               data-journey-click="link - click:User details not found:Look up another member">@messages("look.up.another.member.hyperlink")</a>
             </div>
         </li>
         <li>
-            <div id="upload-file" class="govuk-!-margin-bottom-4">
+            <div id="upload-file" style="width:700px;">
                 <a class="task-name govuk-link govuk-body" id="upload-link" href="@routes.FileUploadController.get"
                    data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("upload.to.check.multiple.members")</a>
             </div>

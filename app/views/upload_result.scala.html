@@ -72,16 +72,26 @@
         </div>
     </div>
 
-    <p class="govuk-body govuk-!-margin-bottom-4" id="choose-something-else">
-        <a href="@routes.ChooseAnOptionController.get"
-        class="govuk-link" id="choose-something-else-link"
-        data-journey-click="Choose something else to do">
-        @Html(messages("choose.something.else"))
-        </a>
-    </p>
+    <p id="you-can-now" class="govuk-body">@messages("you.can.now")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>
+            <div id="look-up-another-member" style="width:700px;" data-journey-click="look-up-member">
+                @messages("look.up.another.member.go.back")
+                <a class="govuk-link govuk-body" id="look-up-another-member-link"
+                   href='@routes.SessionController.redirect("member-name", cleanSession = true)'
+                   data-journey-click="link - click:User details not found:Look up another member">@messages("look.up.another.member.hyperlink")</a>
+            </div>
+        </li>
+        <li>
+            <div id="upload-file" style="width:700px;" data-journey-click="look-up-multiple">
+                <a class="task-name govuk-link govuk-body" id="upload-link" href="@routes.FileUploadController.get"
+                   data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("upload.to.check.multiple.members")</a>
+            </div>
+        </li>
+        <br>
+    </ul>
 
     <p id="feedback-link" class="govuk-body govuk-!-margin-bottom-4">
         <a href='@appConfig.feedbackUrl' class="govuk-link">@messages("feedback.link")</a> @messages("feedback.text")
     </p>
-
 }

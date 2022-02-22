@@ -19,9 +19,9 @@ package validators
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
 import models.{MemberDateOfBirth, RasDate}
 import org.joda.time.DateTime
+import play.api.data.{Form, FormError}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 trait DateValidator {
@@ -31,31 +31,27 @@ trait DateValidator {
   val MONTH = "month"
   val DAY = "day"
 
-  def dateFieldConstraint(name: String): Constraint[RasDate] = Constraint("")({
-    date =>
-      val day = date.day.collect { case x if x.trim.nonEmpty => x }
-      val month = date.month.collect { case x if x.trim.nonEmpty => x }
-      val year = date.year.collect { case x if x.trim.nonEmpty => x }
+  def updatedErrors(formWithErrors: Form[MemberDateOfBirth]): Form[MemberDateOfBirth] = {
+    val isDayMissing = formWithErrors.errors.exists(_.message.matches("error.day.missing"))
+    val isMonthMissing = formWithErrors.errors.exists(_.message.matches("error.month.missing"))
+    val isYearMissing = formWithErrors.errors.exists(_.message.matches("error.year.missing"))
+    val formErrors = (isDayMissing, isMonthMissing, isYearMissing) match {
+      case (true, true, true) => Seq(FormError("dateOfBirth", "error.dob.missing"))
 
-      (day, month, year) match {
-        case (None, None, None) => Invalid(Seq(ValidationError("error.dob.missing")))
+      case (true, true, false) => Seq(FormError("dateOfBirth.day", "error.dob.missing.day.month"),
+        FormError("dateOfBirth.month", "error.dob.missing.day.month"))
 
-        case (None, None, Some(_)) => Invalid(Seq(ValidationError("error.dob.missing.day.month")))
-        case (Some(_), None, None) => Invalid(Seq(ValidationError("error.dob.missing.month.year")))
-        case (None, Some(_), None) => Invalid(Seq(ValidationError("error.dob.missing.day.year")))
+      case (false, true, true) => Seq(FormError("dateOfBirth.month", "error.dob.missing.month.year"),
+        FormError("dateOfBirth.year", "error.dob.missing.month.year"))
 
-        case (None, Some(_), Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", "day")))
-        case (Some(_), None, Some(_)) => Invalid(Seq(ValidationError("error.withName.mandatory.date", "month")))
-        case (Some(_), Some(_), None) => Invalid(Seq(ValidationError("error.withName.mandatory.date", "year")))
+      case (true, false, true) => Seq(FormError("dateOfBirth.day", "error.dob.missing.day.year"),
+        FormError("dateOfBirth.year", "error.dob.missing.day.year"))
 
-        case (Some(d), _, _) if !d.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date")))
-        case (_, Some(m), _) if !m.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date")))
-        case (_, _, Some(y)) if !y.forall(_.isDigit) => Invalid(Seq(ValidationError("error.date.non.number.date")))
+      case _ => formWithErrors.errors
+    }
 
-        case _ => Valid
-      }
-
-  })
+    formWithErrors.copy(errors = formErrors)
+  }
 
   def rasDateConstraint(name: String): Constraint[MemberDateOfBirth] = Constraint("dateOfBirth")({
     memDob => {
