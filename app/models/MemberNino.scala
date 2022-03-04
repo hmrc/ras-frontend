@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class MemberNino(nino :String) extends UserInput {
+case class MemberNino(nino: String) extends UserInput {
 
   def hasAValue: Boolean = nino.nonEmpty
 

@@ -33,8 +33,8 @@ class GlobalErrorViewSpec extends WordSpecLike with RasTestHelper {
 			val result = globalErrorView()(fakeRequest, testMessages, mockAppConfig)
 			val doc = Jsoup.parse(contentAsString(result))
 			doc.title shouldBe Messages("global.error.page.title")
-			doc.getElementsByClass("govuk-heading-l").text shouldBe Messages("global.error.header")
-			doc.getElementsByClass("govuk-body").text shouldBe Messages("global.error.message")
+			doc.getElementsByClass("govuk-heading-xl").text shouldBe Messages("global.error.header")
+			doc.getElementsByClass("govuk-body").text shouldBe Messages("you.can.either")
 		}
 	}
 }

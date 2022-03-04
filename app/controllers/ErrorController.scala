@@ -30,11 +30,12 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 																val shortLivedCache: ShortLivedCache,
 																val sessionService: SessionService,
 																val mcc: MessagesControllerComponents,
-																implicit val appConfig: ApplicationConfig,
                                 globalErrorView: views.html.global_error,
                                 problemUploadingFileView: views.html.problem_uploading_file,
                                 fileNotAvailableView: views.html.file_not_available,
-                                unauthorisedView: views.html.unauthorised) extends FrontendController(mcc) with RasController with Logging {
+                                unauthorisedView: views.html.unauthorised,
+                                startAtStartView: views.html.sorry_you_need_to_start_again)
+                                (implicit val appConfig: ApplicationConfig) extends FrontendController(mcc) with RasController with Logging {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -76,6 +77,11 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 
   def notAuthorised: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(unauthorisedView()))
+      Future.successful(Unauthorized(unauthorisedView()))
+  }
+
+  def startAtStart: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(BadRequest(startAtStartView()))
   }
 }

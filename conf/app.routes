@@ -39,6 +39,7 @@ GET         /global-error                                                       
 GET         /file-upload-problem                                                controllers.ErrorController.renderProblemUploadingFilePage
 GET         /file-not-available                                                 controllers.ErrorController.fileNotAvailable
 GET         /not-authorised                                                     controllers.ErrorController.notAuthorised
+GET         /service-start-at-start                                             controllers.ErrorController.startAtStart
 
 GET         /check-another-member/:target                                       controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
 GET         /keep-alive                                                         controllers.SessionController.keepAlive
