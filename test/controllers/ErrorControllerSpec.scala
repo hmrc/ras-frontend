@@ -36,7 +36,7 @@ class ErrorControllerSpec extends WordSpecLike with RasTestHelper {
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
 
-  val TestErrorController: ErrorController = new ErrorController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, globalErrorView, problemUploadingFileView, fileNotAvailableView, unauthorisedView) {
+  val TestErrorController: ErrorController = new ErrorController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, globalErrorView, problemUploadingFileView, fileNotAvailableView, unauthorisedView, startAtStartView)(mockAppConfig) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
@@ -53,9 +53,9 @@ class ErrorControllerSpec extends WordSpecLike with RasTestHelper {
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
-    "return 200 when not authorised file results is called" in {
+    "return 401 when not authorised file results is called" in {
       val result = TestErrorController.notAuthorised(fakeRequest)
-      status(result) shouldBe Status.OK
+      status(result) shouldBe Status.UNAUTHORIZED
     }
 
     "return error when file not available is called" in {

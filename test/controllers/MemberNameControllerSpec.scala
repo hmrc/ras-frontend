@@ -104,6 +104,7 @@ class MemberNameControllerSpec extends WordSpecLike with RasTestHelper {
     "redirect to match found page when edit mode is true and matching successful" in {
       when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
       when(mockSessionService.cacheResidencyStatusResult(any())(any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 

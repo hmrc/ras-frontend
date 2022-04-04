@@ -20,19 +20,13 @@
 )
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@govuk_wrapper(pageTitle = messages("global.error.page.title")) {
+@govuk_wrapper(pageTitle = messages("sorry.you.need.to.start.again.title")) {
 
-<h1 class="govuk-heading-xl" id="header">@messages("global.error.header")</h1>
+<h1 class="govuk-heading-xl" id="header">@messages("you.need.to.start.again")</h1>
 
 <p class="govuk-body">@messages("you.can.either")</p>
 <ul class="govuk-list govuk-list--bullet">
- <li>@messages("global.error.list.first") <a href="/relief-at-source" class="govuk-link">@messages("global.error.list.first.hyperlink")</a></li>
- <li>
-     @messages("global.error.list.second") <a
-       lang="en" hreflang="en" class="govuk-link hmrc-report-technical-issue" target="_blank"
-       href="http://localhost:9250/contact/report-technical-problem?newTab=true&amp;service=RAS&amp;referrerUrl=%2Frelief-at-source%2Fglobal-error">
-       @messages("global.error.list.second.hyperlink")</a>
- </li>
- </a>
+ <li><a href="/relief-at-source/member-name" class="govuk-link">@messages("start.again.first.link")</a> @messages("start.again.first.list")</li>
+ <li><a href="/relief-at-source/upload-a-file" class="govuk-link">@messages("start.again.second.link")</a> @messages("start.again.second.list")</li>
 </ul>
 }

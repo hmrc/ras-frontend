@@ -17,6 +17,7 @@ no.results.available.page.title = You have not uploaded a file - Look up residen
 results.not.available.yet.page.title = The results file is not available yet - Look up residency status for relief at source - GOV.UK
 file.not.available.page.title = This file is not available - Look up residency status for relief at source - GOV.UK
 file.ready.page.title = The last file you uploaded is ready - Look up residency status for relief at source - GOV.UK
+sorry.you.need.to.start.again.title = Technical Problem - Look up residency status for relief at source - GOV.UK
 
 ######  HEADERS ####################################################################################
 
@@ -26,6 +27,7 @@ member.name.page.header = Enter the member’s name
 member.nino.page.header = What is {0}’s National Insurance number?
 member.dob.page.header = What is {0}’s date of birth?
 global.error.header = Sorry, there is a problem with the service
+you.need.to.start.again = Sorry, you need to start again
 match.found.header = {0}’s residency status
 file.upload.page.header = Upload a file
 upload.success.header = Your file is being processed
@@ -116,6 +118,7 @@ ur.banner.dismiss.text = No thanks
 ##### OTHER ######################################################################################
 what.to.do.next = What to do next
 you.can.now = You can now:
+you.can.either = You can either:
 upload.result.member.contact = the member must contact HMRC to update their personal details (opens in a new tab)
 upload.result.what.next = If no residency status is shown, and you have checked that everything is correct, {0}.
 continue = Continue
@@ -160,13 +163,22 @@ cy.message = You should also use this service from January to get the residency 
 
 cannot.upload.another.file.page.clarification = You can upload another file when the last one has finished processing. This can take up to 24 hours from when you uploaded it.
 
-global.error.message = Try again later.
+global.error.list.first = go
+global.error.list.first.hyperlink = back to the start
+global.error.list.second = choose to
+global.error.list.second.hyperlink = submit a request for help
 
 unauthorised.paragraph.top = You signed in as an individual, organisation or agent.
 unauthorised.paragraph.bottom = To use this service, you must either:
 unauthorised.list.first = {0} if you have one of these accounts
 unauthorised.list.first.link = sign in with your pension scheme administrator or practitioner details
 unauthorised.list.last = register as an administrator or practitioner
+
+start.again.first.link = check the residency status of a member
+start.again.first.list = by entering their name, National Insurance number and date of birth
+
+start.again.second.link = check the status of multiple members
+start.again.second.list = by uploading a file
 
 service.name = Look up residency status for relief at source
 
