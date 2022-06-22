@@ -27,7 +27,7 @@ import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
@@ -38,7 +38,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
 																		 val mcc: MessagesControllerComponents,
                                      implicit val appConfig: ApplicationConfig,
                                      memberNinoView: views.html.member_nino
-                                    ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging {
+                                    ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with WithDefaultFormBinding {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
   lazy val apiVersion: ApiVersion = appConfig.rasApiVersion

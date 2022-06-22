@@ -18,7 +18,7 @@ val silencerVersion = "1.7.1"
 
 val compile: Seq[ModuleID] = Seq(
   ws,
-  "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.20.0",
+  "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.24.0",
   "uk.gov.hmrc" %% "http-caching-client"        % "9.5.0-play-28",
   "uk.gov.hmrc" %% "time"                       % "3.25.0",
   "uk.gov.hmrc" %% "play-frontend-hmrc"         % "1.31.0-play-28",
@@ -41,7 +41,7 @@ val all: Seq[ModuleID] = compile ++ test
 
 lazy val scoverageSettings = {
   Seq(
-    ScoverageKeys.coverageExcludedPackages := "<empty>;testOnlyDoNotUseInAppConf.*;conf.*;models.*;views.*;app.*;uk.gov.hmrc.*;prod.*",
+    ScoverageKeys.coverageExcludedPackages := "<empty>;testOnlyDoNotUseInAppConf.*;conf.*;models.*;views.*;app.*;uk.gov.hmrc.*;prod.*;connectors.*",
     ScoverageKeys.coverageMinimum := 86,
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true,
