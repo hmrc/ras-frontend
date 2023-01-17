@@ -17,8 +17,6 @@
 package validators
 
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import models.{MemberDateOfBirth, RasDate}
 import org.joda.time.DateTime
 import play.api.data.{Form, FormError}
