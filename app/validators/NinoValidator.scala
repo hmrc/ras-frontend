@@ -29,7 +29,7 @@ trait NinoValidator {
   def ninoConstraint(name: String): Constraint[String] = Constraint("nino")({
     text =>
       val ninoText = text.replaceAll("\\s", "")
-      if (ninoText.length == 0)
+      if (ninoText.isEmpty)
         Invalid(Seq(ValidationError("error.withName.mandatory", "National Insurance number")))
       else if (!NinoValidator.containsNoSpecialCharacters(ninoText.toUpperCase()))
         Invalid(Seq(ValidationError("error.nino.special.character")))

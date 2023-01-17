@@ -28,13 +28,13 @@ object MemberNameForm {
   val form = Form(
     mapping(
       "firstName" -> text
-        .verifying("error.mandatory.firstName", _.length > 0)
+        .verifying("error.mandatory.firstName", _.nonEmpty)
         .verifying("error.length.firstName", _.length <= MAX_LENGTH)
-        .verifying("error.firstName.invalid", x => x.length == 0 || x.matches(NAME_REGEX)),
+        .verifying("error.firstName.invalid", x => x.isEmpty || x.matches(NAME_REGEX)),
       "lastName" -> text
-        .verifying("error.mandatory.lastName", _.length > 0)
+        .verifying("error.mandatory.lastName", _.nonEmpty)
         .verifying("error.length.lastName", _.length <= MAX_LENGTH)
-        .verifying("error.lastName.invalid", x => x.length == 0 || x.matches(NAME_REGEX))
+        .verifying("error.lastName.invalid", x => x.isEmpty || x.matches(NAME_REGEX))
     )(MemberName.apply)(MemberName.unapply)
   )
 }
