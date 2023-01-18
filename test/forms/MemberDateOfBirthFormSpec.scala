@@ -155,7 +155,6 @@ class MemberDateOfBirthFormSpec extends WordSpecLike with RasTestHelper with Dat
       val year = (LocalDate.now.getYear + 1).toString
       val formData = Json.obj("dateOfBirth" -> RasDate(Some("2"), Some("3"), Some(year)))
       val validatedForm = form(Some("Chris Bristow")).bind(formData, fromJsonMaxChars)
-      val nextDay = DateTimeFormatter.ofPattern("dd MMMM uuuu").format(LocalDateTime.now().plusDays(1))
       assert(validatedForm.errors.contains(FormError("dateOfBirth", List("error.dob.invalid.future"))))
     }
 

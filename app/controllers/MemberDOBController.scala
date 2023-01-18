@@ -21,9 +21,8 @@ import connectors.ResidencyStatusAPIConnector
 import forms.{MemberDateOfBirthForm => form}
 
 import javax.inject.Inject
-import models.{ApiVersion, MemberDateOfBirth}
+import models.ApiVersion
 import play.api.Logging
-import play.api.data.{Form, FormError}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.audit.DefaultAuditConnector

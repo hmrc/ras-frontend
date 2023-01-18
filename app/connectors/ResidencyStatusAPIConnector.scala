@@ -19,7 +19,6 @@ package connectors
 import java.io.InputStream
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.StreamConverters
 import config.ApplicationConfig
 import javax.inject.Inject
