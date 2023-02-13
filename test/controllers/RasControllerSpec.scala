@@ -61,6 +61,51 @@ class RasControllerSpec extends WordSpecLike with RasTestHelper {
 
         await(result) shouldBe "Z123456"
       }
+
+      "a users is authorised and valid HMRC-PODS-ORG enrolment is retrieved" in {
+
+        val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
+        val enrolment = new Enrolment(key = "HMRC-PODS-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+        val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
+        when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
+
+        val authorisedResult = testController.isAuthorised()
+        val result = authorisedResult.map {
+          case Right(res) => res
+        }
+
+        await(result) shouldBe "Z123456"
+      }
+
+      "a users is authorised and valid HMRC-PODSPP-ORG enrolment is retrieved" in {
+
+        val enrolmentIdentifier = EnrolmentIdentifier("PSPID", "Z123456")
+        val enrolment = new Enrolment(key = "HMRC-PODSPP-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+        val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
+        when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
+
+        val authorisedResult = testController.isAuthorised()
+        val result = authorisedResult.map {
+          case Right(res) => res
+        }
+
+        await(result) shouldBe "Z123456"
+      }
+
+      "a users is authorised and valid HMRC-PP-ORG enrolment is retrieved" in {
+
+        val enrolmentIdentifier = EnrolmentIdentifier("PPID", "Z123456")
+        val enrolment = new Enrolment(key = "HMRC-PP-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+        val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
+        when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
+
+        val authorisedResult = testController.isAuthorised()
+        val result = authorisedResult.map {
+          case Right(res) => res
+        }
+
+        await(result) shouldBe "Z123456"
+      }
     }
 
     "redirect when user is not logged in" when {
