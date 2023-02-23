@@ -19,10 +19,10 @@ package controllers
 import config.ApplicationConfig
 import play.api.Logging
 import play.api.mvc.Result
+import play.api.mvc.Results._
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
-import play.api.mvc.Results._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ trait RasController extends AuthorisedFunctions with Logging {
 	val appConfig: ApplicationConfig
 
 	def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
-    authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG"))
+    authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG") or Enrolment("HMRC-PODS-ORG") or Enrolment("HMRC-PODSPP-ORG"))
     ).retrieve(authorisedEnrolments) {
 			enrolments =>
 				Future(Right(enrolments.enrolments.head.identifiers.head.value))

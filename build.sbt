@@ -70,3 +70,5 @@ TwirlKeys.templateImports ++= Seq(
 scalacOptions ++= Seq(
   "-P:silencer:pathFilters=views;routes"
 )
+
+addCommandAlias("scalastyleAll", "all scalastyle test:scalastyle")

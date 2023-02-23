@@ -32,7 +32,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
                                   val mcc: MessagesControllerComponents,
                                   implicit val appConfig: ApplicationConfig,
                                   matchFoundView: views.html.match_found,
-                                  matchNotFoundView: views.html.match_not_found,
+                                  matchNotFoundView: views.html.match_not_found
                                  ) extends FrontendController(mcc) with PageFlowController with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
