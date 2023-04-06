@@ -19,17 +19,17 @@ package controllers
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
-import org.scalatest.WordSpecLike
+import org.scalatest.wordspec.AnyWordSpec
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class ErrorControllerSpec extends WordSpecLike with RasTestHelper {
+class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
 
   override val fakeRequest = FakeRequest("GET", "/")
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")

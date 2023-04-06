@@ -27,12 +27,12 @@ val compile: Seq[ModuleID] = Seq(
 )
 
 val test: Seq[ModuleID] = Seq(
-  "org.scalatest"          %% "scalatest"          % "3.0.9",
+  "org.scalatest"          %% "scalatest"          % "3.2.15",
   "org.pegdown"            %  "pegdown"            % "1.6.0",
-  "org.jsoup"              %  "jsoup"              % "1.15.3",
+  "org.jsoup"              %  "jsoup"              % "1.15.4",
   "com.typesafe.play"      %% "play-test"          % PlayVersion.current,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3",
-  "org.mockito"            %  "mockito-core"       % "3.12.4",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0",
+  "org.mockito"            %  "mockito-core"       % "5.2.0",
   "org.scalacheck"         %% "scalacheck"         % "1.17.0",
   "uk.gov.hmrc"            %% "domain"             % "8.1.0-play-28"
 ).map(_ % "test")
@@ -53,7 +53,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     scoverageSettings,
-    publishingSettings,
     defaultSettings(),
     scalaSettings,
     scalaVersion := "2.12.12",
