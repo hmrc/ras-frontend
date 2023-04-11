@@ -18,13 +18,13 @@ package views
 
 import models.FileUploadStatus._
 import org.joda.time.DateTime
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class ChooseAnOptionViewSpec extends WordSpecLike with RasTestHelper {
+class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 
 	val mockExpiryTimeStamp: Long = new DateTime().getMillis
 

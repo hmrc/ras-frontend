@@ -16,18 +16,16 @@
 
 package forms
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import forms.{MemberDateOfBirthForm => form}
 import models.RasDate
 import org.joda.time.LocalDate
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.FormError
 import play.api.libs.json.Json
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 import validators.DateValidator
 
-class MemberDateOfBirthFormSpec extends WordSpecLike with RasTestHelper with DateValidator {
+class MemberDateOfBirthFormSpec extends AnyWordSpec with RasTestHelper with DateValidator {
 
   val fromJsonMaxChars: Long = 102400
 

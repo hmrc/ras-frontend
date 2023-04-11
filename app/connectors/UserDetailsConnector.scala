@@ -16,13 +16,13 @@
 
 package connectors
 
-import javax.inject.Inject
 import models._
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UserDetailsConnector @Inject()(val http: DefaultHttpClient) {

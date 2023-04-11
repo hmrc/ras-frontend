@@ -16,21 +16,20 @@
 
 package controllers
 
-import java.io.ByteArrayInputStream
 import models._
 import org.joda.time.{DateTime, LocalDate}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
 import play.api.test.{FakeRequest, Helpers}
 import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
-import org.scalatest.wordspec.AnyWordSpec
-import play.api.mvc.Result
 import utils.RasTestHelper
 
+import java.io.ByteArrayInputStream
 import scala.concurrent.Future
 
 

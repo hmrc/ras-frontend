@@ -17,12 +17,12 @@
 package forms
 
 import forms.MemberNameForm._
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.FormError
 import play.api.libs.json.Json
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class MemberNameFormSpec extends WordSpecLike with RasTestHelper {
+class MemberNameFormSpec extends AnyWordSpec with RasTestHelper {
 
   val MAX_NAME_LENGTH = 35
   val fromJsonMaxChars: Long = 102400

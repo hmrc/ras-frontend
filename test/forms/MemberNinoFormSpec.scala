@@ -17,12 +17,12 @@
 package forms
 
 import forms.{MemberNinoForm => form}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.FormError
 import play.api.libs.json.Json
-import org.scalatest.WordSpecLike
 import utils.{RandomNino, RasTestHelper}
 
-class MemberNinoFormSpec extends WordSpecLike with RasTestHelper {
+class MemberNinoFormSpec extends AnyWordSpec with RasTestHelper {
 
   val MAX_NAME_LENGTH = 35
   val fromJsonMaxChars: Long = 102400

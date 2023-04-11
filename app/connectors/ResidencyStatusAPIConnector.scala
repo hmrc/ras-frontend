@@ -16,19 +16,18 @@
 
 package connectors
 
-import java.io.InputStream
-
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.StreamConverters
 import config.ApplicationConfig
-import javax.inject.Inject
 import models.{ApiVersion, MemberDetails, ResidencyStatus}
 import play.api.Logging
 import play.api.libs.json.{JsSuccess, JsValue}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
+import java.io.InputStream
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 

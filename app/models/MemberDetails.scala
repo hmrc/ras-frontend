@@ -18,7 +18,7 @@ package models
 
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, JsValue, Json, Reads, Writes}
+import play.api.libs.json._
 
 case class MemberDetails(name: MemberName,
                          nino: String,

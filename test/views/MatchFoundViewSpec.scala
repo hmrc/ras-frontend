@@ -18,7 +18,7 @@ package views
 
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import views.helpers.ViewSpecHelper

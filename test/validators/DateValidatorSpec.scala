@@ -17,10 +17,10 @@
 package validators
 
 import models.RasDate
-import org.scalatest.Matchers
-import org.scalatest.WordSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class DateValidatorSpec extends WordSpecLike with Matchers {
+class DateValidatorSpec extends AnyWordSpec with Matchers {
 
   "date validator" should{
 

@@ -18,10 +18,10 @@ package controllers
 
 import models._
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import org.scalacheck.Gen
 import org.scalatest.BeforeAndAfter
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -29,13 +29,12 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.domain.{Generator, PsaId}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 import scala.util.Random
 
-class MemberDOBControllerSpec extends WordSpecLike with RasTestHelper with BeforeAndAfter {
+class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfter {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -125,7 +124,7 @@ class MemberDOBControllerSpec extends WordSpecLike with RasTestHelper with Befor
 
       TestMemberDobController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       when(mockSessionService.cacheDob(any())(any())).thenReturn(Future.successful(None))
-      verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
+      verify(mockSessionService, atLeastOnce).cacheDob(any())(any())
     }
 
     "redirect if unknown current year residency status is returned" in {
@@ -182,7 +181,7 @@ class MemberDOBControllerSpec extends WordSpecLike with RasTestHelper with Befor
         status(result) should equal(SEE_OTHER)
         redirectLocation(result) should include("/member-residency-status")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
+        verify(mockSessionService, atLeastOnce).cacheDob(any())(any())
       }
 
       "a request is made which returns only a CY result (i.e. after 6th April)" in {
@@ -196,7 +195,7 @@ class MemberDOBControllerSpec extends WordSpecLike with RasTestHelper with Befor
         status(result) should equal(SEE_OTHER)
         redirectLocation(result) should include("/member-residency-status")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
+        verify(mockSessionService, atLeastOnce).cacheDob(any())(any())
       }
     }
 
@@ -209,7 +208,7 @@ class MemberDOBControllerSpec extends WordSpecLike with RasTestHelper with Befor
         status(result) should equal(SEE_OTHER)
         redirectLocation(result) should include("/no-residency-status-displayed")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
+        verify(mockSessionService, atLeastOnce).cacheDob(any())(any())
       }
     }
 
@@ -221,7 +220,7 @@ class MemberDOBControllerSpec extends WordSpecLike with RasTestHelper with Befor
         status(result) should equal(SEE_OTHER)
         redirectLocation(result) should include("/global-error")
 
-        verify(mockSessionService, atLeastOnce()).cacheDob(any())(any())
+        verify(mockSessionService, atLeastOnce).cacheDob(any())(any())
       }
     }
   }

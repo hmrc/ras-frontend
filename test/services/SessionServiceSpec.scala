@@ -18,19 +18,18 @@ package services
 
 import models._
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import org.scalatest.WordSpecLike
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 
-class SessionServiceSpec extends WordSpecLike with RasTestHelper {
+class SessionServiceSpec extends AnyWordSpec with RasTestHelper {
 
   val name: MemberName = MemberName("John", "Johnson")
   val nino: MemberNino = MemberNino(RandomNino.generate)

@@ -16,12 +16,12 @@
 
 package views
 
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class CannotUploadAnotherFileViewSpec extends WordSpecLike with RasTestHelper {
+class CannotUploadAnotherFileViewSpec extends AnyWordSpec with RasTestHelper {
 
 	"cannot upload another file page" must {
 		"contains the right title" in {

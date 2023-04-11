@@ -17,13 +17,13 @@
 package connectors
 
 import config.ApplicationConfig
-import javax.inject.Inject
 import models.ApiVersion
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class FileUploadConnector @Inject()(val http: DefaultHttpClient,

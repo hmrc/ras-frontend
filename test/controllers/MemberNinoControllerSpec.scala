@@ -18,20 +18,19 @@ package controllers
 
 import models._
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{atLeastOnce, verify, when}
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.OK
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import org.scalatest.WordSpecLike
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-class MemberNinoControllerSpec extends WordSpecLike with RasTestHelper {
+class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
 
   val memberName: MemberName = MemberName("Jackie", "Chan")
   val memberNino: MemberNino = MemberNino("AB123456C")
@@ -113,7 +112,7 @@ class MemberNinoControllerSpec extends WordSpecLike with RasTestHelper {
       status(result) should equal(SEE_OTHER)
       redirectLocation(result) should include("/member-residency-status")
 
-      verify(mockSessionService, atLeastOnce()).cacheNino(any())(any())
+      verify(mockSessionService, atLeastOnce).cacheNino(any())(any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
@@ -123,7 +122,7 @@ class MemberNinoControllerSpec extends WordSpecLike with RasTestHelper {
       status(result) should equal(SEE_OTHER)
       redirectLocation(result) should include("/no-residency-status-displayed")
 
-      verify(mockSessionService, atLeastOnce()).cacheNino(any())(any())
+      verify(mockSessionService, atLeastOnce).cacheNino(any())(any())
     }
 
     "redirect to technical error page if nino is not cached" in {

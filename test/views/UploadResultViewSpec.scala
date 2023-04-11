@@ -17,7 +17,7 @@
 package views
 
 import org.joda.time.DateTime
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
 import views.helpers.ViewSpecHelper
 

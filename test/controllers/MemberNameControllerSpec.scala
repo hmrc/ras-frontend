@@ -18,19 +18,18 @@ package controllers
 
 import models._
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class MemberNameControllerSpec extends WordSpecLike with RasTestHelper {
+class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
@@ -90,7 +89,7 @@ class MemberNameControllerSpec extends WordSpecLike with RasTestHelper {
 
     "save details to cache" in {
       await(TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
-      verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
+      verify(mockSessionService, atLeastOnce).cacheName(any())(any())
     }
 
     "redirect to nino page when name cached and edit mode is false" in {
@@ -111,7 +110,7 @@ class MemberNameControllerSpec extends WordSpecLike with RasTestHelper {
       status(result) should equal(SEE_OTHER)
       redirectLocation(result) should include("/member-residency-status")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
+      verify(mockSessionService, atLeastOnce).cacheName(any())(any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
@@ -121,7 +120,7 @@ class MemberNameControllerSpec extends WordSpecLike with RasTestHelper {
       status(result) should equal(SEE_OTHER)
       redirectLocation(result) should include("/no-residency-status-displayed")
 
-      verify(mockSessionService, atLeastOnce()).cacheName(any())(any())
+      verify(mockSessionService, atLeastOnce).cacheName(any())(any())
     }
 
     "redirect to technical error page if name is not cached" in {

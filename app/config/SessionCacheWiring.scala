@@ -16,9 +16,10 @@
 
 package config
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+
+import javax.inject.Inject
 
 class RasSessionCache @Inject()(val http: DefaultHttpClient,
 																appConfig: ApplicationConfig

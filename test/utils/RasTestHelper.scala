@@ -21,14 +21,14 @@ import config.{ApplicationConfig, RasSessionCache, RasShortLivedHttpCaching}
 import connectors.{FileUploadConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.MockitoSugar
 import org.scalatest.Suite
-import org.mockito.Mockito.{mock,when}
-import play.api.{Application, i18n}
 import play.api.i18n.{MessagesApi, MessagesImpl}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.{Application, i18n}
 import play.twirl.api.Html
 import services.{AuditService, SessionService, ShortLivedCache}
 import uk.gov.hmrc.crypto.ApplicationCrypto
@@ -38,8 +38,8 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import views.html._
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 trait RasTestHelper extends MockitoSugar {  this: Suite =>
 

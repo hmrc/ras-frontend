@@ -18,15 +18,14 @@ package services
 
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter
-import org.scalatest.Matchers.{contain, convertToAnyShouldWrapper}
-import uk.gov.hmrc.play.audit.model.DataEvent
+import org.scalatest.matchers.should.Matchers.{contain, convertToAnyShouldWrapper}
+import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
-import org.scalatest.WordSpecLike
+import uk.gov.hmrc.play.audit.model.DataEvent
 import utils.RasTestHelper
 
-trait AuditServiceSpec extends WordSpecLike with RasTestHelper with BeforeAndAfter {
+trait AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfter {
 
 	class TestService extends AuditService {
 		override val connector: DefaultAuditConnector = mockAuditConnector

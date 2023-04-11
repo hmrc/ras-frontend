@@ -18,12 +18,13 @@ package views.helpers
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.{Assertion, WordSpecLike}
+import org.scalatest.Assertion
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import play.twirl.api.Html
 import utils.RasTestHelper
 
-class ViewSpecHelper extends WordSpecLike with RasTestHelper {
+class ViewSpecHelper extends AnyWordSpec with RasTestHelper {
 
   def pageWithFeedbackLink(page: Html): Assertion = {
     val body: Document = Jsoup.parse(contentAsString(page))

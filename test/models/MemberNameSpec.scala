@@ -16,9 +16,9 @@
 
 package models
 
-import org.scalatest.WordSpecLike
+import org.scalatest.wordspec.AnyWordSpec
 
-class MemberNameSpec extends WordSpecLike {
+class MemberNameSpec extends AnyWordSpec {
 
   "hasValue" must {
 

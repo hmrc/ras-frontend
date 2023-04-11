@@ -16,13 +16,13 @@
 
 package views
 
-import org.scalatest.Matchers.{be, convertToAnyShouldWrapper}
-import org.scalatest.MustMatchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.should.Matchers.{be, convertToAnyShouldWrapper}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class FileUploadViewSpec extends WordSpecLike with RasTestHelper {
+class FileUploadViewSpec extends AnyWordSpec with RasTestHelper {
 
 	"file upload page" when {
 		"contain a back link" in {
