@@ -1,22 +1,21 @@
 import play.core.PlayVersion
-import play.sbt.routes.RoutesKeys._
 import sbt.Keys._
 import sbt._
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "ras-frontend"
+val boostrapVersion = "7.15.0"
 
 lazy val plugins: Seq[Plugins] =
   Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
 
 val compile: Seq[ModuleID] = Seq(
   ws,
-  "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "7.15.0",
+  "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % boostrapVersion,
   "uk.gov.hmrc" %% "http-caching-client"        % "10.0.0-play-28",
   "uk.gov.hmrc" %% "time"                       % "3.25.0",
   "uk.gov.hmrc" %% "play-frontend-hmrc"         % "7.3.0-play-28",
