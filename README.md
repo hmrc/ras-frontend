@@ -35,6 +35,12 @@ To run the test coverage suite `scoverage`
 
 1. `sbt clean scoverage:test`
 
+#### All tests
+
+Prior to raising a PR use the following script to run Unit tests with coverage and generate a report:
+
+    ./run_all_tests.sh
+
 #### Acceptance Tests
 
 **NOTE:** Cucumber/acceptance tests are available in a separate project at:
