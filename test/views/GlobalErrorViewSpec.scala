@@ -17,15 +17,14 @@
 package views
 
 import org.jsoup.Jsoup
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import play.api.test.Helpers.contentAsString
-import org.scalatest.WordSpecLike
-import utils.RasTestHelper
 import play.api.test.Helpers._
+import utils.RasTestHelper
 
 
-class GlobalErrorViewSpec extends WordSpecLike with RasTestHelper {
+class GlobalErrorViewSpec extends AnyWordSpec with RasTestHelper {
 
 	"global error page" must {
 

@@ -19,8 +19,8 @@ package validators
 
 import models.{MemberDateOfBirth, RasDate}
 import org.joda.time.DateTime
-import play.api.data.{Form, FormError}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import play.api.data.{Form, FormError}
 
 trait DateValidator {
 

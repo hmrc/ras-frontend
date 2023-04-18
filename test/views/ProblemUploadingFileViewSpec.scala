@@ -17,13 +17,13 @@
 package views
 
 import org.jsoup.Jsoup
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class ProblemUploadingFileViewSpec extends WordSpecLike with RasTestHelper{
+class ProblemUploadingFileViewSpec extends AnyWordSpec with RasTestHelper{
 
 	"problem uploading file page" must {
 

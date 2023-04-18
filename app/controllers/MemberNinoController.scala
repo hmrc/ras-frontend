@@ -19,15 +19,16 @@ package controllers
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import forms.{MemberNinoForm => form}
-import javax.inject.Inject
 import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache}
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
@@ -38,7 +39,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
 																		 val mcc: MessagesControllerComponents,
                                      implicit val appConfig: ApplicationConfig,
                                      memberNinoView: views.html.member_nino
-                                    ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with WithDefaultFormBinding {
+                                    ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with WithUnsafeDefaultFormBinding {
 
 	implicit val ec: ExecutionContext = mcc.executionContext
   lazy val apiVersion: ApiVersion = appConfig.rasApiVersion

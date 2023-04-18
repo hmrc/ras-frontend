@@ -16,12 +16,12 @@
 
 package views
 
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class NotAuthorisedViewSpec extends WordSpecLike with RasTestHelper {
+class NotAuthorisedViewSpec extends AnyWordSpec with RasTestHelper {
 
 	"not authorised page" must {
 		"contain the correct page title" in {

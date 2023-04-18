@@ -18,22 +18,22 @@ package controllers
 
 import models._
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
-import org.scalatest.WordSpecLike
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-class ResultsControllerSpec extends WordSpecLike with RasTestHelper {
+class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  override val fakeRequest = FakeRequest("GET", "/")
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
   val currentTaxYear: Int = TaxYearResolver.currentTaxYear
 
   override val SCOTTISH = "Scotland"

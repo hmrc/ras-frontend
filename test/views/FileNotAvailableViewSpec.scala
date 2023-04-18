@@ -16,13 +16,13 @@
 
 package views
 
-import controllers.{ChooseAnOptionController, routes}
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import controllers.routes
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class FileNotAvailableViewSpec extends WordSpecLike with RasTestHelper {
+class FileNotAvailableViewSpec extends AnyWordSpec with RasTestHelper {
 
 	"file not available page" must {
 

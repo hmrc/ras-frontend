@@ -19,14 +19,14 @@ package controllers
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import models._
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import services.SessionService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class RasResidencyCheckerControllerSpec extends WordSpecLike with RasTestHelper {
+class RasResidencyCheckerControllerSpec extends AnyWordSpec with RasTestHelper {
 
   def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController = new RasResidencyCheckerController {
     override val authConnector: AuthConnector = mockAuthConnector

@@ -16,26 +16,24 @@
 
 package controllers
 
-import java.io.ByteArrayInputStream
-
 import models._
 import org.joda.time.{DateTime, LocalDate}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.mvc.Result
 import play.api.test.Helpers.{OK, contentAsString, _}
 import play.api.test.{FakeRequest, Helpers}
 import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
-import org.scalatest.WordSpecLike
-import play.api.mvc.Result
 import utils.RasTestHelper
 
+import java.io.ByteArrayInputStream
 import scala.concurrent.Future
 
 
-class ChooseAnOptionControllerSpec extends WordSpecLike with RasTestHelper {
+class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   val currentTaxYear: Int = TaxYearResolver.currentTaxYear

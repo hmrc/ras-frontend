@@ -16,11 +16,11 @@
 
 package validators
 
-import org.scalatest.Matchers
-import org.scalatest.WordSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import utils.RandomNino
 
-class NinoValidatorSpec extends WordSpecLike with Matchers {
+class NinoValidatorSpec extends AnyWordSpec with Matchers {
 
   "The validation of a nino" must {
 

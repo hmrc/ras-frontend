@@ -16,12 +16,12 @@
 
 package views
 
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class FileUploadSuccessfulViewSpec extends WordSpecLike with RasTestHelper {
+class FileUploadSuccessfulViewSpec extends AnyWordSpec with RasTestHelper {
 
 	"file upload success page" must {
 		"display file upload successful page" when {

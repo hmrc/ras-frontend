@@ -17,15 +17,15 @@
 package services
 
 import config._
-import javax.inject.Inject
 import models.FileUploadStatus._
 import models._
 import org.joda.time.DateTime
 import play.api.Logging
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
+import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionService @Inject()(val http: DefaultHttpClient,
@@ -91,8 +91,6 @@ class ShortLivedCache @Inject()(val shortLiveCache : RasShortLivedHttpCaching,
                                 appConfig: ApplicationConfig,
                                 applicationCrypto: ApplicationCrypto
                                )(implicit ec: ExecutionContext) extends Logging {
-
-  implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
 
   private val source = "ras"
   lazy val hoursToWaitForReUpload: Int = appConfig.hoursToWaitForReUpload

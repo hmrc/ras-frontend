@@ -18,13 +18,13 @@ package controllers
 
 import config.ApplicationConfig
 import models._
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AuthConnector
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class PageFlowControllerSpec extends WordSpecLike with RasTestHelper {
+class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
 
   object TestPageFlowController extends PageFlowController {
     override val authConnector: AuthConnector = mockAuthConnector

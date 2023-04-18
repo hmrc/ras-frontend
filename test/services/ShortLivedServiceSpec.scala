@@ -20,17 +20,16 @@ import models.FileUploadStatus._
 import models.{CallbackData, FileSession, ResultsFileMetaData}
 import org.joda.time.DateTime
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json, Writes}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class ShortLivedServiceSpec extends WordSpecLike with RasTestHelper {
+class ShortLivedServiceSpec extends AnyWordSpec with RasTestHelper {
   val fileId = "file-id-1"
   val fileStatus = "AVAILABLE"
   val reason: Option[String] = None

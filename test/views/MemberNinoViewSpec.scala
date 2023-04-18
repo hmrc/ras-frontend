@@ -18,13 +18,13 @@ package views
 
 import forms.MemberNinoForm
 import models.MemberNino
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.Form
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class MemberNinoViewSpec extends WordSpecLike with RasTestHelper {
+class MemberNinoViewSpec extends AnyWordSpec with RasTestHelper {
 
 	val memberNinoForm:Form[MemberNino] = MemberNinoForm(Some("John Doe")).bind(Map("nino" -> "AA123456A"))
 

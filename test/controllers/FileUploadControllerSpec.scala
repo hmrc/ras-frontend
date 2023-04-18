@@ -21,20 +21,19 @@ import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{atLeastOnce, verify, when}
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.Future
 
-class FileUploadControllerSpec extends WordSpecLike with RasTestHelper {
+class FileUploadControllerSpec extends AnyWordSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
@@ -173,7 +172,7 @@ class FileUploadControllerSpec extends WordSpecLike with RasTestHelper {
     "create a file session when a file has been successfully uploaded" in {
       when(mockShortLivedCache.createFileSession(any(),any())(any())).thenReturn(Future.successful(true))
 			await(TestFileUploadController.uploadSuccess().apply(fakeRequest))
-      verify(mockShortLivedCache, atLeastOnce()).createFileSession(any(),any())(any())
+      verify(mockShortLivedCache, atLeastOnce).createFileSession(any(),any())(any())
     }
 
     "redirect to file upload page" when {

@@ -19,13 +19,13 @@ package views
 import akka.util.Helpers.Requiring
 import forms.MemberDateOfBirthForm
 import models.MemberDateOfBirth
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.Form
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
-class MemberDOBViewSpec extends WordSpecLike with RasTestHelper {
+class MemberDOBViewSpec extends AnyWordSpec with RasTestHelper {
 
 	val memberDOBForm:Form[MemberDateOfBirth] = MemberDateOfBirthForm(Some("Jackie Chan")).bind(Map("dateOfBirth.day" -> "1", "dateOfBirth.month" -> "1", "dateOfBirth.year" -> "2000"))
 

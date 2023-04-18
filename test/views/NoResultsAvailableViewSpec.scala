@@ -16,13 +16,13 @@
 
 package views
 
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 
-class NoResultsAvailableViewSpec extends WordSpecLike with RasTestHelper {
+class NoResultsAvailableViewSpec extends AnyWordSpec with RasTestHelper {
 
 	"renderNoResultsAvailablePage" must {
 		"contain the correct page title" in {

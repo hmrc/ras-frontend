@@ -16,11 +16,8 @@
 
 package controllers
 
-import java.util.UUID
-
 import config.ApplicationConfig
 import connectors.FileUploadConnector
-import javax.inject.Inject
 import models.{Envelope, UploadResponse}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,6 +26,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import java.util.UUID
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.UnanchoredRegex
 

@@ -18,19 +18,18 @@ package controllers
 
 import models._
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import org.scalatest.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.http.Status.OK
 import play.api.test.FakeRequest
+import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
-import org.scalatest.WordSpecLike
-import play.api.test.Helpers.{defaultAwaitTimeout, status}
-import play.api.http.Status.OK
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
 
-class SessionControllerSpec extends WordSpecLike with RasTestHelper {
+class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

@@ -18,8 +18,8 @@ package controllers
 
 import config.ApplicationConfig
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatest.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -28,13 +28,12 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
-import org.scalatest.WordSpecLike
 import utils.RasTestHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class RasControllerSpec extends WordSpecLike with RasTestHelper {
+class RasControllerSpec extends AnyWordSpec with RasTestHelper {
 
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
 

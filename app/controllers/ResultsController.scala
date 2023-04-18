@@ -17,13 +17,13 @@
 package controllers
 
 import config.ApplicationConfig
-import javax.inject.Inject
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionService, ShortLivedCache, TaxYearResolver}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class ResultsController @Inject()(val authConnector: AuthConnector,

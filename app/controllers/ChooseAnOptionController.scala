@@ -20,7 +20,6 @@ import akka.stream.scaladsl.{Source, StreamConverters}
 import akka.util.ByteString
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import javax.inject.Inject
 import models.FileUploadStatus._
 import models.{FileSession, FileUploadStatus}
 import org.joda.time.DateTime
@@ -32,6 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
