@@ -17,19 +17,19 @@ val compile: Seq[ModuleID] = Seq(
   ws,
   "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % boostrapVersion,
   "uk.gov.hmrc" %% "http-caching-client"        % "10.0.0-play-28",
-  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "7.3.0-play-28"
+  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "7.7.0-play-28"
 )
 
 val test: Seq[ModuleID] = Seq(
-  "org.scalatest"          %% "scalatest"               % "3.2.15",
+  "org.scalatest"          %% "scalatest"               % "3.2.16",
   "org.pegdown"            %  "pegdown"                 % "1.6.0",
-  "org.jsoup"              %  "jsoup"                   % "1.15.4",
+  "org.jsoup"              %  "jsoup"                   % "1.16.1",
   "com.typesafe.play"      %% "play-test"               % PlayVersion.current,
   "org.scalatestplus.play" %% "scalatestplus-play"      % "5.1.0",
   "org.mockito"            %% "mockito-scala-scalatest" % "1.17.14",
   "org.scalacheck"         %% "scalacheck"              % "1.17.0",
-  "uk.gov.hmrc"            %% "domain"                  % "8.2.0-play-28",
-  "com.vladsch.flexmark"    % "flexmark-all"            % "0.64.0"
+  "uk.gov.hmrc"            %% "domain"                  % "8.3.0-play-28",
+  "com.vladsch.flexmark"    % "flexmark-all"            % "0.64.4"
 ).map(_ % "test")
 
 val all: Seq[ModuleID] = compile ++ test
