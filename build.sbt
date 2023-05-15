@@ -21,6 +21,7 @@ val compile: Seq[ModuleID] = Seq(
 )
 
 val test: Seq[ModuleID] = Seq(
+  "uk.gov.hmrc"            %% "bootstrap-test-play-28"  % boostrapVersion,
   "org.scalatest"          %% "scalatest"               % "3.2.16",
   "org.pegdown"            %  "pegdown"                 % "1.6.0",
   "org.jsoup"              %  "jsoup"                   % "1.16.1",
