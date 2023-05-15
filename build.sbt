@@ -17,8 +17,7 @@ val compile: Seq[ModuleID] = Seq(
   ws,
   "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % boostrapVersion,
   "uk.gov.hmrc" %% "http-caching-client"        % "10.0.0-play-28",
-  "uk.gov.hmrc" %% "time"                       % "3.25.0",
-  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "7.3.0-play-28",
+  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "7.3.0-play-28"
 )
 
 val test: Seq[ModuleID] = Seq(
@@ -51,7 +50,7 @@ lazy val microservice = Project(appName, file("."))
     scoverageSettings,
     defaultSettings(),
     scalaSettings,
-    scalaVersion := "2.12.15",
+    scalaVersion := "2.13.10",
     // To resolve a bug with version 2.x.x of the scoverage plugin - https://github.com/sbt/sbt/issues/6997
     // Try to remove when sbt 1.8.0+ and scoverage is 2.0.7+
     ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always,

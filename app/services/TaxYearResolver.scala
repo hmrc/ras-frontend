@@ -33,7 +33,6 @@ package services
  */
 
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
-import uk.gov.hmrc.time.DateTimeUtils
 
 trait TaxYearResolver {
 
@@ -72,5 +71,5 @@ trait TaxYearResolver {
 }
 
 object TaxYearResolver extends TaxYearResolver {
-	override lazy val now: () => DateTime = () => DateTimeUtils.now
+	override lazy val now: () => DateTime = () => DateTime.now()
 }
