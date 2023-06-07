@@ -27,6 +27,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.RasTestHelper
 
+import scala.language.postfixOps
 import scala.concurrent.Future
 
 class ShortLivedServiceSpec extends AnyWordSpec with RasTestHelper {
