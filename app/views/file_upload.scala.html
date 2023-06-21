@@ -29,7 +29,7 @@
 @(fileUploadUrl: String, error: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @scriptElem = {
-    <script @CSPNonce.attr type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/file-upload.js")'></script>
+    <script @{CSPNonce.attr} type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/file-upload.js")'></script>
 }
 
 @govuk_wrapper(pageTitle = messages("file.upload.page.title"), scriptElem = Some(scriptElem)) {
