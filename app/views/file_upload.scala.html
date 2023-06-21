@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import views.html.helper.CSPNonce
 @import config.ApplicationConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.{HmrcPageHeading, PageHeading}
 @import views.html.helper.form
@@ -28,7 +29,7 @@
 @(fileUploadUrl: String, error: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @scriptElem = {
-    <script type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/file-upload.js")'></script>
+    <script @CSPNonce.attr type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/file-upload.js")'></script>
 }
 
 @govuk_wrapper(pageTitle = messages("file.upload.page.title"), scriptElem = Some(scriptElem)) {
@@ -80,7 +81,7 @@
         </ul>
     </p>
 
-    @form(Call("POST", fileUploadUrl), 'enctype -> "multipart/form-data", 'id -> "upload-form") {
+    @form(Call("POST", fileUploadUrl), Symbol("enctype") -> "multipart/form-data", Symbol("id") -> "upload-form") {
 
         @govukFileUpload(FileUpload(
             name = "file",

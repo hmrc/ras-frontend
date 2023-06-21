@@ -46,7 +46,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
 
 	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) => Ok(memberNameView(form.fill(session.name), edit))
@@ -59,9 +59,9 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
   }
 
   def post(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
-    isAuthorised.flatMap{
+    isAuthorised().flatMap{
       case Right(userId) =>
-      form.bindFromRequest.fold(
+      form.bindFromRequest().fold(
         formWithErrors => {
           logger.warn("[NameController][post] Invalid form field passed")
           Future.successful(BadRequest(memberNameView(formWithErrors, edit)))
@@ -86,7 +86,7 @@ class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
 
   def back(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) => Future.successful(previousPage("MemberNameController", edit))
         case Left(res) =>
           logger.warn("[NameController][back] user Not authorised")

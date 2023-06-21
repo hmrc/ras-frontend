@@ -53,7 +53,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   def get: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap { fileSession =>
             shortLivedCache.determineFileStatus(userId).flatMap {
@@ -98,7 +98,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   def renderUploadResultsPage: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).map {
             case Some(fileSession) =>
@@ -159,7 +159,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   def renderNoResultsAvailableYetPage: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
@@ -183,7 +183,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   def renderFileReadyPage: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
@@ -206,7 +206,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   def getResultsFile(fileName:String): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           shortLivedCache.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>

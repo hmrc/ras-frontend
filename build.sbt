@@ -8,20 +8,20 @@ import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "ras-frontend"
-val boostrapVersion = "7.15.0"
+val bootstrapVersion = "7.19.0"
 
 lazy val plugins: Seq[Plugins] =
   Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
 
 val compile: Seq[ModuleID] = Seq(
   ws,
-  "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % boostrapVersion,
+  "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % bootstrapVersion,
   "uk.gov.hmrc" %% "http-caching-client"        % "10.0.0-play-28",
-  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "7.7.0-play-28"
+  "uk.gov.hmrc" %% "play-frontend-hmrc"         % "7.13.0-play-28"
 )
 
 val test: Seq[ModuleID] = Seq(
-  "uk.gov.hmrc"            %% "bootstrap-test-play-28"  % boostrapVersion,
+  "uk.gov.hmrc"            %% "bootstrap-test-play-28"  % bootstrapVersion,
   "org.scalatest"          %% "scalatest"               % "3.2.16",
   "org.pegdown"            %  "pegdown"                 % "1.6.0",
   "org.jsoup"              %  "jsoup"                   % "1.16.1",
@@ -30,7 +30,7 @@ val test: Seq[ModuleID] = Seq(
   "org.mockito"            %% "mockito-scala-scalatest" % "1.17.14",
   "org.scalacheck"         %% "scalacheck"              % "1.17.0",
   "uk.gov.hmrc"            %% "domain"                  % "8.3.0-play-28",
-  "com.vladsch.flexmark"    % "flexmark-all"            % "0.64.4"
+  "com.vladsch.flexmark"    % "flexmark-all"            % "0.64.8"
 ).map(_ % "test")
 
 val all: Seq[ModuleID] = compile ++ test
@@ -43,6 +43,11 @@ lazy val scoverageSettings = {
     ScoverageKeys.coverageHighlighting := true,
   )
 }
+
+scalacOptions ++= Seq(
+  "-Wconf:cat=unused-imports&src=html/.*:s",
+  "-Wconf:src=routes/.*:s"
+)
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(plugins: _*)
