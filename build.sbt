@@ -46,7 +46,8 @@ lazy val scoverageSettings = {
 
 scalacOptions ++= Seq(
   "-Wconf:cat=unused-imports&src=html/.*:s",
-  "-Wconf:src=routes/.*:s"
+  "-Wconf:src=routes/.*:s",
+  "-feature"
 )
 
 lazy val microservice = Project(appName, file("."))
