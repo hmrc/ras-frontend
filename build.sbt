@@ -52,6 +52,7 @@ scalacOptions ++= Seq(
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(plugins: _*)
+  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     majorVersion := 0,
     scoverageSettings,
