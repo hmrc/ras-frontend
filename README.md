@@ -56,7 +56,7 @@ Running Locally
 
 Install [Service Manager](https://github.com/hmrc/service-manager), then start dependencies:
 
-    sm --start RAS_ALL -r
+    sm2 --start RAS_ALL -r
 
 Start the app:
 

@@ -46,7 +46,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
 
   def get: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
@@ -147,16 +147,16 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
 
   def back: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) => Future.successful(previousPage("FileUploadController"))
         case Left(res) => res
       }
   }
 
   def uploadSuccess: Action[AnyContent] = Action.async { implicit request =>
-    isAuthorised.flatMap {
+    isAuthorised().flatMap {
       case Right(userId) =>
-        sessionService.fetchRasSession.flatMap {
+        sessionService.fetchRasSession().flatMap {
           case Some(session) =>
             session.envelope match {
               case Some(envelope) =>
@@ -183,7 +183,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
   }
 
   def uploadError: Action[AnyContent] = Action.async { implicit request =>
-    isAuthorised.flatMap {
+    isAuthorised().flatMap {
       case Right(_) =>
         val errorCode: String = request.getQueryString("errorCode").getOrElse("")
         val errorReason: String = request.getQueryString("reason").getOrElse("")
@@ -203,7 +203,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
   }
 
   def uploadInProgress: Action[AnyContent] = Action.async { implicit request =>
-    isAuthorised.flatMap {
+    isAuthorised().flatMap {
       case Right(userId) =>
         shortLivedCache.fetchFileSession(userId).flatMap {
           case Some(fileSession) =>

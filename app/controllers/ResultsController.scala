@@ -39,7 +39,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
 
   def matchFound: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) =>
@@ -78,7 +78,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
 
   def noMatchFound: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) =>
@@ -113,7 +113,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
 
   def back: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(_) => previousPage("ResultsController")

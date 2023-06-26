@@ -41,7 +41,7 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 
 	def renderGlobalErrorPage: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           logger.info("[ErrorController][renderGlobalErrorPage] rendering global error page")
           Future.successful(InternalServerError(globalErrorView()))
@@ -53,7 +53,7 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 
   def renderProblemUploadingFilePage: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           logger.info("[ErrorController][renderProblemUploadingFilePage] rendering problem uploading file page")
           Future.successful(InternalServerError(problemUploadingFileView()))
@@ -65,7 +65,7 @@ class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
 
   def fileNotAvailable: Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           logger.info("[ErrorController][fileNotAvailable] rendering file not available page")
           Future.successful(InternalServerError(fileNotAvailableView()))

@@ -46,7 +46,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
 
   def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) =>
@@ -63,10 +63,10 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
 
   def post(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           getFullName() flatMap { name =>
-            form(Some(name)).bindFromRequest.fold(
+            form(Some(name)).bindFromRequest().fold(
               formWithErrors => {
                 logger.warn("[NinoController][post] Invalid form field passed")
                 Future.successful(BadRequest(memberNinoView(formWithErrors, name, edit)))
@@ -93,7 +93,7 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
 
   def back(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(_) => previousPage("MemberNinoController", edit)

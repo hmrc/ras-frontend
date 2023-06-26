@@ -76,7 +76,7 @@ class SessionService @Inject()(val http: DefaultHttpClient,
     }
 
     for {
-      currentSession <- fetchRasSession
+      currentSession <- fetchRasSession()
       session = currentSession.getOrElse(cleanSession)
       cacheMap <- sessionCache.cache[RasSession](RAS_SESSION_KEY, selectKeysToCache(session))
     }

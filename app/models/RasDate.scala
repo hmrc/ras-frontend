@@ -24,7 +24,7 @@ case class RasDate(day: Option[String], month: Option[String], year: Option[Stri
   def asLocalDate: LocalDate = new LocalDate(year.getOrElse("1").toInt, month.getOrElse("1").toInt, day.getOrElse("1").toInt)
   def isInFuture: Boolean = asLocalDate.isAfter(LocalDate.now)
 
-  override def toString: String = year + "-" + month + "-" + day
+  override def toString: String = year.toString + "-" + month.toString + "-" + day.toString
 }
 
 object RasDate {

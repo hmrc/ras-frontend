@@ -47,7 +47,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 
 	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(session) =>
@@ -63,10 +63,10 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 
   def post(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(userId) =>
           getFullName() flatMap { name =>
-            form(Some(name)).bindFromRequest.fold(
+            form(Some(name)).bindFromRequest().fold(
               formWithErrors => {
                 logger.warn("[DobController][post] Invalid form field passed")
                 val updatedFormWithErrors = updatedErrors(formWithErrors)
@@ -88,7 +88,7 @@ class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
 
   def back(edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
-      isAuthorised.flatMap {
+      isAuthorised().flatMap {
         case Right(_) =>
           sessionService.fetchRasSession() map {
             case Some(_) => previousPage("MemberDOBController", edit)
