@@ -21,8 +21,9 @@ import config.{ApplicationConfig, RasSessionCache, RasShortLivedHttpCaching}
 import connectors.{FileUploadConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.MockitoSugar
+import org.mockito.Mockito.when
 import org.scalatest.Suite
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.{MessagesApi, MessagesImpl}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._

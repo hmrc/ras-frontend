@@ -18,6 +18,7 @@ package services
 
 import models._
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
@@ -65,10 +66,10 @@ class SessionServiceSpec extends AnyWordSpec with RasTestHelper {
       }
       "set to a clean value" in {
         when(mockRasSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(name = TestSessionService.cleanMemberName))
+        val json = Json.toJson[RasSession](rasSession.copy(name = RasSession.cleanMemberName))
         when(mockRasSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetCacheName()(headerCarrier), 10 seconds)
-        result shouldBe Some(rasSession.copy(name = TestSessionService.cleanMemberName))
+        result shouldBe Some(rasSession.copy(name = RasSession.cleanMemberName))
       }
     }
 
@@ -123,10 +124,10 @@ class SessionServiceSpec extends AnyWordSpec with RasTestHelper {
       }
       "set to an empty value" in {
         when(mockRasSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(nino = TestSessionService.cleanMemberNino))
+        val json = Json.toJson[RasSession](rasSession.copy(nino = RasSession.cleanMemberNino))
         when(mockRasSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetCacheNino()(headerCarrier), 10 seconds)
-        result shouldBe Some(rasSession.copy(nino = TestSessionService.cleanMemberNino))
+        result shouldBe Some(rasSession.copy(nino = RasSession.cleanMemberNino))
       }
     }
 
@@ -147,10 +148,10 @@ class SessionServiceSpec extends AnyWordSpec with RasTestHelper {
       }
       "set to an empty value" in {
         when(mockRasSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(Some(rasSession)))
-        val json = Json.toJson[RasSession](rasSession.copy(dateOfBirth = TestSessionService.cleanMemberDateOfBirth))
+        val json = Json.toJson[RasSession](rasSession.copy(dateOfBirth = RasSession.cleanMemberDateOfBirth))
         when(mockRasSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetCacheDob()(headerCarrier), 10 seconds)
-        result shouldBe Some(rasSession.copy(dateOfBirth = TestSessionService.cleanMemberDateOfBirth))
+        result shouldBe Some(rasSession.copy(dateOfBirth = RasSession.cleanMemberDateOfBirth))
       }
     }
 
@@ -223,10 +224,10 @@ class SessionServiceSpec extends AnyWordSpec with RasTestHelper {
     "return a clean session" when {
       "reset cache with key all is called" in {
         when(mockRasSessionCache.fetchAndGetEntry[RasSession](any())(any(), any(), any())).thenReturn(Future.successful(None))
-        val json = Json.toJson[RasSession](TestSessionService.cleanSession)
+        val json = Json.toJson[RasSession](RasSession.cleanSession)
         when(mockRasSessionCache.cache[RasSession](any(), any())(any(), any(), any())).thenReturn(Future.successful(CacheMap("sessionValue", Map("ras_session" -> json))))
         val result = Await.result(TestSessionService.resetRasSession()(headerCarrier), 10 seconds)
-        result shouldBe Some(TestSessionService.cleanSession)
+        result shouldBe Some(RasSession.cleanSession)
       }
     }
   }
