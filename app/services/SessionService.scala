@@ -32,57 +32,36 @@ class SessionService @Inject()(val http: DefaultHttpClient,
                                val sessionCache: RasSessionCache
                               )(implicit ec: ExecutionContext) {
 
-  private object CacheKeys extends Enumeration {
-    val All, Name, Nino, Dob, StatusResult, UploadResponse, Envelope = Value
-  }
-
   val RAS_SESSION_KEY: String = "ras_session"
-  val cleanMemberName: MemberName = MemberName("", "")
-  val cleanMemberNino: MemberNino = MemberNino("")
-  val cleanMemberDateOfBirth: MemberDateOfBirth = MemberDateOfBirth(RasDate(None, None, None))
-  val cleanSession: RasSession = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth, None, None)
 
   def fetchRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
     sessionCache.fetchAndGetEntry[RasSession](RAS_SESSION_KEY)
   }
 
-  def cacheName(value: MemberName)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Name, Some(value))
-  def cacheNino(value: MemberNino)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Nino, Some(value))
-  def cacheDob(value: MemberDateOfBirth)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Dob, Some(value))
-  def cacheUploadResponse(value: UploadResponse)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.UploadResponse, Some(value))
-  def cacheEnvelope(value: Envelope)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Envelope, Some(value))
-  def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.StatusResult, Some(value))
+  def cacheName(value: MemberName)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Name, Some(value))
+  def cacheNino(value: MemberNino)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Nino, Some(value))
+  def cacheDob(value: MemberDateOfBirth)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Dob, Some(value))
+  def cacheUploadResponse(value: UploadResponse)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.UploadResponse, Some(value))
+  def cacheEnvelope(value: Envelope)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Envelope, Some(value))
+  def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.StatusResult, Some(value))
 
-  def resetCacheName()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Name)
-  def resetCacheNino()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Nino)
-  def resetCacheDob()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Dob)
-  def resetCacheUploadResponse()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.UploadResponse)
-  def resetCacheEnvelope()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.Envelope)
-  def resetCacheResidencyStatusResult()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.StatusResult)
+  def resetCacheName()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Name)
+  def resetCacheNino()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Nino)
+  def resetCacheDob()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Dob)
+  def resetCacheUploadResponse()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.UploadResponse)
+  def resetCacheEnvelope()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.Envelope)
+  def resetCacheResidencyStatusResult()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.StatusResult)
 
-  def resetRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKeys.All)
+  def resetRasSession()(implicit hc: HeaderCarrier): Future[Option[RasSession]] = cache(CacheKey.All)
 
-  private def cache[T](key: CacheKeys.Value, value: Option[T] = None)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
-    def selectKeysToCache(session: RasSession): RasSession = {
-      key match {
-        case CacheKeys.Name => session.copy(name = value.getOrElse(cleanMemberName).asInstanceOf[MemberName])
-        case CacheKeys.Nino => session.copy(nino = value.getOrElse(cleanMemberNino).asInstanceOf[MemberNino])
-        case CacheKeys.Dob => session.copy(dateOfBirth = value.getOrElse(cleanMemberDateOfBirth).asInstanceOf[MemberDateOfBirth])
-        case CacheKeys.StatusResult => session.copy(residencyStatusResult = value.asInstanceOf[Option[ResidencyStatusResult]])
-        case CacheKeys.UploadResponse => session.copy(uploadResponse = value.asInstanceOf[Option[UploadResponse]])
-        case CacheKeys.Envelope => session.copy(envelope = value.asInstanceOf[Option[Envelope]])
-        case _ => cleanSession
-      }
-    }
-
+  private def cache[T](key: CacheKey[T], value: Option[T] = None)(implicit hc: HeaderCarrier): Future[Option[RasSession]] = {
     for {
       currentSession <- fetchRasSession()
-      session = currentSession.getOrElse(cleanSession)
-      cacheMap <- sessionCache.cache[RasSession](RAS_SESSION_KEY, selectKeysToCache(session))
+      session = currentSession.getOrElse(RasSession.cleanSession)
+      cacheMap <- sessionCache.cache[RasSession](RAS_SESSION_KEY, session.selectKeysToCache(session, key, value))
+    } yield {
+      cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
     }
-      yield {
-        cacheMap.getEntry[RasSession](RAS_SESSION_KEY)
-      }
   }
 }
 

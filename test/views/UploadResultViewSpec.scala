@@ -21,7 +21,6 @@ import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, includ
 import play.api.i18n.Messages
 import views.helpers.ViewSpecHelper
 
-
 class UploadResultViewSpec extends ViewSpecHelper {
 
 	private def isBeforeApr6(timestamp: Long) : Boolean = {

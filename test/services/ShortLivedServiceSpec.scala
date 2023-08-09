@@ -20,6 +20,7 @@ import models.FileUploadStatus._
 import models.{CallbackData, FileSession, ResultsFileMetaData}
 import org.joda.time.DateTime
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json, Writes}

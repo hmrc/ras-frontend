@@ -24,7 +24,7 @@ import play.api.http.Status.FORBIDDEN
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Request, Result}
 import services.{AuditService, SessionService, TaxYearResolver}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -79,7 +79,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
             }
         }
       }.recover {
-        case e: Upstream4xxResponse if e.upstreamResponseCode == FORBIDDEN =>
+        case UpstreamErrorResponse.WithStatusCode(FORBIDDEN) =>
           auditResponse(failureReason = Some("MATCHING_FAILED"), nino = Some(memberDetails.nino),
             residencyStatus = None, userId = userId)
           logger.info("[RasResidencyCheckerController][getResult] No match found from customer matching")

@@ -16,11 +16,14 @@
 
 package models
 
-import play.api.libs.json.{Json, OFormat}
+trait CacheKey[+T]
 
-
-case class Envelope(id:String)
-
-object Envelope {
-  implicit val formats: OFormat[Envelope] = Json.format[Envelope]
+object CacheKey {
+  case object Name extends CacheKey[MemberName]
+  case object Nino extends CacheKey[MemberNino]
+  case object Dob extends CacheKey[MemberDateOfBirth]
+  case object StatusResult extends CacheKey[Option[ResidencyStatusResult]]
+  case object UploadResponse extends CacheKey[Option[UploadResponse]]
+  case object Envelope extends CacheKey[Option[Envelope]]
+  case object All extends CacheKey[RasSession]
 }
