@@ -109,7 +109,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                         case Some(callbackData) =>
                           val currentTaxYear = TaxYearResolver.currentTaxYear
                           val filename = filesSessionService.getDownloadFileName(fileSession)
-                          Ok(uploadResultView(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
+                          Ok(uploadResultView(callbackData.reference, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
                         case _ =>
                           logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.ErrorController.renderGlobalErrorPage)
@@ -191,7 +191,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                   Future.successful(Ok(fileReadyView()))
                 case _ =>
                   logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
-                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress))
+                  Future.successful(Redirect(routes.UpscanController.uploadInProgress))
               }
             case _ =>
               logger.error("[ChooseAnOptionController][renderFileReadyPage] failed to retrieve session")

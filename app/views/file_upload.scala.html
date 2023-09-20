@@ -18,6 +18,8 @@
 @import config.ApplicationConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.{HmrcPageHeading, PageHeading}
 @import views.html.helper.form
+@import models.upscan.UpscanInitiateResponse
+
 @this(
         govuk_wrapper: views.html.govuk_wrapper,
         govukBackLink: GovukBackLink,
@@ -26,7 +28,8 @@
         govukButton: GovukButton,
         hmrcPageHeading: HmrcPageHeading
 )
-@(fileUploadUrl: String, error: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+
+@(upscanInitiateResponse : UpscanInitiateResponse, error: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @scriptElem = {
     <script @{CSPNonce.attr} type="text/javascript" src='@controllers.routes.Assets.versioned("javascript/file-upload.js")'></script>
@@ -35,7 +38,7 @@
 @govuk_wrapper(pageTitle = messages("file.upload.page.title"), scriptElem = Some(scriptElem)) {
 
     @govukBackLink(BackLink(
-        href = routes.FileUploadController.back.url,
+        href = routes.UpscanController.back.url,
         content = Text(messages("back")),
         attributes = Map("data-journey-click" -> "navigation - link:Upload a file:Back")
     ))
@@ -81,7 +84,10 @@
         </ul>
     </p>
 
-    @form(Call("POST", fileUploadUrl), Symbol("enctype") -> "multipart/form-data", Symbol("id") -> "upload-form") {
+    <form method="post" action="@upscanInitiateResponse.postTarget" enctype="multipart/form-data" id="upload-form">
+        @for(field <- upscanInitiateResponse.formFields) {
+            <input type="hidden" name="@field._1" value="@field._2"/>
+        }
 
         @govukFileUpload(FileUpload(
             name = "file",
@@ -104,5 +110,5 @@
             content = Text(messages("upload.continue")),
             attributes = Map("data-journey-click" -> "button - click:Upload a file:Continue", "id" -> "continue")
         ))
-    }
+    </form>
 }

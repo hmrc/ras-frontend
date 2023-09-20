@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package models
+package models.upscan
 
 import play.api.libs.json.{Json, OFormat}
 
+case class UpscanInitiateRequest(
+                                  callbackUrl: String,
+                                  successRedirect: Option[String] = None,
+                                  errorRedirect: Option[String] = None,
+                                  minimumFileSize: Option[Int] = None,
+                                  maximumFileSize: Option[Int] = Some(2097152))
 
-case class Envelope(id:String)
-
-object Envelope {
-  implicit val formats: OFormat[Envelope] = Json.format[Envelope]
+object UpscanInitiateRequest {
+  implicit val format: OFormat[UpscanInitiateRequest] = Json.format[UpscanInitiateRequest]
 }

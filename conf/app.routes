@@ -10,13 +10,13 @@ GET         /no-results-available                                               
 GET         /results-not-available                                              controllers.ChooseAnOptionController.renderNoResultsAvailableYetPage
 GET         /file-ready                                                         controllers.ChooseAnOptionController.renderFileReadyPage
 
-GET         /upload-a-file                                                      controllers.FileUploadController.get
-GET         /upload-a-file/back                                                 controllers.FileUploadController.back
+GET         /upload-a-file                                                      controllers.UpscanController.get
+GET         /upload-a-file/back                                                 controllers.UpscanController.back
 
-GET         /file-uploaded                                                      controllers.FileUploadController.uploadSuccess
-GET         /file-upload-failed                                                 controllers.FileUploadController.uploadError
+GET         /file-uploaded                                                      controllers.UpscanController.uploadSuccess
+GET         /file-upload-failed                                                 controllers.UpscanController.uploadError
 
-GET         /cannot-upload-another-file                                         controllers.FileUploadController.uploadInProgress
+GET         /cannot-upload-another-file                                         controllers.UpscanController.uploadInProgress
 
 GET         /member-name                                                        controllers.MemberNameController.get(edit: Boolean ?= false)
 POST        /member-name                                                        controllers.MemberNameController.post(edit: Boolean ?= false)

@@ -44,7 +44,6 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 	lazy val signOutAndContinueUrl: String = s"$signOutBaseUrl$continueCallback"
 	lazy val loginCallback: String = config.getConfString("gg-urls.login-callback.url","/relief-at-source/")
-	lazy val fileUploadCallBack: String = loadConfig("file-upload-ras-callback-url")
 	lazy val fileDeletionUrl: String = config.getConfString("file-deletion-url","/ras-api/file/remove/")
 	lazy val rasApiResidencyStatusEndpoint: String = loadConfig("residency-status-url")
 
@@ -62,19 +61,16 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val refreshInterval: Int = timeOutSeconds + 10
 	lazy val enableRefresh: Boolean= config.getConfBool("sessionTimeout.enableRefresh", defBool = true)
 
-
-	//FileUpload
 	lazy val rasApiBaseUrl: String = config.baseUrl("relief-at-source")
-	lazy val fileUploadBaseUrl: String = config.baseUrl("file-upload")
-	lazy val fileUploadUrlSuffix: String = loadConfig("file-upload-url-suffix")
-	lazy val maxItems: Int = config.getInt("file-upload-constraints.maxItems")
-	lazy val maxSize: String = loadConfig("file-upload-constraints.maxSize")
-	lazy val maxSizePerItem: String = loadConfig("file-upload-constraints.maxSizePerItem")
-	lazy val allowZeroLengthFiles: Boolean = config.getBoolean("file-upload-constraints.allowZeroLengthFiles")
 	lazy val rasFrontendBaseUrl: String = loadConfig("ras-frontend.host")
 	lazy val rasFrontendUrlSuffix: String = loadConfig("ras-frontend-url-suffix")
-	lazy val fileUploadFrontendBaseUrl: String = loadConfig("file-upload-frontend.host")
-	lazy val fileUploadFrontendSuffix: String = loadConfig("file-upload-frontend-url-suffix")
+
+	//Upscan
+	lazy val initiateUrl: String = config.baseUrl("upscan-initiate") + "/upscan/v2/initiate"
+	lazy val uploadRedirectTargetBase = loadConfig("upload-redirect-target-base")
+	lazy val upscanCallbackEndpoint: String = loadConfig("upscan.callback-endpoint")
+	lazy val maxFileSize: Int = config.getInt("upscan.maxFileSize")
+
 
 	lazy val feedbackBaseUrl: String = config.getString("feedback-link-base")
 	val feedbackUrl: String = s"$feedbackBaseUrl/feedback/ras"
