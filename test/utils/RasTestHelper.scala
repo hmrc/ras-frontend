@@ -19,6 +19,7 @@ package utils
 import akka.actor.ActorSystem
 import config.ApplicationConfig
 import connectors.{FileUploadConnector, FilesSessionConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
+import connectors.{ResidencyStatusAPIConnector, UpscanInitiateConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.when
@@ -92,7 +93,7 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	val mockAuditConnector: DefaultAuditConnector = mock[DefaultAuditConnector]
 	val mockAuditService: AuditService = mock[AuditService]
 
-	val mockFileUploadConnector: FileUploadConnector = mock[FileUploadConnector]
+	val mockFileUploadConnector: UpscanInitiateConnector = mock[UpscanInitiateConnector]
 	val mockResidencyStatusAPIConnector: ResidencyStatusAPIConnector = mock[ResidencyStatusAPIConnector]
 	val mockUserDetailsConnector: UserDetailsConnector = mock[UserDetailsConnector]
 
@@ -116,8 +117,8 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	when(mockAppConfig.urBannerLinkUrl).thenReturn("urBannerLinkUrl")
 	when(mockAppConfig.rasFrontendBaseUrl).thenReturn("http://localhost:9673")
 	when(mockAppConfig.rasFrontendUrlSuffix).thenReturn("relief-at-source")
-	when(mockAppConfig.fileUploadFrontendBaseUrl).thenReturn("http://localhost:8899")
-	when(mockAppConfig.fileUploadFrontendSuffix).thenReturn("file-upload/upload/envelopes")
+	//when(mockAppConfig.fileUploadFrontendBaseUrl).thenReturn("http://localhost:8899")
+	//when(mockAppConfig.fileUploadFrontendSuffix).thenReturn("file-upload/upload/envelopes")
 	when(mockAppConfig.loginCallback).thenReturn("/relief-at-source/")
 	when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
 	when(mockAppConfig.feedbackUrl).thenReturn("http://localhost:9514/feedback/ras")

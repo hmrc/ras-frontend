@@ -65,16 +65,23 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 
 	//FileUpload
 	lazy val rasApiBaseUrl: String = config.baseUrl("relief-at-source")
-	lazy val fileUploadBaseUrl: String = config.baseUrl("file-upload")
-	lazy val fileUploadUrlSuffix: String = loadConfig("file-upload-url-suffix")
-	lazy val maxItems: Int = config.getInt("file-upload-constraints.maxItems")
-	lazy val maxSize: String = loadConfig("file-upload-constraints.maxSize")
-	lazy val maxSizePerItem: String = loadConfig("file-upload-constraints.maxSizePerItem")
-	lazy val allowZeroLengthFiles: Boolean = config.getBoolean("file-upload-constraints.allowZeroLengthFiles")
+//	lazy val fileUploadBaseUrl: String = config.baseUrl("file-upload")
+//	lazy val fileUploadUrlSuffix: String = loadConfig("file-upload-url-suffix")
+//	lazy val maxItems: Int = config.getInt("file-upload-constraints.maxItems")
+//	lazy val maxSize: String = loadConfig("file-upload-constraints.maxSize")
+//	lazy val maxSizePerItem: String = loadConfig("file-upload-constraints.maxSizePerItem")
+//	lazy val allowZeroLengthFiles: Boolean = config.getBoolean("file-upload-constraints.allowZeroLengthFiles")
 	lazy val rasFrontendBaseUrl: String = loadConfig("ras-frontend.host")
 	lazy val rasFrontendUrlSuffix: String = loadConfig("ras-frontend-url-suffix")
-	lazy val fileUploadFrontendBaseUrl: String = loadConfig("file-upload-frontend.host")
-	lazy val fileUploadFrontendSuffix: String = loadConfig("file-upload-frontend-url-suffix")
+	//lazy val fileUploadFrontendBaseUrl: String = loadConfig("file-upload-frontend.host")
+	//lazy val fileUploadFrontendSuffix: String = loadConfig("file-upload-frontend-url-suffix")
+
+	//Upscan
+	lazy val initiateUrl            = config.baseUrl("upscan-initiate") + "/upscan/v2/initiate"
+	lazy val uploadRedirectTargetBase = loadConfig("upload-redirect-target-base")
+	lazy val callbackEndpointTarget   = loadConfig("upscan.callback-endpoint") //it's hardcoded in
+	lazy val maxFileSize: Int = config.getInt("upscan.maxFileSize")
+
 
 	lazy val feedbackBaseUrl: String = config.getString("feedback-link-base")
 	val feedbackUrl: String = s"$feedbackBaseUrl/feedback/ras"
