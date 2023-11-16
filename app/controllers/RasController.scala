@@ -38,7 +38,7 @@ trait RasController extends AuthorisedFunctions with Logging {
 				Future(Right(enrolments.enrolments.head.identifiers.head.value))
 		} recover {
       case e: NoActiveSession => Left(notLogged(e))
-      case ex : AuthorisationException => Left(unAuthorise(ex))
+      case ex: AuthorisationException => Left(unAuthorise(ex))
     }
   }
 
@@ -61,5 +61,4 @@ trait RasController extends AuthorisedFunctions with Logging {
 			)
 		)
 	}
-
 }

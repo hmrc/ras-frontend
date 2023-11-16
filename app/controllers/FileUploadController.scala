@@ -20,8 +20,8 @@ import config.ApplicationConfig
 import connectors.FileUploadConnector
 import models.{Envelope, UploadResponse}
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionService, ShortLivedCache}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import services.{RasFilesSessionService, RasSessionCacheService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -32,11 +32,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.UnanchoredRegex
 
 class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
-																		 val authConnector: DefaultAuthConnector,
-																		 val shortLivedCache: ShortLivedCache,
-																		 val sessionService: SessionService,
-																		 val mcc: MessagesControllerComponents,
-																		 implicit val appConfig: ApplicationConfig,
+                                     val authConnector: DefaultAuthConnector,
+                                     val filesSessionService: RasFilesSessionService,
+                                     val sessionService: RasSessionCacheService,
+                                     val mcc: MessagesControllerComponents,
+                                     implicit val appConfig: ApplicationConfig,
                                      fileUploadView: views.html.file_upload,
                                      fileUploadSuccessView: views.html.file_upload_successful,
                                      cannotUploadAnotherView: views.html.cannot_upload_another_file
@@ -50,7 +50,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
         case Right(userId) =>
           sessionService.fetchRasSession().flatMap {
             case Some(session) =>
-              shortLivedCache.isFileInProgress(userId).flatMap {
+              filesSessionService.isFileInProgress(userId).flatMap {
                 case true =>
                   logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
                     s"so another could not be uploaded")
@@ -99,7 +99,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
       }
   }
 
-  def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit hc:HeaderCarrier): Future[Option[String]] = {
+  def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit hc:HeaderCarrier, request: Request[_]): Future[Option[String]] = {
     lazy val rasFrontendBaseUrl: String = appConfig.rasFrontendBaseUrl
     lazy val rasFrontendUrlSuffix: String = appConfig.rasFrontendUrlSuffix
     lazy val fileUploadFrontendBaseUrl: String = appConfig.fileUploadFrontendBaseUrl
@@ -160,7 +160,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
           case Some(session) =>
             session.envelope match {
               case Some(envelope) =>
-                shortLivedCache.createFileSession(userId,envelope.id).map {
+                filesSessionService.createFileSession(userId,envelope.id).map {
                   case true =>
                     logger.info(s"[FileUploadController][uploadSuccess] upload has been successful for userId ($userId)")
                     Ok(fileUploadSuccessView())
@@ -205,7 +205,7 @@ class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
   def uploadInProgress: Action[AnyContent] = Action.async { implicit request =>
     isAuthorised().flatMap {
       case Right(userId) =>
-        shortLivedCache.fetchFileSession(userId).flatMap {
+        filesSessionService.fetchFileSession(userId).flatMap {
           case Some(fileSession) =>
             fileSession.resultsFile match {
               case Some(_) =>

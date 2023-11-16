@@ -21,7 +21,7 @@ import connectors.ResidencyStatusAPIConnector
 import models._
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatest.wordspec.AnyWordSpec
-import services.SessionService
+import services.RasSessionCacheService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import utils.RasTestHelper
@@ -31,7 +31,7 @@ class RasResidencyCheckerControllerSpec extends AnyWordSpec with RasTestHelper {
   def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController = new RasResidencyCheckerController {
     override val authConnector: AuthConnector = mockAuthConnector
 		override val connector: DefaultAuditConnector = mockAuditConnector
-    override val sessionService: SessionService = mockSessionService
+    override val sessionService: RasSessionCacheService = mockRasSessionCacheService
     override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockResidencyStatusAPIConnector
     override val apiVersion: ApiVersion = version
 		override val appConfig: ApplicationConfig = mockAppConfig

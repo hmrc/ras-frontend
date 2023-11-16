@@ -43,7 +43,7 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
   private val enrolments = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val TestSessionController = new SessionController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig)
+  val TestSessionController = new SessionController(mockAuthConnector, mockRasSessionCacheService, mockMCC, mockAppConfig)
 
   "SessionController" must {
 
@@ -52,85 +52,85 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to target" when {
 
       "redirect is called with choose-an-option" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("choose-an-option", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("relief-at-source")
       }
 
       "redirect is called with member-name in edit mode" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-name", cleanSession = false, edit = true)(FakeRequest()))
         redirectLocation(result) should include("member-name")
       }
 
       "redirect is called with member-nino in edit mode" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-nino", cleanSession = false, edit = true)(FakeRequest()))
         redirectLocation(result) should include("member-national-insurance-number")
       }
 
       "redirect is called with member-dob in edit mode" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-dob", cleanSession = false, edit = true)(FakeRequest()))
         redirectLocation(result) should include("member-date-of-birth")
       }
 
       "redirect is called with member-name and clean" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-name", cleanSession = true)(FakeRequest()))
         redirectLocation(result) should include("member-name")
       }
 
       "redirect is called with choose-an-option in a clean session" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("choose-an-option", cleanSession = true, edit = true)(FakeRequest()))
         redirectLocation(result) should include("relief-at-source")
       }
 
       "redirect is called with member-nino and clean" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-nino", cleanSession = true)(FakeRequest()))
         redirectLocation(result) should include("member-national-insurance-number")
       }
 
       "redirect is called with member-dob and clean" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-dob", cleanSession = true)(FakeRequest()))
         redirectLocation(result) should include("member-date-of-birth")
       }
 
       "redirect is called with member-name" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-name", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("member-name")
       }
 
       "redirect is called with member-nino" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-nino", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("member-national-insurance-number")
       }
 
       "redirect is called with member-dob" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("member-dob", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("member-date-of-birth")
       }
 
       "redirect is called with start" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("start", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("relief-at-source")
       }
 
       "redirect is called with chooseAnOption" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("chooseAnOption", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("relief-at-source")
       }
 
       "redirect is called with chooseAnOption and clean" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("chooseAnOption", cleanSession = true)(FakeRequest()))
         redirectLocation(result) should include("relief-at-source")
       }
@@ -138,25 +138,25 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to global error page" when {
       "no ras session is returned (target is irrelevant here)" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(None))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(None))
         val result = await(TestSessionController.redirect("member-details", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("global-error")
       }
 
       "no ras session is returned (target is irrelevant here) and clean is true" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(None))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(None))
         val result = await(TestSessionController.redirect("member-details", cleanSession = true)(FakeRequest()))
         redirectLocation(result) should include("global-error")
       }
 
       "ras session is returned but target is not recognised" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("blah blah", cleanSession = false)(FakeRequest()))
         redirectLocation(result) should include("global-error")
       }
 
       "ras session is returned but target is not recognised and clean is true" in {
-        when(mockSessionService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+        when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = await(TestSessionController.redirect("blah blah", cleanSession = true)(FakeRequest()))
         redirectLocation(result) should include("global-error")
       }

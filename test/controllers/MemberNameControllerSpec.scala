@@ -44,11 +44,12 @@ class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
   val postData: JsObject = Json.obj("firstName" -> "Jim", "lastName" -> "McGill")
 
 
-  val TestMemberNameController: MemberNameController = new MemberNameController(mockAuthConnector, mockAuditConnector, mockResidencyStatusAPIConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, memberNameView) {
+  val TestMemberNameController: MemberNameController = new MemberNameController(mockAuthConnector, mockAuditConnector,
+    mockResidencyStatusAPIConnector, mockRasSessionCacheService, mockMCC, mockAppConfig, memberNameView) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
 
-    when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
-    when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockRasSessionCacheService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
+    when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   "MemberNameController" must {
@@ -71,7 +72,7 @@ class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "return HTML when there is no ras session" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestMemberNameController.get()(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
@@ -90,12 +91,12 @@ class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "save details to cache" in {
       await(TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData))))
-      verify(mockSessionService, atLeastOnce).cacheName(any())(any())
+      verify(mockRasSessionCacheService, atLeastOnce).cacheName(any())(any())
     }
 
     "redirect to nino page when name cached and edit mode is false" in {
       val session = RasSession(memberName, MemberNino(""), MemberDateOfBirth(RasDate(None, None, None)), None, None)
-      when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(session)))
+      when(mockRasSessionCacheService.cacheName(any())(any())).thenReturn(Future.successful(Some(session)))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result) should include("/member-national-insurance-number")
@@ -103,15 +104,15 @@ class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to match found page when edit mode is true and matching successful" in {
       when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
-      when(mockSessionService.cacheResidencyStatusResult(any())(any())).thenReturn(Future.successful(Some(rasSession)))
-      when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockRasSessionCacheService.cacheResidencyStatusResult(any())(any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockRasSessionCacheService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNameController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
       status(result) should equal(SEE_OTHER)
       redirectLocation(result) should include("/member-residency-status")
 
-      verify(mockSessionService, atLeastOnce).cacheName(any())(any())
+      verify(mockRasSessionCacheService, atLeastOnce).cacheName(any())(any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
@@ -121,11 +122,11 @@ class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
       status(result) should equal(SEE_OTHER)
       redirectLocation(result) should include("/no-residency-status-displayed")
 
-      verify(mockSessionService, atLeastOnce).cacheName(any())(any())
+      verify(mockRasSessionCacheService, atLeastOnce).cacheName(any())(any())
     }
 
     "redirect to technical error page if name is not cached" in {
-      when(mockSessionService.cacheName(any())(any())).thenReturn(Future.successful(None))
+      when(mockRasSessionCacheService.cacheName(any())(any())).thenReturn(Future.successful(None))
       val result = TestMemberNameController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result) should include("global-error")

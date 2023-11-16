@@ -50,11 +50,11 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
 
-  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(mockResidencyStatusAPIConnector, mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, chooseAnOptionView, fileReadyView, uploadResultView, resultsNotAvailableYetView, noResultsAvailableView) {
+  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(mockResidencyStatusAPIConnector, mockAuthConnector, mockRasFilesSessionService, mockMCC, mockAppConfig, chooseAnOptionView, fileReadyView, uploadResultView, resultsNotAvailableYetView, noResultsAvailableView) {
 
-    when(mockShortLivedCache.determineFileStatus(any())(any())).thenReturn(Future.successful(FileUploadStatus.NoFileSession))
+    when(mockRasFilesSessionService.determineFileStatus(any())).thenReturn(Future.successful(FileUploadStatus.NoFileSession))
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
-    when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
+    when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
     when(mockResidencyStatusAPIConnector.getFile(any(), any())(any(), any())).thenReturn(Future.successful(Some(inputStream)))
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
@@ -100,13 +100,13 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
   "renderUploadResultsPage" must {
 
     "return ok when called" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result: Result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
       result.header.status shouldBe OK
     }
 
     "return global error" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession.copy(userFile = None)))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession.copy(userFile = None))))
       val result: Future[Result] = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
       redirectLocation(result) should include("/global-error")
     }
@@ -115,7 +115,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 			val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
 			val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
 			val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
-			when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+			when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
 			val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
 				FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
 			contentAsString(result) shouldBe row1
@@ -125,7 +125,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
       val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",Some("wrongName.csv"),Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
       status(result) shouldBe SEE_OTHER
@@ -134,7 +134,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "not be able to download a file containing the results when there is no results file" in {
       val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
       status(result) shouldBe SEE_OTHER
@@ -142,7 +142,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "not be able to download a file containing the results when there is no file session" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(None))
       val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
       status(result) shouldBe SEE_OTHER
@@ -153,7 +153,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "render upload result page is called but there is no callback data in the retrieved file session" in {
         val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(new DateTime().plusDays(10).getMillis),None)
-        when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+        when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
         val result = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) should include("/global-error")
@@ -163,20 +163,20 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "renderFileReadyPage" must {
     "return ok when called" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderFileReadyPage(fakeRequest)
       status(result) shouldBe OK
     }
 
     "return global error page when there is no file session" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(None))
       val result = TestChooseAnOptionController.renderFileReadyPage(fakeRequest)
       redirectLocation(result) should include("/global-error")
     }
 
     "redirect to cannot upload another file there is no result file ready" in {
       val fileSession = FileSession(None, None, "1234", None, None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderFileReadyPage(fakeRequest)
       redirectLocation(result) should include("/cannot-upload-another-file")
     }
@@ -185,21 +185,21 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
   "renderResultsNotAvailableYetPage" must {
     "return ok when called" in {
       val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("/results-not-available")
     }
 
     "return error when there is a result file in file session" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(Some(fileSession)))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("/residency-status-added")
     }
 
     "return error when there is no file session" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())).thenReturn(Future.successful(None))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(None))
       val result = TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("/no-results-available")
@@ -208,7 +208,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "renderNoResultAvailablePage" must {
     "return ok when called" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(None)
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(None))
       val result = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
       status(result) shouldBe OK
       await(await(result).body.consumeData).utf8String should include("You have not uploaded a file")
@@ -216,14 +216,14 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to results-not-avilable when there is a file session with a file in progress" in {
       val session = fileSession.copy(resultsFile = None)
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(session))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(session)))
       val result = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("/results-not-available")
     }
 
     "redirect to results page when there is a file session with a file ready" in {
-      when(mockShortLivedCache.fetchFileSession(any())(any())) thenReturn Future.successful(Some(fileSession))
+      when(mockRasFilesSessionService.fetchFileSession(any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("/residency-status-added")

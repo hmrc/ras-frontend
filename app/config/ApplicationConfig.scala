@@ -20,6 +20,7 @@ import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
+import scala.concurrent.duration.Duration
 
 
 class ApplicationConfig @Inject()(config: ServicesConfig){
@@ -75,12 +76,10 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val fileUploadFrontendBaseUrl: String = loadConfig("file-upload-frontend.host")
 	lazy val fileUploadFrontendSuffix: String = loadConfig("file-upload-frontend-url-suffix")
 
-	//SessionCacheWiring
-	lazy val shortLivedCacheBaseUri: String = config.baseUrl("cachable.short-lived-cache")
-	lazy val shortLivedCacheDomain: String = config.getString(s"microservice.services.cachable.short-lived-cache.domain")
-	lazy val sessionCacheBaseUri: String = config.baseUrl("keystore")
-	lazy val sessionCacheDomain: String = config.getString(s"microservice.services.cachable.session-cache.domain")
-
 	lazy val feedbackBaseUrl: String = config.getString("feedback-link-base")
 	val feedbackUrl: String = s"$feedbackBaseUrl/feedback/ras"
+
+	lazy val userSessionsTTL: Duration = config.getDuration("mongodb.userSessionsCacheTTLHours")
+	lazy val fileSessionsTTL: Duration = config.getDuration("mongodb.fileSessionsCacheTTLDays")
+	lazy val apiMongoUri: String = config.getString("mongodb.apiUri")
 }

@@ -16,14 +16,15 @@
 
 package validators
 
-import models.RasDate
+import models.{MemberDateOfBirth, RasDate}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.data.validation.Invalid
+import validators.DateValidator.rasDateConstraint
 
 class DateValidatorSpec extends AnyWordSpec with Matchers {
 
   "date validator" should{
-
     "return false when day is non digit" in {
       DateValidator.checkDayRange(RasDate(Some("a"),Some("1"),Some("1999"))) shouldBe false
     }
@@ -52,6 +53,13 @@ class DateValidatorSpec extends AnyWordSpec with Matchers {
       DateValidator.isAfter1900("19C") shouldBe false
     }
 
-  }
+    "handle NumberFormatException" in {
+      val invalidYearMemberDOB = MemberDateOfBirth(RasDate(Some("1"), Some("12"), Some("non-integer")))
 
+      val constraint = rasDateConstraint("dateOfBirth")
+      val result = constraint.apply(invalidYearMemberDOB)
+
+      result shouldBe an[Invalid]
+    }
+  }
 }
