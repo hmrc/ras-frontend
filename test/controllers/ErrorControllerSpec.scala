@@ -36,7 +36,7 @@ class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
 
-  val TestErrorController: ErrorController = new ErrorController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, globalErrorView, problemUploadingFileView, fileNotAvailableView, unauthorisedView, startAtStartView)(mockAppConfig) {
+  val TestErrorController: ErrorController = new ErrorController(mockAuthConnector, mockRasSessionCacheService, mockMCC, globalErrorView, problemUploadingFileView, fileNotAvailableView, unauthorisedView, startAtStartView)(mockAppConfig) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }

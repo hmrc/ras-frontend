@@ -19,7 +19,7 @@ package controllers
 import config.ApplicationConfig
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionService, ShortLivedCache}
+import services.RasSessionCacheService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -27,9 +27,8 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorController @Inject()(val authConnector: DefaultAuthConnector,
-																val shortLivedCache: ShortLivedCache,
-																val sessionService: SessionService,
-																val mcc: MessagesControllerComponents,
+                                val sessionService: RasSessionCacheService,
+                                val mcc: MessagesControllerComponents,
                                 globalErrorView: views.html.global_error,
                                 problemUploadingFileView: views.html.problem_uploading_file,
                                 fileNotAvailableView: views.html.file_not_available,

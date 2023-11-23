@@ -17,7 +17,7 @@
 package utils
 
 import akka.actor.ActorSystem
-import config.{ApplicationConfig, RasSessionCache, RasShortLivedHttpCaching}
+import config.ApplicationConfig
 import connectors.{FileUploadConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -31,9 +31,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Application, i18n}
 import play.twirl.api.Html
-import services.{AuditService, SessionService, ShortLivedCache}
+import repository.{RasFilesSessionRepository, RasSessionCacheRepository}
+import services.{AuditService, RasFilesSessionService, RasSessionCacheService}
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
@@ -42,7 +44,7 @@ import views.html._
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-trait RasTestHelper extends MockitoSugar {  this: Suite =>
+trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 
 	def fakeApplicationCreation: Application =
 		GuiceApplicationBuilder()
@@ -93,10 +95,16 @@ trait RasTestHelper extends MockitoSugar {  this: Suite =>
 	val mockFileUploadConnector: FileUploadConnector = mock[FileUploadConnector]
 	val mockResidencyStatusAPIConnector: ResidencyStatusAPIConnector = mock[ResidencyStatusAPIConnector]
 	val mockUserDetailsConnector: UserDetailsConnector = mock[UserDetailsConnector]
-	val mockSessionService: SessionService = mock[SessionService]
-	val mockRasSessionCache: RasSessionCache = mock[RasSessionCache]
-	val mockRasShortLivedHttpCache : RasShortLivedHttpCaching = mock[RasShortLivedHttpCaching]
-	val mockShortLivedCache: ShortLivedCache = mock[ShortLivedCache]
+
+	val applicationConfig = fakeApplication.injector.instanceOf[ApplicationConfig]
+
+	//user sessions
+	val mockRasSessionCacheService: RasSessionCacheService = mock[RasSessionCacheService]
+	val mockRasSessionCacheRepository: RasSessionCacheRepository = mock[RasSessionCacheRepository]
+
+	//file sessions
+	val mockRasFilesSessionService: RasFilesSessionService = mock[RasFilesSessionService]
+	val mockRasFilesSessionRepository: RasFilesSessionRepository = mock[RasFilesSessionRepository]
 
 	when(mockAppConfig.hoursToWaitForReUpload).thenReturn(24)
 	when(mockAppConfig.reportAProblemPartialUrl).thenReturn("reportAProblemPartialUrl")

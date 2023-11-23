@@ -34,7 +34,6 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
   }
 
   "Requesting the tax year for a date" must {
-
     "Return 2012 when the date is 2013/4/5" in {
       Resolver().taxYearFor(new LocalDate(2013, 4, 5)) shouldBe 2012
     }
@@ -61,7 +60,6 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
   }
 
   "Requesting the currentTaxYear" must {
-
     "Return 2012 when the current UK time is 23:59:59.999 on 2013/4/5" in {
       val currentTime = new DateTime(2013, 4, 5, 23, 59, 59, 999, DateTimeZone.forID("Europe/London"))
       Resolver(currentTime).currentTaxYear shouldBe 2012
@@ -94,7 +92,6 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
   }
 
   "Requesting the start of the current tax year" must {
-
     "Return 2012/4/6 when the current UK time is 23:59:59.999 on 2013/4/5" in {
       val currentTime = new DateTime(2013, 4, 5, 23, 59, 59, 999, DateTimeZone.forID("Europe/London"))
       Resolver(currentTime).startOfCurrentTaxYear shouldBe new LocalDate(2012, 4, 6)
@@ -127,7 +124,6 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
   }
 
   "Requesting the start of a given tax year" must {
-
     "Return 2012/4/6 for 2012" in {
       Resolver().startOfTaxYear(2012) shouldBe new LocalDate(2012, 4, 6)
     }
@@ -135,7 +131,6 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
   }
 
   "Requesting the end of the current tax year" must {
-
     "Return 2013/4/5 when the current UK time is 23:59:59.999 on 2013/4/5" in {
       val currentTime = new DateTime(2013, 4, 5, 23, 59, 59, 999, DateTimeZone.forID("Europe/London"))
       Resolver(currentTime).endOfCurrentTaxYear shouldBe new LocalDate(2013, 4, 5)
@@ -168,7 +163,6 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
   }
 
   "Requesting the start of the next tax year" must {
-
     "Return 2013/4/6 when the current UK time is 23:59:59.999 on 2013/4/5" in {
       val currentTime = new DateTime(2013, 4, 5, 23, 59, 59, 999, DateTimeZone.forID("Europe/London"))
       Resolver(currentTime).startOfNextTaxYear shouldBe new LocalDate(2013, 4, 6)
@@ -201,7 +195,6 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
   }
 
   "local date falling in this tax year" must {
-
     object TaxYearResolverForTest extends TaxYearResolver {
       override lazy val now: () => DateTime = () => new DateTime(2015, 3, 31, 0, 0, 0, 0, DateTimeZone.forID("Europe/London"))
     }
@@ -229,7 +222,8 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
     }
 
     "return true when earliestDateForCurrentTaxYear is the same as the current date" in {
-      TaxYearResolverForTest.fallsInThisTaxYear(new LocalDate(currentYear, 3, 31)) shouldBe true
+      val taxYearStart = new LocalDate(TaxYearResolverForTest.taxYearFor(TaxYearResolverForTest.now().toLocalDate), 4, 6)
+      TaxYearResolverForTest.fallsInThisTaxYear(taxYearStart) shouldBe true
     }
   }
 

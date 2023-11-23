@@ -22,7 +22,7 @@ import forms.{MemberDateOfBirthForm => form}
 import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionService, ShortLivedCache}
+import services.RasSessionCacheService
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
@@ -33,12 +33,11 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
-																		val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
-																		val connector: DefaultAuditConnector,
-																		val shortLivedCache: ShortLivedCache,
-																		val sessionService: SessionService,
-																		val mcc: MessagesControllerComponents,
-																		implicit val appConfig: ApplicationConfig,
+                                    val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
+                                    val connector: DefaultAuditConnector,
+                                    val sessionService: RasSessionCacheService,
+                                    val mcc: MessagesControllerComponents,
+                                    implicit val appConfig: ApplicationConfig,
                                     memberDobView: views.html.member_dob
 																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with DateValidator with WithUnsafeDefaultFormBinding {
 

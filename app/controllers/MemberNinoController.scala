@@ -22,7 +22,7 @@ import forms.{MemberNinoForm => form}
 import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionService, ShortLivedCache}
+import services.RasSessionCacheService
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
@@ -34,9 +34,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
                                      val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
                                      val connector: DefaultAuditConnector,
-                                     val shortLivedCache: ShortLivedCache,
-                                     val sessionService: SessionService,
-																		 val mcc: MessagesControllerComponents,
+                                     val sessionService: RasSessionCacheService,
+                                     val mcc: MessagesControllerComponents,
                                      implicit val appConfig: ApplicationConfig,
                                      memberNinoView: views.html.member_nino
                                     ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with WithUnsafeDefaultFormBinding {

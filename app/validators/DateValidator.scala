@@ -59,7 +59,7 @@ trait DateValidator {
         try {
           new DateTime().withYear(date.year.getOrElse("0").toInt).year.isLeap
         } catch {
-          case e: NumberFormatException => false
+          case _: NumberFormatException => false
         }
 
       if (!DateValidator.checkDayRange(date)) {

@@ -53,8 +53,8 @@ class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
   val rasSession: RasSession = RasSession(name, nino, memberDob, Some(residencyStatusResult), None)
 
 
-  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockShortLivedCache, mockSessionService, mockMCC, mockAppConfig, matchFoundView, matchNotFoundView) {
-    when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
+  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockRasSessionCacheService, mockMCC, mockAppConfig, matchFoundView, matchNotFoundView) {
+    when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   "Results Controller" must {
@@ -80,42 +80,42 @@ class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "return HTML when match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
       val result = TestResultsController.noMatchFound(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }
 
     "redirect to global error page when no session data is returned on match found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("global-error")
     }
 
     "redirect to homepage when session data is returned with no result for match found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe "/relief-at-source"
     }
 
     "redirect to global error page when no session data is returned on match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("global-error")
     }
 
     "redirect to homepage when session data is returned with no result for match not found" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) shouldBe 303
       redirectLocation(result) should include("/relief-at-source")
     }
 
     "return to member dob page when back link is clicked" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(
         Some(RasSession(name, nino, memberDob,
           Some(ResidencyStatusResult(
               NON_SCOTTISH, Some(NON_SCOTTISH),
@@ -130,7 +130,7 @@ class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "redirect to global error when no session and back link is clicked" in {
-      when(mockSessionService.fetchRasSession()(any())).thenReturn(Future.successful(None))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.back.apply(FakeRequest())
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) should include("/global-error")

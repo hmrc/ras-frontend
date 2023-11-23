@@ -26,7 +26,7 @@ import org.joda.time.DateTime
 import play.api.Logging
 import play.api.http.HttpEntity
 import play.api.mvc._
-import services.{SessionService, ShortLivedCache, TaxYearResolver}
+import services.{RasFilesSessionService, TaxYearResolver}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -37,8 +37,7 @@ import scala.util.{Failure, Success}
 
 class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAPIConnector,
                                          val authConnector: DefaultAuthConnector,
-                                         val shortLivedCache: ShortLivedCache,
-                                         val sessionService: SessionService,
+                                         val filesSessionService: RasFilesSessionService,
                                          val mcc: MessagesControllerComponents,
                                          implicit val appConfig: ApplicationConfig,
                                          chooseAnOptionView: views.html.choose_an_option,
@@ -55,8 +54,8 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     implicit request =>
       isAuthorised().flatMap {
         case Right(userId) =>
-          shortLivedCache.fetchFileSession(userId).flatMap { fileSession =>
-            shortLivedCache.determineFileStatus(userId).flatMap {
+          filesSessionService.fetchFileSession(userId).flatMap { fileSession =>
+            filesSessionService.determineFileStatus(userId).flatMap {
               fileStatus =>
                 logger.info(s"[ChooseAnOptionController][get] determine file status returned $fileStatus")
                 Future.successful(Ok(chooseAnOptionView(fileStatus, getHelpDate(fileStatus, fileSession))))
@@ -100,7 +99,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     implicit request =>
       isAuthorised().flatMap {
         case Right(userId) =>
-          shortLivedCache.fetchFileSession(userId).map {
+          filesSessionService.fetchFileSession(userId).map {
             case Some(fileSession) =>
               fileSession.resultsFile match {
                 case Some(resultFile) =>
@@ -109,7 +108,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                       fileSession.userFile match {
                         case Some(callbackData) =>
                           val currentTaxYear = TaxYearResolver.currentTaxYear
-                          val filename = shortLivedCache.getDownloadFileName(fileSession)
+                          val filename = filesSessionService.getDownloadFileName(fileSession)
                           Ok(uploadResultView(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
                         case _ =>
                           logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
@@ -137,7 +136,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     implicit request =>
       isAuthorised().flatMap {
         case Right(userId) =>
-          shortLivedCache.fetchFileSession(userId).flatMap {
+          filesSessionService.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
               fileSession.resultsFile match {
                 case Some(_) =>
@@ -161,7 +160,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     implicit request =>
       isAuthorised().flatMap {
         case Right(userId) =>
-          shortLivedCache.fetchFileSession(userId).flatMap {
+          filesSessionService.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
               fileSession.resultsFile match {
                 case Some(_) =>
@@ -185,7 +184,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     implicit request =>
       isAuthorised().flatMap {
         case Right(userId) =>
-          shortLivedCache.fetchFileSession(userId).flatMap {
+          filesSessionService.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
               fileSession.resultsFile match {
                 case Some(_) =>
@@ -208,14 +207,14 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     implicit request =>
       isAuthorised().flatMap {
         case Right(userId) =>
-          shortLivedCache.fetchFileSession(userId).flatMap {
+          filesSessionService.fetchFileSession(userId).flatMap {
             case Some(fileSession) =>
               fileSession.resultsFile match {
                 case Some(resultFile) =>
                   resultFile.filename match {
                     case Some(name) if name == fileName =>
-                      shortLivedCache.removeFileSessionFromCache(userId)
-                      getFile(fileName, userId, shortLivedCache.getDownloadFileName(fileSession))
+                      filesSessionService.removeFileSessionFromCache(userId)
+                      getFile(fileName, userId, filesSessionService.getDownloadFileName(fileSession))
                     case _ =>
                       logger.error("[ChooseAnOptionController][getResultsFile] filename empty")
                       Future.successful(Redirect(routes.ErrorController.fileNotAvailable))

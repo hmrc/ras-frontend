@@ -22,7 +22,7 @@ import forms.MemberNameForm._
 import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionService, ShortLivedCache}
+import services.RasSessionCacheService
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
@@ -32,12 +32,11 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
-																		 val connector: DefaultAuditConnector,
-																		 val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
-																		 val shortLivedCache: ShortLivedCache,
-																		 val sessionService: SessionService,
-																		 val mcc: MessagesControllerComponents,
-																		 implicit val appConfig: ApplicationConfig,
+                                     val connector: DefaultAuditConnector,
+                                     val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
+                                     val sessionService: RasSessionCacheService,
+                                     val mcc: MessagesControllerComponents,
+                                     implicit val appConfig: ApplicationConfig,
                                      memberNameView: views.html.member_name) 
   extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with WithUnsafeDefaultFormBinding {
 

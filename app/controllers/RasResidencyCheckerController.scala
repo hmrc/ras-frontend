@@ -23,7 +23,7 @@ import play.api.Logging
 import play.api.http.Status.FORBIDDEN
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Request, Result}
-import services.{AuditService, SessionService, TaxYearResolver}
+import services.{AuditService, RasSessionCacheService, TaxYearResolver}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
   val apiVersion: ApiVersion
-	val sessionService: SessionService
+	val sessionService: RasSessionCacheService
 
 	val SCOTTISH = "scotResident"
 	val WELSH = "welshResident"
@@ -139,7 +139,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
     )
   }
 
-	def getFullName()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
+	def getFullName()(implicit ec: ExecutionContext, request: Request[_]): Future[String] = {
 		sessionService.fetchRasSession() map {
 			case Some(session) => session.name.firstName.capitalize + " " + session.name.lastName.capitalize
 			case _ => "member"
