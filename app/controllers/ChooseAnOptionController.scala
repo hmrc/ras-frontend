@@ -26,7 +26,7 @@ import org.joda.time.DateTime
 import play.api.Logging
 import play.api.http.HttpEntity
 import play.api.mvc._
-import services.{RasFilesSessionService, TaxYearResolver}
+import services.{FilesSessionService, TaxYearResolver}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -37,7 +37,7 @@ import scala.util.{Failure, Success}
 
 class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAPIConnector,
                                          val authConnector: DefaultAuthConnector,
-                                         val filesSessionService: RasFilesSessionService,
+                                         val filesSessionService: FilesSessionService,
                                          val mcc: MessagesControllerComponents,
                                          implicit val appConfig: ApplicationConfig,
                                          chooseAnOptionView: views.html.choose_an_option,

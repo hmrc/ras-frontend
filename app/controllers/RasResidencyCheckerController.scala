@@ -23,7 +23,7 @@ import play.api.Logging
 import play.api.http.Status.FORBIDDEN
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Request, Result}
-import services.{AuditService, RasSessionCacheService, TaxYearResolver}
+import services.{AuditService, SessionCacheService, TaxYearResolver}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
   val apiVersion: ApiVersion
-	val sessionService: RasSessionCacheService
+	val sessionService: SessionCacheService
 
 	val SCOTTISH = "scotResident"
 	val WELSH = "welshResident"

@@ -17,38 +17,44 @@
 package services
 
 import config.ApplicationConfig
+import connectors.FilesSessionConnector
 import models.FileUploadStatus.{InProgress, NoFileSession, Ready, TimeExpiryError, UploadError}
-import models.{FileSession, FileUploadStatus}
+import models.{CreateFileSessionRequest, FileSession, FileUploadStatus}
 import org.joda.time.DateTime
 import play.api.Logging
-import repository.RasFilesSessionRepository
-import uk.gov.hmrc.mongo.cache.DataKey
+import play.api.libs.json.{JsError, JsSuccess, Json}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RasFilesSessionService @Inject()(filesSessionRepository: RasFilesSessionRepository,
-                                       appConfig: ApplicationConfig)
-                                      (implicit ec: ExecutionContext) extends Logging {
+class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
+                                    appConfig: ApplicationConfig) extends Logging {
 
   lazy val hoursToWaitForReUpload: Int = appConfig.hoursToWaitForReUpload
   private val STATUS_AVAILABLE: String = "AVAILABLE"
   private val defaultDownloadName: String = "Residency-status"
 
-  def createFileSession(userId: String, envelopeId: String): Future[Boolean] = {
-    filesSessionRepository.put[FileSession](userId)(DataKey("fileSession"), FileSession(None, None, userId, Some(DateTime.now().getMillis), None))
-      .map(_ => true)
-      .recover {
-      case ex: Throwable => logger.error(s"unable to create FileSession to cache => " +
-        s"$userId , envelopeId :$envelopeId,  Exception is ${ex.getMessage}")
-        false
+  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val createRequest = CreateFileSessionRequest(userId,envelopeId)
+    Json.toJson(createRequest).validate[CreateFileSessionRequest] match {
+      case JsSuccess(validRequest, _) =>
+        fileSessionConnector.createFileSession(createRequest).recover {
+          case ex: Throwable =>
+            logger.error(s"[FilesSessionService][createFileSession] Unable to create FileSession to cache => " +
+              s"${validRequest.userId}, envelopeId: ${validRequest.envelopeId}, Exception is ${ex.getMessage}")
+            false
+        }
+      case JsError(errors) =>
+        logger.error(s"[FilesSessionService][createFileSession] Validation failed for CreateFileSessionRequest: $errors")
+        Future.successful(false)
     }
   }
 
-  def fetchFileSession(userId: String): Future[Option[FileSession]] = {
-    filesSessionRepository.get[FileSession](userId)(DataKey("fileSession")).recover {
-      case ex: Throwable => logger.error(s"unable to fetch FileSession from cache => " +
+  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] = {
+    fileSessionConnector.fetchFileSession(userId).recover {
+      case ex: Throwable => logger.error(s"[FilesSessionService][fetchFileSession] Unable to fetch FileSession from cache => " +
         s"$userId , Exception is ${ex.getMessage}")
         None
     }
@@ -58,23 +64,23 @@ class RasFilesSessionService @Inject()(filesSessionRepository: RasFilesSessionRe
     new DateTime(fileUploadTime).plusHours(hoursToWaitForReUpload).isBefore(DateTime.now.getMillis)
   }
 
-  def failedProcessingUploadedFile(userId: String): Future[Boolean] = {
+  def failedProcessingUploadedFile(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     fetchFileSession(userId).map {
       case Some(fileSession) =>
         fileSession.uploadTimeStamp match {
           case Some(timestamp) =>
             errorInFileUpload(fileSession) || (hasBeen24HoursSinceTheUpload(timestamp) && fileSession.resultsFile.isEmpty)
           case _ =>
-            logger.error("[RasFilesSessionService][failedProcessingUploadedFile] no upload timestamp found")
+            logger.error("[FilesSessionService][failedProcessingUploadedFile] No upload timestamp found")
             false
         }
       case _ =>
-        logger.error("[RasFilesSessionService][failedProcessingUploadedFile] no file session found")
+        logger.error("[FilesSessionService][failedProcessingUploadedFile] No file session found")
         false
     }
   }
 
-  def errorInFileUpload(fileSession: FileSession): Boolean = {
+  def errorInFileUpload(fileSession: FileSession)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
     fileSession.userFile match {
       case Some(userFile) =>
         userFile.status match {
@@ -96,22 +102,22 @@ class RasFilesSessionService @Inject()(filesSessionRepository: RasFilesSessionRe
     }
   }
 
-  def isFileInProgress(userId: String): Future[Boolean] = {
+  def isFileInProgress(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     fetchFileSession(userId).map {
       case Some(fileSession) =>
         fileSession.resultsFile.isDefined || fileSession.uploadTimeStamp.exists(!hasBeen24HoursSinceTheUpload(_))
       case None =>
-        logger.warn(s"[RasFilesSessionService][isFileInProgress] fileSession not defined for $userId")
+        logger.warn(s"[FilesSessionService][isFileInProgress] FileSession not defined for $userId")
         false
     }.recover {
       case ex: Throwable =>
-        logger.error(s"[RasFilesSessionService][isFileInProgress] unable to fetch FileSession from cache to check " +
+        logger.error(s"[FilesSessionService][isFileInProgress] Unable to fetch FileSession from cache to check " +
           s"isFileInProgress => $userId , Exception is ${ex.getMessage}")
         false
     }
   }
 
-  def determineFileStatus(userId: String): Future[FileUploadStatus.Value] = {
+  def determineFileStatus(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileUploadStatus.Value] = {
     fetchFileSession(userId).flatMap {
       case Some(fileSession) =>
         fileSession.resultsFile match {
@@ -129,12 +135,13 @@ class RasFilesSessionService @Inject()(filesSessionRepository: RasFilesSessionRe
     }
   }
 
-  def removeFileSessionFromCache(userId: String): Future[Unit] = {
-    filesSessionRepository.deleteEntity(userId).recover {
+  def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    fileSessionConnector.deleteFileSession(userId)
+      .recover {
       case ex: Throwable =>
-        logger.error(s"[RasFilesSessionService][removeFileSessionFromCache] unable to remove FileSession from cache  => " +
+        logger.error(s"[FilesSessionService][removeFileSessionFromCache] Unable to remove FileSession from cache  => " +
         s"$userId , Exception is ${ex.getMessage}")
-        filesSessionRepository.deleteEntity(userId)
+        false
     }
   }
 }

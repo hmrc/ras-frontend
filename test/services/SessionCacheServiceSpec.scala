@@ -29,7 +29,7 @@ import utils.{RandomNino, RasTestHelper}
 import java.util.UUID
 import scala.concurrent.Future
 
-class RasSessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with OptionValues {
+class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with OptionValues {
 
   val sessionId: String = UUID.randomUUID.toString
   val name: MemberName = MemberName("John", "Johnson")
@@ -46,7 +46,7 @@ class RasSessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Opt
   val sessionPair: (String, String) = SessionKeys.sessionId -> sessionId
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(sessionPair)
 
-  val sessionCacheService: RasSessionCacheService = new RasSessionCacheService(sessionRepository)
+  val sessionCacheService: SessionCacheService = new SessionCacheService(sessionRepository)
 
   class Setup(initializeCache: Boolean = true) {
     await {

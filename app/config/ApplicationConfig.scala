@@ -80,6 +80,4 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	val feedbackUrl: String = s"$feedbackBaseUrl/feedback/ras"
 
 	lazy val userSessionsTTL: Duration = config.getDuration("mongodb.userSessionsCacheTTLHours")
-	lazy val fileSessionsTTL: Duration = config.getDuration("mongodb.fileSessionsCacheTTLDays")
-	lazy val apiMongoUri: String = config.getString("mongodb.apiUri")
 }

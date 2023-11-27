@@ -18,7 +18,7 @@ package utils
 
 import akka.actor.ActorSystem
 import config.ApplicationConfig
-import connectors.{FileUploadConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
+import connectors.{FileUploadConnector, FilesSessionConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.when
@@ -31,8 +31,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Application, i18n}
 import play.twirl.api.Html
-import repository.{RasFilesSessionRepository, RasSessionCacheRepository}
-import services.{AuditService, RasFilesSessionService, RasSessionCacheService}
+import repository.RasSessionCacheRepository
+import services.{AuditService, FilesSessionService, SessionCacheService}
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.MongoSupport
@@ -99,12 +99,12 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	val applicationConfig = fakeApplication.injector.instanceOf[ApplicationConfig]
 
 	//user sessions
-	val mockRasSessionCacheService: RasSessionCacheService = mock[RasSessionCacheService]
+	val mockRasSessionCacheService: SessionCacheService = mock[SessionCacheService]
 	val mockRasSessionCacheRepository: RasSessionCacheRepository = mock[RasSessionCacheRepository]
 
 	//file sessions
-	val mockRasFilesSessionService: RasFilesSessionService = mock[RasFilesSessionService]
-	val mockRasFilesSessionRepository: RasFilesSessionRepository = mock[RasFilesSessionRepository]
+	val mockFilesSessionService: FilesSessionService = mock[FilesSessionService]
+	val mockFilesSessionConnector: FilesSessionConnector = mock[FilesSessionConnector]
 
 	when(mockAppConfig.hoursToWaitForReUpload).thenReturn(24)
 	when(mockAppConfig.reportAProblemPartialUrl).thenReturn("reportAProblemPartialUrl")

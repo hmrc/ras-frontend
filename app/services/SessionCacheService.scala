@@ -25,7 +25,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RasSessionCacheService @Inject()(sessionCacheRepository: RasSessionCacheRepository)(implicit ec: ExecutionContext) {
+class SessionCacheService @Inject()(sessionCacheRepository: RasSessionCacheRepository)(implicit ec: ExecutionContext) {
 
   val RAS_SESSION_KEY: String = "ras_session"
 
