@@ -21,7 +21,7 @@ import connectors.FileUploadConnector
 import models.{Envelope, UploadResponse}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
-import services.{RasFilesSessionService, RasSessionCacheService}
+import services.{FilesSessionService, SessionCacheService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -33,8 +33,8 @@ import scala.util.matching.UnanchoredRegex
 
 class FileUploadController @Inject()(fileUploadConnector: FileUploadConnector,
                                      val authConnector: DefaultAuthConnector,
-                                     val filesSessionService: RasFilesSessionService,
-                                     val sessionService: RasSessionCacheService,
+                                     val filesSessionService: FilesSessionService,
+                                     val sessionService: SessionCacheService,
                                      val mcc: MessagesControllerComponents,
                                      implicit val appConfig: ApplicationConfig,
                                      fileUploadView: views.html.file_upload,
