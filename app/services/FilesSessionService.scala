@@ -22,7 +22,6 @@ import models.FileUploadStatus.{InProgress, NoFileSession, Ready, TimeExpiryErro
 import models.{CreateFileSessionRequest, FileSession, FileUploadStatus}
 import org.joda.time.DateTime
 import play.api.Logging
-import play.api.libs.json.{JsError, JsSuccess, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -37,18 +36,11 @@ class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
   private val defaultDownloadName: String = "Residency-status"
 
   def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    val createRequest = CreateFileSessionRequest(userId,envelopeId)
-    Json.toJson(createRequest).validate[CreateFileSessionRequest] match {
-      case JsSuccess(validRequest, _) =>
-        fileSessionConnector.createFileSession(createRequest).recover {
-          case ex: Throwable =>
-            logger.error(s"[FilesSessionService][createFileSession] Unable to create FileSession to cache => " +
-              s"${validRequest.userId}, envelopeId: ${validRequest.envelopeId}, Exception is ${ex.getMessage}")
-            false
-        }
-      case JsError(errors) =>
-        logger.error(s"[FilesSessionService][createFileSession] Validation failed for CreateFileSessionRequest: $errors")
-        Future.successful(false)
+    fileSessionConnector.createFileSession(CreateFileSessionRequest(userId,envelopeId)).recover {
+      case ex: Throwable =>
+        logger.error(s"[FilesSessionService][createFileSession] Unable to create FileSession to cache => " +
+          s"$userId, envelopeId: $envelopeId, Exception is ${ex.getMessage}")
+        false
     }
   }
 

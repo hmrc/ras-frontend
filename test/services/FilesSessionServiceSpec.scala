@@ -48,18 +48,6 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
       result shouldBe true
     }
 
-    "return false if userId is empty" in {
-      val result: Boolean = filesSessionService.createFileSession("", "envelopeId-1234").futureValue
-
-      result shouldBe false
-    }
-
-    "return false if envelopeId is empty" in {
-      val result: Boolean = filesSessionService.createFileSession("A123456", "").futureValue
-
-      result shouldBe false
-    }
-
     "return false if session not created" in {
       when(mockFilesSessionConnector.createFileSession(any())(any(), any()))
         .thenReturn(Future.successful(false))
