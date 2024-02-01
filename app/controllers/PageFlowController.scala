@@ -21,7 +21,7 @@ import play.api.mvc.Results.Redirect
 
 trait PageFlowController extends RasController {
 
-  val FILE_UPLOAD = "FileUploadController"
+  val FILE_UPLOAD = "UpscanController"
   val MEMBER_NAME = "MemberNameController"
   val MEMBER_NINO = "MemberNinoController"
   val MEMBER_DOB = "MemberDOBController"

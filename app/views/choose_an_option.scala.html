@@ -36,7 +36,7 @@
         <div>
             @if(fileStatus==NoFileSession){
                 <div class="app-task-list__item">
-                    <a class="task-name govuk-link govuk-body" id="upload-link" href="@routes.FileUploadController.get" data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("Upload a file")</a>
+                    <a class="task-name govuk-link govuk-body" id="upload-link" href="@routes.UpscanController.get" data-journey-click="link - click:Choose option to get residency status:Upload a file">@messages("Upload a file")</a>
                 </div>
             }
 
@@ -61,7 +61,7 @@
                     <p class="paragraph-info govuk-body"><strong class="task-completed" id="file-problem">@messages("file.problem")</strong>@messages("problem.getting.result")</p>
                     <p class="paragraph-info govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-4">
                         @messages("file.problem.paragraph.start")
-                        <a id='file-problem-link' class='file-problem-link govuk-link govuk-body' href='@routes.FileUploadController.get' data-journey-click='link - click:Choose option to get residency status:Upload a file'>@messages("upload.file.again")</a>
+                        <a id='file-problem-link' class='file-problem-link govuk-link govuk-body' href='@routes.UpscanController.get' data-journey-click='link - click:Choose option to get residency status:Upload a file'>@messages("upload.file.again")</a>
                         @messages("file.problem.paragraph.end")
                     </p>
                 </div>

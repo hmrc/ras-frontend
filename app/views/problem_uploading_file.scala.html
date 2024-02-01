@@ -24,7 +24,7 @@
 	@govuk_wrapper(pageTitle = messages("problem.uploading.file.title")) {
 
     @govukBackLink(BackLink(
-        href = routes.FileUploadController.get.url,
+        href = routes.UpscanController.get.url,
         content = Text(messages("back")),
         attributes = Map("data-journey-click" -> "navigation - link:There has been a problem uploading your file:Back")
     ))
@@ -39,7 +39,7 @@
    </div>
 
     <p class="govuk-body" id="return-to-upload">
-        <a href="@routes.FileUploadController.get" class="govuk-link" id="return-to-upload-link" data-journey-click="Return to upload a file">
+        <a href="@routes.UpscanController.get" class="govuk-link" id="return-to-upload-link" data-journey-click="Return to upload a file">
         @Html(messages("return.to.upload"))
         </a>
     </p>

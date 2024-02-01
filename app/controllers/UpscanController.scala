@@ -27,12 +27,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.matching.UnanchoredRegex
 
-class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConnector,
+class UpscanController @Inject()(upscanInitiateConnector: UpscanInitiateConnector,
                                      val authConnector: DefaultAuthConnector,
                                      val filesSessionService: FilesSessionService,
                                      val sessionService: SessionCacheService,
@@ -53,20 +51,20 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
             case Some(session) =>
               filesSessionService.isFileInProgress(userId).flatMap {
                 case true =>
-                  logger.info(s"[FileUploadController][get] a file is still processing for userId ($userId) " +
+                  logger.info(s"[UpscanController][get] a file is still processing for userId ($userId) " +
                     s"so another could not be uploaded")
-                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress))
+                  Future.successful(Redirect(routes.UpscanController.uploadInProgress))
                 case _ =>
                   createFileUploadUrl(userId).flatMap {
                     case Some(url) =>
-                      logger.info(s"[FileUploadController][get] form url created successfully for userId ($userId)")
+                      logger.info(s"[UpscanController][get] form url created successfully for userId ($userId)")
                       val error = extractErrorReason(session.uploadResponse)
                       if(error == "upload.failed.error"){
                         sessionService.cacheUploadResponse(UploadResponse("",None)).map {
                           case Some(_) =>
                             Redirect(routes.ErrorController.renderProblemUploadingFilePage)
                           case _ =>
-                            logger.error(s"[FileUploadController][get] failed to obtain a session for userId ($userId)")
+                            logger.error(s"[UpscanController][get] failed to obtain a session for userId ($userId)")
                             Redirect(routes.ErrorController.renderGlobalErrorPage)
                         }
                       }
@@ -75,7 +73,7 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
                         Future.successful(Ok(fileUploadView(url,error)))
                       }
                     case _ =>
-                      logger.error(s"[FileUploadController][get] failed to obtain a form url using existing envelope " +
+                      logger.error(s"[UpscanController][get] failed to obtain a form url using existing envelope " +
                         s"for userId ($userId)")
                       Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                   }
@@ -83,19 +81,19 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
             case _ =>
               createFileUploadUrl(userId).flatMap {
                 case Some(url) =>
-                  logger.info(s"[FileUploadController][get] stored new envelope id successfully for userId ($userId)")
+                  logger.info(s"[UpscanController][get] stored new envelope id successfully for userId ($userId)")
                   Future.successful(Ok(fileUploadView(url,"")))
                 case _ =>
-                  logger.error(s"[FileUploadController][get] failed to obtain a form url using new envelope for userId ($userId)")
+                  logger.error(s"[UpscanController][get] failed to obtain a form url using new envelope for userId ($userId)")
                   Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
               }
           }.recover {
             case e: Throwable =>
-              logger.error(s"[FileUploadController][get] failed to fetch ras session for userId ($userId) - $e")
+              logger.error(s"[UpscanController][get] failed to fetch ras session for userId ($userId) - $e")
               Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
         case Left(resp) =>
-          logger.warn("[FileUploadController][get] user not authorised")
+          logger.warn("[UpscanController][get] user not authorised")
           resp
       }
   }
@@ -107,8 +105,8 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
     def urlToString(c: Call): String = appConfig.uploadRedirectTargetBase + c.url
 
 
-    val successRedirectUrl  = controllers.routes.FileUploadController.uploadSuccess
-    val errorRedirectUrl = controllers.routes.FileUploadController.uploadError
+    val successRedirectUrl  = controllers.routes.UpscanController.uploadSuccess
+    val errorRedirectUrl = controllers.routes.UpscanController.uploadError
 
     (for {
       upscanInitiateResponse <- upscanInitiateConnector.initiateUpscan(userId, Some(urlToString(successRedirectUrl)), Some(urlToString(errorRedirectUrl)))
@@ -146,7 +144,7 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
 //                      val completeFileUploadUrl = s"$fileUploadUrl?$successRedirectUrl&$errorRedirectUrl"
 //                      Some(completeFileUploadUrl)
 //                    case _ =>
-//                      logger.error(s"[FileUploadController][get] failed to retrieve cache after storing the envelope for userId ($userId)")
+//                      logger.error(s"[UpscanController][get] failed to retrieve cache after storing the envelope for userId ($userId)")
 //                      None
 //                  }
 //                case _ =>
@@ -168,7 +166,7 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
   def back: Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised().flatMap {
-        case Right(_) => Future.successful(previousPage("FileUploadController"))
+        case Right(_) => Future.successful(previousPage("UpscanController"))
         case Left(res) => res
       }
   }
@@ -182,22 +180,22 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
               case Some(envelope) =>
                 filesSessionService.createFileSession(userId,envelope.id).map {
                   case true =>
-                    logger.info(s"[FileUploadController][uploadSuccess] upload has been successful for userId ($userId)")
+                    logger.info(s"[UpscanController][uploadSuccess] upload has been successful for userId ($userId)")
                     Ok(fileUploadSuccessView())
                   case _ =>
-                    logger.error(s"[FileUploadController][uploadSuccess] failed to create file session for userId ($userId)")
+                    logger.error(s"[UpscanController][uploadSuccess] failed to create file session for userId ($userId)")
                     Redirect(routes.ErrorController.renderGlobalErrorPage)
                 }
               case _ =>
-                logger.error(s"[FileUploadController][uploadSuccess] no envelope exists in the session for userId ($userId)")
+                logger.error(s"[UpscanController][uploadSuccess] no envelope exists in the session for userId ($userId)")
                 Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
             }
           case _ =>
-            logger.error(s"[FileUploadController][uploadSuccess] session could not be retrieved for userId ($userId)")
+            logger.error(s"[UpscanController][uploadSuccess] session could not be retrieved for userId ($userId)")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
         }
       case Left(resp) =>
-        logger.warn("[FileUploadController][uploadSuccess] user not authorised")
+        logger.warn("[UpscanController][uploadSuccess] user not authorised")
         resp
     }
   }
@@ -211,13 +209,13 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
 
         sessionService.cacheUploadResponse(errorResponse).flatMap {
           case Some(_) =>
-            Future.successful(Redirect(routes.FileUploadController.get))
+            Future.successful(Redirect(routes.UpscanController.get))
           case _ =>
             Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage))
         }
 
       case Left(resp) =>
-        logger.warn("[FileUploadController][uploadError] user not authorised")
+        logger.warn("[UpscanController][uploadError] user not authorised")
         resp
     }
   }
@@ -229,18 +227,18 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
           case Some(fileSession) =>
             fileSession.resultsFile match {
               case Some(_) =>
-                logger.info("[FileUploadController][uploadInProgress] redirecting to file ready page")
+                logger.info("[UpscanController][uploadInProgress] redirecting to file ready page")
                 Future.successful(Redirect(routes.ChooseAnOptionController.renderFileReadyPage))
               case _ =>
-                logger.info("[FileUploadController][uploadInProgress] calling cannot upload another file")
+                logger.info("[UpscanController][uploadInProgress] calling cannot upload another file")
                 Future.successful(Ok(cannotUploadAnotherView()))
             }
           case _ =>
-            logger.info("[FileUploadController][uploadInProgress] redirecting to global error")
+            logger.info("[UpscanController][uploadInProgress] redirecting to global error")
             Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
         }
       case Left(resp) =>
-        logger.warn("[FileUploadController][uploadInProgress] user not authorised")
+        logger.warn("[UpscanController][uploadInProgress] user not authorised")
         resp
     }
   }
@@ -252,28 +250,28 @@ class FileUploadController @Inject()(upscanInitiateConnector: UpscanInitiateConn
       case Some(response) =>
         response.code match {
           case "400" if response.reason.getOrElse("").contains(fileUploadEmptyFileReason) =>
-            logger.error("[FileUploadController][extractErrorReason] empty file")
+            logger.error("[UpscanController][extractErrorReason] empty file")
             "file.empty.error"
           case "400" =>
-            logger.error("[FileUploadController][extractErrorReason] bad request")
+            logger.error("[UpscanController][extractErrorReason] bad request")
             "upload.failed.error"
           case "404" =>
-            logger.error("[FileUploadController][extractErrorReason] envelope not found")
+            logger.error("[UpscanController][extractErrorReason] envelope not found")
             "upload.failed.error"
-          case "413" =>
-            logger.error("[FileUploadController][extractErrorReason] file too large")
+          case "EntityTooLarge" =>
+            logger.error("[UpscanController][extractErrorReason] file too large")
             "file.large.error"
           case "415" =>
-            logger.error("[FileUploadController][extractErrorReason] file type other than the supported type")
+            logger.error("[UpscanController][extractErrorReason] file type other than the supported type")
             "upload.failed.error"
           case "423" =>
-            logger.error("[FileUploadController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
+            logger.error("[UpscanController][extractErrorReason] routing request has been made for this Envelope. Envelope is locked")
             "upload.failed.error"
           case "" =>
-            logger.error("[FileUploadController][extractErrorReason] no error code returned")
+            logger.error("[UpscanController][extractErrorReason] no error code returned")
             ""
           case other @_ =>
-            logger.error(s"[FileUploadController][extractErrorReason] unknown cause: $other")
+            logger.error(s"[UpscanController][extractErrorReason] unknown cause: $other")
             "upload.failed.error"
         }
       case _ => ""

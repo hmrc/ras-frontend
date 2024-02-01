@@ -191,7 +191,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                   Future.successful(Ok(fileReadyView()))
                 case _ =>
                   logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
-                  Future.successful(Redirect(routes.FileUploadController.uploadInProgress))
+                  Future.successful(Redirect(routes.UpscanController.uploadInProgress))
               }
             case _ =>
               logger.error("[ChooseAnOptionController][renderFileReadyPage] failed to retrieve session")

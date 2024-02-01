@@ -18,8 +18,7 @@ package utils
 
 import akka.actor.ActorSystem
 import config.ApplicationConfig
-import connectors.{FileUploadConnector, FilesSessionConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
-import connectors.{ResidencyStatusAPIConnector, UpscanInitiateConnector, UserDetailsConnector}
+import connectors.{UpscanInitiateConnector, FilesSessionConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.when
@@ -93,7 +92,7 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	val mockAuditConnector: DefaultAuditConnector = mock[DefaultAuditConnector]
 	val mockAuditService: AuditService = mock[AuditService]
 
-	val mockFileUploadConnector: UpscanInitiateConnector = mock[UpscanInitiateConnector]
+	val mockUpscanInitiateConnector: UpscanInitiateConnector = mock[UpscanInitiateConnector]
 	val mockResidencyStatusAPIConnector: ResidencyStatusAPIConnector = mock[ResidencyStatusAPIConnector]
 	val mockUserDetailsConnector: UserDetailsConnector = mock[UserDetailsConnector]
 

@@ -38,7 +38,7 @@
 @govuk_wrapper(pageTitle = messages("file.upload.page.title"), scriptElem = Some(scriptElem)) {
 
     @govukBackLink(BackLink(
-        href = routes.FileUploadController.back.url,
+        href = routes.UpscanController.back.url,
         content = Text(messages("back")),
         attributes = Map("data-journey-click" -> "navigation - link:Upload a file:Back")
     ))
