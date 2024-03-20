@@ -56,7 +56,7 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
           _ <- sessionCacheService.cacheDob(memberDob)
           _ <- sessionCacheService.cacheNino(nino)
           _ <- sessionCacheService.cacheUploadResponse(uploadResponse)
-          _ <- sessionCacheService.cacheEnvelope(envelope)
+          _ <- sessionCacheService.cacheFile(envelope)
           _ <- sessionCacheService.cacheResidencyStatusResult(residencyStatusResult)
         } yield ()
       } else {
@@ -119,13 +119,13 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
 
   "cacheEnvelope" must {
     "save envelope in session" in new Setup(false) {
-      val result: Future[Option[RasSession]] = sessionCacheService.cacheEnvelope(envelope)
+      val result: Future[Option[RasSession]] = sessionCacheService.cacheFile(envelope)
       await(result).value shouldBe emptyRasSession.copy(envelope = Some(envelope))
     }
 
     "replace existing envelope in session" in new Setup(true) {
       val newEnvelope: Envelope = envelope.copy(UUID.randomUUID().toString)
-      val result: Future[Option[RasSession]] = sessionCacheService.cacheEnvelope(newEnvelope)
+      val result: Future[Option[RasSession]] = sessionCacheService.cacheFile(newEnvelope)
       await(result).value shouldBe rasSession.copy(envelope = Some(newEnvelope))
     }
   }

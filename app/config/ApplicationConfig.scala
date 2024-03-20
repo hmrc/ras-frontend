@@ -16,6 +16,7 @@
 
 package config
 
+import com.sun.tools.javac.comp.Todo
 import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -62,23 +63,14 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val refreshInterval: Int = timeOutSeconds + 10
 	lazy val enableRefresh: Boolean= config.getConfBool("sessionTimeout.enableRefresh", defBool = true)
 
-
-	//FileUpload
 	lazy val rasApiBaseUrl: String = config.baseUrl("relief-at-source")
-//	lazy val fileUploadBaseUrl: String = config.baseUrl("file-upload")
-//	lazy val fileUploadUrlSuffix: String = loadConfig("file-upload-url-suffix")
-//	lazy val maxItems: Int = config.getInt("file-upload-constraints.maxItems")
-//	lazy val maxSize: String = loadConfig("file-upload-constraints.maxSize")
-//	lazy val maxSizePerItem: String = loadConfig("file-upload-constraints.maxSizePerItem")
-//	lazy val allowZeroLengthFiles: Boolean = config.getBoolean("file-upload-constraints.allowZeroLengthFiles")
 	lazy val rasFrontendBaseUrl: String = loadConfig("ras-frontend.host")
 	lazy val rasFrontendUrlSuffix: String = loadConfig("ras-frontend-url-suffix")
-	//lazy val fileUploadFrontendBaseUrl: String = loadConfig("file-upload-frontend.host")
-	//lazy val fileUploadFrontendSuffix: String = loadConfig("file-upload-frontend-url-suffix")
 
 	//Upscan
 	lazy val initiateUrl            = config.baseUrl("upscan-initiate") + "/upscan/v2/initiate"
 	lazy val uploadRedirectTargetBase = loadConfig("upload-redirect-target-base")
+	//Todo
 	lazy val callbackEndpointTarget   = loadConfig("upscan.callback-endpoint") //it's hardcoded in
 	lazy val maxFileSize: Int = config.getInt("upscan.maxFileSize")
 

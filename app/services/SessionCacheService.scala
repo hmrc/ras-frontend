@@ -37,7 +37,7 @@ class SessionCacheService @Inject()(sessionCacheRepository: RasSessionCacheRepos
   def cacheNino(value: MemberNino)(implicit request: Request[_]): Future[Option[RasSession]] = cache(CacheKey.Nino, Some(value))
   def cacheDob(value: MemberDateOfBirth)(implicit request: Request[_]): Future[Option[RasSession]] = cache(CacheKey.Dob, Some(value))
   def cacheUploadResponse(value: UploadResponse)(implicit request: Request[_]): Future[Option[RasSession]] = cache(CacheKey.UploadResponse, Some(value))
-  def cacheEnvelope(value: Envelope)(implicit request: Request[_]): Future[Option[RasSession]] = cache(CacheKey.Envelope, Some(value))
+  def cacheFile(value: Envelope)(implicit request: Request[_]): Future[Option[RasSession]] = cache(CacheKey.Envelope, Some(value))
   def cacheResidencyStatusResult(value: ResidencyStatusResult)(implicit request: Request[_]): Future[Option[RasSession]] = cache(CacheKey.StatusResult, Some(value))
 
   def resetCacheName()(implicit request: Request[_]): Future[Option[RasSession]] = cache(CacheKey.Name)

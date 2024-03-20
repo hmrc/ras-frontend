@@ -57,7 +57,7 @@ class UpscanController @Inject()(upscanInitiateConnector: UpscanInitiateConnecto
                 case _ =>
                   createFileUploadUrl(userId).flatMap {
                     case Some(url) =>
-                      logger.info(s"[UpscanController][get] form url created successfully for userId ($userId)")
+                      logger.error(s"[UpscanController][get] form url created successfully for userId ($userId)")
                       val error = extractErrorReason(session.uploadResponse)
                       if(error == "upload.failed.error"){
                         sessionService.cacheUploadResponse(UploadResponse("",None)).map {
@@ -104,64 +104,17 @@ class UpscanController @Inject()(upscanInitiateConnector: UpscanInitiateConnecto
 
     def urlToString(c: Call): String = appConfig.uploadRedirectTargetBase + c.url
 
-
     val successRedirectUrl  = controllers.routes.UpscanController.uploadSuccess
     val errorRedirectUrl = controllers.routes.UpscanController.uploadError
 
     (for {
       upscanInitiateResponse <- upscanInitiateConnector.initiateUpscan(userId, Some(urlToString(successRedirectUrl)), Some(urlToString(errorRedirectUrl)))
-      session <- sessionService.cacheEnvelope(Envelope(upscanInitiateResponse.fileReference.reference))
+      session <- sessionService.cacheFile(Envelope(upscanInitiateResponse.fileReference.reference))
     } yield (upscanInitiateResponse, session)).map {
       case (uir, Some(_)) => Some(uir)
       case _ => None
     }
   }
-
-//  def createFileUploadUrl(envelope: Option[Envelope], userId: String)(implicit hc:HeaderCarrier): Future[Option[String]] = {
-//    lazy val rasFrontendBaseUrl: String = appConfig.rasFrontendBaseUrl
-//    lazy val rasFrontendUrlSuffix: String = appConfig.rasFrontendUrlSuffix
-//    lazy val fileUploadFrontendBaseUrl: String = appConfig.fileUploadFrontendBaseUrl
-//    lazy val fileUploadFrontendSuffix: String = appConfig.fileUploadFrontendSuffix
-//    val envelopeIdPattern: UnanchoredRegex = "envelopes/([\\w\\d-]+)$".r.unanchored
-//    val successRedirectUrl: String = s"redirect-success-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-uploaded"
-//    val errorRedirectUrl: String = s"redirect-error-url=$rasFrontendBaseUrl/$rasFrontendUrlSuffix/file-upload-failed"
-//
-//    envelope match {
-//      case Some(envelope) =>
-//        val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/${envelope.id}/files/${UUID.randomUUID().toString}"
-//        val completeFileUploadUrl = s"$fileUploadUrl?$successRedirectUrl&$errorRedirectUrl"
-//        Future.successful(Some(completeFileUploadUrl))
-//      case _ =>
-//        fileUploadConnector.createEnvelope(userId).flatMap { response =>
-//          response.header("Location") match {
-//            case Some(locationHeader) =>
-//              locationHeader match {
-//                case envelopeIdPattern(id) =>
-//                  sessionService.cacheEnvelope(Envelope(id)).map {
-//                    case Some(_) =>
-//                      logger.info(s"[UploadService][createFileUploadUrl] Envelope id obtained and cached for userId ($userId)")
-//                      val fileUploadUrl = s"$fileUploadFrontendBaseUrl/$fileUploadFrontendSuffix/$id/files/${UUID.randomUUID().toString}"
-//                      val completeFileUploadUrl = s"$fileUploadUrl?$successRedirectUrl&$errorRedirectUrl"
-//                      Some(completeFileUploadUrl)
-//                    case _ =>
-//                      logger.error(s"[UpscanController][get] failed to retrieve cache after storing the envelope for userId ($userId)")
-//                      None
-//                  }
-//                case _ =>
-//                  logger.error(s"[UploadService][createFileUploadUrl] Failed to obtain an envelope id from location header for userId ($userId)")
-//                  Future.successful(None)
-//              }
-//            case _ =>
-//              logger.error(s"[UploadService][createFileUploadUrl] Failed to find a location header in the response for userId ($userId)")
-//              Future.successful(None)
-//          }
-//        }.recover {
-//          case e: Throwable =>
-//            logger.error(s"[UploadService][createFileUploadUrl] Failed to create envelope. ${e.getMessage}", e)
-//            None
-//        }
-//    }
-//  }
 
   def back: Action[AnyContent] = Action.async {
     implicit request =>
@@ -245,7 +198,6 @@ class UpscanController @Inject()(upscanInitiateConnector: UpscanInitiateConnecto
 
   private def extractErrorReason(uploadResponse: Option[UploadResponse]):String ={
 		val fileUploadEmptyFileReason= "Envelope does not allow zero length files, and submitted file has length 0"
-
 		uploadResponse match {
       case Some(response) =>
         response.code match {

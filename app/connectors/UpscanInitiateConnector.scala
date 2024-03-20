@@ -19,7 +19,7 @@ package connectors
 import config.ApplicationConfig
 import models.ApiVersion
 import models.upscan.{PreparedUpload, UpscanFileReference, UpscanInitiateRequest, UpscanInitiateResponse}
-import play.api.libs.json.Writes
+import play.api.libs.json.{Writes, __}
 import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -47,7 +47,11 @@ class UpscanInitiateConnector @Inject()(httpClient: HttpClient, appConfig: Appli
       maximumFileSize = Some(appConfig.maxFileSize)
     )
 
-    initiate(upscanInitiateUrl, request)
+    val result = initiate(upscanInitiateUrl, request)
+    result.map(println(_))
+    //Todo
+//    initiate(upscanInitiateUrl, request)
+        result
   }
 
   private def initiate[T](url: String, request: T)(
