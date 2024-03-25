@@ -30,7 +30,7 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.RasTestHelper
 
 import scala.concurrent.Future
@@ -60,8 +60,8 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
   "UpscanController" must {
 
     "render file upload page" when {
-      "a url is successfully created from an envelope stored in the session" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
+      "a url is successfully created from a file stored in the session" in {
+        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("existingReference123")))
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
         when(mockUpscanInitiateConnector.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(upscanResponse))
@@ -72,8 +72,8 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
         doc(result).getElementById("upload-form").attr("action") should include(expectedUrlPart)
       }
 
-      "a url is successfully created using a new envelope where session does not exist" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("0b215e97-11d4-4006-91db-c067e74fc653")))
+      "a url is successfully created using a new file reference where session does not exist" in {
+        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("0b215e97-11d4-4006-91db-c067e74fc653")))
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
         when(mockUpscanInitiateConnector.initiateUpscan(any(),any(),any())(any())).thenReturn(Future.successful(upscanResponse))
         when(mockRasSessionCacheService.cacheFile(any())(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -86,7 +86,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to cannot upload another file page" when {
       "a file is already in process" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
+        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("existingReference123")))
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(true))
         val result = TestUpscanController.get.apply(fakeRequest)
@@ -96,7 +96,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "display file upload page when a file is not in processing" in {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")),Some(false))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("existingReference123")),Some(false))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       val result = TestUpscanController.get.apply(fakeRequest)
@@ -111,7 +111,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
         redirectLocation(result) should include("/file-upload-problem")
       }
 
-      "a url is not successfully created from an existing envelope stored in the session" in {
+      "a url is not successfully created from an existing file stored in the session" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, None, None, None)
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockUpscanInitiateConnector.initiateUpscan(any(), any(), any())(any())).thenReturn(Future.failed(new RuntimeException))
@@ -137,14 +137,14 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
       }
 
       "upload success endpoint has been called but we fail to create a file session" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
+        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("existingReference123")))
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockFilesSessionService.createFileSession(any(),any())(any(), any())).thenReturn(Future.successful(false))
         val result = TestUpscanController.uploadSuccess().apply(fakeRequest)
         redirectLocation(result) should include("/global-error")
       }
 
-      "upload success endpoint has been called but no envelope exists in the session" in {
+      "upload success endpoint has been called but no file exists in the session" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, None, None, None)
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         val result = TestUpscanController.uploadSuccess().apply(fakeRequest)
@@ -160,7 +160,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "display file upload successful page" when {
       "file has been uploaded successfully" in {
-        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
+        val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("existingReference123")))
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockFilesSessionService.createFileSession(any(),any())(any(), any())).thenReturn(Future.successful(true))
         val result = TestUpscanController.uploadSuccess().apply(fakeRequest)
@@ -187,7 +187,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
   "rendered file upload page" must {
     "redirect to problem uploading file if a bad request has been submitted" in {
       val uploadResponse = UploadResponse("400",None)
-      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("123456")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(File("123456")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       val result = TestUpscanController.get().apply(fakeRequest)
@@ -196,7 +196,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "contain file too large error if present in session cache" in {
       val uploadResponse = UploadResponse("EntityTooLarge",Some(""))
-      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockUpscanInitiateConnector.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(upscanResponse))
       when(mockRasSessionCacheService.cacheFile(any())(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -204,9 +204,9 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
       doc(result).getElementById("upload-error").text shouldBe "file.large.error"
     }
 
-    "redirect to problem uploading file if envelope not found in session cache" in {
+    "redirect to problem uploading file if file not found in session cache" in {
       val uploadResponse = UploadResponse("404",Some(""))
-      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       when(mockUpscanInitiateConnector.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(upscanResponse))
@@ -217,7 +217,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to problem uploading file if file type is wrong" in {
       val uploadResponse = UploadResponse("415",Some(""))
-      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       when(mockUpscanInitiateConnector.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(upscanResponse))
@@ -228,7 +228,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to problem uploading file if locked" in {
       val uploadResponse = UploadResponse("423",Some(""))
-      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       val result = TestUpscanController.get().apply(fakeRequest)
@@ -237,7 +237,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to problem uploading file if server error" in {
       val uploadResponse = UploadResponse("500",None)
-      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(Envelope("existingEnvelopeId123")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       when(mockUpscanInitiateConnector.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(upscanResponse))
@@ -248,7 +248,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to problem uploading file if any unknown errors" in {
       val uploadResponse1 = UploadResponse("500",None)
-      val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
+      val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession1)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       when(mockUpscanInitiateConnector.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(upscanResponse))
@@ -260,7 +260,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "render file upload page id upload response contains no errors" in {
       val uploadResponse1 = UploadResponse("",None)
-      val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
+      val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession1)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       when(mockUpscanInitiateConnector.initiateUpscan(any, any, any)(any)).thenReturn(Future.successful(upscanResponse))
@@ -271,7 +271,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to global error page when upload response has not been cleared properly (no session returned form cache upload response)" in {
       val uploadResponse1 = UploadResponse("500",None)
-      val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(Envelope("existingEnvelopeId123")))
+      val rasSession1 = RasSession(memberName, memberNino, memberDob, None,Some(uploadResponse1),Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession1)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
       when(mockRasSessionCacheService.cacheUploadResponse(any())(any())).thenReturn(Future.successful(None))
@@ -282,7 +282,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "cannot upload another file page" must {
     "return global error if there is no file session" in  {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(true))
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(None))
@@ -292,7 +292,7 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "redirect to file ready if there is a file session and the file is ready" in  {
-      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(Envelope("existingEnvelopeId123")))
+      val rasSession = RasSession(memberName, memberNino, memberDob, None, None, Some(File("existingReference123")))
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(true))
       val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)

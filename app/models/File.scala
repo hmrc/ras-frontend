@@ -19,8 +19,8 @@ package models
 import play.api.libs.json.{Json, OFormat}
 
 
-case class Envelope(id:String)
+case class File(id:String)
 
-object Envelope {
-  implicit val formats: OFormat[Envelope] = Json.format[Envelope]
+object File {
+  implicit val formats: OFormat[File] = Json.format[File]
 }

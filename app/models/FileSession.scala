@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class CallbackData(envelopeId: String, fileId: String, status: String, reason: Option[String])
+case class CallbackData(reference: String, fileId: String, status: String, reason: Option[String])
 
 object CallbackData {
   implicit val formats: OFormat[CallbackData] = Json.format[CallbackData]
