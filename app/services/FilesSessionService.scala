@@ -35,11 +35,11 @@ class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
   private val STATUS_AVAILABLE: String = "AVAILABLE"
   private val defaultDownloadName: String = "Residency-status"
 
-  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    fileSessionConnector.createFileSession(CreateFileSessionRequest(userId,envelopeId)).recover {
+  def createFileSession(userId: String, reference: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    fileSessionConnector.createFileSession(CreateFileSessionRequest(userId, reference)).recover {
       case ex: Throwable =>
         logger.error(s"[FilesSessionService][createFileSession] Unable to create FileSession to cache => " +
-          s"$userId, envelopeId: $envelopeId, Exception is ${ex.getMessage}")
+          s"$userId, reference: $reference, Exception is ${ex.getMessage}")
         false
     }
   }

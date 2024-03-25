@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMethodTester {
 
-  val callbackData: CallbackData = CallbackData("1234", "file-id-1", "AVAILABLE", None)
+  val callbackData: CallbackData = CallbackData("reference-1234", "file-id-1", "AVAILABLE", None)
   val resultsFile: ResultsFileMetaData = ResultsFileMetaData("file-id-1", Some("fileName.csv"), Some(1234L), 123, 1234L)
   val fileMetaData: FileMetadata = FileMetadata("file-id-1", Some("fileName.csv"), None)
   val newFileSession: FileSession = FileSession(None, None, "A123456", Some(DateTime.now().getMillis), None)
@@ -43,7 +43,7 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
       when(mockFilesSessionConnector.createFileSession(any())(any(), any()))
         .thenReturn(Future.successful(true))
 
-      val result: Boolean = filesSessionService.createFileSession("A123456", "envelopeId-1234").futureValue
+      val result: Boolean = filesSessionService.createFileSession("A123456", "reference-1234").futureValue
 
       result shouldBe true
     }
@@ -52,7 +52,7 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
       when(mockFilesSessionConnector.createFileSession(any())(any(), any()))
         .thenReturn(Future.successful(false))
 
-      val result: Boolean = filesSessionService.createFileSession("A123456", "envelopeId-1234").futureValue
+      val result: Boolean = filesSessionService.createFileSession("A123456", "reference-1234").futureValue
 
       result shouldBe false
     }

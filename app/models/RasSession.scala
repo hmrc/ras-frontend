@@ -23,7 +23,7 @@ case class RasSession(name:MemberName,
                       dateOfBirth:MemberDateOfBirth,
                       residencyStatusResult: Option[ResidencyStatusResult] = None,
                       uploadResponse: Option[UploadResponse] = None,
-                      envelope: Option[Envelope] = None,
+                      file: Option[File] = None,
                       aFileIsInProcess: Option[Boolean] = None) {
 
   def selectKeysToCache[T](session: RasSession, key: CacheKey[T], value: Option[T]): RasSession = key match {
@@ -32,7 +32,7 @@ case class RasSession(name:MemberName,
     case CacheKey.Dob => handleDobCacheKey(session, value)
     case CacheKey.StatusResult => handleStatusResultCacheKey(session, value)
     case CacheKey.UploadResponse => handleUploadResponseCacheKey(session, value)
-    case CacheKey.Envelope => handleEnvelopeCacheKey(session, value)
+    case CacheKey.File => handleFileCacheKey(session, value)
     case CacheKey.All => RasSession.cleanSession
     case _ => throw new IllegalArgumentException("Mismatched key and value types")
   }
@@ -67,9 +67,9 @@ case class RasSession(name:MemberName,
     case _ => session
   }
 
-  private def handleEnvelopeCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
-    case Some(v: Envelope) => session.copy(envelope = Some(v))
-    case None => session.copy(envelope = None)
+  private def handleFileCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
+    case Some(v: File) => session.copy(file = Some(v))
+    case None => session.copy(file = None)
     case _ => session
   }
 }
