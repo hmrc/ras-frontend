@@ -109,7 +109,7 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
                         case Some(callbackData) =>
                           val currentTaxYear = TaxYearResolver.currentTaxYear
                           val filename = filesSessionService.getDownloadFileName(fileSession)
-                          Ok(uploadResultView(callbackData.fileId, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
+                          Ok(uploadResultView(callbackData.reference, formattedExpiryDate(timestamp), isBeforeApr6(timestamp), currentTaxYear, filename))
                         case _ =>
                           logger.error("[ChooseAnOptionController][renderUploadResultsPage] failed to retrieve callback data")
                           Redirect(routes.ErrorController.renderGlobalErrorPage)

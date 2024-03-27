@@ -48,7 +48,6 @@ class UpscanInitiateConnector @Inject()(httpClient: HttpClient, appConfig: Appli
     )
 
     val result = initiate(upscanInitiateUrl, request)
-    result.map(println(_))
     //Todo
 //    initiate(upscanInitiateUrl, request)
         result
