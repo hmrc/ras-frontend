@@ -47,10 +47,7 @@ class UpscanInitiateConnector @Inject()(httpClient: HttpClient, appConfig: Appli
       maximumFileSize = Some(appConfig.maxFileSize)
     )
 
-    val result = initiate(upscanInitiateUrl, request)
-    //Todo
-//    initiate(upscanInitiateUrl, request)
-        result
+    initiate(upscanInitiateUrl, request)
   }
 
   private def initiate[T](url: String, request: T)(
