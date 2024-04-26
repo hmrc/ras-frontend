@@ -116,8 +116,6 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	when(mockAppConfig.urBannerLinkUrl).thenReturn("urBannerLinkUrl")
 	when(mockAppConfig.rasFrontendBaseUrl).thenReturn("http://localhost:9673")
 	when(mockAppConfig.rasFrontendUrlSuffix).thenReturn("relief-at-source")
-	//when(mockAppConfig.fileUploadFrontendBaseUrl).thenReturn("http://localhost:8899")
-	//when(mockAppConfig.fileUploadFrontendSuffix).thenReturn("file-upload/upload/envelopes")
 	when(mockAppConfig.loginCallback).thenReturn("/relief-at-source/")
 	when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
 	when(mockAppConfig.feedbackUrl).thenReturn("http://localhost:9514/feedback/ras")

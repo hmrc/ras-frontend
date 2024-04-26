@@ -19,9 +19,13 @@ package models.upscan
 import play.api.libs.json.{JsError, JsObject, JsResult, JsString, JsSuccess, JsValue, Json, OFormat, Reads, Writes}
 
 trait UploadStatus
+
 case object InProgress extends UploadStatus
+
 case object Failed extends UploadStatus
+
 case object NotStarted extends UploadStatus
+
 case class UploadedSuccessfully(name: String, mimeType: String, downloadUrl: String, size: Option[Long]) extends UploadStatus
 
 object UploadedSuccessfully {
@@ -31,26 +35,25 @@ object UploadedSuccessfully {
 object UploadStatus {
   implicit val readsUploadStatus: Reads[UploadStatus] = new Reads[UploadStatus] {
     override def reads(json: JsValue): JsResult[UploadStatus] = {
-      val jsObject = json.asInstanceOf[JsObject]
-      jsObject.value.get("_type") match {
-        case Some(JsString("NotStarted")) => JsSuccess(NotStarted)
-        case Some(JsString("InProgress")) => JsSuccess(InProgress)
-        case Some(JsString("Failed")) => JsSuccess(Failed)
-        case Some(JsString("UploadedSuccessfully")) => Json.fromJson[UploadedSuccessfully](jsObject)(UploadedSuccessfully.uploadedSuccessfullyFormat)
-        case Some(value) => JsError(s"Unexpected value of _type: $value")
-        case None => JsError("Missing _type field")
+      json match {
+        case JsString(value: String) => value match {
+          case "NotStarted" => JsSuccess(NotStarted)
+          case "InProgress" => JsSuccess(InProgress)
+          case "Failed" => JsSuccess(Failed)
+          case "UploadedSuccessfully" => Json.fromJson[UploadedSuccessfully](json)(UploadedSuccessfully.uploadedSuccessfullyFormat)
+          case _ => JsError(s"Unexpected value of _type: $value")
+        }
+        case _ => JsError("Missing _type field")
       }
     }
   }
 
-  implicit val writesUploadStatus: Writes[UploadStatus] = new Writes[UploadStatus] {
-    override def writes(status: UploadStatus): JsValue = {
-      status match {
-        case NotStarted => JsObject(Map("_type" -> JsString("NotStarted")))
-        case InProgress => JsObject(Map("_type" -> JsString("InProgress")))
-        case Failed => JsObject(Map("_type" -> JsString("Failed")))
-        case s : UploadedSuccessfully => Json.toJson(s)(UploadedSuccessfully.uploadedSuccessfullyFormat).as[JsObject] + ("_type" -> JsString("UploadedSuccessfully"))
-      }
+  implicit val writesUploadStatus: Writes[UploadStatus] = (status: UploadStatus) => {
+    status match {
+      case NotStarted => JsString("NotStarted")
+      case InProgress => JsString("InProgress")
+      case Failed => JsString("Failed")
+      case s: UploadedSuccessfully => Json.toJson(s)(UploadedSuccessfully.uploadedSuccessfullyFormat).as[JsObject] + ("_type" -> JsString("UploadedSuccessfully"))
     }
   }
 }

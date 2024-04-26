@@ -19,7 +19,7 @@ package connectors
 import config.ApplicationConfig
 import models.ApiVersion
 import models.upscan.{PreparedUpload, UpscanFileReference, UpscanInitiateRequest, UpscanInitiateResponse}
-import play.api.libs.json.{Writes, __}
+import play.api.libs.json.Writes
 import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
