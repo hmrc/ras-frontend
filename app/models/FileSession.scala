@@ -18,7 +18,21 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class CallbackData(envelopeId: String, fileId: String, status: String, reason: Option[String])
+import java.time.Instant
+
+case class UploadDetails(uploadTimestamp: Instant, checksum: String, fileMimeType: String, fileName: String, size: Int)
+
+case class FailureDetails(failureReason: String, message: String)
+object FailureDetails{
+  implicit val formats: OFormat[FailureDetails] = Json.format[FailureDetails]
+}
+
+object UploadDetails {
+  val empty: UploadDetails = UploadDetails(Instant.now(), "", "", "", 0)
+  implicit val formats: OFormat[UploadDetails] = Json.format[UploadDetails]
+}
+
+case class CallbackData(reference: String, downloadUrl: Option[String], fileStatus: String, uploadDetails: Option[UploadDetails], failureDetails: Option[FailureDetails])
 
 object CallbackData {
   implicit val formats: OFormat[CallbackData] = Json.format[CallbackData]

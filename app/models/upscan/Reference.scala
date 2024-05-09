@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const submitButton = document.querySelector('button')
-submitButton.disabled = true;
+package models.upscan
 
-const fileInput = document.querySelector('#choose-file');
-fileInput.addEventListener('input', () => {
-    if(fileInput.checkValidity()) {
-        submitButton.disabled = false;
-    }
-})
+import play.api.libs.json.Reads
+
+case class Reference(value: String) extends AnyVal
+
+object Reference {
+  implicit val referenceReader: Reads[Reference] = Reads.StringReads.map(Reference(_))
+}

@@ -32,14 +32,14 @@ class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
                                     appConfig: ApplicationConfig) extends Logging {
 
   lazy val hoursToWaitForReUpload: Int = appConfig.hoursToWaitForReUpload
-  private val STATUS_AVAILABLE: String = "AVAILABLE"
+  private val STATUS_READY: String = "READY"
   private val defaultDownloadName: String = "Residency-status"
 
-  def createFileSession(userId: String, envelopeId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    fileSessionConnector.createFileSession(CreateFileSessionRequest(userId,envelopeId)).recover {
+  def createFileSession(userId: String, reference: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    fileSessionConnector.createFileSession(CreateFileSessionRequest(userId, reference)).recover {
       case ex: Throwable =>
         logger.error(s"[FilesSessionService][createFileSession] Unable to create FileSession to cache => " +
-          s"$userId, envelopeId: $envelopeId, Exception is ${ex.getMessage}")
+          s"$userId, reference: $reference, Exception is ${ex.getMessage}")
         false
     }
   }
@@ -75,8 +75,8 @@ class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
   def errorInFileUpload(fileSession: FileSession)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
     fileSession.userFile match {
       case Some(userFile) =>
-        userFile.status match {
-          case STATUS_AVAILABLE => false
+        userFile.fileStatus match {
+          case STATUS_READY => false
           case _ =>
             removeFileSessionFromCache(fileSession.userId)
             true

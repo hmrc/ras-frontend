@@ -24,6 +24,6 @@ object CacheKey {
   case object Dob extends CacheKey[MemberDateOfBirth]
   case object StatusResult extends CacheKey[Option[ResidencyStatusResult]]
   case object UploadResponse extends CacheKey[Option[UploadResponse]]
-  case object Envelope extends CacheKey[Option[Envelope]]
+  case object File extends CacheKey[Option[File]]
   case object All extends CacheKey[RasSession]
 }

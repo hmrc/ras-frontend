@@ -45,7 +45,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
   val mockUploadTimeStamp: Long = new DateTime().minusDays(10).getMillis
   val mockExpiryTimeStamp: Long = new DateTime().minusDays(7).getMillis
   val mockResultsFileMetadata: ResultsFileMetaData = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-  val fileSession: FileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(DateTime.now().getMillis),None)
+  val fileSession: FileSession = FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata),"1234",Some(DateTime.now().getMillis),None)
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
@@ -64,7 +64,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     val testTimeStamp: Long = new LocalDate(2013, 4, 5).toDate.getTime
     val currentTime = new DateTime(2014, 4, 6, 0, 0, 0, 0)
     val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(testTimeStamp),1,1L)
-    val optionalFileSession = Some(FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",Some(currentTime.getMillis),None))
+    val optionalFileSession = Some(FileSession(Some(CallbackData("",None,"",None,None)),Some(mockResultsFileMetadata),"1234",Some(currentTime.getMillis),None))
 
     "return the expiry date format message" in {
       val result = TestChooseAnOptionController.getHelpDate(Ready, optionalFileSession)
@@ -113,7 +113,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 		"download a file containing the results" in {
 			val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
 			val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-			val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
+			val fileSession = FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata),"1234",None,None)
 			when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
 			val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
 				FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
@@ -123,7 +123,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     "not be able to download a file containing the results when file name is incorrect" in {
       val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
       val mockResultsFileMetadata = ResultsFileMetaData("",Some("wrongName.csv"),Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),Some(mockResultsFileMetadata),"1234",None,None)
+      val fileSession = FileSession(Some(CallbackData("",None,"",None,None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
@@ -132,7 +132,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "not be able to download a file containing the results when there is no results file" in {
-      val fileSession = FileSession(Some(CallbackData("","someFileId","",None)),None,"1234",None,None)
+      val fileSession = FileSession(Some(CallbackData("",None,"",None,None)),None,"1234",None,None)
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
         FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))

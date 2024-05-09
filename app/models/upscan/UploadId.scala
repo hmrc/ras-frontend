@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-const submitButton = document.querySelector('button')
-submitButton.disabled = true;
+package models.upscan
 
-const fileInput = document.querySelector('#choose-file');
-fileInput.addEventListener('input', () => {
-    if(fileInput.checkValidity()) {
-        submitButton.disabled = false;
-    }
-})
+import play.api.mvc.QueryStringBindable
+import java.util.UUID
+
+case class UploadId(value: String) extends AnyVal
+
+object UploadId {
+  def generate: UploadId = UploadId(UUID.randomUUID().toString)
+
+  implicit def queryBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[UploadId] =
+    stringBinder.transform(UploadId(_),_.value)
+}
