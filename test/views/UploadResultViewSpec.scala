@@ -16,24 +16,31 @@
 
 package views
 
-import org.joda.time.DateTime
+import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
 import views.helpers.ViewSpecHelper
 
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
 class UploadResultViewSpec extends ViewSpecHelper {
 
-	private def isBeforeApr6(timestamp: Long) : Boolean = {
-		val uploadDate = new DateTime(timestamp)
-		uploadDate.isBefore(DateTime.parse(s"${uploadDate.getYear}-04-06"))
+	private def isBeforeApr6(timestamp: Long): Boolean = {
+		val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
+		uploadDate.isBefore(LocalDateTime.of(uploadDate.getYear, 4, 6, 0, 0, 0))
 	}
 
 	def formattedExpiryDate(timestamp: Long): String = {
-		val expiryDate = new DateTime(timestamp).plusDays(3)
-		s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}"
+		val expiryDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London")).plusDays(3)
+
+		val timeFormatter = DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)
+		val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK)
+
+		s"${expiryDate.format(timeFormatter).toLowerCase()} on ${expiryDate.format(dateFormatter)}"
 	}
 
-	val now: Long = DateTime.now().getMillis
+	val now: Long = Instant.now().toEpochMilli
 
 	"upload result page" must {
 		behave like pageWithFeedbackLink(
@@ -101,7 +108,7 @@ class UploadResultViewSpec extends ViewSpecHelper {
 		}
 
 		"contain the correct ga events when upload date is 01/01/2018 (CY+1)" in {
-			val mockUploadTimeStamp = DateTime.parse("2018-01-01").getMillis
+			val mockUploadTimeStamp = LocalDateTime.of(2018, 1, 1, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY & CY + 1:Back"
 			doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY & CY + 1:ResidencyStatusResults CY & CY + 1 CSV"
@@ -111,13 +118,13 @@ class UploadResultViewSpec extends ViewSpecHelper {
 		}
 
 		"contain a cy message when upload date is 06/04/2018" in {
-			val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
+			val mockUploadTimeStamp = LocalDateTime.of(2018, 4, 6, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (1000 + 1).toString, (1000 + 2).toString)
 		}
 
 		"contain the correct ga events when upload date is 06/04/2018 (CY only)" in {
-			val mockUploadTimeStamp = DateTime.parse("2018-04-06").getMillis
+			val mockUploadTimeStamp = LocalDateTime.of(2018, 4, 6, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("back").attr("data-journey-click") shouldBe "navigation - link:Residency status upload added CY:Back"
 			doc(result).getElementById("result-link").attr("data-journey-click") shouldBe "link - click:Residency status upload added CY:ResidencyStatusResults CY CSV"
@@ -128,7 +135,7 @@ class UploadResultViewSpec extends ViewSpecHelper {
 		}
 
 		"contain a cy message when upload date is 31/12/2018" in {
-			val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
+			val mockUploadTimeStamp = LocalDateTime.of(2018, 12, 31, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli
 			val result = uploadResultView("fileId", formattedExpiryDate(mockUploadTimeStamp), isBeforeApr6(mockUploadTimeStamp), currentTaxYear = 1000, "filename")(fakeRequest, testMessages, mockAppConfig)
 			doc(result).getElementById("cy-message").text shouldBe Messages("cy.message", (1000 + 1).toString, (1000 + 2).toString)
 		}

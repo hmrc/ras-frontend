@@ -17,7 +17,8 @@
 package services
 
 import models._
-import org.joda.time.DateTime
+
+import java.time.{Instant, LocalDateTime, ZoneOffset}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.PrivateMethodTester
@@ -25,6 +26,7 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import utils.RasTestHelper
 
+import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
 class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMethodTester {
@@ -32,9 +34,9 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
   val callbackData: CallbackData = CallbackData("reference-1234", None, "READY", None, None)
   val resultsFile: ResultsFileMetaData = ResultsFileMetaData("file-id-1", Some("fileName.csv"), Some(1234L), 123, 1234L)
   val fileMetaData: FileMetadata = FileMetadata("file-id-1", Some("fileName.csv"), None)
-  val newFileSession: FileSession = FileSession(None, None, "A123456", Some(DateTime.now().getMillis), None)
-  val fileSession: FileSession = FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(DateTime.now().getMillis), None)
-  val failedFileSession: FileSession = FileSession(Some(callbackData.copy(fileStatus = "ERROR")), Some(resultsFile), "A123456", Some(DateTime.now().getMillis), None)
+  val newFileSession: FileSession = FileSession(None, None, "A123456", Some(Instant.now().toEpochMilli), None)
+  val fileSession: FileSession = FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
+  val failedFileSession: FileSession = FileSession(Some(callbackData.copy(status = "ERROR")), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
 
   val filesSessionService: FilesSessionService = new FilesSessionService(mockFilesSessionConnector, mockAppConfig)
 
@@ -142,7 +144,7 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
     }
 
     "return true when the file session exists but results file is empty" in {
-      val fileSessionWithoutResultsFile: FileSession = FileSession(Some(callbackData), None, "A123456", Some(DateTime.now().minusDays(2).getMillis), None)
+      val fileSessionWithoutResultsFile: FileSession = FileSession(Some(callbackData), None, "A123456", Some(Instant.now().minus(2, ChronoUnit.DAYS).toEpochMilli), None)
 
       when(mockFilesSessionConnector.fetchFileSession(any())(any(), any()))
         .thenReturn(Future.successful(Some(fileSessionWithoutResultsFile)))
@@ -277,7 +279,7 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
 
     "return TimeExpiryError if no entry in db for userId " in {
       when(mockFilesSessionConnector.fetchFileSession(any())(any(), any()))
-        .thenReturn(Future.successful(Some(failedFileSession.copy(resultsFile = None, uploadTimeStamp = Some(DateTime.now().minusDays(2).getMillis)))))
+        .thenReturn(Future.successful(Some(failedFileSession.copy(resultsFile = None, uploadTimeStamp = Some(Instant.now().minus(2, ChronoUnit.DAYS).toEpochMilli)))))
       when(mockFilesSessionConnector.deleteFileSession(any())(any(), any()))
         .thenReturn(Future.successful(true))
 

@@ -48,7 +48,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
 
       residencyStatusAPIConnector.getResidencyStatus(memberDetails).flatMap { rasResponse =>
         val formattedName = session.name.firstName + " " + session.name.lastName
-        val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+        val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.toString
         val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
         val nyResidencyStatus: Option[String] =
           rasResponse.nextYearForecastResidencyStatus.map(extractResidencyStatus)
@@ -65,7 +65,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
             ResidencyStatusResult(
               cyResidencyStatus, nyResidencyStatus,
               TaxYearResolver.currentTaxYear.toString,
-              (TaxYearResolver.currentTaxYear + 1).toString,
+              TaxYearResolver.nextTaxYear.toString,
               formattedName, formattedDob, memberDetails.nino)
           auditResponse(failureReason = None, nino = Some(memberDetails.nino),
             residencyStatus = Some(rasResponse),

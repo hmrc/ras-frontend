@@ -30,6 +30,8 @@ import services.TaxYearResolver
 import uk.gov.hmrc.auth.core._
 import utils.{RandomNino, RasTestHelper}
 
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import scala.concurrent.Future
 
 class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
@@ -121,7 +123,7 @@ class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
               NON_SCOTTISH, Some(NON_SCOTTISH),
               currentTaxYear.toString, (currentTaxYear + 1).toString,
               name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.toString("d MMMM yyyy"),
+              memberDob.dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK)),
               "")),None))
       ))
       val result = TestResultsController.back.apply(FakeRequest())

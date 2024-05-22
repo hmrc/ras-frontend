@@ -17,7 +17,8 @@
 package controllers
 
 import models._
-import org.joda.time.{DateTime, LocalDate}
+
+import java.time.{Duration, Instant, LocalDate, LocalDateTime, ZoneId, ZoneOffset}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
@@ -42,10 +43,10 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
   private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
   val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
-  val mockUploadTimeStamp: Long = new DateTime().minusDays(10).getMillis
-  val mockExpiryTimeStamp: Long = new DateTime().minusDays(7).getMillis
+  val mockUploadTimeStamp: Long = Instant.now().minus(Duration.ofDays(10)).toEpochMilli
+  val mockExpiryTimeStamp: Long = Instant.now().minus(Duration.ofDays(7)).toEpochMilli
   val mockResultsFileMetadata: ResultsFileMetaData = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-  val fileSession: FileSession = FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata),"1234",Some(DateTime.now().getMillis),None)
+  val fileSession: FileSession = FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata),"1234",Some(Instant.now().toEpochMilli),None)
 
   val row1 = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
@@ -61,10 +62,11 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "getHelpDate" must {
     import models.FileUploadStatus._
-    val testTimeStamp: Long = new LocalDate(2013, 4, 5).toDate.getTime
-    val currentTime = new DateTime(2014, 4, 6, 0, 0, 0, 0)
-    val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(testTimeStamp),1,1L)
-    val optionalFileSession = Some(FileSession(Some(CallbackData("",None,"",None,None)),Some(mockResultsFileMetadata),"1234",Some(currentTime.getMillis),None))
+    val testTimeStamp = LocalDateTime.of(2013, 4, 5, 0, 0, 0, 0).atZone(ZoneId.of("Europe/London"))
+    val currentTime = LocalDateTime.of(2014, 4, 6, 0, 0, 0, 0).atZone(ZoneId.of("Europe/London"))
+    val timestampInMillis: Option[Long] = Some(testTimeStamp.toInstant.toEpochMilli)
+    val mockResultsFileMetadata = ResultsFileMetaData("", Some("testFile.csv"), timestampInMillis, 1, 1L)
+    val optionalFileSession = Some(FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata), "1234", Some(currentTime.toInstant.toEpochMilli), None))
 
     "return the expiry date format message" in {
       val result = TestChooseAnOptionController.getHelpDate(Ready, optionalFileSession)
@@ -111,7 +113,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
 		"download a file containing the results" in {
-			val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
+			val mockUploadTimeStamp = LocalDate.ofEpochDay(2018-12-31).toEpochDay
 			val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
 			val fileSession = FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata),"1234",None,None)
 			when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
@@ -121,7 +123,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 		}
 
     "not be able to download a file containing the results when file name is incorrect" in {
-      val mockUploadTimeStamp = DateTime.parse("2018-12-31").getMillis
+      val mockUploadTimeStamp = LocalDateTime.of(2018, 12, 31, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli
       val mockResultsFileMetadata = ResultsFileMetaData("",Some("wrongName.csv"),Some(mockUploadTimeStamp),1,1L)
       val fileSession = FileSession(Some(CallbackData("",None,"",None,None)),Some(mockResultsFileMetadata),"1234",None,None)
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
@@ -151,7 +153,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to error page" when {
 
       "render upload result page is called but there is no callback data in the retrieved file session" in {
-        val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(new DateTime().plusDays(10).getMillis),None)
+        val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(LocalDateTime.now().plusDays(10).toInstant(ZoneOffset.UTC).toEpochMilli),None)
         when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
         val result = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
         status(result) shouldBe SEE_OTHER
@@ -231,10 +233,8 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "fomattedExpiryDate method" must {
     "return correctly formatted date and time" in {
-      val date = new DateTime()
-        .withDate(2020,3,20)
-        .withTime(10,30,0,0)
-      assert(TestChooseAnOptionController.formattedExpiryDate(date.getMillis) ==  "10:30am on Monday 23 March 2020"
+      val date = LocalDateTime.of(2020,3,20,10,30,0,0)
+      assert(TestChooseAnOptionController.formattedExpiryDate(date.toInstant(ZoneOffset.UTC).toEpochMilli) ==  "10:30am on Monday 23 March 2020"
       )
     }
   }

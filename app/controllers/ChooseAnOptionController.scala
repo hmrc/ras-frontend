@@ -16,13 +16,14 @@
 
 package controllers
 
-import akka.stream.scaladsl.{Source, StreamConverters}
-import akka.util.ByteString
+import org.apache.pekko.stream.scaladsl.{Source, StreamConverters}
+import org.apache.pekko.util.ByteString
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import models.FileUploadStatus._
 import models.{FileSession, FileUploadStatus}
-import org.joda.time.DateTime
+
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId, ZonedDateTime}
 import play.api.Logging
 import play.api.http.HttpEntity
 import play.api.mvc._
@@ -31,6 +32,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -80,19 +84,24 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
   }
 
   def formattedExpiryDate(timestamp: Long): String = {
-    val expiryDate = new DateTime(timestamp).plusDays(3)
-    s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}"
+    val expiryDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London")).plusDays(3)
+
+    val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK)
+    val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK)
+
+    s"${expiryDate.format(timeFormatter).toLowerCase()} on ${expiryDate.format(dateFormatter)}"
   }
 
   private def formattedUploadDate(timestamp: Long): String = {
-    val uploadDate = new DateTime(timestamp)
+    val uploadDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
 
-    val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(DateTime.now.toLocalDate)) {
+    val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
       "today"
     } else {
       "yesterday"
     }
-		s"$todayOrYesterday at ${uploadDate.toString("h:mma").toLowerCase()}"
+    s"$todayOrYesterday at ${uploadDate.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()
+    }"
   }
 
   def renderUploadResultsPage: Action[AnyContent] = Action.async {
@@ -255,8 +264,8 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     }
   }
 
-  private def isBeforeApr6(timestamp: Long) : Boolean = {
-    val uploadDate = new DateTime(timestamp)
-    uploadDate.isBefore(DateTime.parse(s"${uploadDate.getYear}-04-06"))
+  private def isBeforeApr6(timestamp: Long): Boolean = {
+    val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
+    uploadDate.isBefore(LocalDateTime.of(uploadDate.getYear, 4, 6, 0, 0, 0))
   }
 }

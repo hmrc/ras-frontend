@@ -16,12 +16,12 @@
 
 package models
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 
 case class RasDate(day: Option[String], month: Option[String], year: Option[String]){
 
-  def asLocalDate: LocalDate = new LocalDate(year.getOrElse("1").toInt, month.getOrElse("1").toInt, day.getOrElse("1").toInt)
+  def asLocalDate: LocalDate = LocalDate.of(year.getOrElse("1").toInt, month.getOrElse("1").toInt, day.getOrElse("1").toInt)
   def isInFuture: Boolean = asLocalDate.isAfter(LocalDate.now)
 
   override def toString: String = year.toString + "-" + month.toString + "-" + day.toString

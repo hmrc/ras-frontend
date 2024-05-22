@@ -16,7 +16,7 @@
 
 package views
 
-import akka.util.Helpers.Requiring
+import org.apache.pekko.util.Helpers.Requiring
 import forms.MemberNameForm
 import models.MemberName
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}

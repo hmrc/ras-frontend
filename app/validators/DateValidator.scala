@@ -18,7 +18,8 @@ package validators
 
 
 import models.{MemberDateOfBirth, RasDate}
-import org.joda.time.DateTime
+
+import java.time.Year
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{Form, FormError}
 
@@ -55,12 +56,11 @@ trait DateValidator {
     memDob => {
       val date = memDob.dateOfBirth
 
-      val leapYear =
-        try {
-          new DateTime().withYear(date.year.getOrElse("0").toInt).year.isLeap
-        } catch {
-          case _: NumberFormatException => false
-        }
+      val leapYear: Boolean = try {
+        Year.isLeap(date.year.getOrElse("0").toInt)
+      } catch {
+        case _: NumberFormatException => false
+      }
 
       if (!DateValidator.checkDayRange(date)) {
         if (date.month.getOrElse("0").toInt == 2 && leapYear)
@@ -106,7 +106,7 @@ trait DateValidator {
       val day = date.day.getOrElse("0")
       val month = date.month.getOrElse("0")
       val year = date.year.getOrElse("0").toInt
-      val leapYear = new DateTime().withYear(year).year.isLeap
+      val leapYear: Boolean = Year.isLeap(year)
 
       if (day forall Character.isDigit) {
         if (month.toInt == 2 && leapYear)

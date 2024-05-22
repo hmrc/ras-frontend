@@ -20,10 +20,12 @@ import config.ApplicationConfig
 import connectors.FilesSessionConnector
 import models.FileUploadStatus.{InProgress, NoFileSession, Ready, TimeExpiryError, UploadError}
 import models.{CreateFileSessionRequest, FileSession, FileUploadStatus}
-import org.joda.time.DateTime
+
+import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
+import java.time.temporal.ChronoUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,7 +55,11 @@ class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
   }
 
   private def hasBeen24HoursSinceTheUpload(fileUploadTime: Long): Boolean = {
-    new DateTime(fileUploadTime).plusHours(hoursToWaitForReUpload).isBefore(DateTime.now.getMillis)
+    val uploadDateTime = Instant.ofEpochMilli(fileUploadTime)
+    val futureDateTime = uploadDateTime.plus(hoursToWaitForReUpload, ChronoUnit.HOURS)
+    val currentInstant = Instant.now()
+
+    futureDateTime.isBefore(currentInstant)
   }
 
   def failedProcessingUploadedFile(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
