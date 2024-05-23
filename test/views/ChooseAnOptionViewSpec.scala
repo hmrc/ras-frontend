@@ -129,10 +129,10 @@ class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 			}
 
 			"contain File processing paragraphs with yesterday date" in {
-				val date = ZonedDateTime.now().minusDays(1)
-				val result = chooseAnOptionView(InProgress, formattedUploadDate(date.toInstant.toEpochMilli))(fakeRequest, testMessages, mockAppConfig)
+				val date = Instant.now().minus(1, ChronoUnit.DAYS)
+				val result = chooseAnOptionView(InProgress, formattedUploadDate(date.toEpochMilli))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-					s"${Messages("yesterday")} at ${date.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()}")
+					s"${Messages("yesterday")} at ${date.atZone(zoneID).format(DateTimeFormatter.ofPattern("h:mma")).toLowerCase()}")
 				doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
 				doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 			}
