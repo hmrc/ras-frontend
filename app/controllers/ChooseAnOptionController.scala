@@ -23,7 +23,7 @@ import connectors.ResidencyStatusAPIConnector
 import models.FileUploadStatus._
 import models.{FileSession, FileUploadStatus}
 
-import java.time.{Instant, LocalDate, LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import play.api.Logging
 import play.api.http.HttpEntity
 import play.api.mvc._

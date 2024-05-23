@@ -18,7 +18,7 @@ package views
 
 import models.FileUploadStatus._
 
-import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
@@ -30,13 +30,13 @@ import java.util.Locale
 
 class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 
-	val mockExpiryTimeStamp: Long = Instant.now().toEpochMilli
-	val zoneID = ZoneId.of("Europe/London")
+	val mockExpiryTimeStamp: Long = ZonedDateTime.now.toInstant.toEpochMilli
+	val zoneID: ZoneId = ZoneId.of("Europe/London")
 
 	def formattedExpiryDate(timestamp: Long): Option[String] = {
 		val expiryDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneID)
-		val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK).withLocale(Locale.UK).withZone(zoneID)
-		val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK).withLocale(Locale.UK).withZone(zoneID)
+		val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK).withZone(zoneID)
+		val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK).withZone(zoneID)
 
 		val formattedDate = s"${expiryDate.format(timeFormatter).toLowerCase()} on ${expiryDate.format(dateFormatter)}"
 		Some(formattedDate)	}
@@ -103,8 +103,8 @@ class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 			"contain File ready paragraph" in {
 				val date = LocalDateTime.ofInstant(Instant.ofEpochMilli(mockExpiryTimeStamp), zoneID)
 				val result = chooseAnOptionView(Ready, formattedExpiryDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
-				val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK).withLocale(Locale.UK).withZone(zoneID)
-				val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK).withLocale(Locale.UK).withZone(zoneID)
+				val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK).withZone(zoneID)
+				val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK).withZone(zoneID)
 
 				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.format(timeFormatter).toLowerCase()} on ${date.format(dateFormatter)}")
 			}
