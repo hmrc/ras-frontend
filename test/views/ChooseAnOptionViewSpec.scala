@@ -25,16 +25,17 @@ import play.api.i18n.Messages
 import utils.RasTestHelper
 
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 
 class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 
-	val mockExpiryTimeStamp: Long = ZonedDateTime.now.toInstant.toEpochMilli
+	val mockExpiryTimeStamp: Long = Instant.now().toEpochMilli
 	val zoneID: ZoneId = ZoneId.of("Europe/London")
 
 	def formattedExpiryDate(timestamp: Long): Option[String] = {
-		val expiryDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneID)
+		val expiryDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneID)
 		val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK).withZone(zoneID)
 		val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK).withZone(zoneID)
 
@@ -42,7 +43,7 @@ class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 		Some(formattedDate)	}
 
 	private def formattedUploadDate(timestamp: Long): Option[String] = {
-		val uploadDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
+		val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneID)
 
 		val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
 			"today"
@@ -118,10 +119,10 @@ class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 			}
 
 			"contain File processing paragraphs with todays date" in {
-				val date = ZonedDateTime.now().minusDays(1)
+				val date = Instant.now().minus(1, ChronoUnit.DAYS)
 				val result = chooseAnOptionView(InProgress, formattedUploadDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-					s"${Messages("today")} at ${date.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()}")
+					s"${Messages("today")} at ${date.atZone(zoneID).format(DateTimeFormatter.ofPattern("h:mma")).toLowerCase()}")
 				doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
 				doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
