@@ -17,8 +17,6 @@
 package services
 
 import models._
-
-import java.time.{Instant, LocalDateTime, ZoneOffset}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.PrivateMethodTester
@@ -26,6 +24,7 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import utils.RasTestHelper
 
+import java.time.Instant
 import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
@@ -36,7 +35,7 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
   val fileMetaData: FileMetadata = FileMetadata("file-id-1", Some("fileName.csv"), None)
   val newFileSession: FileSession = FileSession(None, None, "A123456", Some(Instant.now().toEpochMilli), None)
   val fileSession: FileSession = FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
-  val failedFileSession: FileSession = FileSession(Some(callbackData.copy(status = "ERROR")), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
+  val failedFileSession: FileSession = FileSession(Some(callbackData.copy(fileStatus = "ERROR")), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
 
   val filesSessionService: FilesSessionService = new FilesSessionService(mockFilesSessionConnector, mockAppConfig)
 

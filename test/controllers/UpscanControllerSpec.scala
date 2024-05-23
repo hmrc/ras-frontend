@@ -17,8 +17,6 @@
 package controllers
 
 import models._
-
-import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
 import models.upscan.{UpscanFileReference, UpscanInitiateResponse}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -34,6 +32,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.RasTestHelper
 
+import java.time.Instant
 import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
