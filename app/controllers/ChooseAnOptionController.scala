@@ -23,7 +23,7 @@ import connectors.ResidencyStatusAPIConnector
 import models.FileUploadStatus._
 import models.{FileSession, FileUploadStatus}
 
-import java.time.{Instant, LocalDate, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
+import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
 import play.api.Logging
 import play.api.http.HttpEntity
 import play.api.mvc._
@@ -84,17 +84,16 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
   }
 
   def formattedExpiryDate(timestamp: Long): String = {
-    val expiryDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London")).plusDays(3)
+    val expiryDate = Instant.ofEpochMilli(timestamp).plus(3, ChronoUnit.DAYS)
 
-    val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK)
-    val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK)
+    val timeFormatter = DateTimeFormatter.ofPattern("H:mma")
+    val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy")
 
-    s"${expiryDate.format(timeFormatter).toLowerCase()} on ${expiryDate.format(dateFormatter)}"
+    s"${expiryDate.atZone(ZoneId.of("Europe/London")).format(timeFormatter).toLowerCase()} on ${expiryDate.atZone(ZoneId.of("Europe/London")).format(dateFormatter)}"
   }
 
   private def formattedUploadDate(timestamp: Long): String = {
-    val uploadDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
-
+    val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
     val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
       "today"
     } else {

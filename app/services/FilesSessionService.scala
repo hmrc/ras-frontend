@@ -21,7 +21,7 @@ import connectors.FilesSessionConnector
 import models.FileUploadStatus.{InProgress, NoFileSession, Ready, TimeExpiryError, UploadError}
 import models.{CreateFileSessionRequest, FileSession, FileUploadStatus}
 
-import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
+import java.time.Instant
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 

@@ -16,15 +16,17 @@
 
 package views
 
-import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
+import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
 import play.api.i18n.Messages
 import views.helpers.ViewSpecHelper
 
 import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.time.temporal.ChronoUnit
 
 class UploadResultViewSpec extends ViewSpecHelper {
+
+	val zoneID: ZoneId = ZoneId.of("Europe/London")
 
 	private def isBeforeApr6(timestamp: Long): Boolean = {
 		val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
@@ -32,10 +34,10 @@ class UploadResultViewSpec extends ViewSpecHelper {
 	}
 
 	def formattedExpiryDate(timestamp: Long): String = {
-		val expiryDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London")).plusDays(3)
+		val expiryDate = Instant.ofEpochMilli(timestamp).atZone(zoneID).plus(3, ChronoUnit.DAYS)
 
-		val timeFormatter = DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)
-		val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK)
+		val timeFormatter = DateTimeFormatter.ofPattern("h:mma")
+		val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy")
 
 		s"${expiryDate.format(timeFormatter).toLowerCase()} on ${expiryDate.format(dateFormatter)}"
 	}
