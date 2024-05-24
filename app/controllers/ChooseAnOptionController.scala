@@ -31,6 +31,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import java.time.{Instant, ZoneId, ZonedDateTime}
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -80,19 +82,26 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
   }
 
   def formattedExpiryDate(timestamp: Long): String = {
-    val expiryDate = new DateTime(timestamp).plusDays(3)
-    s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}"
+    val zoneId = ZoneId.of("Europe/London")
+    val instant = Instant.ofEpochMilli(timestamp)
+    val zdt = ZonedDateTime.ofInstant(instant, zoneId)
+
+    val expiryDate = zdt.plusDays(3)
+    s"${expiryDate.format(DateTimeFormatter.ofPattern("h:mma")).toLowerCase} on ${expiryDate.format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy"))}"
   }
 
-  private def formattedUploadDate(timestamp: Long): String = {
-    val uploadDate = new DateTime(timestamp)
 
-    val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(DateTime.now.toLocalDate)) {
+  private def formattedUploadDate(timestamp: Long): String = {
+    val zoneId = ZoneId.of("Europe/London")
+    val instant = Instant.ofEpochMilli(timestamp)
+    val uploadDate = ZonedDateTime.ofInstant(instant, zoneId)
+
+    val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
       "today"
     } else {
       "yesterday"
     }
-		s"$todayOrYesterday at ${uploadDate.toString("h:mma").toLowerCase()}"
+		s"$todayOrYesterday at ${uploadDate.format(DateTimeFormatter.ofPattern("h:mma")).toLowerCase()}"
   }
 
   def renderUploadResultsPage: Action[AnyContent] = Action.async {
