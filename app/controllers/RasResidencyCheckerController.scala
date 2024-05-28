@@ -26,6 +26,8 @@ import play.api.mvc.{AnyContent, Request, Result}
 import services.{AuditService, SessionCacheService, TaxYearResolver}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import scala.concurrent.{ExecutionContext, Future}
 
 trait RasResidencyCheckerController extends RasController with AuditService with Logging {
@@ -48,7 +50,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
 
       residencyStatusAPIConnector.getResidencyStatus(memberDetails).flatMap { rasResponse =>
         val formattedName = session.name.firstName + " " + session.name.lastName
-        val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.toString
+        val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK))
         val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
         val nyResidencyStatus: Option[String] =
           rasResponse.nextYearForecastResidencyStatus.map(extractResidencyStatus)
