@@ -81,20 +81,20 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     }
   }
 
-  def formattedExpiryDate(timestamp: Long): String = {
-    val zoneId = ZoneId.of("Europe/London")
-    val instant = Instant.ofEpochMilli(timestamp)
-    val zdt = ZonedDateTime.ofInstant(instant, zoneId)
+  private def mapLongToZonedDateTime(timestamp: Long): ZonedDateTime =
+    ZonedDateTime
+      .ofInstant(
+        Instant.ofEpochMilli(timestamp),
+        ZoneId.systemDefault()
+      )
 
-    val expiryDate = zdt.plusDays(3)
+  def formattedExpiryDate(timestamp: Long): String = {
+    val expiryDate = mapLongToZonedDateTime(timestamp).plusDays(3)
     s"${expiryDate.format(DateTimeFormatter.ofPattern("h:mma")).toLowerCase} on ${expiryDate.format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy"))}"
   }
 
-
   private def formattedUploadDate(timestamp: Long): String = {
-    val zoneId = ZoneId.of("Europe/London")
-    val instant = Instant.ofEpochMilli(timestamp)
-    val uploadDate = ZonedDateTime.ofInstant(instant, zoneId)
+    val uploadDate = mapLongToZonedDateTime(timestamp)
 
     val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
       "today"

@@ -68,12 +68,11 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "return the expiry date format message" in {
       val result = TestChooseAnOptionController.getHelpDate(Ready, optionalFileSession)
-     result.get should include("Monday 8 April 2013")
-    }
+      result shouldBe Some("12:00am on Monday 8 April 2013")    }
 
     "return the upload date format message" in {
       val result = TestChooseAnOptionController.getHelpDate(InProgress, optionalFileSession)
-      result.get should include("yesterday at")
+      result shouldBe Some("yesterday at 12:00am")
     }
 
     "return None when there fileStatus is not Ready or InProgress" in {
