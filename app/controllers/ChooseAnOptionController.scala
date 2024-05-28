@@ -83,7 +83,15 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     }
   }
 
+  private def mapLongToZonedDateTime(timestamp: Long): ZonedDateTime =
+    ZonedDateTime
+      .ofInstant(
+        Instant.ofEpochMilli(timestamp),
+        ZoneId.systemDefault()
+      )
+
   def formattedExpiryDate(timestamp: Long): String = {
+
     val expiryDate = Instant.ofEpochMilli(timestamp).plus(3, ChronoUnit.DAYS)
 
     val timeFormatter = DateTimeFormatter.ofPattern("H:mma")
@@ -94,11 +102,13 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
 
   private def formattedUploadDate(timestamp: Long): String = {
     val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
+    
     val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
       "today"
     } else {
       "yesterday"
     }
+
     s"$todayOrYesterday at ${uploadDate.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()
     }"
   }
