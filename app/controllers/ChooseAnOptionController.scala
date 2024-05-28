@@ -83,13 +83,6 @@ class ChooseAnOptionController @Inject()(resultsFileConnector: ResidencyStatusAP
     }
   }
 
-  private def mapLongToZonedDateTime(timestamp: Long): ZonedDateTime =
-    ZonedDateTime
-      .ofInstant(
-        Instant.ofEpochMilli(timestamp),
-        ZoneId.systemDefault()
-      )
-
   def formattedExpiryDate(timestamp: Long): String = {
 
     val expiryDate = Instant.ofEpochMilli(timestamp).plus(3, ChronoUnit.DAYS)
