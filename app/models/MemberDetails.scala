@@ -20,6 +20,9 @@ package models
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
 case class MemberDetails(name: MemberName,
                          nino: String,
                          dateOfBirth: RasDate) {
@@ -30,7 +33,7 @@ case class MemberDetails(name: MemberName,
           "nino":"${nino.toUpperCase}",
           "firstName":"${name.firstName.capitalize}",
           "lastName":"${name.lastName.capitalize}",
-          "dateOfBirth":"${dateOfBirth.asLocalDate.toString("yyyy-MM-dd")}"
+          "dateOfBirth":"${dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale(Locale.UK))}"
         }
       """)
   }

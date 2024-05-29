@@ -23,6 +23,8 @@ import services.{SessionCacheService, TaxYearResolver}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
@@ -45,10 +47,10 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
               session.residencyStatusResult match {
                 case Some(residencyStatusResult) =>
                   val name = s"${session.name.firstName.capitalize} ${session.name.lastName.capitalize}"
-                  val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
+                  val dateOfBirth = session.dateOfBirth.dateOfBirth.toString
                   val nino = session.nino.nino
                   val currentTaxYear = TaxYearResolver.currentTaxYear
-                  val nextTaxYear = TaxYearResolver.currentTaxYear + 1
+                  val nextTaxYear = TaxYearResolver.nextTaxYear
                   val currentYearResidencyStatus = residencyStatusResult.currentYearResidencyStatus
                   val nextYearResidencyStatus = residencyStatusResult.nextYearResidencyStatus
 
@@ -87,8 +89,7 @@ class ResultsController @Inject()(val authConnector: AuthConnector,
 
                     val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
                     val nino = session.nino.nino
-                    val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.toString("d MMMM yyyy")
-
+                    val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK))
                     logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
                     Ok(matchNotFoundView(name, dateOfBirth, nino))
 

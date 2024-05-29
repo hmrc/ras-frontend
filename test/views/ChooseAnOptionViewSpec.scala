@@ -17,31 +17,41 @@
 package views
 
 import models.FileUploadStatus._
-import org.joda.time.DateTime
+
+import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
 import utils.RasTestHelper
 
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
+
 
 class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 
-	val mockExpiryTimeStamp: Long = new DateTime().getMillis
+	val mockExpiryTimeStamp: Long = Instant.now().toEpochMilli
+	val zoneID: ZoneId = ZoneId.of("Europe/London")
 
 	def formattedExpiryDate(timestamp: Long): Option[String] = {
-		val expiryDate = new DateTime(timestamp)
-		Some(s"${expiryDate.toString("H:mma").toLowerCase()} on ${expiryDate.toString("EEEE d MMMM yyyy")}")
-	}
+		val expiryDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneID)
+		val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK).withZone(zoneID)
+		val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK).withZone(zoneID)
+
+		val formattedDate = s"${expiryDate.format(timeFormatter).toLowerCase()} on ${expiryDate.format(dateFormatter)}"
+		Some(formattedDate)	}
 
 	private def formattedUploadDate(timestamp: Long): Option[String] = {
-		val uploadDate = new DateTime(timestamp)
+		val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneID)
 
-		val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(DateTime.now.toLocalDate)) {
+		val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
 			"today"
 		} else {
 			"yesterday"
 		}
-		Some(s"$todayOrYesterday at ${uploadDate.toString("h:mma").toLowerCase()}")
+		Some(s"$todayOrYesterday at ${uploadDate.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()
+		}")
 	}
 
 	"choose an option page" when {
@@ -92,9 +102,12 @@ class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 			}
 
 			"contain File ready paragraph" in {
-				val date = new DateTime(mockExpiryTimeStamp)
+				val date = LocalDateTime.ofInstant(Instant.ofEpochMilli(mockExpiryTimeStamp), zoneID)
 				val result = chooseAnOptionView(Ready, formattedExpiryDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.toString("H:mma").toLowerCase()} on ${date.toString("EEEE d MMMM yyyy")}")
+				val timeFormatter = DateTimeFormatter.ofPattern("H:mma").withLocale(Locale.UK).withZone(zoneID)
+				val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy").withLocale(Locale.UK).withZone(zoneID)
+
+				doc(result).getElementsByClass("paragraph-info").text shouldBe Messages("result.timescale", s"${date.format(timeFormatter).toLowerCase()} on ${date.format(dateFormatter)}")
 			}
 		}
 
@@ -106,20 +119,20 @@ class ChooseAnOptionViewSpec extends AnyWordSpec with RasTestHelper {
 			}
 
 			"contain File processing paragraphs with todays date" in {
-				val date = DateTime.now().minusDays(1)
+				val date = Instant.now().minus(1, ChronoUnit.DAYS)
 				val result = chooseAnOptionView(InProgress, formattedUploadDate(mockExpiryTimeStamp))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-					s"${Messages("today")} at ${date.toString("h:mma").toLowerCase()}")
+					s"${Messages("today")} at ${date.atZone(zoneID).format(DateTimeFormatter.ofPattern("h:mma")).toLowerCase()}")
 				doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
 				doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 
 			}
 
 			"contain File processing paragraphs with yesterday date" in {
-				val date = DateTime.now().minusDays(1)
-				val result = chooseAnOptionView(InProgress, formattedUploadDate(date.getMillis))(fakeRequest, testMessages, mockAppConfig)
+				val date = Instant.now().minus(1, ChronoUnit.DAYS)
+				val result = chooseAnOptionView(InProgress, formattedUploadDate(date.toEpochMilli))(fakeRequest, testMessages, mockAppConfig)
 				doc(result).getElementsByClass("paragraph-info").get(0).text() shouldBe Messages("file.processing") + Messages("file.upload.time",
-					s"${Messages("yesterday")} at ${date.toString("h:mma").toLowerCase()}")
+					s"${Messages("yesterday")} at ${date.atZone(zoneID).format(DateTimeFormatter.ofPattern("h:mma")).toLowerCase()}")
 				doc(result).getElementsByClass("paragraph-info").get(1).text() shouldBe Messages("file.size.info")
 				doc(result).getElementsByClass("paragraph-info").get(2).text() shouldBe Messages("processing.file")
 			}

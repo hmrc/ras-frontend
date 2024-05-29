@@ -16,8 +16,8 @@
 
 package connectors
 
-import akka.actor.ActorSystem
-import akka.stream.scaladsl.StreamConverters
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.StreamConverters
 import config.ApplicationConfig
 import models.{ApiVersion, MemberDetails, ResidencyStatus}
 import play.api.Logging

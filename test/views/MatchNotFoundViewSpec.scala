@@ -16,7 +16,7 @@
 
 package views
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -24,11 +24,15 @@ import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import views.helpers.ViewSpecHelper
 
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
 
 class MatchNotFoundViewSpec extends ViewSpecHelper {
 
 	val nino: String = "AA123456A"
-	val dob: String = new LocalDate(1999, 1, 1).toString("d MMMM yyyy")
+	val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK)
+	val dob: String = LocalDate.of(1999, 1, 1).format(dateFormatter)
 
 	"match not found page" must {
 

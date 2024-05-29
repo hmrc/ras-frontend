@@ -18,7 +18,6 @@ package controllers
 
 import models._
 import models.upscan.{UpscanFileReference, UpscanInitiateResponse}
-import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
@@ -33,6 +32,8 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.RasTestHelper
 
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
 class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
@@ -47,8 +48,9 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
   val rasSession: RasSession = RasSession(memberName, memberNino, memberDob, None)
   val upscanResponse: models.upscan.UpscanInitiateResponse = UpscanInitiateResponse(UpscanFileReference(""), "upscan/upload-proxy", Map("" -> ""))
 
-  val mockUploadTimeStamp: Long = new DateTime().minusDays(10).getMillis
-  val fileSession: FileSession = FileSession(Some(CallbackData("",None, "",None,None)),None,"1234",Some(DateTime.now().getMillis),None)
+  val mockUploadTimeStamp: Long = Instant.now().minus(10, ChronoUnit.DAYS).toEpochMilli
+
+  val fileSession: FileSession = FileSession(Some(CallbackData("",None,"",None, None)),None,"1234", Some(Instant.now().toEpochMilli),None)
 
   private def doc(result: Future[Result]): Document = Jsoup.parse(contentAsString(result))
 

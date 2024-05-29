@@ -16,44 +16,10 @@
 
 package services
 
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import uk.gov.hmrc.time.TaxYear
 
-trait TaxYearResolver {
+object TaxYearResolver {
+	def currentTaxYear: Int = TaxYear.current.currentYear
 
-	lazy val now: () => DateTime = ???
-
-	private val ukTime : DateTimeZone = DateTimeZone.forID("Europe/London")
-
-	def taxYearFor(dateToResolve: LocalDate): Int = {
-		val year = dateToResolve.year.get
-
-		if (dateToResolve.isBefore(new LocalDate(year, 4, 6)))
-			year - 1
-		else
-			year
-	}
-
-	def fallsInThisTaxYear(currentDate: LocalDate): Boolean = {
-		val earliestDateForCurrentTaxYear = new LocalDate(taxYearFor(now().toLocalDate), 4, 6)
-		earliestDateForCurrentTaxYear.isBefore(currentDate) || earliestDateForCurrentTaxYear.isEqual(currentDate)
-	}
-
-	def currentTaxYear: Int = taxYearFor(new LocalDate(now(), ukTime))
-
-	def startOfTaxYear(year: Int) = new LocalDate(year, 4, 6)
-
-	def endOfTaxYear(year: Int) = new LocalDate(year + 1, 4, 5)
-
-	def endOfLastTaxYear: LocalDate = endOfTaxYear(currentTaxYear - 1)
-
-	def startOfCurrentTaxYear: LocalDate = startOfTaxYear(currentTaxYear)
-
-	def endOfCurrentTaxYear: LocalDate = endOfTaxYear(currentTaxYear)
-
-	def startOfNextTaxYear: LocalDate = startOfTaxYear(currentTaxYear + 1)
-
-}
-
-object TaxYearResolver extends TaxYearResolver {
-	override lazy val now: () => DateTime = () => DateTime.now()
+	def nextTaxYear: Int = TaxYear.current.next.currentYear
 }
