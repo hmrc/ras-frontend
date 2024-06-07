@@ -19,9 +19,9 @@ package config
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.bootstrap.http.HttpClientV2Provider
 
 class Bindings extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -30,6 +30,6 @@ class Bindings extends Module {
 
   private def bindDeps(): Seq[Binding[_]] = Seq(
 		bind[AuthConnector].to(classOf[DefaultAuthConnector]),
-    bind[HttpClient].to(classOf[DefaultHttpClient])
+    bind[HttpClientV2].toProvider(classOf[HttpClientV2Provider])
 	)
 }

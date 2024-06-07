@@ -17,7 +17,7 @@
 @import config.ApplicationConfig
 @import play.api.i18n.Messages
 @this(govuk_wrapper: views.html.govuk_wrapper)
-@()(implicit messages: Messages, request: Request[_], appConfig: ApplicationConfig)
+@()(implicit messages: Messages, request: RequestHeader, appConfig: ApplicationConfig)
 
 @anchor(serviceName: String, email: String) = {
     <a class="govuk-link" href="mailto:@email">@serviceName</a>
