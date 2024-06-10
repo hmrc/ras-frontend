@@ -17,22 +17,23 @@
 package config
 
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Request
+import play.api.mvc.RequestHeader
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
 														 implicit val appConfig: ApplicationConfig,
+														 implicit val ec: ExecutionContext,
 														 errorPageView: views.html.error,
-														 pageNotFoundView: views.html.global_page_not_found) extends FrontendErrorHandler with I18nSupport {
+														 pageNotFoundView: views.html.global_page_not_found)
+	extends FrontendErrorHandler
+		with I18nSupport {
+	override def notFoundTemplate(implicit request: play.api.mvc.RequestHeader): Future[Html] =
+		Future.successful(pageNotFoundView())
 
-	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html = {
-		errorPageView(pageTitle, heading, message)
-	}
-
-	override def notFoundTemplate(implicit rh: Request[_]): Html = {
-		pageNotFoundView()
-	}
+	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader): Future[Html] =
+		Future.successful(errorPageView(pageTitle, heading, message))
 }

@@ -7,7 +7,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning
 
 val appName = "ras-frontend"
 
-ThisBuild / scalaVersion := "2.13.13"
+ThisBuild / scalaVersion := "2.13.14"
 ThisBuild / majorVersion := 0
 
 lazy val scoverageSettings = {
@@ -20,7 +20,7 @@ lazy val scoverageSettings = {
 }
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
+  .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     scalacOptions ++= Seq(
