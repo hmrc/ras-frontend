@@ -16,11 +16,11 @@ class FrontendAccessibilitySpec
   implicit val arbAppConfig: Arbitrary[ApplicationConfig] = fixed(appConfig)
 
   implicit val arbMemberDateOfBirth:
-    Arbitrary[Form[models.MemberDateOfBirth]]             = fixed(MemberDateOfBirthForm.apply(Some("2014/15/01")))
+    Arbitrary[Form[models.MemberDateOfBirth]]             = fixed(MemberDateOfBirthForm.apply(Some("name")))
   implicit val arbMemberName:
     Arbitrary[Form[models.MemberName]]                    = fixed(MemberNameForm.form)
   implicit val arbMemberNINO:
-    Arbitrary[Form[models.MemberNino]]                    = fixed(MemberNinoForm.apply(Some("test")))
+    Arbitrary[Form[models.MemberNino]]                    = fixed(MemberNinoForm.apply(Some("firstName")))
   implicit val arbFileUploadStatus:
     Arbitrary[FileUploadStatus.Value]                     = fixed(models.FileUploadStatus.NoFileSession)
 
@@ -29,6 +29,7 @@ class FrontendAccessibilitySpec
 
   override def renderViewByClass: PartialFunction[Any, Html] =
   {
+    case error: error                                               => render(error)
     case cannot_upload_another_file: cannot_upload_another_file     => render(cannot_upload_another_file)
     case choose_an_option: choose_an_option                         => render(choose_an_option)
     case file_not_available: file_not_available                     => render(file_not_available)
@@ -48,7 +49,7 @@ class FrontendAccessibilitySpec
     case sorry_you_need_to_start_again:
       sorry_you_need_to_start_again                                 => render(sorry_you_need_to_start_again)
     case unauthorised: unauthorised                                 => render(unauthorised)
-    //case upload_result: upload_result => render(upload_result)
+    case upload_result: upload_result => render(upload_result)
   }
 
   runAccessibilityTests()
