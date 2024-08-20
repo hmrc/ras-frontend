@@ -1,2 +1,2 @@
 
-sbt clean scalastyleAll compile coverage test coverageOff coverageReport dependencyUpdates
+sbt clean scalastyleAll compile coverage test coverageOff coverageReport dependencyUpdates A11y/test

@@ -56,3 +56,4 @@ class FrontendAccessibilitySpec
 
   override def layoutClasses: Seq[Class[govuk_wrapper]] = Seq(classOf[govuk_wrapper])
 }
+
