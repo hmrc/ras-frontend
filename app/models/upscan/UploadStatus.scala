@@ -16,9 +16,9 @@
 
 package models.upscan
 
-import play.api.libs.json.{JsError, JsObject, JsResult, JsString, JsSuccess, JsValue, Json, OFormat, Reads, Writes}
+import play.api.libs.json._
 
-trait UploadStatus
+sealed trait UploadStatus
 
 case object InProgress extends UploadStatus
 
@@ -48,12 +48,10 @@ object UploadStatus {
     }
   }
 
-  implicit val writesUploadStatus: Writes[UploadStatus] = (status: UploadStatus) => {
-    status match {
-      case NotStarted => JsString("NotStarted")
-      case InProgress => JsString("InProgress")
-      case Failed => JsString("Failed")
-      case s: UploadedSuccessfully => Json.toJson(s)(UploadedSuccessfully.uploadedSuccessfullyFormat).as[JsObject] + ("_type" -> JsString("UploadedSuccessfully"))
-    }
+  implicit val writesUploadStatus: Writes[UploadStatus] = {
+    case NotStarted => JsString("NotStarted")
+    case InProgress => JsString("InProgress")
+    case Failed => JsString("Failed")
+    case s: UploadedSuccessfully => Json.toJson(s)(UploadedSuccessfully.uploadedSuccessfullyFormat).as[JsObject] + ("_type" -> JsString("UploadedSuccessfully"))
   }
 }

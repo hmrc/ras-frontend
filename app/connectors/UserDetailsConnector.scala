@@ -20,17 +20,21 @@ import models._
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.bootstrap.http.HttpClientV2Provider
+import java.net.URL
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserDetailsConnector @Inject()(val http: DefaultHttpClient) {
+class UserDetailsConnector @Inject()(val http: HttpClientV2Provider) {
 
 	implicit val userDetailsFormats: OFormat[UserDetails] = Json.format[UserDetails]
 
-	def getUserDetails(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserDetails] = {
-    http.GET[UserDetails](url)
+	def getUserDetails(url: URL)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserDetails] = {
+    http
+      .get()
+      .get(url)
+      .execute[UserDetails]
   }
 
 }
