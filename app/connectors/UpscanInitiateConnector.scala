@@ -19,20 +19,20 @@ package connectors
 import config.ApplicationConfig
 import models.ApiVersion
 import models.upscan.{PreparedUpload, UpscanFileReference, UpscanInitiateRequest, UpscanInitiateResponse}
-import play.api.libs.json.Writes
+import play.api.libs.json.{Json, OFormat}
 import play.mvc.Http.HeaderNames
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpscanInitiateConnector @Inject()(httpClient: HttpClient, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
+class UpscanInitiateConnector @Inject()(httpClient: HttpClientV2, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
 
-  private val headers = Map(
-    HeaderNames.CONTENT_TYPE -> "application/json"
-  )
+  private val headers: (String, String) = (HeaderNames.CONTENT_TYPE, "application/json")
 
-  private val upscanInitiateUrl: String = appConfig.initiateUrl
+  private val upscanInitiateUrl: URL = url"${appConfig.initiateUrl}"
   lazy val rasApiBaseUrl: String = appConfig.rasApiBaseUrl
   lazy val rasFileUploadCallbackUrl: String = appConfig.upscanCallbackEndpoint
   lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
@@ -40,7 +40,7 @@ class UpscanInitiateConnector @Inject()(httpClient: HttpClient, appConfig: Appli
 
   def initiateUpscan(userId: String, redirectOnSuccess: Option[String], redirectOnError: Option[String])
                 (implicit hc: HeaderCarrier): Future[UpscanInitiateResponse] = {
-    val request = UpscanInitiateRequest(
+    val request: UpscanInitiateRequest = UpscanInitiateRequest(
       callbackUrl = s"$rasApiBaseUrl$rasFileUploadCallbackUrl/$userId?version=$apiVersion",
       successRedirect = redirectOnSuccess,
       errorRedirect = redirectOnError,
@@ -50,11 +50,15 @@ class UpscanInitiateConnector @Inject()(httpClient: HttpClient, appConfig: Appli
     initiate(upscanInitiateUrl, request)
   }
 
-  private def initiate[T](url: String, request: T)(
+  private def initiate(url: URL, request: UpscanInitiateRequest)(
     implicit hc: HeaderCarrier,
-    wts: Writes[T]): Future[UpscanInitiateResponse] =
+    format: OFormat[UpscanInitiateRequest]): Future[UpscanInitiateResponse] =
     for {
-      response <- httpClient.POST[T, PreparedUpload](url, request, headers.toSeq)
+      response: PreparedUpload <- httpClient
+        .post(url)(hc)
+        .withBody(Json.toJson(request))
+        .setHeader(headers)
+        .execute[PreparedUpload]
       fileReference = UpscanFileReference(response.reference.value)
       postTarget = response.uploadRequest.href
       formFields = response.uploadRequest.fields

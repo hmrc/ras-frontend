@@ -38,7 +38,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import views.html._
 
 import scala.concurrent.duration.{Duration, DurationInt}
@@ -87,7 +86,6 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 	val mockAppCrypto: ApplicationCrypto = mock[ApplicationCrypto]
 
-	val mockHttp: DefaultHttpClient = mock[DefaultHttpClient]
 	val mockAuthConnector: DefaultAuthConnector = mock[DefaultAuthConnector]
 	val mockAuditConnector: DefaultAuditConnector = mock[DefaultAuditConnector]
 	val mockAuditService: AuditService = mock[AuditService]

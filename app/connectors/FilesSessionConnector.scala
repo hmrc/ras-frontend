@@ -22,52 +22,56 @@ import models.{CreateFileSessionRequest, FileSession}
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.play.bootstrap.http.HttpClientV2Provider
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FilesSessionConnector @Inject()(val http: DefaultHttpClient,
+class FilesSessionConnector @Inject()(val http: HttpClientV2Provider,
                                      val appConfig: ApplicationConfig) extends Logging {
 
   lazy val serviceUrl: String = appConfig.rasApiBaseUrl
 
-  def createFileSession(request: CreateFileSessionRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
-    val createSessionUri = s"$serviceUrl/create-file-session"
+  def createFileSession(request: CreateFileSessionRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    http
+      .get()
+      .post(url"$serviceUrl/create-file-session")
+      .withBody(Json.toJson(request))
+      .execute
+      .map {
+        case response if response.status == CREATED => true
+        case _ => false
+      }
 
-    http.POST[CreateFileSessionRequest, HttpResponse](createSessionUri, request).map {
-      case response if response.status == CREATED => true
-      case _ => false
-    }
-  }
+  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] =
+    http
+      .get()
+      .get(url"$serviceUrl/get-file-session/$userId")
+      .execute
+      .flatMap {
+        response =>
+          response.status match {
+            case OK =>
+              Json.parse(response.body).validate[FileSession] match {
+                case JsSuccess(value, _) => Future.successful(Some(value))
+                case _ => Future.successful(None)
+              }
+            case status =>
+              logger.warn(s"[FilesSessionConnector][fetchFileSession] Received non-OK status code from API: $status")
+              Future.successful(None)
+          }
+      }
 
-  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] = {
-    val getSessionUri = s"$serviceUrl/get-file-session/$userId"
-
-    http.GET(getSessionUri).flatMap {
-      response =>
-        response.status match {
-          case OK =>
-            Json.parse(response.body).validate[FileSession] match {
-              case JsSuccess(value, _) => Future.successful(Some(value))
-              case _ => Future.successful(None)
-            }
-          case status =>
-            logger.warn(s"[FilesSessionConnector][fetchFileSession] Received non-OK status code from API: $status")
-            Future.successful(None)
-        }
-    }
-  }
-
-  def deleteFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
-    val deleteSessionUri = s"$serviceUrl/delete-file-session/$userId"
-
-    http.DELETE(deleteSessionUri).map {
-      case response if response.status == NO_CONTENT => true
-      case _ => false
-    }
-  }
+  def deleteFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    http
+      .get()
+      .delete(url"$serviceUrl/delete-file-session/$userId")
+      .execute
+      .map {
+        case response if response.status == NO_CONTENT => true
+        case _ => false
+      }
 }
