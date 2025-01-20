@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SessionCacheService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -30,52 +30,46 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
                                   val sessionService: SessionCacheService,
                                   val mcc: MessagesControllerComponents,
                                   val appConfig: ApplicationConfig
-																 ) extends FrontendController(mcc) with RasController with Logging {
+                                 ) extends FrontendController(mcc) with RasController with Logging {
 
-	implicit val ec: ExecutionContext = mcc.executionContext
+  implicit val ec: ExecutionContext = mcc.executionContext
 
-	val CHOOSE_AN_OPTION = "choose-an-option"
+  val CHOOSE_AN_OPTION = "choose-an-option"
   val MEMBER_NAME = "member-name"
   val MEMBER_NINO = "member-nino"
   val MEMBER_DOB = "member-dob"
 
-  def redirect(target:String, cleanSession:Boolean, edit: Boolean = false): Action[AnyContent] = Action.async {
+  def redirect(target: String, cleanSession: Boolean, edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       isAuthorised().flatMap {
-        case Right(_) =>
-          if (cleanSession) {
-            sessionService.resetRasSession() map {
-              case Some(_) =>
-                target match {
-                  case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get)
-                  case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
-                  case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
-                  case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
-                  case _ =>
-                    logger.error(s"[SessionController][redirect] Invalid redirect target $target")
-                    Redirect(routes.ErrorController.renderGlobalErrorPage)
-                }
-              case _ =>
-                logger.error("[SessionController][redirect] No session found")
-                Redirect(routes.ErrorController.renderGlobalErrorPage)
-            }
-          } else {
-            target match {
-              case CHOOSE_AN_OPTION => Future.successful(Redirect(routes.ChooseAnOptionController.get))
-              case MEMBER_NAME => Future.successful(Redirect(routes.MemberNameController.get(edit)))
-              case MEMBER_NINO => Future.successful(Redirect(routes.MemberNinoController.get(edit)))
-              case MEMBER_DOB => Future.successful(Redirect(routes.MemberDOBController.get(edit)))
-              case _ =>
-                logger.error(s"[SessionController][cleanAndRedirect] Invalid redirect target $target")
-                Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
-            }
+        case Right(_) if cleanSession =>
+          sessionService.resetRasSession() map {
+            case Some(_) =>
+              redirectToTarget(target, edit)
+            case _ =>
+              logger.error("[SessionController][redirect] No session found")
+              Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
+        case Right(_) => Future.successful(redirectToTarget(target, edit))
         case Left(resp) =>
           logger.warn("[SessionController][redirect] User is unauthenticated")
           resp
       }
   }
+
+  private def redirectToTarget(target: String, edit: Boolean): Result = {
+    target match {
+      case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get)
+      case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
+      case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
+      case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
+      case _ =>
+        logger.error(s"[SessionController][redirect] Invalid redirect target $target")
+        Redirect(routes.ErrorController.renderGlobalErrorPage)
+    }
+  }
+
   def keepAlive(): Action[AnyContent] = Action.async {
-     Future.successful(Ok("OK"))
+    Future.successful(Ok("OK"))
   }
 }

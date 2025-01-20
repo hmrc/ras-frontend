@@ -56,7 +56,7 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceName = Some(messages("service.name")),
         serviceUrl = Some(controllers.routes.ChooseAnOptionController.get.url),
-        signOutUrl = Some(appConfig.signOutAndContinueUrl),
+        signOutUrl = Some(controllers.routes.LogoutController.logout.url),
         userResearchBanner = if(showUrBanner && appConfig.urBannerEnabled) Some(UserResearchBanner(url = appConfig.urBannerLinkUrl)) else None
     )),
     beforeContentBlock = beforeContentHtml,
