@@ -27,7 +27,6 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LogoutController @Inject()(val authConnector: DefaultAuthConnector,
-                                 val sessionService: SessionCacheService,
                                  val mcc: MessagesControllerComponents,
                                  val appConfig: ApplicationConfig
                                 ) extends FrontendController(mcc) with RasController with Logging {
