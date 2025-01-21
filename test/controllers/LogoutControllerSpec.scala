@@ -16,17 +16,15 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.reset
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{doReturn, spy, when}
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.mvc.Result
-import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
-import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments, NoActiveSession, SessionRecordNotFound}
+import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments, SessionRecordNotFound}
 import utils.RasTestHelper
 
 import scala.concurrent.Future
@@ -55,7 +53,8 @@ class LogoutControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "redirect to sign in page when user logged out" in {
-      when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(Future.failed(SessionRecordNotFound("no session found")))
+      when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any()))
+        .thenReturn(Future.failed(SessionRecordNotFound("no session found")))
 
       val result: Future[Result] = logoutController.logout(FakeRequest())
 

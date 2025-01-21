@@ -17,8 +17,6 @@
 package views
 
 import models.FileUploadStatus._
-
-import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
@@ -26,6 +24,7 @@ import utils.RasTestHelper
 
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.Locale
 
 
