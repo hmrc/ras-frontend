@@ -31,19 +31,19 @@ import scala.concurrent.Future
 
 class LogoutControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  private val enrolment = new Enrolment(
-    key = "HMRC-PSA-ORG",
-    identifiers = List(EnrolmentIdentifier("PSAID", "Z123456")),
-    state = "Activated"
-  )
-
-  val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
-
   val logoutController = new LogoutController(mockAuthConnector, mockMCC, mockAppConfig)
 
   "LogoutController" must {
 
     "redirect to the feedback page when user is logged in" in {
+      val enrolment = new Enrolment(
+        key = "HMRC-PSA-ORG",
+        identifiers = List(EnrolmentIdentifier("PSAID", "Z123456")),
+        state = "Activated"
+      )
+
+      val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
+
       when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
       val result: Future[Result] = logoutController.logout(FakeRequest())
