@@ -28,6 +28,8 @@ import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+import uk.gov.hmrc.http.HttpReads.Implicits._
+
 class UpscanInitiateConnector @Inject()(httpClient: HttpClientV2, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
 
   private val headers: (String, String) = (HeaderNames.CONTENT_TYPE, "application/json")

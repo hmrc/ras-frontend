@@ -29,14 +29,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait RasController extends AuthorisedFunctions with Logging {
 
-	val appConfig: ApplicationConfig
+  val appConfig: ApplicationConfig
 
-	def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
-    authorised(AuthProviders(GovernmentGateway) and (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG") or Enrolment("HMRC-PODS-ORG") or Enrolment("HMRC-PODSPP-ORG"))
+  def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
+    authorised(AuthProviders(GovernmentGateway) and
+      (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG") or Enrolment("HMRC-PODS-ORG") or Enrolment("HMRC-PODSPP-ORG"))
     ).retrieve(authorisedEnrolments) {
-			enrolments =>
-				Future(Right(enrolments.enrolments.head.identifiers.head.value))
-		} recover {
+      enrolments =>
+        Future(Right(enrolments.enrolments.head.identifiers.head.value))
+    }.recover {
       case e: NoActiveSession => Left(notLogged(e))
       case ex: AuthorisationException => Left(unAuthorise(ex))
     }
@@ -52,13 +53,13 @@ trait RasController extends AuthorisedFunctions with Logging {
     Future.successful(Redirect(routes.ErrorController.notAuthorised))
   }
 
-	def toGGLogin(continueUrl: String): Result = {
-		Redirect(
+  def toGGLogin(continueUrl: String): Result = {
+    Redirect(
       appConfig.loginURL,
-			Map(
-				"continue_url" -> Seq(continueUrl),
-				"origin"   -> Seq("ras-frontend")
-			)
-		)
-	}
+      Map(
+        "continue_url" -> Seq(continueUrl),
+        "origin" -> Seq("ras-frontend")
+      )
+    )
+  }
 }
