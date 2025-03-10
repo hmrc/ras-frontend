@@ -155,5 +155,25 @@ class MemberNameFormSpec extends AnyWordSpec with RasTestHelper {
       val validatedForm = form.bind(formData, fromJsonMaxChars)
       assert(validatedForm.errors.isEmpty)
     }
+
+    "trim leading whitespace" in {
+      val formData = Json.obj(
+        "firstName" -> " Ramin",
+        "lastName" -> "   Esfandiari")
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
+      assert(validatedForm.errors.isEmpty)
+      assert(validatedForm.get.firstName == "Ramin")
+      assert(validatedForm.get.lastName == "Esfandiari")
+    }
+
+    "trim trailing whitespace" in {
+      val formData = Json.obj(
+        "firstName" -> "Ramin   ",
+        "lastName" -> "Esfandiari   ")
+      val validatedForm = form.bind(formData, fromJsonMaxChars)
+      assert(validatedForm.errors.isEmpty)
+      assert(validatedForm.get.firstName == "Ramin")
+      assert(validatedForm.get.lastName == "Esfandiari")
+    }
   }
 }
