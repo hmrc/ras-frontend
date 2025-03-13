@@ -38,6 +38,7 @@ results.not.available.yet.page.header = The results file is not available yet
 file.not.available.page.header = This file is not available
 unauthorised.page.header = You cannot use these sign in details
 file.ready.page.header = The last file you uploaded is ready
+sign.out.page.header = For your security, we signed you out
 
 ###### SUB-HEADERS #################################################################################
 
@@ -216,6 +217,10 @@ ras.timeoutDialog.minute= minute
 ras.timeoutDialog.button= Stay signed in
 ras.timeoutDialog.p1 = For security reasons, you will be signed out of this service in:
 ras.timeoutDialog.signout= Sign out
+
+##signoutDialog
+sign.out.page.title = For your security, we signed you out
+sign.out.button = Sign in
 
 ###### WDYWTDP ######################################################################################
 

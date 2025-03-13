@@ -137,4 +137,5 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	val unauthorisedView: unauthorised = fakeApplication.injector.instanceOf[unauthorised]
 	val uploadResultView: upload_result = fakeApplication.injector.instanceOf[upload_result]
 	val startAtStartView: sorry_you_need_to_start_again = fakeApplication.injector.instanceOf[sorry_you_need_to_start_again]
+	val signedOutView: signed_out = fakeApplication.injector.instanceOf[signed_out]
 }

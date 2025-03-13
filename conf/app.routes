@@ -45,3 +45,5 @@ GET         /check-another-member/:target                                       
 GET         /keep-alive                                                         controllers.SessionController.keepAlive
 
 GET         /logout                                                             controllers.LogoutController.logout
+
+GET         /signed-out                                                         controllers.SignedOutController.signedOut
