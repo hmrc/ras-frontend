@@ -50,6 +50,7 @@ class FrontendAccessibilitySpec
       sorry_you_need_to_start_again                                 => render(sorry_you_need_to_start_again)
     case unauthorised: unauthorised                                 => render(unauthorised)
     case upload_result: upload_result => render(upload_result)
+    case signed_out: signed_out => render(signed_out)
   }
 
   runAccessibilityTests()
