@@ -27,16 +27,18 @@
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper
 )
 
-@(pageTitle: String, beforeContentHtml: Option[Html] = None, showUrBanner: Boolean = false, scriptElem: Option[Html] = None)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: ApplicationConfig)
+@(pageTitle: String, beforeContentHtml: Option[Html] = None, showUrBanner: Boolean = false, scriptElem: Option[Html] = None, turnOnSignOutDialogHelper: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: ApplicationConfig)
 
 @head = {
     <meta name="format-detection" content="telephone=no" />
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/ras.css")'/>
-    @hmrcTimeoutDialogHelper(
-        signOutUrl = appConfig.signOutAndContinueUrl,
-        timeout = Some(appConfig.timeOutSeconds),
-        countdown = Some(appConfig.timeOutCountDownSeconds)
-    )
+    @if(turnOnSignOutDialogHelper){
+        @hmrcTimeoutDialogHelper(
+            signOutUrl = appConfig.timedOutUrl,
+            timeout = Some(appConfig.timeOutSeconds),
+            countdown = Some(appConfig.timeOutCountDownSeconds)
+        )
+    }
 }
 
 @content = {

@@ -43,6 +43,7 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
 	lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 	lazy val signOutAndContinueUrl: String = s"$signOutBaseUrl$continueCallback"
+	lazy val timedOutUrl: String = "/relief-at-source/signed-out"
 	lazy val loginCallback: String = config.getConfString("gg-urls.login-callback.url","/relief-at-source/")
 	lazy val fileDeletionUrl: String = config.getConfString("file-deletion-url","/ras-api/file/remove/")
 	lazy val rasApiResidencyStatusEndpoint: String = loadConfig("residency-status-url")
