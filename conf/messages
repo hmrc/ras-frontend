@@ -51,6 +51,7 @@ file.upload.page.sub-title = You can only upload:
 file.upload.page.point.one = one file at a time
 file.upload.page.point.two = a CSV
 file.upload.page.point.three = a file smaller than 2MB
+file.upload.page.upload.a.file = Upload a file
 
 upload.success.first-description = If your file is larger than 1MB or if the service is busy it can take up to 24 hours.
 upload.success.second-description = The results will be available on the service for 3 calendar days before being deleted.
