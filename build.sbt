@@ -7,7 +7,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning
 
 val appName = "ras-frontend"
 
-ThisBuild / scalaVersion := "2.13.14"
+ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / majorVersion := 0
 
 lazy val scoverageSettings = {
