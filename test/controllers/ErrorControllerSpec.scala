@@ -22,12 +22,14 @@ import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.RasTestHelper
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
 
@@ -43,6 +45,7 @@ class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
 
 
   "ErrorController" must {
+
     "return error when global error endpoint is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
@@ -74,5 +77,29 @@ class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }
+
+    val controller = new ErrorController(mockAuthConnector, mockRasSessionCacheService, mockMCC, globalErrorView, problemUploadingFileView, fileNotAvailableView, unauthorisedView, startAtStartView)(mockAppConfig) {
+      override def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
+        Future.successful(Left(Future.successful(Forbidden("User not authorised"))))
+
+      }
+    }
+
+    "return the response from Left when user is not authorised for renderGlobalErrorPage" in {
+      val result: Future[Result] = controller.renderGlobalErrorPage.apply(FakeRequest())
+      status(result) shouldBe FORBIDDEN
+    }
+
+    "return the response from Left when user is not authorised for renderProblemUploadingFilePage" in {
+      val result: Future[Result] = controller.renderProblemUploadingFilePage.apply(FakeRequest())
+      status(result) shouldBe FORBIDDEN
+    }
+
+    "return the response from Left when user is not authorised for fileNotAvailable" in {
+      val result: Future[Result] = controller.fileNotAvailable.apply(FakeRequest())
+      status(result) shouldBe FORBIDDEN
+    }
+
+
   }
 }
