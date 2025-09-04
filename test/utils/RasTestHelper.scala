@@ -18,13 +18,13 @@ package utils
 
 import org.apache.pekko.actor.ActorSystem
 import config.ApplicationConfig
-import connectors.{UpscanInitiateConnector, FilesSessionConnector, ResidencyStatusAPIConnector, UserDetailsConnector}
+import connectors.{FilesSessionConnector, ResidencyStatusAPIConnector, UpscanInitiateConnector, UserDetailsConnector}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.when
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.{MessagesApi, MessagesImpl}
+import play.api.i18n.{Messages, MessagesApi, MessagesImpl}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._
 import play.api.test.FakeRequest
@@ -63,6 +63,8 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	private val messagesActionBuilder: MessagesActionBuilder = new DefaultMessagesActionBuilderImpl(stubBodyParser[AnyContent](), stubMessagesApi())
 	private val cc: ControllerComponents = stubControllerComponents()
 	val fakeRequest = FakeRequest()
+
+  def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
 	val mockMCC: MessagesControllerComponents = DefaultMessagesControllerComponents(
 		messagesActionBuilder,

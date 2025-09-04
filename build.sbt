@@ -1,23 +1,11 @@
-import sbt.Keys.*
 import sbt.*
-import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
+import sbt.Keys.*
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.versioning.SbtGitVersioning
 
 val appName = "ras-frontend"
 
 ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / majorVersion := 0
-
-lazy val scoverageSettings = {
-  Seq(
-    ScoverageKeys.coverageExcludedPackages := "<empty>;testOnlyDoNotUseInAppConf.*;conf.*;models.*;views.*;app.*;uk.gov.hmrc.*;prod.*;connectors.*",
-    ScoverageKeys.coverageMinimumStmtTotal := 86,
-    ScoverageKeys.coverageFailOnMinimum := true,
-    ScoverageKeys.coverageHighlighting := true,
-  )
-}
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
@@ -37,5 +25,5 @@ lazy val microservice = Project(appName, file("."))
   )
   // To resolve dependency clash between flexmark v0.64.4+ and play-language to run accessibility tests, remove when versions align
   .settings(dependencyOverrides += "com.ibm.icu" % "icu4j" % "69.1")
+  .settings(CodeCoverageSettings())
 
-addCommandAlias("scalastyleAll", "all scalastyle Test/scalastyle")
