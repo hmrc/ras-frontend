@@ -2,12 +2,10 @@ import sbt.*
 import sbt.Keys.*
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 
-val appName = "ras-frontend"
-
 ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / majorVersion := 0
 
-lazy val microservice = Project(appName, file("."))
+lazy val microservice = Project("ras-frontend", file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
@@ -23,7 +21,5 @@ lazy val microservice = Project(appName, file("."))
     PlayKeys.playDefaultPort := 9673,
     libraryDependencies ++= AppDependencies(),
   )
-  // To resolve dependency clash between flexmark v0.64.4+ and play-language to run accessibility tests, remove when versions align
-  .settings(dependencyOverrides += "com.ibm.icu" % "icu4j" % "69.1")
   .settings(CodeCoverageSettings())
 
