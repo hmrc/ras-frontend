@@ -46,14 +46,6 @@ Prior to raising a PR use the following script to run Unit tests with coverage a
 **NOTE:** Cucumber/acceptance tests are available in a separate project at:
 [https://github.com/hmrc/ras-acceptance-tests](https://github.com/hmrc/ras-acceptance-tests)
 
-#### Accessibility Tests
-
-For the accessibility tests Node v12 or above is needed. Details can be found [here](https://github.com/hmrc/sbt-accessibility-linter).
-
-Run the tests with command:
-
-* `sbt clean A11y/test`
-
 #### Performance Tests
 
 **NOTE:** Performance tests are available in a separate project at:
@@ -62,7 +54,7 @@ Run the tests with command:
 Running Locally
 ------------
 
-Install [Service Manager](https://github.com/hmrc/service-manager), then start dependencies:
+Install [Service Manager](https://github.com/hmrc/sm2), then start dependencies:
 
     sm2 --start RAS_ALL
 
