@@ -56,7 +56,6 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
   val TestUpscanController: UpscanController = new UpscanController(mockUpscanInitiateConnector, mockAuthConnector, mockFilesSessionService, mockRasSessionCacheService, mockMCC, mockAppConfig, fileUploadView, fileUploadSuccessfulView, cannotUploadAnotherFileView) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
-    when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
 
   "UpscanController" must {

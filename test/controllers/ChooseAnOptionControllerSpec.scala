@@ -57,7 +57,6 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
     when(mockResidencyStatusAPIConnector.getFile(any(), any())(any(), any())).thenReturn(Future.successful(Some(inputStream)))
-    when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
   }
 
   "getHelpDate" must {

@@ -62,9 +62,6 @@ class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
   "Results Controller" must {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
 
-    when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).
-      thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
-
     "return 200 when match found" in {
       val result = TestResultsController.matchFound(fakeRequest)
       status(result) shouldBe Status.OK

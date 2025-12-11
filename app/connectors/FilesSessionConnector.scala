@@ -22,26 +22,25 @@ import models.{CreateFileSessionRequest, FileSession}
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
-import uk.gov.hmrc.play.bootstrap.http.HttpClientV2Provider
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FilesSessionConnector @Inject()(val http: HttpClientV2Provider,
-                                     val appConfig: ApplicationConfig) extends Logging {
+class FilesSessionConnector @Inject()(http: HttpClientV2,
+                                     appConfig: ApplicationConfig) extends Logging {
 
   lazy val serviceUrl: String = appConfig.rasApiBaseUrl
 
   def createFileSession(request: CreateFileSessionRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val fullURL = s"$serviceUrl/create-file-session"
     http
-      .get()
       .post(url"$fullURL")
       .withBody(Json.toJson(request))
-      .execute
+      .execute[HttpResponse]
       .map {
         case response if response.status == CREATED => true
         case _ => false
@@ -51,9 +50,8 @@ class FilesSessionConnector @Inject()(val http: HttpClientV2Provider,
   def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] = {
     val fullURL = s"$serviceUrl/get-file-session/$userId"
     http
-      .get()
       .get(url"$fullURL")
-      .execute
+      .execute[HttpResponse]
       .flatMap {
         response =>
           response.status match {
@@ -72,9 +70,8 @@ class FilesSessionConnector @Inject()(val http: HttpClientV2Provider,
   def deleteFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val fullURL = s"$serviceUrl/delete-file-session/$userId"
     http
-      .get()
       .delete(url"$fullURL")
-      .execute
+      .execute[HttpResponse]
       .map {
         case response if response.status == NO_CONTENT => true
         case _ => false
