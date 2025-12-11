@@ -41,12 +41,12 @@ class ResidencyStatusAPIConnector @Inject()(val http: HttpClientV2Provider,
   lazy val residencyStatusVersion: ApiVersion = appConfig.rasApiVersion
 
   def getResidencyStatus(memberDetails: MemberDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ResidencyStatus] = {
-    val rasUri = url"$serviceUrl/$residencyStatusUrl"
+    val fullUrl = s"$serviceUrl/$residencyStatusUrl"
     val headerCarrier = hc.withExtraHeaders("Accept" -> s"application/vnd.hmrc.$residencyStatusVersion+json", "Content-Type" -> "application/json" )
     logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")
     http
       .get()
-      .post(rasUri)(headerCarrier)
+      .post(url"$fullUrl")(headerCarrier)
       .withBody(memberDetails.asCustomerDetailsPayload)
       .execute[HttpResponse]
       .map(toResidencyStatus)
@@ -55,11 +55,11 @@ class ResidencyStatusAPIConnector @Inject()(val http: HttpClientV2Provider,
   def getFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[InputStream]] = {
     implicit val system: ActorSystem = ActorSystem()
     val requiredHeaders: Seq[(String, String)] = hc.headers(HeaderNames.explicitlyIncludedHeaders)
-
+    val fullUrl = s"$serviceUrl/ras-api/file/getFile/$fileName"
     logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
     http
       .get()
-      .get(url"$serviceUrl/ras-api/file/getFile/$fileName")
+      .get(url"$fullUrl")
       .transform(
         requiredHeaders
           .foldLeft(_)((request: WSRequest, headers: (String, String)) => request.addHttpHeaders(headers))
@@ -71,10 +71,10 @@ class ResidencyStatusAPIConnector @Inject()(val http: HttpClientV2Provider,
     }
 
   def deleteFile(fileName: String, userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
-
+    val fullURL = s"$serviceUrl$fileDeletionUrl$fileName/$userId"
     http
       .get()
-      .delete(url"$serviceUrl$fileDeletionUrl$fileName/$userId")
+      .delete(url"$fullURL")
       .execute[HttpResponse]
   }
 

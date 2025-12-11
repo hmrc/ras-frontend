@@ -35,21 +35,24 @@ class FilesSessionConnector @Inject()(val http: HttpClientV2Provider,
 
   lazy val serviceUrl: String = appConfig.rasApiBaseUrl
 
-  def createFileSession(request: CreateFileSessionRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+  def createFileSession(request: CreateFileSessionRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val fullURL = s"$serviceUrl/create-file-session"
     http
       .get()
-      .post(url"$serviceUrl/create-file-session")
+      .post(url"$fullURL")
       .withBody(Json.toJson(request))
       .execute
       .map {
         case response if response.status == CREATED => true
         case _ => false
       }
+  }
 
-  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] =
+  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] = {
+    val fullURL = s"$serviceUrl/get-file-session/$userId"
     http
       .get()
-      .get(url"$serviceUrl/get-file-session/$userId")
+      .get(url"$fullURL")
       .execute
       .flatMap {
         response =>
@@ -64,14 +67,17 @@ class FilesSessionConnector @Inject()(val http: HttpClientV2Provider,
               Future.successful(None)
           }
       }
+  }
 
-  def deleteFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+  def deleteFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val fullURL = s"$serviceUrl/delete-file-session/$userId"
     http
       .get()
-      .delete(url"$serviceUrl/delete-file-session/$userId")
+      .delete(url"$fullURL")
       .execute
       .map {
         case response if response.status == NO_CONTENT => true
         case _ => false
       }
+  }
 }
