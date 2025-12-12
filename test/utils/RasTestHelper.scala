@@ -16,9 +16,9 @@
 
 package utils
 
-import org.apache.pekko.actor.ActorSystem
 import config.ApplicationConfig
-import connectors.{FilesSessionConnector, ResidencyStatusAPIConnector, UpscanInitiateConnector, UserDetailsConnector}
+import connectors.{FilesSessionConnector, ResidencyStatusAPIConnector, UpscanInitiateConnector}
+import org.apache.pekko.actor.ActorSystem
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito.when
@@ -94,7 +94,6 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 
 	val mockUpscanInitiateConnector: UpscanInitiateConnector = mock[UpscanInitiateConnector]
 	val mockResidencyStatusAPIConnector: ResidencyStatusAPIConnector = mock[ResidencyStatusAPIConnector]
-	val mockUserDetailsConnector: UserDetailsConnector = mock[UserDetailsConnector]
 
 	val applicationConfig = fakeApplication.injector.instanceOf[ApplicationConfig]
 

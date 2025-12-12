@@ -68,9 +68,6 @@ class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with Before
 
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
-    when(mockUserDetailsConnector.getUserDetails(any())(any(), any())).
-      thenReturn(Future.successful(UserDetails(None, None, "", groupIdentifier = Some("group"))))
-
     when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
 
     "return ok" when {

@@ -35,8 +35,8 @@ class UpscanInitiateConnector @Inject()(httpClient: HttpClientV2, appConfig: App
   private val headers: (String, String) = (HeaderNames.CONTENT_TYPE, "application/json")
 
   private val upscanInitiateUrl: URL = url"${appConfig.initiateUrl}"
+  private lazy val rasFileUploadCallbackUrl: String = appConfig.upscanCallbackEndpoint
   lazy val rasApiBaseUrl: String = appConfig.rasApiBaseUrl
-  lazy val rasFileUploadCallbackUrl: String = appConfig.upscanCallbackEndpoint
   lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
 
 
