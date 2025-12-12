@@ -22,7 +22,7 @@
 )
 @(name: String, dateOfBirth: String, nino: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@govuk_wrapper(pageTitle = messages("match.not.found.page.title"), showUrBanner = true) {
+@govuk_wrapper(pageTitle = messages("match.not.found.page.title")) {
 
     @govukBackLink(BackLink(
         href = routes.ResultsController.back.url,
