@@ -48,9 +48,6 @@ class ApplicationConfig @Inject()(config: ServicesConfig){
 	lazy val fileDeletionUrl: String = config.getConfString("file-deletion-url","/ras-api/file/remove/")
 	lazy val rasApiResidencyStatusEndpoint: String = loadConfig("residency-status-url")
 
-	lazy val urBannerEnabled: Boolean = config.getConfBool("ur-banner.enabled", defBool = false)
-	lazy val urBannerLinkUrl: String = config.getConfString("ur-banner.link-url","")
-
 	lazy val rasApiVersion: ApiVersion = loadConfig("ras-api-version") match {
     case "1.0" => ApiV1_0
     case "2.0" => ApiV2_0

@@ -27,7 +27,7 @@
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper
 )
 
-@(pageTitle: String, beforeContentHtml: Option[Html] = None, showUrBanner: Boolean = false, scriptElem: Option[Html] = None, turnOnSignOutDialogHelper: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: ApplicationConfig)
+@(pageTitle: String, beforeContentHtml: Option[Html] = None, scriptElem: Option[Html] = None, turnOnSignOutDialogHelper: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: ApplicationConfig)
 
 @head = {
     <meta name="format-detection" content="telephone=no" />
@@ -58,8 +58,7 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceName = Some(messages("service.name")),
         serviceUrl = Some(controllers.routes.ChooseAnOptionController.get.url),
-        signOutUrl = Some(controllers.routes.LogoutController.logout.url),
-        userResearchBanner = if(showUrBanner && appConfig.urBannerEnabled) Some(UserResearchBanner(url = appConfig.urBannerLinkUrl)) else None
+        signOutUrl = Some(controllers.routes.LogoutController.logout.url)
     )),
     beforeContentBlock = beforeContentHtml,
     scriptsBlock = Some(hmrcScripts(scriptElem)),
