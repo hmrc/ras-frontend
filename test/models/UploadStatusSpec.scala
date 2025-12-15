@@ -70,7 +70,8 @@ class UploadStatusSpec extends AnyWordSpec with Matchers {
     "serialize UploadedSuccessfully to JSON with _type" in {
 
 
-      val json = Json.toJson(expectedJson)
+      val json = Json.toJson(expectedJson: UploadStatus)
+      (json \ "_type").as[String] shouldBe "UploadedSuccessfully"
       (json \ "name").as[String] shouldBe "test"
       (json \ "mimeType").as[String] shouldBe "csv"
       (json \ "downloadUrl").as[String] shouldBe "file.csv"

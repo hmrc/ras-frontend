@@ -111,12 +111,6 @@ error.page.not.found.error.contact = If the web address is correct or you select
 error.page.not.found.error.ras.email = reliefatsource.administration@hmrc.gov.uk
 error.page.not.found.error.contact.end = if you need to help with a member's residency status.
 
-###### UR BANNER ######################################################################################
-
-ur.banner.title = Help improve GOV.UK
-ur.banner.text = Get involved in making government services better (opens in a new window)
-ur.banner.dismiss.text = No thanks
-
 ##### OTHER ######################################################################################
 what.to.do.next = What to do next
 you.can.now = You can now:
