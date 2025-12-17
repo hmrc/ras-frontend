@@ -16,8 +16,6 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlPathEqualTo}
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models._
 import models.upscan.UpscanInitiateResponse
 import org.scalatest.matchers.should.Matchers
@@ -48,7 +46,7 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
   "upscan initiate" should {
 
     "returns valid successful response" in {
-      setupMockPost(OK, upscanInitiateResponseJson)
+      setupMockPost(OK, upscanInitiateResponseJson, "/upscan/v2/initiate")
       val result: UpscanInitiateResponse = await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
 
       result.fileReference.reference shouldBe "reference-1234"
@@ -58,7 +56,7 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
     "throw an exception" when {
 
       "upscan returns a 4xx response" in {
-        setupMockPost(BAD_REQUEST, "")
+        setupMockPost(BAD_REQUEST, "", "/upscan/v2/initiate")
         val exception = intercept[UpstreamErrorResponse] {
           await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
         }
@@ -66,7 +64,7 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
       }
 
       "upscan returns 5xx response" in {
-        setupMockPost(SERVICE_UNAVAILABLE, "")
+        setupMockPost(SERVICE_UNAVAILABLE, "", "/upscan/v2/initiate")
         val exception = intercept[UpstreamErrorResponse] {
           await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
         }
@@ -75,13 +73,4 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
     }
   }
 
-  private def setupMockPost(statusCode: Int, body: String): StubMapping =
-    wireMockServer.stubFor(
-      post(urlPathEqualTo("/upscan/v2/initiate"))
-        .willReturn(
-          aResponse()
-            .withStatus(statusCode)
-            .withBody(body)
-        )
-    )
 }

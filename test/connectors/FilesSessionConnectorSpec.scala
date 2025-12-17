@@ -17,16 +17,12 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.{CallbackData, CreateFileSessionRequest, FileSession, ResultsFileMetaData}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.{BAD_REQUEST, CREATED, NO_CONTENT, OK}
 import uk.gov.hmrc.http.client.HttpClientV2
 import utils.RasTestHelper
-
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 
 class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHelper {
   val httpClient: HttpClientV2 = fakeApplication.injector.instanceOf[HttpClientV2]
@@ -43,14 +39,14 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
   "fetchFileSession" should {
 
     "return correct file session response when file fetch call is successful" in {
-      setupMockGet(OK, fileSessionJson)
+      setupMockGet(OK, fileSessionJson, "/get-file-session/A123456")
       val result: Option[FileSession] = await(connector.fetchFileSession("A123456"))
       result shouldBe fileSession
       wireMockServer.verify(getRequestedFor(urlEqualTo("/get-file-session/A123456")))
     }
 
     "return None as the response when file fetch call is successful with bad request" in {
-      setupMockGet(BAD_REQUEST, "")
+      setupMockGet(BAD_REQUEST, "", "/get-file-session/A123456")
       val result: Option[FileSession] = await(connector.fetchFileSession("A123456"))
       result shouldBe None
       wireMockServer.verify(getRequestedFor(urlEqualTo("/get-file-session/A123456")))
@@ -58,7 +54,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
 
     "return Ok for invalid json response in file fetch call" in {
       val invalidJson : String = """{"test":"value"}""".stripMargin
-      setupMockGet(OK, invalidJson)
+      setupMockGet(OK, invalidJson, "/get-file-session/A123456")
       val result: Option[FileSession] = await(connector.fetchFileSession("A123456"))
       result shouldBe None
     }
@@ -69,14 +65,14 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
     val fileSession : CreateFileSessionRequest = CreateFileSessionRequest("A123456", "reference-1234")
 
     "return the response as true once the file session is successful" in {
-      setupMockPost(CREATED, fileSession.toString)
+      setupMockPost(CREATED, fileSession.toString, "/create-file-session")
       val result: Boolean = await(connector.createFileSession(fileSession))
       result shouldBe true
       wireMockServer.verify(postRequestedFor(urlEqualTo("/create-file-session")))
     }
 
-    "return the response as false if the file session is un-successful" in {
-      setupMockPost(BAD_REQUEST, fileSession.toString)
+    "return the response as false if the file session is not successful" in {
+      setupMockPost(BAD_REQUEST, fileSession.toString, "/create-file-session")
       val result: Boolean = await(connector.createFileSession(fileSession))
       result shouldBe false
       wireMockServer.verify(postRequestedFor(urlEqualTo("/create-file-session")))
@@ -87,52 +83,19 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
   "deleteFileSession" should {
 
     "return the response as true once the file session is deleted successfully" in {
-      setupMockDelete(NO_CONTENT, "A123456")
+      setupMockDelete(NO_CONTENT, "A123456", "/delete-file-session/A123456")
       val result: Boolean = await(connector.deleteFileSession("A123456"))
       result shouldBe true
       wireMockServer.verify(deleteRequestedFor(urlEqualTo("/delete-file-session/A123456")))
     }
 
     "return the response as false if the deletion is failed" in {
-      setupMockDelete(BAD_REQUEST, "")
+      setupMockDelete(BAD_REQUEST, "", "/delete-file-session/A123456")
       val result: Boolean = await(connector.deleteFileSession("A123456"))
       result shouldBe false
       wireMockServer.verify(deleteRequestedFor(urlEqualTo("/delete-file-session/A123456")))
     }
 
   }
-
-  private def setupMockGet(statusCode: Int, body: String): StubMapping = {
-    wireMockServer.stubFor(
-      get(urlPathEqualTo("/get-file-session/A123456"))
-        .willReturn(
-          aResponse()
-            .withStatus(statusCode)
-            .withBody(body)
-
-        )
-    )
-  }
-  private def setupMockPost(statusCode: Int, body: String): StubMapping =
-    wireMockServer.stubFor(
-      post(urlPathEqualTo("/create-file-session"))
-        .willReturn(
-          aResponse()
-            .withStatus(statusCode)
-            .withBody(body)
-
-        )
-    )
-
-  private def setupMockDelete(statusCode: Int, body: String): StubMapping =
-    wireMockServer.stubFor(
-      delete(urlPathEqualTo("/delete-file-session/A123456"))
-        .willReturn(
-          aResponse()
-            .withStatus(statusCode)
-            .withBody(body)
-
-        )
-    )
 
 }

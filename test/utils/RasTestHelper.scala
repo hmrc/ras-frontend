@@ -16,6 +16,8 @@
 
 package utils
 
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, delete, get, post, urlPathEqualTo}
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.ApplicationConfig
 import connectors.{FilesSessionConnector, ResidencyStatusAPIConnector, UpscanInitiateConnector}
 import org.apache.pekko.actor.ActorSystem
@@ -124,7 +126,8 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
 	when(mockAppConfig.rasApiResidencyStatusEndpoint).thenReturn("residency-status")
 	when(mockAppConfig.fileDeletionUrl).thenReturn("/ras-api/file/remove/")
 	when(mockAppConfig.initiateUrl).thenReturn(wireMockUrl + "/upscan/v2/initiate")
-	when(mockAppConfig.upscanCallbackEndpoint).thenReturn("/test")
+	when(mockAppConfig.upscanCallbackEndpoint).thenReturn("/ras-api/file-processing/status")
+
 	val cannotUploadAnotherFileView: cannot_upload_another_file = fakeApplication.injector.instanceOf[cannot_upload_another_file]
 	val chooseAnOptionView: choose_an_option = fakeApplication.injector.instanceOf[choose_an_option]
 	val fileNotAvailableView: file_not_available = fakeApplication.injector.instanceOf[file_not_available]
@@ -145,4 +148,39 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
 	val uploadResultView: upload_result = fakeApplication.injector.instanceOf[upload_result]
 	val startAtStartView: sorry_you_need_to_start_again = fakeApplication.injector.instanceOf[sorry_you_need_to_start_again]
 	val signedOutView: signed_out = fakeApplication.injector.instanceOf[signed_out]
+
+	def setupMockGet(statusCode: Int, body: String, url : String): StubMapping = {
+		wireMockServer.stubFor(
+			get(urlPathEqualTo(url))
+				.willReturn(
+					aResponse()
+						.withStatus(statusCode)
+						.withBody(body)
+
+				)
+		)
+	}
+
+	def setupMockPost(statusCode: Int, body: String, url : String): StubMapping =
+		wireMockServer.stubFor(
+			post(urlPathEqualTo(url))
+				.willReturn(
+					aResponse()
+						.withStatus(statusCode)
+						.withBody(body)
+
+				)
+		)
+
+	def setupMockDelete(statusCode: Int, body: String, url : String): StubMapping =
+		wireMockServer.stubFor(
+			delete(urlPathEqualTo(url))
+				.willReturn(
+					aResponse()
+						.withStatus(statusCode)
+						.withBody(body)
+
+				)
+		)
+
 }

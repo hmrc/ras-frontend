@@ -16,8 +16,6 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -27,8 +25,6 @@ import uk.gov.hmrc.http.{HttpResponse, InternalServerException, UpstreamErrorRes
 import utils.RasTestHelper
 
 import java.io.InputStream
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 import scala.io.Source
 
 class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with RasTestHelper {
@@ -38,26 +34,28 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
   val memberName: MemberName = MemberName("John", "Smith")
   val rasDate: RasDate = RasDate(Some("1"), Some("2"), Some("1990"))
   val memberDetails = MemberDetails(memberName, "AB123456C", rasDate)
+  val fileName = "testFile.csv"
 
-  val residencyStatusJson =
+  val residencyStatusJson : String =
     """
       |{
       |  "currentYearResidencyStatus": "scotResident",
       |  "nextYearForecastResidencyStatus": "otherUKResident"
       |}
   """.stripMargin
-  val expected = ResidencyStatus("scotResident", Some("otherUKResident"))
+
+  val expectedResponse = ResidencyStatus("scotResident", Some("otherUKResident"))
 
   "getResidencyStatus" should {
 
     "return the success response when API returns 200" in {
-      setupMockPost(OK, residencyStatusJson)
+      setupMockPost(OK, residencyStatusJson, "/residency-status")
       val result: ResidencyStatus = await(connector.getResidencyStatus(memberDetails))
-      result shouldBe expected
+      result shouldBe expectedResponse
     }
 
     "throw internal server error when API returns 400" in {
-      setupMockPost(BAD_REQUEST, residencyStatusJson)
+      setupMockPost(BAD_REQUEST, residencyStatusJson, "/residency-status")
       val result = intercept[InternalServerException] {
         await(connector.getResidencyStatus(memberDetails))
       }
@@ -65,7 +63,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     }
 
     "throw UpstreamErrorResponse when API returns 403" in {
-      setupMockPost(FORBIDDEN, residencyStatusJson)
+      setupMockPost(FORBIDDEN, residencyStatusJson, "/residency-status")
       val result = intercept[UpstreamErrorResponse] {
         await(connector.getResidencyStatus(memberDetails))
       }
@@ -73,7 +71,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     }
 
     "throw InternalServerException when API returns 5XX" in {
-      setupMockPost(INTERNAL_SERVER_ERROR, residencyStatusJson)
+      setupMockPost(INTERNAL_SERVER_ERROR, residencyStatusJson, "/residency-status")
       val result = intercept[InternalServerException] {
         await(connector.getResidencyStatus(memberDetails))
       }
@@ -82,11 +80,11 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
   }
 
   "getFile" should {
-    val row = "John,Smith,AB123456C,1990-02-21"
 
+    val record = "John,Smith,AB123456C,1990-02-21"
     "return the success response when API returns 200" in {
-      setupMockGet(OK, row)
-      val result: Option[InputStream] = await(connector.getFile("testFile.csv","A123456"))
+      setupMockGet(OK, record, s"/ras-api/file/getFile/$fileName")
+      val result: Option[InputStream] = await(connector.getFile(fileName,"A123456"))
       result.isDefined shouldBe true
 
       val content = Source.fromInputStream(result.get).mkString
@@ -94,8 +92,8 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     }
 
     "return empty InputStream when response body is empty" in {
-      setupMockGet(OK, "")
-      val result: Option[InputStream] = await(connector.getFile("testFile.csv","A123456"))
+      setupMockGet(OK, "", s"/ras-api/file/getFile/$fileName")
+      val result: Option[InputStream] = await(connector.getFile(fileName,"A123456"))
       result.isDefined shouldBe true
 
       val content = Source.fromInputStream(result.get).mkString
@@ -103,8 +101,8 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     }
 
     "return InputStream even when response status is 500" in {
-      setupMockGet(INTERNAL_SERVER_ERROR, "Internal server error")
-      val result: Option[InputStream] = await(connector.getFile("testFile.csv","A123456"))
+      setupMockGet(INTERNAL_SERVER_ERROR, "Internal server error", s"/ras-api/file/getFile/$fileName")
+      val result: Option[InputStream] = await(connector.getFile(fileName,"A123456"))
       result.isDefined shouldBe true
 
       val content = Source.fromInputStream(result.get).mkString
@@ -116,47 +114,16 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
   "deleteFile" should {
 
     "return the response as OK once the file is deleted successfully" in {
-      setupMockDelete(OK)
-      val result: HttpResponse = await(connector.deleteFile("testFile.csv", "A123456"))
+      setupMockDelete(OK, "", s"/ras-api/file/remove/$fileName/A123456")
+      val result: HttpResponse = await(connector.deleteFile(fileName, "A123456"))
       result.status shouldBe OK
     }
 
     "return the response as Bad Request if API returns 400" in {
-      setupMockDelete(BAD_REQUEST)
-      val result: HttpResponse = await(connector.deleteFile("testFile.csv","A123456"))
+      setupMockDelete(BAD_REQUEST, "", s"/ras-api/file/remove/$fileName/A123456")
+      val result: HttpResponse = await(connector.deleteFile(fileName,"A123456"))
       result.status shouldBe BAD_REQUEST
     }
   }
 
-  private def setupMockPost(statusCode: Int, body: String): StubMapping =
-    wireMockServer.stubFor(
-      post(urlPathEqualTo("/residency-status"))
-        .willReturn(
-          aResponse()
-            .withStatus(statusCode)
-            .withBody(body)
-
-        )
-    )
-
-  private def setupMockGet(statusCode: Int, body: String): StubMapping = {
-    wireMockServer.stubFor(
-      get(urlPathEqualTo("/ras-api/file/getFile/testFile.csv"))
-        .willReturn(
-          aResponse()
-            .withStatus(statusCode)
-            .withBody(body)
-
-        )
-    )
-  }
-
-  private def setupMockDelete(statusCode: Int): StubMapping =
-    wireMockServer.stubFor(
-      delete(urlPathEqualTo("/ras-api/file/remove/testFile.csv/A123456"))
-        .willReturn(
-          aResponse()
-            .withStatus(statusCode)
-        )
-    )
 }
