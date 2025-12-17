@@ -156,7 +156,6 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
 					aResponse()
 						.withStatus(statusCode)
 						.withBody(body)
-
 				)
 		)
 	}
@@ -168,7 +167,6 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
 					aResponse()
 						.withStatus(statusCode)
 						.withBody(body)
-
 				)
 		)
 
@@ -179,8 +177,6 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
 					aResponse()
 						.withStatus(statusCode)
 						.withBody(body)
-
 				)
 		)
-
 }
