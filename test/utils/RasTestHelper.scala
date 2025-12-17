@@ -35,6 +35,7 @@ import repository.RasSessionCacheRepository
 import services.{AuditService, FilesSessionService, SessionCacheService}
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.test.WireMockSupport
 import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -43,13 +44,15 @@ import views.html._
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
+trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport {  this: Suite =>
 
-	def fakeApplicationCreation: Application =
+	def fakeApplicationCreation: Application = {
+		wireMockServer.start()
+
 		GuiceApplicationBuilder()
 			.configure("metrics.enabled" -> "false")
 			.build()
-
+	}
 	val fakeApplication: Application = fakeApplicationCreation
 
 	def await[A](future: Future[A], timeout: Duration = 20.seconds): A = Await.result(future, timeout)
@@ -117,6 +120,11 @@ trait RasTestHelper extends MockitoSugar with MongoSupport {  this: Suite =>
 	when(mockAppConfig.loginURL).thenReturn("http://localhost:9025/gg/sign-in")
 	when(mockAppConfig.feedbackUrl).thenReturn("http://localhost:9514/feedback/ras")
 
+	when(mockAppConfig.rasApiBaseUrl).thenReturn(wireMockUrl)
+	when(mockAppConfig.rasApiResidencyStatusEndpoint).thenReturn("residency-status")
+	when(mockAppConfig.fileDeletionUrl).thenReturn("/ras-api/file/remove/")
+	when(mockAppConfig.initiateUrl).thenReturn(wireMockUrl + "/upscan/v2/initiate")
+	when(mockAppConfig.upscanCallbackEndpoint).thenReturn("/test")
 	val cannotUploadAnotherFileView: cannot_upload_another_file = fakeApplication.injector.instanceOf[cannot_upload_another_file]
 	val chooseAnOptionView: choose_an_option = fakeApplication.injector.instanceOf[choose_an_option]
 	val fileNotAvailableView: file_not_available = fakeApplication.injector.instanceOf[file_not_available]
