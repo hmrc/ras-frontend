@@ -56,7 +56,7 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
     "throw an exception" when {
 
       "upscan returns a 4xx response" in {
-        setupMockPost(BAD_REQUEST, "", "/upscan/v2/initiate")
+        setupMockPost(BAD_REQUEST, "{}", "/upscan/v2/initiate")
         val exception = intercept[UpstreamErrorResponse] {
           await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
         }
@@ -64,7 +64,7 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
       }
 
       "upscan returns 5xx response" in {
-        setupMockPost(SERVICE_UNAVAILABLE, "", "/upscan/v2/initiate")
+        setupMockPost(SERVICE_UNAVAILABLE, "{}", "/upscan/v2/initiate")
         val exception = intercept[UpstreamErrorResponse] {
           await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
         }

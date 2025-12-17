@@ -46,7 +46,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
     }
 
     "return None as the response when file fetch call is successful with bad request" in {
-      setupMockGet(BAD_REQUEST, "", "/get-file-session/A123456")
+      setupMockGet(BAD_REQUEST, "{}", "/get-file-session/A123456")
       val result: Option[FileSession] = await(connector.fetchFileSession("A123456"))
       result shouldBe None
       wireMockServer.verify(getRequestedFor(urlEqualTo("/get-file-session/A123456")))
@@ -72,7 +72,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
     }
 
     "return the response as false if the file session is not successful" in {
-      setupMockPost(BAD_REQUEST, fileSession.toString, "/create-file-session")
+      setupMockPost(BAD_REQUEST, "{}", "/create-file-session")
       val result: Boolean = await(connector.createFileSession(fileSession))
       result shouldBe false
       wireMockServer.verify(postRequestedFor(urlEqualTo("/create-file-session")))
@@ -90,7 +90,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
     }
 
     "return the response as false if the deletion is failed" in {
-      setupMockDelete(BAD_REQUEST, "", "/delete-file-session/A123456")
+      setupMockDelete(BAD_REQUEST, "{}", "/delete-file-session/A123456")
       val result: Boolean = await(connector.deleteFileSession("A123456"))
       result shouldBe false
       wireMockServer.verify(deleteRequestedFor(urlEqualTo("/delete-file-session/A123456")))

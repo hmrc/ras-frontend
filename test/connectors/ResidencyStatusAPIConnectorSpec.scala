@@ -55,7 +55,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     }
 
     "throw internal server error when API returns 400" in {
-      setupMockPost(BAD_REQUEST, residencyStatusJson, "/residency-status")
+      setupMockPost(BAD_REQUEST, "{}", "/residency-status")
       val result = intercept[InternalServerException] {
         await(connector.getResidencyStatus(memberDetails))
       }
@@ -63,7 +63,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     }
 
     "throw UpstreamErrorResponse when API returns 403" in {
-      setupMockPost(FORBIDDEN, residencyStatusJson, "/residency-status")
+      setupMockPost(FORBIDDEN, "{}", "/residency-status")
       val result = intercept[UpstreamErrorResponse] {
         await(connector.getResidencyStatus(memberDetails))
       }
@@ -71,7 +71,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     }
 
     "throw InternalServerException when API returns 5XX" in {
-      setupMockPost(INTERNAL_SERVER_ERROR, residencyStatusJson, "/residency-status")
+      setupMockPost(INTERNAL_SERVER_ERROR, "{}", "/residency-status")
       val result = intercept[InternalServerException] {
         await(connector.getResidencyStatus(memberDetails))
       }
@@ -87,7 +87,10 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
       val result: Option[InputStream] = await(connector.getFile(fileName,"A123456"))
       result.isDefined shouldBe true
 
-      val content = Source.fromInputStream(result.get).mkString
+      val value = result.get
+
+      val content = Source.fromInputStream(value).mkString
+      value.close()
       content should include ("John")
     }
 
