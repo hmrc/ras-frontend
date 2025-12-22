@@ -53,24 +53,3 @@
         line-height: 1.25;
     }
 }
-
-.govuk-header__content {
-    display: flex;
-    align-items: center;
-}
-
-.hmrc-sign-out-nav {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-    display: flex;
-    align-items: center;
-}
-
-.hmrc-sign-out-nav__link,
-.hmrc-sign-out-nav a {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1.25 !important;
-    padding-top: 20px !important;
-    padding-bottom: 0 !important;
-}
