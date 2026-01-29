@@ -23,30 +23,35 @@ import utils.RasTestHelper
 
 class CannotUploadAnotherFileViewSpec extends AnyWordSpec with RasTestHelper {
 
-	"cannot upload another file page" must {
-		"contains the right title" in {
-			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).title() shouldBe Messages("cannot.upload.another.file.page.title")
-		}
+  "cannot upload another file page" must {
+    "contains the right title" in {
+      val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).title() shouldBe Messages("cannot.upload.another.file.page.title")
+    }
 
-		"contains the right header" in {
-			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("page-header").text shouldBe Messages("cannot.upload.another.file.page.header")
-		}
+    "contains the right header" in {
+      val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("page-header").text shouldBe Messages("cannot.upload.another.file.page.header")
+    }
 
-		"contains a clarification paragraph" in {
-			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("page-clarification").text shouldBe Messages("cannot.upload.another.file.page.clarification")
-		}
+    "contains a clarification paragraph" in {
+      val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("page-clarification").text shouldBe Messages(
+        "cannot.upload.another.file.page.clarification"
+      )
+    }
 
-		"contains a 'choose something else to do' button" in {
-			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
-		}
+    "contains a 'choose something else to do' button" in {
+      val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("choose-something-else").text shouldBe Messages("choose.something.else")
+    }
 
-		"contains the correct ga events" in {
-			val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("choose-something-else-link").attr("data-journey-click") shouldBe "Choose something else to do"
-		}
-	}
+    "contains the correct ga events" in {
+      val result = cannotUploadAnotherFileView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result)
+        .getElementById("choose-something-else-link")
+        .attr("data-journey-click") shouldBe "Choose something else to do"
+    }
+  }
+
 }

@@ -31,46 +31,51 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
-                                     val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
-                                     val connector: DefaultAuditConnector,
-                                     val sessionService: SessionCacheService,
-                                     val mcc: MessagesControllerComponents,
-                                     implicit val appConfig: ApplicationConfig,
-                                     memberNinoView: views.html.member_nino
-                                    ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with WithUnsafeDefaultFormBinding {
+class MemberNinoController @Inject() (
+  val authConnector: DefaultAuthConnector,
+  val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
+  val connector: DefaultAuditConnector,
+  val sessionService: SessionCacheService,
+  val mcc: MessagesControllerComponents,
+  implicit val appConfig: ApplicationConfig,
+  memberNinoView: views.html.member_nino
+) extends FrontendController(mcc)
+    with RasResidencyCheckerController
+    with PageFlowController
+    with Logging
+    with WithUnsafeDefaultFormBinding {
 
-	implicit val ec: ExecutionContext = mcc.executionContext
-  lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
+  implicit val ec: ExecutionContext = mcc.executionContext
+  lazy val apiVersion: ApiVersion   = appConfig.rasApiVersion
 
-  def get(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(session) =>
-              val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(memberNinoView(form(Some(name)).fill(session.nino), name, edit))
-            case _ =>
-              Ok(memberNinoView(form(), "member", edit))
-          }
-        case Left(resp) =>
-          logger.warn("[NinoController][get] user Not authorised")
-          resp
-      }
+  def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)   =>
+        sessionService.fetchRasSession() map {
+          case Some(session) =>
+            val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+            Ok(memberNinoView(form(Some(name)).fill(session.nino), name, edit))
+          case _             =>
+            Ok(memberNinoView(form(), "member", edit))
+        }
+      case Left(resp) =>
+        logger.warn("[NinoController][get] user Not authorised")
+        resp
+    }
   }
 
-  def post(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(userId) =>
-          getFullName() flatMap { name =>
-            form(Some(name)).bindFromRequest().fold(
+  def post(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(userId) =>
+        getFullName() flatMap { name =>
+          form(Some(name))
+            .bindFromRequest()
+            .fold(
               formWithErrors => {
                 logger.warn("[NinoController][post] Invalid form field passed")
                 Future.successful(BadRequest(memberNinoView(formWithErrors, name, edit)))
               },
-              memberNino => {
+              memberNino =>
                 sessionService.cacheNino(memberNino.copy(nino = memberNino.nino.replaceAll("\\s", ""))) flatMap {
                   case Some(session) =>
                     if (edit) {
@@ -78,29 +83,27 @@ class MemberNinoController @Inject()(val authConnector: DefaultAuthConnector,
                     } else {
                       Future.successful(Redirect(routes.MemberDOBController.get()))
                     }
-                  case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+                  case _             => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                 }
-              }
             )
-          }
-        case Left(resp)
-        =>
-          logger.warn("[NinoController][post] user Not authorised")
-          resp
-      }
+        }
+      case Left(resp)    =>
+        logger.warn("[NinoController][post] user Not authorised")
+        resp
+    }
   }
 
-  def back(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(_) => previousPage("MemberNinoController", edit)
-            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage)
-          }
-        case Left(res) =>
-          logger.warn("[NinoController][back] user Not authorised")
-          res
-      }
+  def back(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)  =>
+        sessionService.fetchRasSession() map {
+          case Some(_) => previousPage("MemberNinoController", edit)
+          case _       => Redirect(routes.ErrorController.renderGlobalErrorPage)
+        }
+      case Left(res) =>
+        logger.warn("[NinoController][back] user Not authorised")
+        res
+    }
   }
+
 }

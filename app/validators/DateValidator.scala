@@ -16,7 +16,6 @@
 
 package validators
 
-
 import models.{MemberDateOfBirth, RasDate}
 
 import java.time.Year
@@ -26,25 +25,34 @@ import play.api.data.{Form, FormError}
 trait DateValidator {
 
   val YEAR_FIELD_LENGTH: Int = 4
-  val YEAR = "year"
-  val MONTH = "month"
-  val DAY = "day"
+  val YEAR                   = "year"
+  val MONTH                  = "month"
+  val DAY                    = "day"
 
   def updatedErrors(formWithErrors: Form[MemberDateOfBirth]): Form[MemberDateOfBirth] = {
-    val isDayMissing = formWithErrors.errors.exists(_.message.matches("error.day.missing"))
+    val isDayMissing   = formWithErrors.errors.exists(_.message.matches("error.day.missing"))
     val isMonthMissing = formWithErrors.errors.exists(_.message.matches("error.month.missing"))
-    val isYearMissing = formWithErrors.errors.exists(_.message.matches("error.year.missing"))
-    val formErrors = (isDayMissing, isMonthMissing, isYearMissing) match {
+    val isYearMissing  = formWithErrors.errors.exists(_.message.matches("error.year.missing"))
+    val formErrors     = (isDayMissing, isMonthMissing, isYearMissing) match {
       case (true, true, true) => Seq(FormError("dateOfBirth", "error.dob.missing"))
 
-      case (true, true, false) => Seq(FormError("dateOfBirth.day", "error.dob.missing.day.month"),
-        FormError("dateOfBirth.month", "error.dob.missing.day.month"))
+      case (true, true, false) =>
+        Seq(
+          FormError("dateOfBirth.day", "error.dob.missing.day.month"),
+          FormError("dateOfBirth.month", "error.dob.missing.day.month")
+        )
 
-      case (false, true, true) => Seq(FormError("dateOfBirth.month", "error.dob.missing.month.year"),
-        FormError("dateOfBirth.year", "error.dob.missing.month.year"))
+      case (false, true, true) =>
+        Seq(
+          FormError("dateOfBirth.month", "error.dob.missing.month.year"),
+          FormError("dateOfBirth.year", "error.dob.missing.month.year")
+        )
 
-      case (true, false, true) => Seq(FormError("dateOfBirth.day", "error.dob.missing.day.year"),
-        FormError("dateOfBirth.year", "error.dob.missing.day.year"))
+      case (true, false, true) =>
+        Seq(
+          FormError("dateOfBirth.day", "error.dob.missing.day.year"),
+          FormError("dateOfBirth.year", "error.dob.missing.day.year")
+        )
 
       case _ => formWithErrors.errors
     }
@@ -52,60 +60,53 @@ trait DateValidator {
     formWithErrors.copy(errors = formErrors)
   }
 
-  def rasDateConstraint(name: String): Constraint[MemberDateOfBirth] = Constraint("dateOfBirth")({
-    memDob => {
-      val date = memDob.dateOfBirth
+  def rasDateConstraint(name: String): Constraint[MemberDateOfBirth] = Constraint("dateOfBirth") { memDob =>
+    val date = memDob.dateOfBirth
 
-      val leapYear: Boolean = try {
+    val leapYear: Boolean =
+      try
         Year.isLeap(date.year.getOrElse("0").toInt)
-      } catch {
+      catch {
         case _: NumberFormatException => false
       }
 
-      if (!DateValidator.checkDayRange(date)) {
-        if (date.month.getOrElse("0").toInt == 2 && leapYear)
-          Invalid(Seq(ValidationError("error.day.invalid.feb.leap", DAY)))
-        else if (date.month.getOrElse("0").toInt == 2)
-          Invalid(Seq(ValidationError("error.day.invalid.feb", DAY)))
-        else if (List(4, 6, 9, 11).contains(date.month.getOrElse("0").toInt))
-          Invalid(Seq(ValidationError("error.day.invalid.thirty", DAY)))
+    if (!DateValidator.checkDayRange(date)) {
+      if (date.month.getOrElse("0").toInt == 2 && leapYear)
+        Invalid(Seq(ValidationError("error.day.invalid.feb.leap", DAY)))
+      else if (date.month.getOrElse("0").toInt == 2)
+        Invalid(Seq(ValidationError("error.day.invalid.feb", DAY)))
+      else if (List(4, 6, 9, 11).contains(date.month.getOrElse("0").toInt))
+        Invalid(Seq(ValidationError("error.day.invalid.thirty", DAY)))
+      else
+        Invalid(Seq(ValidationError("error.day.invalid", DAY)))
+    } else if (!DateValidator.checkMonthRange(date.month.getOrElse("0")))
+      Invalid(Seq(ValidationError("error.month.invalid", MONTH)))
+    else if (!DateValidator.checkYearLength(date.year.getOrElse("0")))
+      Invalid(Seq(ValidationError("error.year.invalid.format", YEAR)))
+    else {
+      try
+        if (date.isInFuture) {
+          Invalid(Seq(ValidationError("error.dob.invalid.future")))
+        } else if (!DateValidator.isAfter1900(date.year.getOrElse("0")))
+          Invalid(Seq(ValidationError("error.dob.before.1900")))
         else
-          Invalid(Seq(ValidationError("error.day.invalid", DAY)))
-      }
+          Valid
+      catch {
+        // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
+        case e: Exception => Valid
+        // $COVERAGE-ON$
 
-      else if (!DateValidator.checkMonthRange(date.month.getOrElse("0")))
-        Invalid(Seq(ValidationError("error.month.invalid", MONTH)))
-
-      else if (!DateValidator.checkYearLength(date.year.getOrElse("0")))
-        Invalid(Seq(ValidationError("error.year.invalid.format", YEAR)))
-
-      else {
-        try {
-          if (date.isInFuture) {
-            Invalid(Seq(ValidationError("error.dob.invalid.future")))
-          }
-          else if (!DateValidator.isAfter1900(date.year.getOrElse("0")))
-            Invalid(Seq(ValidationError("error.dob.before.1900")))
-          else
-            Valid
-        }
-        catch {
-          // $COVERAGE-OFF$Disabling highlighting by default until a workaround for https://issues.scala-lang.org/browse/SI-8596 is found
-          case e: Exception => Valid
-          // $COVERAGE-ON$
-
-        }
       }
     }
-  })
+  }
 
-  def checkDayRange(date: RasDate): Boolean = {
+  def checkDayRange(date: RasDate): Boolean =
 
     try {
 
-      val day = date.day.getOrElse("0")
-      val month = date.month.getOrElse("0")
-      val year = date.year.getOrElse("0").toInt
+      val day               = date.day.getOrElse("0")
+      val month             = date.month.getOrElse("0")
+      val year              = date.year.getOrElse("0").toInt
       val leapYear: Boolean = Year.isLeap(year)
 
       if (day forall Character.isDigit) {
@@ -117,35 +118,30 @@ trait DateValidator {
           day.toInt > 0 && day.toInt < 31
         else
           day.toInt > 0 && day.toInt < 32
-      }
-      else
+      } else
         false
     } catch {
       case e: NumberFormatException => false
     }
 
-  }
-
-  def checkMonthRange(month: String): Boolean = {
+  def checkMonthRange(month: String): Boolean =
     if (month forall Character.isDigit)
       month.toInt > 0 && month.toInt < 13
     else
       false
-  }
 
-  def checkYearLength(year: String): Boolean = {
+  def checkYearLength(year: String): Boolean =
     if (year forall Character.isDigit)
       year.length == YEAR_FIELD_LENGTH
     else
       false
-  }
 
-  def isAfter1900(year: String): Boolean = {
+  def isAfter1900(year: String): Boolean =
     if (year forall Character.isDigit)
       year.toInt >= 1900
     else
       false
-  }
+
 }
 
 object DateValidator extends DateValidator

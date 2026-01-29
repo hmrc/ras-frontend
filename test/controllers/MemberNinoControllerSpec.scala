@@ -33,19 +33,29 @@ import scala.concurrent.Future
 
 class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  val memberName: MemberName = MemberName("Jackie", "Chan")
-  val memberNino: MemberNino = MemberNino("AB123456C")
+  val memberName: MemberName       = MemberName("Jackie", "Chan")
+  val memberNino: MemberNino       = MemberNino("AB123456C")
   val memberDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
-  val rasSession: RasSession = RasSession(memberName, memberNino, memberDob, None, None)
-  val postData: JsObject = Json.obj("nino" -> RandomNino.generate)
+  val rasSession: RasSession       = RasSession(memberName, memberNino, memberDob, None, None)
+  val postData: JsObject           = Json.obj("nino" -> RandomNino.generate)
 
-  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
-  private val enrolments = Enrolments(Set(enrolment))
+  private val enrolmentIdentifier             = EnrolmentIdentifier("PSAID", "Z123456")
+
+  private val enrolment                       =
+    new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+
+  private val enrolments                      = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val TestMemberNinoController: MemberNinoController = new MemberNinoController(mockAuthConnector, mockResidencyStatusAPIConnector,
-      mockAuditConnector, mockRasSessionCacheService, mockMCC, mockAppConfig, memberNinoView) {
+  val TestMemberNinoController: MemberNinoController = new MemberNinoController(
+    mockAuthConnector,
+    mockResidencyStatusAPIConnector,
+    mockAuditConnector,
+    mockRasSessionCacheService,
+    mockMCC,
+    mockAppConfig,
+    memberNinoView
+  ) {
     override lazy val apiVersion: ApiVersion = ApiV1_0
 
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
@@ -74,51 +84,51 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "return bad request with session name when form error is present and session contains a name" in {
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-      val postData = Json.obj(
-        "nino" -> RandomNino.generate.substring(3))
-      val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val postData = Json.obj("nino" -> RandomNino.generate.substring(3))
+      val result   = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
     }
 
     "return bad request with member as name when form error is present and session contains no name" in {
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
-      val postData = Json.obj(
-        "nino" -> RandomNino.generate.substring(3))
-      val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val postData = Json.obj("nino" -> RandomNino.generate.substring(3))
+      val result   = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
     }
 
     "return bad request when form error present with special characters" in {
-      val postData = Json.obj(
-        "nino" -> "AB123%56C")
-      val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
+      val postData = Json.obj("nino" -> "AB123%56C")
+      val result   = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
       status(result) should equal(BAD_REQUEST)
     }
 
     "redirect to dob page when nino cached and edit mode is false" in {
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
       val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("member-date-of-birth")
     }
 
     "redirect to match found page when edit mode is true and matching successful" in {
-      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
-      when(mockRasSessionCacheService.cacheResidencyStatusResult(any())(any())).thenReturn(Future.successful(Some(rasSession)))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any()))
+        .thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
+      when(mockRasSessionCacheService.cacheResidencyStatusResult(any())(any()))
+        .thenReturn(Future.successful(Some(rasSession)))
 
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
 
-      status(result) should equal(SEE_OTHER)
+      status(result)           should equal(SEE_OTHER)
       redirectLocation(result) should include("/member-residency-status")
 
       verify(mockRasSessionCacheService, atLeastOnce).cacheNino(any())(any())
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
-      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any())).thenReturn(Future.failed(UpstreamErrorResponse("Member not found", 403, 403)))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Member not found", 403, 403)))
 
       val result = TestMemberNinoController.post(true).apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) should equal(SEE_OTHER)
+      status(result)           should equal(SEE_OTHER)
       redirectLocation(result) should include("/no-residency-status-displayed")
 
       verify(mockRasSessionCacheService, atLeastOnce).cacheNino(any())(any())
@@ -127,7 +137,7 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to technical error page if nino is not cached" in {
       when(mockRasSessionCacheService.cacheNino(any())(any())).thenReturn(Future.successful(None))
       val result = TestMemberNinoController.post().apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("global-error")
     }
 
@@ -136,21 +146,22 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
   "return to member name page when back link is clicked and edit mode is false" in {
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
     val result = TestMemberNinoController.back().apply(FakeRequest())
-    status(result) shouldBe SEE_OTHER
+    status(result)         shouldBe SEE_OTHER
     redirectLocation(result) should include("/member-name")
   }
 
   "return to match not found page when back link is clicked and edit mode is true" in {
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
     val result = TestMemberNinoController.back(true).apply(FakeRequest())
-    status(result) shouldBe SEE_OTHER
+    status(result)         shouldBe SEE_OTHER
     redirectLocation(result) should include("/no-residency-status-displayed")
   }
 
   "redirect to global error page navigating back with no session" in {
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
     val result = TestMemberNinoController.back().apply(FakeRequest())
-    status(result) shouldBe SEE_OTHER
+    status(result)         shouldBe SEE_OTHER
     redirectLocation(result) should include("global-error")
   }
+
 }

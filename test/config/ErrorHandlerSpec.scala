@@ -24,22 +24,27 @@ import views.html.{error, global_page_not_found}
 
 import scala.concurrent.ExecutionContext
 
-
 class ErrorHandlerSpec extends AnyWordSpec with RasTestHelper {
 
-  private val messageApi: MessagesApi = fakeApplicationCreation.injector.instanceOf[MessagesApi]
-  private val errorTemplate: error = fakeApplicationCreation.injector.instanceOf[error]
-  private val errorNotFoundTemplate: global_page_not_found = fakeApplicationCreation.injector.instanceOf[global_page_not_found]
-  private val errorHandler: ErrorHandler = new ErrorHandler(messageApi, mockAppConfig, ExecutionContext.global, errorTemplate, errorNotFoundTemplate)
+  private val messageApi: MessagesApi                      = fakeApplicationCreation.injector.instanceOf[MessagesApi]
+  private val errorTemplate: error                         = fakeApplicationCreation.injector.instanceOf[error]
+
+  private val errorNotFoundTemplate: global_page_not_found =
+    fakeApplicationCreation.injector.instanceOf[global_page_not_found]
+
+  private val errorHandler: ErrorHandler                   =
+    new ErrorHandler(messageApi, mockAppConfig, ExecutionContext.global, errorTemplate, errorNotFoundTemplate)
 
   "ErrorHandler" must {
 
     "return an error page" in {
-      val result = await(errorHandler.standardErrorTemplate(
-        pageTitle = "pageTitle",
-        heading = "heading",
-        message = "message"
-      )(fakeRequest))
+      val result = await(
+        errorHandler.standardErrorTemplate(
+          pageTitle = "pageTitle",
+          heading = "heading",
+          message = "message"
+        )(fakeRequest)
+      )
 
       result.body must include("pageTitle")
       result.body must include("heading")
@@ -49,8 +54,8 @@ class ErrorHandlerSpec extends AnyWordSpec with RasTestHelper {
     "return a not found template" in {
       val result = await(errorHandler.notFoundTemplate(fakeRequest))
 
-      val pageNotFoundTitle = Messages("error.page_not_found.tabtitle")
-      val pageNotFoundHeading = Messages("error.page_not_found.heading")
+      val pageNotFoundTitle    = Messages("error.page_not_found.tabtitle")
+      val pageNotFoundHeading  = Messages("error.page_not_found.heading")
       val pageNotFoundMessage1 = Messages("error.page.not.found.error.check.web.address.correct")
       val pageNotFoundMessage2 = Messages("error.page.not.found.error.check.web.address.full")
       val pageNotFoundMessage3 = Messages("error.page.not.found.error.contact")
@@ -63,4 +68,5 @@ class ErrorHandlerSpec extends AnyWordSpec with RasTestHelper {
     }
 
   }
+
 }

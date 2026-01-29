@@ -18,14 +18,15 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class ResidencyStatusResult(currentYearResidencyStatus: String,
-                                 nextYearResidencyStatus: Option[String],
-                                 currentTaxYear: String,
-                                 nextTaxYear:String,
-                                 name:String,
-                                 dateOfBirth:String,
-                                 nino:String)
-
+case class ResidencyStatusResult(
+  currentYearResidencyStatus: String,
+  nextYearResidencyStatus: Option[String],
+  currentTaxYear: String,
+  nextTaxYear: String,
+  name: String,
+  dateOfBirth: String,
+  nino: String
+)
 
 object ResidencyStatusResult {
   implicit val format: OFormat[ResidencyStatusResult] = Json.format[ResidencyStatusResult]

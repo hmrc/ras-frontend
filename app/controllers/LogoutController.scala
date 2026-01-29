@@ -25,23 +25,24 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class LogoutController @Inject()(val authConnector: DefaultAuthConnector,
-                                 val mcc: MessagesControllerComponents,
-                                 val appConfig: ApplicationConfig
-                                ) extends FrontendController(mcc) with RasController with Logging {
+class LogoutController @Inject() (
+  val authConnector: DefaultAuthConnector,
+  val mcc: MessagesControllerComponents,
+  val appConfig: ApplicationConfig
+) extends FrontendController(mcc) with RasController with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def logout: Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) => Future.successful(
+  def logout: Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)   =>
+        Future.successful(
           Redirect(appConfig.feedbackUrl).withNewSession
         )
-        case Left(resp) =>
-          logger.warn("[LogoutController][logout] User is unauthenticated")
-          resp
-      }
+      case Left(resp) =>
+        logger.warn("[LogoutController][logout] User is unauthenticated")
+        resp
+    }
   }
 
 }

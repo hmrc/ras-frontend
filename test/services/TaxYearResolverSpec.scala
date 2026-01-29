@@ -31,4 +31,5 @@ class TaxYearResolverSpec extends AnyWordSpec with Matchers {
       TaxYearResolver.nextTaxYear shouldBe TaxYear.current.next.currentYear
     }
   }
+
 }

@@ -33,15 +33,26 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  override val fakeRequest = FakeRequest("GET", "/")
-  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+  override val fakeRequest                    = FakeRequest("GET", "/")
+  private val enrolmentIdentifier             = EnrolmentIdentifier("PSAID", "Z123456")
+
+  private val enrolment                       =
+    new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+
   val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
 
-  val TestErrorController: ErrorController = new ErrorController(mockAuthConnector, mockRasSessionCacheService, mockMCC, globalErrorView, problemUploadingFileView, fileNotAvailableView, unauthorisedView, startAtStartView)(mockAppConfig) {
+  val TestErrorController: ErrorController = new ErrorController(
+    mockAuthConnector,
+    mockRasSessionCacheService,
+    mockMCC,
+    globalErrorView,
+    problemUploadingFileView,
+    fileNotAvailableView,
+    unauthorisedView,
+    startAtStartView
+  )(mockAppConfig) {
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
   }
-
 
   "ErrorController" must {
 
@@ -68,20 +79,31 @@ class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
     "return HTML when global error is called" in {
       val result = TestErrorController.renderGlobalErrorPage(fakeRequest)
       contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      charset(result)     shouldBe Some("utf-8")
     }
 
     "return HTML when problem uploading file is called" in {
       val result = TestErrorController.renderProblemUploadingFilePage(fakeRequest)
       contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      charset(result)     shouldBe Some("utf-8")
     }
 
-    val controller = new ErrorController(mockAuthConnector, mockRasSessionCacheService, mockMCC, globalErrorView, problemUploadingFileView, fileNotAvailableView, unauthorisedView, startAtStartView)(mockAppConfig) {
-      override def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
+    val controller = new ErrorController(
+      mockAuthConnector,
+      mockRasSessionCacheService,
+      mockMCC,
+      globalErrorView,
+      problemUploadingFileView,
+      fileNotAvailableView,
+      unauthorisedView,
+      startAtStartView
+    )(mockAppConfig) {
+      override def isAuthorised()(implicit
+        hc: HeaderCarrier,
+        ec: ExecutionContext
+      ): Future[Either[Future[Result], String]] =
         Future.successful(Left(Future.successful(Forbidden("User not authorised"))))
 
-      }
     }
 
     "return the response from Left when user is not authorised for renderGlobalErrorPage" in {
@@ -99,6 +121,6 @@ class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
       status(result) shouldBe FORBIDDEN
     }
 
-
   }
+
 }

@@ -30,12 +30,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FilesSessionConnector @Inject()(http: HttpClientV2,
-                                     appConfig: ApplicationConfig) extends Logging {
+class FilesSessionConnector @Inject() (http: HttpClientV2, appConfig: ApplicationConfig) extends Logging {
 
   lazy val serviceUrl: String = appConfig.rasApiBaseUrl
 
-  def createFileSession(request: CreateFileSessionRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  def createFileSession(
+    request: CreateFileSessionRequest
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val fullURL = s"$serviceUrl/create-file-session"
     http
       .post(url"$fullURL")
@@ -43,27 +44,28 @@ class FilesSessionConnector @Inject()(http: HttpClientV2,
       .execute[HttpResponse]
       .map {
         case response if response.status == CREATED => true
-        case _ => false
+        case _                                      => false
       }
   }
 
-  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] = {
+  def fetchFileSession(
+    userId: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] = {
     val fullURL = s"$serviceUrl/get-file-session/$userId"
     http
       .get(url"$fullURL")
       .execute[HttpResponse]
-      .flatMap {
-        response =>
-          response.status match {
-            case OK =>
-              Json.parse(response.body).validate[FileSession] match {
-                case JsSuccess(value, _) => Future.successful(Some(value))
-                case _ => Future.successful(None)
-              }
-            case status =>
-              logger.warn(s"[FilesSessionConnector][fetchFileSession] Received non-OK status code from API: $status")
-              Future.successful(None)
-          }
+      .flatMap { response =>
+        response.status match {
+          case OK     =>
+            Json.parse(response.body).validate[FileSession] match {
+              case JsSuccess(value, _) => Future.successful(Some(value))
+              case _                   => Future.successful(None)
+            }
+          case status =>
+            logger.warn(s"[FilesSessionConnector][fetchFileSession] Received non-OK status code from API: $status")
+            Future.successful(None)
+        }
       }
   }
 
@@ -74,7 +76,8 @@ class FilesSessionConnector @Inject()(http: HttpClientV2,
       .execute[HttpResponse]
       .map {
         case response if response.status == NO_CONTENT => true
-        case _ => false
+        case _                                         => false
       }
   }
+
 }

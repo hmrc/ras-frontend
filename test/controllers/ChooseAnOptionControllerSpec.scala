@@ -34,38 +34,70 @@ import utils.RasTestHelper
 import java.io.ByteArrayInputStream
 import scala.concurrent.Future
 
-
 class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-  val currentTaxYear: Int = TaxYearResolver.currentTaxYear
+  val currentTaxYear: Int                   = TaxYearResolver.currentTaxYear
 
-  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
-  val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
-  val mockUploadTimeStamp: Long = Instant.now().minus(Duration.ofDays(10)).toEpochMilli
-  val mockExpiryTimeStamp: Long = Instant.now().minus(Duration.ofDays(7)).toEpochMilli
-  val mockResultsFileMetadata: ResultsFileMetaData = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-  val fileSession: FileSession = FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata),"1234",Some(Instant.now().toEpochMilli),None)
+  private val enrolmentIdentifier                  = EnrolmentIdentifier("PSAID", "Z123456")
 
-  val row1 = "John,Smith,AB123456C,1990-02-21"
+  private val enrolment                            =
+    new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+
+  val successfulRetrieval: Future[Enrolments]      = Future.successful(Enrolments(Set(enrolment)))
+  val mockUploadTimeStamp: Long                    = Instant.now().minus(Duration.ofDays(10)).toEpochMilli
+  val mockExpiryTimeStamp: Long                    = Instant.now().minus(Duration.ofDays(7)).toEpochMilli
+
+  val mockResultsFileMetadata: ResultsFileMetaData =
+    ResultsFileMetaData("", Some("testFile.csv"), Some(mockUploadTimeStamp), 1, 1L)
+
+  val fileSession: FileSession                     = FileSession(
+    Some(CallbackData("", None, "", None, None)),
+    Some(mockResultsFileMetadata),
+    "1234",
+    Some(Instant.now().toEpochMilli),
+    None
+  )
+
+  val row1        = "John,Smith,AB123456C,1990-02-21"
   val inputStream = new ByteArrayInputStream(row1.getBytes)
 
-  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(mockResidencyStatusAPIConnector, mockAuthConnector, mockFilesSessionService, mockMCC, mockAppConfig, chooseAnOptionView, fileReadyView, uploadResultView, resultsNotAvailableYetView, noResultsAvailableView) {
+  val TestChooseAnOptionController: ChooseAnOptionController = new ChooseAnOptionController(
+    mockResidencyStatusAPIConnector,
+    mockAuthConnector,
+    mockFilesSessionService,
+    mockMCC,
+    mockAppConfig,
+    chooseAnOptionView,
+    fileReadyView,
+    uploadResultView,
+    resultsNotAvailableYetView,
+    noResultsAvailableView
+  ) {
 
-    when(mockFilesSessionService.determineFileStatus(any())(any(), any())).thenReturn(Future.successful(FileUploadStatus.NoFileSession))
+    when(mockFilesSessionService.determineFileStatus(any())(any(), any()))
+      .thenReturn(Future.successful(FileUploadStatus.NoFileSession))
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
     when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
-    when(mockResidencyStatusAPIConnector.getFile(any(), any())(any(), any())).thenReturn(Future.successful(Some(inputStream)))
+    when(mockResidencyStatusAPIConnector.getFile(any(), any())(any(), any()))
+      .thenReturn(Future.successful(Some(inputStream)))
   }
 
   "getHelpDate" must {
     import models.FileUploadStatus._
-    val testTimeStamp = LocalDateTime.of(2013, 4, 5, 0, 0, 0, 0).atZone(ZoneId.of("Europe/London"))
-    val currentTime = LocalDateTime.of(2014, 4, 6, 0, 0, 0, 0).atZone(ZoneId.of("Europe/London"))
+    val testTimeStamp                   = LocalDateTime.of(2013, 4, 5, 0, 0, 0, 0).atZone(ZoneId.of("Europe/London"))
+    val currentTime                     = LocalDateTime.of(2014, 4, 6, 0, 0, 0, 0).atZone(ZoneId.of("Europe/London"))
     val timestampInMillis: Option[Long] = Some(testTimeStamp.toInstant.toEpochMilli)
-    val mockResultsFileMetadata = ResultsFileMetaData("", Some("testFile.csv"), timestampInMillis, 1, 1L)
-    val optionalFileSession = Some(FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata), "1234", Some(currentTime.toInstant.toEpochMilli), None))
+    val mockResultsFileMetadata         = ResultsFileMetaData("", Some("testFile.csv"), timestampInMillis, 1, 1L)
+    val optionalFileSession             = Some(
+      FileSession(
+        Some(CallbackData("", None, "", None, None)),
+        Some(mockResultsFileMetadata),
+        "1234",
+        Some(currentTime.toInstant.toEpochMilli),
+        None
+      )
+    )
 
     "return the expiry date format message" in {
       val result = TestChooseAnOptionController.getHelpDate(Ready, optionalFileSession)
@@ -100,62 +132,80 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "renderUploadResultsPage" must {
     "return ok when called" in {
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
       val result: Result = await(TestChooseAnOptionController.renderUploadResultsPage(fakeRequest))
       result.header.status shouldBe OK
     }
 
     "return global error" in {
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession.copy(userFile = None))))
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession.copy(userFile = None))))
       val result: Future[Result] = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
       redirectLocation(result) should include("/global-error")
     }
 
-		"download a file containing the results" in {
-			val mockUploadTimeStamp = LocalDate.ofEpochDay(2018-12-31).toEpochDay
-			val mockResultsFileMetadata = ResultsFileMetaData("",Some("testFile.csv"),Some(mockUploadTimeStamp),1,1L)
-			val fileSession = FileSession(Some(CallbackData("",None,"",None, None)),Some(mockResultsFileMetadata),"1234",None,None)
-			when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
-			val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-				FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
-			contentAsString(result) shouldBe row1
-		}
+    "download a file containing the results" in {
+      val mockUploadTimeStamp     = LocalDate.ofEpochDay(2018 - 12 - 31).toEpochDay
+      val mockResultsFileMetadata = ResultsFileMetaData("", Some("testFile.csv"), Some(mockUploadTimeStamp), 1, 1L)
+      val fileSession             =
+        FileSession(Some(CallbackData("", None, "", None, None)), Some(mockResultsFileMetadata), "1234", None, None)
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
+      val result                  = TestChooseAnOptionController
+        .getResultsFile("testFile.csv")
+        .apply(FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
+      contentAsString(result) shouldBe row1
+    }
 
     "not be able to download a file containing the results when file name is incorrect" in {
-      val mockUploadTimeStamp = LocalDateTime.of(2018, 12, 31, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli
-      val mockResultsFileMetadata = ResultsFileMetaData("",Some("wrongName.csv"),Some(mockUploadTimeStamp),1,1L)
-      val fileSession = FileSession(Some(CallbackData("",None,"",None,None)),Some(mockResultsFileMetadata),"1234",None,None)
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-        FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
-      status(result) shouldBe SEE_OTHER
+      val mockUploadTimeStamp     = LocalDateTime.of(2018, 12, 31, 0, 0).toInstant(ZoneOffset.UTC).toEpochMilli
+      val mockResultsFileMetadata = ResultsFileMetaData("", Some("wrongName.csv"), Some(mockUploadTimeStamp), 1, 1L)
+      val fileSession             =
+        FileSession(Some(CallbackData("", None, "", None, None)), Some(mockResultsFileMetadata), "1234", None, None)
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
+      val result                  = TestChooseAnOptionController
+        .getResultsFile("testFile.csv")
+        .apply(FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/file-not-available")
     }
 
     "not be able to download a file containing the results when there is no results file" in {
-      val fileSession = FileSession(Some(CallbackData("",None,"",None,None)),None,"1234",None,None)
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-        FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
-      status(result) shouldBe SEE_OTHER
+      val fileSession = FileSession(Some(CallbackData("", None, "", None, None)), None, "1234", None, None)
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
+      val result      = TestChooseAnOptionController
+        .getResultsFile("testFile.csv")
+        .apply(FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/file-not-available")
     }
 
     "not be able to download a file containing the results when there is no file session" in {
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(None))
-      val result = TestChooseAnOptionController.getResultsFile("testFile.csv").apply(
-        FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
-      status(result) shouldBe SEE_OTHER
+      val result = TestChooseAnOptionController
+        .getResultsFile("testFile.csv")
+        .apply(FakeRequest(Helpers.GET, "/chooseAnOption/results/:testFile.csv"))
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/file-not-available")
     }
 
     "redirect to error page" when {
 
       "render upload result page is called but there is no callback data in the retrieved file session" in {
-        val fileSession = FileSession(None,Some(ResultsFileMetaData("",None,None,1,1L)),"1234",Some(LocalDateTime.now().plusDays(10).toInstant(ZoneOffset.UTC).toEpochMilli),None)
-        when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
-        val result = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
-        status(result) shouldBe SEE_OTHER
+        val fileSession = FileSession(
+          None,
+          Some(ResultsFileMetaData("", None, None, 1, 1L)),
+          "1234",
+          Some(LocalDateTime.now().plusDays(10).toInstant(ZoneOffset.UTC).toEpochMilli),
+          None
+        )
+        when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+          .thenReturn(Future.successful(Some(fileSession)))
+        val result      = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
+        status(result)         shouldBe SEE_OTHER
         redirectLocation(result) should include("/global-error")
       }
     }
@@ -163,7 +213,8 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "renderFileReadyPage" must {
     "return ok when called" in {
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderFileReadyPage(fakeRequest)
       status(result) shouldBe OK
     }
@@ -176,32 +227,35 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
     "redirect to cannot upload another file there is no result file ready" in {
       val fileSession = FileSession(None, None, "1234", None, None)
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestChooseAnOptionController.renderFileReadyPage(fakeRequest)
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
+      val result      = TestChooseAnOptionController.renderFileReadyPage(fakeRequest)
       redirectLocation(result) should include("/cannot-upload-another-file")
     }
   }
 
   "renderResultsNotAvailableYetPage" must {
     "return ok when called" in {
-      val fileSession = FileSession(None,None,"1234",None,None)
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
-      val result = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
-      status(result) shouldBe SEE_OTHER
+      val fileSession = FileSession(None, None, "1234", None, None)
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
+      val result      = TestChooseAnOptionController.renderUploadResultsPage(fakeRequest)
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/results-not-available")
     }
 
     "return error when there is a result file in file session" in {
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest)
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/residency-status-added")
     }
 
     "return error when there is no file session" in {
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(None))
       val result = TestChooseAnOptionController.renderNoResultsAvailableYetPage(fakeRequest)
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/no-results-available")
     }
   }
@@ -210,31 +264,36 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
     "return ok when called" in {
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(None))
       val result = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
-      status(result) shouldBe OK
+      status(result)                                 shouldBe OK
       await(await(result).body.consumeData).utf8String should include("You have not uploaded a file")
     }
 
     "redirect to results-not-avilable when there is a file session with a file in progress" in {
       val session = fileSession.copy(resultsFile = None)
       when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(session)))
-      val result = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
-      status(result) shouldBe SEE_OTHER
+      val result  = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/results-not-available")
     }
 
     "redirect to results page when there is a file session with a file ready" in {
-      when(mockFilesSessionService.fetchFileSession(any())(any(), any())).thenReturn(Future.successful(Some(fileSession)))
+      when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
+        .thenReturn(Future.successful(Some(fileSession)))
       val result = TestChooseAnOptionController.renderNoResultAvailablePage(fakeRequest)
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/residency-status-added")
     }
   }
 
   "fomattedExpiryDate method" must {
     "return correctly formatted date and time" in {
-      val date = LocalDateTime.of(2020,3,20,10,30,0,0)
-      assert(TestChooseAnOptionController.formattedExpiryDate(date.toInstant(ZoneOffset.UTC).toEpochMilli) ==  "10:30am on Monday 23 March 2020"
+      val date = LocalDateTime.of(2020, 3, 20, 10, 30, 0, 0)
+      assert(
+        TestChooseAnOptionController.formattedExpiryDate(
+          date.toInstant(ZoneOffset.UTC).toEpochMilli
+        ) == "10:30am on Monday 23 March 2020"
       )
     }
   }
+
 }

@@ -32,9 +32,8 @@ class UploadIdSpec extends AnyWordSpec with Matchers {
 
       val actual = UploadId.generate
 
-      noException should be thrownBy {
+      noException should be thrownBy
         UUID.fromString(actual.value)
-      }
 
     }
   }
@@ -52,4 +51,5 @@ class UploadIdSpec extends AnyWordSpec with Matchers {
     }
 
   }
+
 }

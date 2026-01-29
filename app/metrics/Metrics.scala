@@ -20,5 +20,5 @@ import com.codahale.metrics.{MetricRegistry, Timer}
 
 object Metrics {
   val registry: MetricRegistry = new MetricRegistry
-	val responseTimer: Timer = registry.timer("ras-frontend-status-retrieval-timer")
+  val responseTimer: Timer     = registry.timer("ras-frontend-status-retrieval-timer")
 }

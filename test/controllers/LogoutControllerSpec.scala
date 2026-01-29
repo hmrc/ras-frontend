@@ -49,7 +49,7 @@ class LogoutControllerSpec extends AnyWordSpec with RasTestHelper {
       val result: Future[Result] = logoutController.logout(FakeRequest())
 
       redirectLocation(result) should include("/feedback/ras")
-      status(result) shouldBe Status.SEE_OTHER
+      status(result)         shouldBe Status.SEE_OTHER
     }
 
     "redirect to sign in page when user logged out" in {
@@ -59,8 +59,9 @@ class LogoutControllerSpec extends AnyWordSpec with RasTestHelper {
       val result: Future[Result] = logoutController.logout(FakeRequest())
 
       redirectLocation(result) should include("gg/sign-in?continue_url=%2Frelief-at-source%2F&origin=ras-frontend")
-      status(result) shouldBe Status.SEE_OTHER
+      status(result)         shouldBe Status.SEE_OTHER
     }
 
   }
+
 }

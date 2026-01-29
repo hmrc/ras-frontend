@@ -30,18 +30,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
-class UpscanInitiateConnector @Inject()(httpClient: HttpClientV2, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
+class UpscanInitiateConnector @Inject() (httpClient: HttpClientV2, appConfig: ApplicationConfig)(implicit
+  ec: ExecutionContext
+) {
 
   private val headers: (String, String) = (HeaderNames.CONTENT_TYPE, "application/json")
 
-  private val upscanInitiateUrl: URL = url"${appConfig.initiateUrl}"
+  private val upscanInitiateUrl: URL                = url"${appConfig.initiateUrl}"
   private lazy val rasFileUploadCallbackUrl: String = appConfig.upscanCallbackEndpoint
-  lazy val rasApiBaseUrl: String = appConfig.rasApiBaseUrl
-  lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
+  lazy val rasApiBaseUrl: String                    = appConfig.rasApiBaseUrl
+  lazy val apiVersion: ApiVersion                   = appConfig.rasApiVersion
 
-
-  def initiateUpscan(userId: String, redirectOnSuccess: Option[String], redirectOnError: Option[String])
-                (implicit hc: HeaderCarrier): Future[UpscanInitiateResponse] = {
+  def initiateUpscan(userId: String, redirectOnSuccess: Option[String], redirectOnError: Option[String])(implicit
+    hc: HeaderCarrier
+  ): Future[UpscanInitiateResponse] = {
     val request: UpscanInitiateRequest = UpscanInitiateRequest(
       callbackUrl = s"$rasApiBaseUrl$rasFileUploadCallbackUrl/$userId?version=$apiVersion",
       successRedirect = redirectOnSuccess,
@@ -52,17 +54,19 @@ class UpscanInitiateConnector @Inject()(httpClient: HttpClientV2, appConfig: App
     initiate(upscanInitiateUrl, request)
   }
 
-  private def initiate(url: URL, request: UpscanInitiateRequest)(
-    implicit hc: HeaderCarrier,
-    format: OFormat[UpscanInitiateRequest]): Future[UpscanInitiateResponse] =
+  private def initiate(url: URL, request: UpscanInitiateRequest)(implicit
+    hc: HeaderCarrier,
+    format: OFormat[UpscanInitiateRequest]
+  ): Future[UpscanInitiateResponse] =
     for {
       response: PreparedUpload <- httpClient
-        .post(url)(hc)
-        .withBody(Json.toJson(request))
-        .setHeader(headers)
-        .execute[PreparedUpload]
-      fileReference = UpscanFileReference(response.reference.value)
-      postTarget = response.uploadRequest.href
-      formFields = response.uploadRequest.fields
+                                    .post(url)(hc)
+                                    .withBody(Json.toJson(request))
+                                    .setHeader(headers)
+                                    .execute[PreparedUpload]
+      fileReference             = UpscanFileReference(response.reference.value)
+      postTarget                = response.uploadRequest.href
+      formFields                = response.uploadRequest.fields
     } yield UpscanInitiateResponse(fileReference, postTarget, formFields)
+
 }

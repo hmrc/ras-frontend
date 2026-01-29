@@ -31,17 +31,18 @@ trait RasController extends AuthorisedFunctions with Logging {
 
   val appConfig: ApplicationConfig
 
-  def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
-    authorised(AuthProviders(GovernmentGateway) and
-      (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG") or Enrolment("HMRC-PODS-ORG") or Enrolment("HMRC-PODSPP-ORG"))
-    ).retrieve(authorisedEnrolments) {
-      enrolments =>
-        Future(Right(enrolments.enrolments.head.identifiers.head.value))
+  def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] =
+    authorised(
+      AuthProviders(GovernmentGateway) and
+        (Enrolment("HMRC-PSA-ORG") or Enrolment("HMRC-PP-ORG") or Enrolment("HMRC-PODS-ORG") or Enrolment(
+          "HMRC-PODSPP-ORG"
+        ))
+    ).retrieve(authorisedEnrolments) { enrolments =>
+      Future(Right(enrolments.enrolments.head.identifiers.head.value))
     }.recover {
-      case e: NoActiveSession => Left(notLogged(e))
+      case e: NoActiveSession         => Left(notLogged(e))
       case ex: AuthorisationException => Left(unAuthorise(ex))
     }
-  }
 
   def notLogged(e: NoActiveSession): Future[Result] = {
     logger.warn(s"[RasController][notLogged] No Active Session - $e")
@@ -53,13 +54,13 @@ trait RasController extends AuthorisedFunctions with Logging {
     Future.successful(Redirect(routes.ErrorController.notAuthorised))
   }
 
-  def toGGLogin(continueUrl: String): Result = {
+  def toGGLogin(continueUrl: String): Result =
     Redirect(
       appConfig.loginURL,
       Map(
         "continue_url" -> Seq(continueUrl),
-        "origin" -> Seq("ras-frontend")
+        "origin"       -> Seq("ras-frontend")
       )
     )
-  }
+
 }

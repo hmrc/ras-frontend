@@ -33,7 +33,6 @@ import utils.RasTestHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
 class RasControllerSpec extends AnyWordSpec with RasTestHelper {
 
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
@@ -49,14 +48,15 @@ class RasControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "a users is authorised and valid HMRC-PSA-ORG enrolment is retrieved" in {
 
-        val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-        val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+        val enrolmentIdentifier                     = EnrolmentIdentifier("PSAID", "Z123456")
+        val enrolment                               =
+          new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
         val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
         when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
         val authorisedResult = testController.isAuthorised()
-        val result = authorisedResult.map {
-          case Right(res) => res
+        val result           = authorisedResult.map { case Right(res) =>
+          res
         }
 
         await(result) shouldBe "Z123456"
@@ -64,14 +64,15 @@ class RasControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "a users is authorised and valid HMRC-PODS-ORG enrolment is retrieved" in {
 
-        val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-        val enrolment = new Enrolment(key = "HMRC-PODS-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+        val enrolmentIdentifier                     = EnrolmentIdentifier("PSAID", "Z123456")
+        val enrolment                               =
+          new Enrolment(key = "HMRC-PODS-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
         val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
         when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
         val authorisedResult = testController.isAuthorised()
-        val result = authorisedResult.map {
-          case Right(res) => res
+        val result           = authorisedResult.map { case Right(res) =>
+          res
         }
 
         await(result) shouldBe "Z123456"
@@ -79,14 +80,15 @@ class RasControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "a users is authorised and valid HMRC-PODSPP-ORG enrolment is retrieved" in {
 
-        val enrolmentIdentifier = EnrolmentIdentifier("PSPID", "Z123456")
-        val enrolment = new Enrolment(key = "HMRC-PODSPP-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+        val enrolmentIdentifier                     = EnrolmentIdentifier("PSPID", "Z123456")
+        val enrolment                               =
+          new Enrolment(key = "HMRC-PODSPP-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
         val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
         when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
         val authorisedResult = testController.isAuthorised()
-        val result = authorisedResult.map {
-          case Right(res) => res
+        val result           = authorisedResult.map { case Right(res) =>
+          res
         }
 
         await(result) shouldBe "Z123456"
@@ -94,14 +96,14 @@ class RasControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "a users is authorised and valid HMRC-PP-ORG enrolment is retrieved" in {
 
-        val enrolmentIdentifier = EnrolmentIdentifier("PPID", "Z123456")
-        val enrolment = new Enrolment(key = "HMRC-PP-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+        val enrolmentIdentifier                     = EnrolmentIdentifier("PPID", "Z123456")
+        val enrolment                               = new Enrolment(key = "HMRC-PP-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
         val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
         when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
         val authorisedResult = testController.isAuthorised()
-        val result = authorisedResult.map {
-          case Right(res) => res
+        val result           = authorisedResult.map { case Right(res) =>
+          res
         }
 
         await(result) shouldBe "Z123456"
@@ -113,15 +115,21 @@ class RasControllerSpec extends AnyWordSpec with RasTestHelper {
       "an non logged in response is returned from auth - expired bearer token" in {
 
         val unsuccessfulRetrieval: Future[NoActiveSession] = Future.failed(BearerTokenExpired(""))
-        when(mockAuthConnector.authorise[NoActiveSession](any[Predicate], any[Retrieval[NoActiveSession]])
-          (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
+        when(
+          mockAuthConnector.authorise[NoActiveSession](any[Predicate], any[Retrieval[NoActiveSession]])(
+            any[HeaderCarrier],
+            any[ExecutionContext]
+          )
+        ).thenReturn(unsuccessfulRetrieval)
 
         val authorisedResult = testController.isAuthorised()
-        val result = authorisedResult.map {
-          case Left(res) => await(res)
+        val result           = authorisedResult.map { case Left(res) =>
+          await(res)
         }
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe "http://localhost:9025/gg/sign-in?continue_url=%2Frelief-at-source%2F&origin=ras-frontend"
+        redirectLocation(
+          result
+        )              shouldBe "http://localhost:9025/gg/sign-in?continue_url=%2Frelief-at-source%2F&origin=ras-frontend"
       }
     }
 
@@ -129,32 +137,41 @@ class RasControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "an unauthorised response is returned from auth - Missing Response Header" in {
 
-        val unsuccessfulRetrieval: Future[AuthorisationException] = Future.failed(InternalError("MissingResponseHeader"))
-        when(mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])
-          (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
+        val unsuccessfulRetrieval: Future[AuthorisationException] =
+          Future.failed(InternalError("MissingResponseHeader"))
+        when(
+          mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])(
+            any[HeaderCarrier],
+            any[ExecutionContext]
+          )
+        ).thenReturn(unsuccessfulRetrieval)
 
         val authorisedResult = testController.isAuthorised()
-        val result = authorisedResult.map {
-          case Left(res) => await(res)
+        val result           = authorisedResult.map { case Left(res) =>
+          await(res)
         }
-        status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe "/relief-at-source/not-authorised"
-        }
-      }
-
-      "an unauthorised response is returned from auth - Invalid Response header" in {
-
-        val unsuccessfulRetrieval: Future[AuthorisationException] = Future.failed(InternalError("InvalidResponseHeader"))
-        when(mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])
-          (any[HeaderCarrier], any[ExecutionContext])).thenReturn(unsuccessfulRetrieval)
-
-        val authorisedResult = testController.isAuthorised()
-        val result = authorisedResult.map {
-          case Left(res) => await(res)
-        }
-        status(result) shouldBe Status.SEE_OTHER
+        status(result)           shouldBe Status.SEE_OTHER
         redirectLocation(result) shouldBe "/relief-at-source/not-authorised"
       }
     }
+
+    "an unauthorised response is returned from auth - Invalid Response header" in {
+
+      val unsuccessfulRetrieval: Future[AuthorisationException] = Future.failed(InternalError("InvalidResponseHeader"))
+      when(
+        mockAuthConnector.authorise[AuthorisationException](any[Predicate], any[Retrieval[AuthorisationException]])(
+          any[HeaderCarrier],
+          any[ExecutionContext]
+        )
+      ).thenReturn(unsuccessfulRetrieval)
+
+      val authorisedResult = testController.isAuthorised()
+      val result           = authorisedResult.map { case Left(res) =>
+        await(res)
+      }
+      status(result)           shouldBe Status.SEE_OTHER
+      redirectLocation(result) shouldBe "/relief-at-source/not-authorised"
+    }
+  }
 
 }

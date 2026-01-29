@@ -22,7 +22,11 @@ import play.api.data.Forms._
 import validators.NinoValidator
 
 object MemberNinoForm {
+
   def apply(name: Option[String] = None) = Form(
-    mapping("nino" -> text.verifying(NinoValidator.ninoConstraint(name.getOrElse("member"))))(MemberNino.apply)(MemberNino.unapply)
+    mapping("nino" -> text.verifying(NinoValidator.ninoConstraint(name.getOrElse("member"))))(MemberNino.apply)(
+      MemberNino.unapply
+    )
   )
+
 }

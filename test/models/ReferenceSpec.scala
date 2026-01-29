@@ -31,18 +31,19 @@ class ReferenceSpec extends AnyWordSpec with Matchers {
     }
 
     "read Reference from JSON string" in {
-      val json = JsString("test-reference")
+      val json   = JsString("test-reference")
       val result = Json.fromJson[Reference](json)
 
       result shouldBe JsSuccess(Reference("test-reference"))
     }
 
     "read Reference from JSON using referenceReader" in {
-      val json = JsString("test-reference")
+      val json   = JsString("test-reference")
       val result = json.validate[Reference]
 
       result shouldBe JsSuccess(Reference("test-reference"))
     }
 
   }
+
 }

@@ -23,61 +23,70 @@ import utils.RasTestHelper
 
 class NotAuthorisedViewSpec extends AnyWordSpec with RasTestHelper {
 
-	"not authorised page" must {
-		"contain the correct page title" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).title shouldBe Messages("unauthorised.error.page.title")
-		}
+  "not authorised page" must {
+    "contain the correct page title" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).title shouldBe Messages("unauthorised.error.page.title")
+    }
 
-		"contain the correct page header" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("header").text shouldBe Messages("unauthorised.page.header")
-		}
+    "contain the correct page header" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("header").text shouldBe Messages("unauthorised.page.header")
+    }
 
-		"contain the correct top paragraph" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("paragraph-top").text shouldBe Messages("unauthorised.paragraph.top")
-		}
+    "contain the correct top paragraph" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("paragraph-top").text shouldBe Messages("unauthorised.paragraph.top")
+    }
 
-		"contain the correct bottom paragraph" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("paragraph-bottom").text shouldBe Messages("unauthorised.paragraph.bottom")
-		}
+    "contain the correct bottom paragraph" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("paragraph-bottom").text shouldBe Messages("unauthorised.paragraph.bottom")
+    }
 
-		"contain a list with two items" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("action-list").children().size() shouldBe 2
-		}
+    "contain a list with two items" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("action-list").children().size() shouldBe 2
+    }
 
-		"first list item should contain the correct text" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("action-list").children().first().text shouldBe Messages("unauthorised.list.first", Messages("unauthorised.list.first.link"))
-		}
+    "first list item should contain the correct text" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("action-list").children().first().text shouldBe Messages(
+        "unauthorised.list.first",
+        Messages("unauthorised.list.first.link")
+      )
+    }
 
-		"first list item link should have the correct href" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("link-sign-in").attr("href") shouldBe mockAppConfig.signOutAndContinueUrl
-		}
+    "first list item link should have the correct href" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("link-sign-in").attr("href") shouldBe mockAppConfig.signOutAndContinueUrl
+    }
 
-		"second list item should contain the correct text" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("action-list").children().last().text shouldBe Messages("unauthorised.list.last")
-		}
+    "second list item should contain the correct text" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result).getElementById("action-list").children().last().text shouldBe Messages("unauthorised.list.last")
+    }
 
-		"second list item link should have the correct href" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("link-register").attr("href") shouldBe "https://online.hmrc.gov.uk/registration/pensions"
-		}
+    "second list item link should have the correct href" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result)
+        .getElementById("link-register")
+        .attr("href") shouldBe "https://online.hmrc.gov.uk/registration/pensions"
+    }
 
-		"first list item link should have the correct ga event" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("link-sign-in").attr("data-journey-click") shouldBe "link - click:There is a problem:Sign in"
-		}
+    "first list item link should have the correct ga event" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result)
+        .getElementById("link-sign-in")
+        .attr("data-journey-click") shouldBe "link - click:There is a problem:Sign in"
+    }
 
-		"second list item link should have the correct ga event" in {
-			val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
-			doc(result).getElementById("link-register").attr("data-journey-click") shouldBe "link - click:There is a problem:Register"
-		}
-	}
+    "second list item link should have the correct ga event" in {
+      val result = unauthorisedView()(fakeRequest, testMessages, mockAppConfig)
+      doc(result)
+        .getElementById("link-register")
+        .attr("data-journey-click") shouldBe "link - click:There is a problem:Register"
+    }
+  }
 
 }

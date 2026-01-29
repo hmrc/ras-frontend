@@ -19,7 +19,7 @@ package services
 import uk.gov.hmrc.time.TaxYear
 
 object TaxYearResolver {
-	def currentTaxYear: Int = TaxYear.current.currentYear
+  def currentTaxYear: Int = TaxYear.current.currentYear
 
-	def nextTaxYear: Int = TaxYear.current.next.currentYear
+  def nextTaxYear: Int = TaxYear.current.next.currentYear
 }

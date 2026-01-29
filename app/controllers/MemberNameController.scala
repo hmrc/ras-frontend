@@ -31,67 +31,70 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MemberNameController @Inject()(val authConnector: DefaultAuthConnector,
-                                     val connector: DefaultAuditConnector,
-                                     val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
-                                     val sessionService: SessionCacheService,
-                                     val mcc: MessagesControllerComponents,
-                                     implicit val appConfig: ApplicationConfig,
-                                     memberNameView: views.html.member_name) 
-  extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with WithUnsafeDefaultFormBinding {
+class MemberNameController @Inject() (
+  val authConnector: DefaultAuthConnector,
+  val connector: DefaultAuditConnector,
+  val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
+  val sessionService: SessionCacheService,
+  val mcc: MessagesControllerComponents,
+  implicit val appConfig: ApplicationConfig,
+  memberNameView: views.html.member_name
+) extends FrontendController(mcc)
+    with RasResidencyCheckerController
+    with PageFlowController
+    with Logging
+    with WithUnsafeDefaultFormBinding {
 
-	implicit val ec: ExecutionContext = mcc.executionContext
-	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
+  implicit val ec: ExecutionContext = mcc.executionContext
+  lazy val apiVersion: ApiVersion   = appConfig.rasApiVersion
 
-	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(session) => Ok(memberNameView(form.fill(session.name), edit))
-            case _ => Ok(memberNameView(form, edit))
-          }
-        case Left(resp) =>
-          logger.warn("[NameController][get] user Not authorised")
-          resp
-      }
+  def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)   =>
+        sessionService.fetchRasSession() map {
+          case Some(session) => Ok(memberNameView(form.fill(session.name), edit))
+          case _             => Ok(memberNameView(form, edit))
+        }
+      case Left(resp) =>
+        logger.warn("[NameController][get] user Not authorised")
+        resp
+    }
   }
 
   def post(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
-    isAuthorised().flatMap{
+    isAuthorised().flatMap {
       case Right(userId) =>
-      form.bindFromRequest().fold(
-        formWithErrors => {
-          logger.warn("[NameController][post] Invalid form field passed")
-          Future.successful(BadRequest(memberNameView(formWithErrors, edit)))
-        },
-        memberName => {
-          sessionService.cacheName(memberName) flatMap {
-            case Some(session) =>
-							if (edit) {
-								submitResidencyStatus(session, userId)
-							} else {
-								Future.successful(Redirect(routes.MemberNinoController.get()))
-							}
-						case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
-          }
-        }
-      )
-      case Left(res) =>
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => {
+              logger.warn("[NameController][post] Invalid form field passed")
+              Future.successful(BadRequest(memberNameView(formWithErrors, edit)))
+            },
+            memberName =>
+              sessionService.cacheName(memberName) flatMap {
+                case Some(session) =>
+                  if (edit) {
+                    submitResidencyStatus(session, userId)
+                  } else {
+                    Future.successful(Redirect(routes.MemberNinoController.get()))
+                  }
+                case _             => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+              }
+          )
+      case Left(res)     =>
         logger.warn("[NameController][post] user Not authorised")
         res
     }
   }
 
-  def back(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) => Future.successful(previousPage("MemberNameController", edit))
-        case Left(res) =>
-          logger.warn("[NameController][back] user Not authorised")
-          res
-      }
+  def back(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)  => Future.successful(previousPage("MemberNameController", edit))
+      case Left(res) =>
+        logger.warn("[NameController][back] user Not authorised")
+        res
+    }
   }
 
 }
-

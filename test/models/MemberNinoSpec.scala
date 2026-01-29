@@ -23,8 +23,8 @@ class MemberNinoSpec extends AnyWordSpec {
   "hasValue" must {
 
     "return false if nino is empty" in {
-        val nino = MemberNino("")
-        assert(!nino.hasAValue)
+      val nino = MemberNino("")
+      assert(!nino.hasAValue)
     }
 
     "return true if nino has a value" in {
@@ -32,4 +32,5 @@ class MemberNinoSpec extends AnyWordSpec {
       assert(nino.hasAValue)
     }
   }
+
 }

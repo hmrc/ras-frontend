@@ -28,14 +28,15 @@ import utils.RasTestHelper
 
 class RasResidencyCheckerControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController = new RasResidencyCheckerController {
-    override val authConnector: AuthConnector = mockAuthConnector
-		override val connector: DefaultAuditConnector = mockAuditConnector
-    override val sessionService: SessionCacheService = mockRasSessionCacheService
-    override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockResidencyStatusAPIConnector
-    override val apiVersion: ApiVersion = version
-		override val appConfig: ApplicationConfig = mockAppConfig
-  }
+  def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController =
+    new RasResidencyCheckerController {
+      override val authConnector: AuthConnector                             = mockAuthConnector
+      override val connector: DefaultAuditConnector                         = mockAuditConnector
+      override val sessionService: SessionCacheService                      = mockRasSessionCacheService
+      override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockResidencyStatusAPIConnector
+      override val apiVersion: ApiVersion                                   = version
+      override val appConfig: ApplicationConfig                             = mockAppConfig
+    }
 
   "RasResidencyCheckerController extractResidencyStatus" when {
     "version 1.0 of the API is used" must {
@@ -43,9 +44,9 @@ class RasResidencyCheckerControllerSpec extends AnyWordSpec with RasTestHelper {
         val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV1_0)
 
         testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe "Scotland"
-        testRasResidencyCheckerController.extractResidencyStatus(WELSH) shouldBe ""
+        testRasResidencyCheckerController.extractResidencyStatus(WELSH)    shouldBe ""
         testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe "England, Northern Ireland or Wales"
-        testRasResidencyCheckerController.extractResidencyStatus("") shouldBe ""
+        testRasResidencyCheckerController.extractResidencyStatus("")       shouldBe ""
       }
     }
     "version 2.0 of the API is used" must {
@@ -53,9 +54,9 @@ class RasResidencyCheckerControllerSpec extends AnyWordSpec with RasTestHelper {
         val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV2_0)
 
         testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe "Scotland"
-        testRasResidencyCheckerController.extractResidencyStatus(WELSH) shouldBe "Wales"
+        testRasResidencyCheckerController.extractResidencyStatus(WELSH)    shouldBe "Wales"
         testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe "England, Northern Ireland or Wales"
-        testRasResidencyCheckerController.extractResidencyStatus("") shouldBe ""
+        testRasResidencyCheckerController.extractResidencyStatus("")       shouldBe ""
       }
     }
   }

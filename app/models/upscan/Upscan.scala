@@ -21,4 +21,5 @@ case class UpscanFileReference(reference: String)
 case class UpscanInitiateResponse(
   fileReference: UpscanFileReference,
   postTarget: String,
-  formFields: Map[String, String])
+  formFields: Map[String, String]
+)

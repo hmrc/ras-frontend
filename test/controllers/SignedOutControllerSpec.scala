@@ -27,9 +27,7 @@ import utils.RasTestHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
 class SignedOutControllerSpec extends AnyWordSpec with Matchers with RasTestHelper {
-
 
   "SignedOut Controller" should {
 
@@ -43,11 +41,12 @@ class SignedOutControllerSpec extends AnyWordSpec with Matchers with RasTestHelp
 
     }
 
-
     class TestController extends SignedOutController(mockAuthConnector, mockMCC, mockAppConfig, signedOutView) {
-      override def isAuthorised()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Future[Result], String]] = {
+      override def isAuthorised()(implicit
+        hc: HeaderCarrier,
+        ec: ExecutionContext
+      ): Future[Either[Future[Result], String]] =
         Future.successful(Right("testUserId"))
-      }
     }
 
     "when User is authenticated" in {
@@ -63,4 +62,5 @@ class SignedOutControllerSpec extends AnyWordSpec with Matchers with RasTestHelp
     }
 
   }
+
 }
