@@ -23,7 +23,7 @@ import validators.DateValidator
 
 object MemberDateOfBirthForm extends DateValidator {
 
-  val nonNumberErrorKey                  = "error.date.non.number.date"
+  val nonNumberErrorKey = "error.date.non.number.date"
 
   def apply(name: Option[String] = None) = Form(
     "dateOfBirth" -> mapping(

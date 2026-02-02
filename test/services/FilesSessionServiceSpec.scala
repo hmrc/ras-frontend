@@ -35,10 +35,10 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
   val fileMetaData: FileMetadata       = FileMetadata("file-id-1", Some("fileName.csv"), None)
   val newFileSession: FileSession      = FileSession(None, None, "A123456", Some(Instant.now().toEpochMilli), None)
 
-  val fileSession: FileSession         =
+  val fileSession: FileSession =
     FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
 
-  val failedFileSession: FileSession   = FileSession(
+  val failedFileSession: FileSession = FileSession(
     Some(callbackData.copy(fileStatus = "ERROR")),
     Some(resultsFile),
     "A123456",

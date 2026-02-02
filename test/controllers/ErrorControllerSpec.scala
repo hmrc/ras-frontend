@@ -33,10 +33,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  override val fakeRequest                    = FakeRequest("GET", "/")
-  private val enrolmentIdentifier             = EnrolmentIdentifier("PSAID", "Z123456")
+  override val fakeRequest        = FakeRequest("GET", "/")
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
 
-  private val enrolment                       =
+  private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
 
   val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))

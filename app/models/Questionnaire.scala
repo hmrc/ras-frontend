@@ -31,7 +31,7 @@ object Questionnaire {
   val maxOptionSize        = 4
   val maxBooleanOptionSize = 2
 
-  val form                 = Form(
+  val form = Form(
     mapping(
       "easyToUse"         -> number(0, maxOptionSize),
       "satisfactionLevel" -> number(0, maxOptionSize),

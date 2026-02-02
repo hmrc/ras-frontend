@@ -38,17 +38,17 @@ import scala.concurrent.Future
 
 class UpscanControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  implicit val headerCarrier: HeaderCarrier                = HeaderCarrier()
-  private val enrolmentIdentifier                          = EnrolmentIdentifier("PSAID", "Z123456")
+  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+  private val enrolmentIdentifier           = EnrolmentIdentifier("PSAID", "Z123456")
 
-  private val enrolment                                    =
+  private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
 
-  val successfulRetrieval: Future[Enrolments]              = Future.successful(Enrolments(Set(enrolment)))
-  val memberName: MemberName                               = MemberName("Jackie", "Chan")
-  val memberNino: MemberNino                               = MemberNino("AB123456C")
-  val memberDob: MemberDateOfBirth                         = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
-  val rasSession: RasSession                               = RasSession(memberName, memberNino, memberDob, None)
+  val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
+  val memberName: MemberName                  = MemberName("Jackie", "Chan")
+  val memberNino: MemberNino                  = MemberNino("AB123456C")
+  val memberDob: MemberDateOfBirth            = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
+  val rasSession: RasSession                  = RasSession(memberName, memberNino, memberDob, None)
 
   val upscanResponse: models.upscan.UpscanInitiateResponse =
     UpscanInitiateResponse(UpscanFileReference(""), "upscan/upload-proxy", Map("" -> ""))

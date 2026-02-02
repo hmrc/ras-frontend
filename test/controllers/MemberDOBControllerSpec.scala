@@ -45,16 +45,16 @@ class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with Before
       number <- Gen.chooseNum(0, 9999999)
     } yield PsaId(f"$prefix$number%07d")
 
-  private val memberName                      = MemberName("Jackie", "Chan")
-  private val memberNino: String              = new Generator(new Random()).nextNino.nino
-  private val dob                             = RasDate(Some("12"), Some("12"), Some("2012"))
-  private val memberDob                       = MemberDateOfBirth(dob)
-  private val rasSession                      = RasSession(memberName, MemberNino(memberNino), memberDob, None, None)
-  private val postData                        = Json.obj("dateOfBirth" -> dob)
-  private val psaId: String                   = randomPsaId.sample.get.id
-  private val enrolmentIdentifier             = EnrolmentIdentifier("PSAID", psaId)
+  private val memberName          = MemberName("Jackie", "Chan")
+  private val memberNino: String  = new Generator(new Random()).nextNino.nino
+  private val dob                 = RasDate(Some("12"), Some("12"), Some("2012"))
+  private val memberDob           = MemberDateOfBirth(dob)
+  private val rasSession          = RasSession(memberName, MemberNino(memberNino), memberDob, None, None)
+  private val postData            = Json.obj("dateOfBirth" -> dob)
+  private val psaId: String       = randomPsaId.sample.get.id
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", psaId)
 
-  private val enrolment                       =
+  private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
 
   private val enrolments                      = Enrolments(Set(enrolment))

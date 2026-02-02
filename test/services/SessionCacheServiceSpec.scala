@@ -31,25 +31,25 @@ import scala.concurrent.Future
 
 class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with OptionValues {
 
-  val sessionId: String                            = UUID.randomUUID.toString
-  val name: MemberName                             = MemberName("John", "Johnson")
-  val nino: MemberNino                             = MemberNino(RandomNino.generate)
-  val memberDob: MemberDateOfBirth                 = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
+  val sessionId: String            = UUID.randomUUID.toString
+  val name: MemberName             = MemberName("John", "Johnson")
+  val nino: MemberNino             = MemberNino(RandomNino.generate)
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
 
-  val memberDetails: MemberDetails                 =
+  val memberDetails: MemberDetails =
     MemberDetails(name, RandomNino.generate, RasDate(Some("1"), Some("1"), Some("1999")))
 
-  val uploadResponse: UploadResponse               = UploadResponse("111", Some("error error"))
+  val uploadResponse: UploadResponse = UploadResponse("111", Some("error error"))
 
   val residencyStatusResult: ResidencyStatusResult =
     ResidencyStatusResult("uk", Some("uk"), "2000", "2001", "John Johnson", "1-1-1999", nino.nino)
 
-  val reference: File                              = File("someReference")
+  val reference: File = File("someReference")
 
-  val rasSession: RasSession                       =
+  val rasSession: RasSession =
     RasSession(name, nino, memberDob, Some(residencyStatusResult), Some(uploadResponse), Some(reference))
 
-  val emptyRasSession: RasSession                  = RasSession.cleanSession
+  val emptyRasSession: RasSession = RasSession.cleanSession
 
   val sessionRepository                                     = new RasSessionCacheRepository(mongoComponent, applicationConfig)
   val sessionPair: (String, String)                         = SessionKeys.sessionId -> sessionId

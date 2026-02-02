@@ -42,9 +42,9 @@ class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
   override val SCOTTISH = "Scotland"
   val NON_SCOTTISH      = "England, Northern Ireland or Wales"
 
-  private val enrolmentIdentifier                  = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
 
-  private val enrolment                            =
+  private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
 
   private val enrolments                           = Enrolments(Set(enrolment))

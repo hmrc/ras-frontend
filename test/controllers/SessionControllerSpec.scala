@@ -34,13 +34,13 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  val nino: MemberNino                        = MemberNino(RandomNino.generate)
-  val dob: RasDate                            = RasDate(Some("1"), Some("1"), Some("1999"))
-  val memberDob: MemberDateOfBirth            = MemberDateOfBirth(dob)
-  val rasSession: RasSession                  = RasSession(MemberName("Jim", "McGill"), nino, memberDob, None, None)
-  private val enrolmentIdentifier             = EnrolmentIdentifier("PSAID", "Z123456")
+  val nino: MemberNino             = MemberNino(RandomNino.generate)
+  val dob: RasDate                 = RasDate(Some("1"), Some("1"), Some("1999"))
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(dob)
+  val rasSession: RasSession       = RasSession(MemberName("Jim", "McGill"), nino, memberDob, None, None)
+  private val enrolmentIdentifier  = EnrolmentIdentifier("PSAID", "Z123456")
 
-  private val enrolment                       =
+  private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
 
   private val enrolments                      = Enrolments(Set(enrolment))

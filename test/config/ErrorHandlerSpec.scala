@@ -26,13 +26,13 @@ import scala.concurrent.ExecutionContext
 
 class ErrorHandlerSpec extends AnyWordSpec with RasTestHelper {
 
-  private val messageApi: MessagesApi                      = fakeApplicationCreation.injector.instanceOf[MessagesApi]
-  private val errorTemplate: error                         = fakeApplicationCreation.injector.instanceOf[error]
+  private val messageApi: MessagesApi = fakeApplicationCreation.injector.instanceOf[MessagesApi]
+  private val errorTemplate: error    = fakeApplicationCreation.injector.instanceOf[error]
 
   private val errorNotFoundTemplate: global_page_not_found =
     fakeApplicationCreation.injector.instanceOf[global_page_not_found]
 
-  private val errorHandler: ErrorHandler                   =
+  private val errorHandler: ErrorHandler =
     new ErrorHandler(messageApi, mockAppConfig, ExecutionContext.global, errorTemplate, errorNotFoundTemplate)
 
   "ErrorHandler" must {

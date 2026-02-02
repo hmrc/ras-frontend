@@ -39,9 +39,9 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
   val rasSession: RasSession       = RasSession(memberName, memberNino, memberDob, None, None)
   val postData: JsObject           = Json.obj("nino" -> RandomNino.generate)
 
-  private val enrolmentIdentifier             = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
 
-  private val enrolment                       =
+  private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
 
   private val enrolments                      = Enrolments(Set(enrolment))

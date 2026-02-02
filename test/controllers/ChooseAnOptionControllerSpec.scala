@@ -39,19 +39,19 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   val currentTaxYear: Int                   = TaxYearResolver.currentTaxYear
 
-  private val enrolmentIdentifier                  = EnrolmentIdentifier("PSAID", "Z123456")
+  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
 
-  private val enrolment                            =
+  private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
 
-  val successfulRetrieval: Future[Enrolments]      = Future.successful(Enrolments(Set(enrolment)))
-  val mockUploadTimeStamp: Long                    = Instant.now().minus(Duration.ofDays(10)).toEpochMilli
-  val mockExpiryTimeStamp: Long                    = Instant.now().minus(Duration.ofDays(7)).toEpochMilli
+  val successfulRetrieval: Future[Enrolments] = Future.successful(Enrolments(Set(enrolment)))
+  val mockUploadTimeStamp: Long               = Instant.now().minus(Duration.ofDays(10)).toEpochMilli
+  val mockExpiryTimeStamp: Long               = Instant.now().minus(Duration.ofDays(7)).toEpochMilli
 
   val mockResultsFileMetadata: ResultsFileMetaData =
     ResultsFileMetaData("", Some("testFile.csv"), Some(mockUploadTimeStamp), 1, 1L)
 
-  val fileSession: FileSession                     = FileSession(
+  val fileSession: FileSession = FileSession(
     Some(CallbackData("", None, "", None, None)),
     Some(mockResultsFileMetadata),
     "1234",

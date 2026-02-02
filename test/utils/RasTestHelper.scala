@@ -56,7 +56,7 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
       .build()
   }
 
-  val fakeApplication: Application         = fakeApplicationCreation
+  val fakeApplication: Application = fakeApplicationCreation
 
   def await[A](future: Future[A], timeout: Duration = 20.seconds): A = Await.result(future, timeout)
 
@@ -70,8 +70,8 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
   private val messagesActionBuilder: MessagesActionBuilder =
     new DefaultMessagesActionBuilderImpl(stubBodyParser[AnyContent](), stubMessagesApi())
 
-  private val cc: ControllerComponents                     = stubControllerComponents()
-  val fakeRequest                                          = FakeRequest()
+  private val cc: ControllerComponents = stubControllerComponents()
+  val fakeRequest                      = FakeRequest()
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
@@ -135,31 +135,31 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
   val cannotUploadAnotherFileView: cannot_upload_another_file =
     fakeApplication.injector.instanceOf[cannot_upload_another_file]
 
-  val chooseAnOptionView: choose_an_option                    = fakeApplication.injector.instanceOf[choose_an_option]
-  val fileNotAvailableView: file_not_available                = fakeApplication.injector.instanceOf[file_not_available]
-  val fileReadyView: file_ready                               = fakeApplication.injector.instanceOf[file_ready]
-  val fileUploadView: file_upload                             = fakeApplication.injector.instanceOf[file_upload]
-  val fileUploadSuccessfulView: file_upload_successful        = fakeApplication.injector.instanceOf[file_upload_successful]
-  val globalErrorView: global_error                           = fakeApplication.injector.instanceOf[global_error]
-  val globalPageNotFoundView: global_page_not_found           = fakeApplication.injector.instanceOf[global_page_not_found]
-  val matchFoundView: match_found                             = fakeApplication.injector.instanceOf[match_found]
-  val matchNotFoundView: match_not_found                      = fakeApplication.injector.instanceOf[match_not_found]
-  val memberDobView: member_dob                               = fakeApplication.injector.instanceOf[member_dob]
-  val memberNameView: member_name                             = fakeApplication.injector.instanceOf[member_name]
-  val memberNinoView: member_nino                             = fakeApplication.injector.instanceOf[member_nino]
-  val noResultsAvailableView: no_results_available            = fakeApplication.injector.instanceOf[no_results_available]
-  val problemUploadingFileView: problem_uploading_file        = fakeApplication.injector.instanceOf[problem_uploading_file]
+  val chooseAnOptionView: choose_an_option             = fakeApplication.injector.instanceOf[choose_an_option]
+  val fileNotAvailableView: file_not_available         = fakeApplication.injector.instanceOf[file_not_available]
+  val fileReadyView: file_ready                        = fakeApplication.injector.instanceOf[file_ready]
+  val fileUploadView: file_upload                      = fakeApplication.injector.instanceOf[file_upload]
+  val fileUploadSuccessfulView: file_upload_successful = fakeApplication.injector.instanceOf[file_upload_successful]
+  val globalErrorView: global_error                    = fakeApplication.injector.instanceOf[global_error]
+  val globalPageNotFoundView: global_page_not_found    = fakeApplication.injector.instanceOf[global_page_not_found]
+  val matchFoundView: match_found                      = fakeApplication.injector.instanceOf[match_found]
+  val matchNotFoundView: match_not_found               = fakeApplication.injector.instanceOf[match_not_found]
+  val memberDobView: member_dob                        = fakeApplication.injector.instanceOf[member_dob]
+  val memberNameView: member_name                      = fakeApplication.injector.instanceOf[member_name]
+  val memberNinoView: member_nino                      = fakeApplication.injector.instanceOf[member_nino]
+  val noResultsAvailableView: no_results_available     = fakeApplication.injector.instanceOf[no_results_available]
+  val problemUploadingFileView: problem_uploading_file = fakeApplication.injector.instanceOf[problem_uploading_file]
 
-  val resultsNotAvailableYetView: results_not_available_yet   =
+  val resultsNotAvailableYetView: results_not_available_yet =
     fakeApplication.injector.instanceOf[results_not_available_yet]
 
-  val unauthorisedView: unauthorised                          = fakeApplication.injector.instanceOf[unauthorised]
-  val uploadResultView: upload_result                         = fakeApplication.injector.instanceOf[upload_result]
+  val unauthorisedView: unauthorised  = fakeApplication.injector.instanceOf[unauthorised]
+  val uploadResultView: upload_result = fakeApplication.injector.instanceOf[upload_result]
 
-  val startAtStartView: sorry_you_need_to_start_again         =
+  val startAtStartView: sorry_you_need_to_start_again =
     fakeApplication.injector.instanceOf[sorry_you_need_to_start_again]
 
-  val signedOutView: signed_out                               = fakeApplication.injector.instanceOf[signed_out]
+  val signedOutView: signed_out = fakeApplication.injector.instanceOf[signed_out]
 
   def setupMockGet(statusCode: Int, body: String, url: String): StubMapping =
     wireMockServer.stubFor(

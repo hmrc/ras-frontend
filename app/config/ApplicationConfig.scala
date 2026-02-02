@@ -38,12 +38,12 @@ class ApplicationConfig @Inject() (config: ServicesConfig) {
   lazy val basAuthHost: String = s"${config.getConfString("auth.bas-gateway.host", "")}"
   lazy val loginURL: String    = s"$basAuthHost/bas-gateway/sign-in"
 
-  lazy val reportAProblemUrl: String             = s"$contactHost/contact/problem_reports"
+  lazy val reportAProblemUrl: String = s"$contactHost/contact/problem_reports"
 
-  lazy val reportAProblemPartialUrl: String      =
+  lazy val reportAProblemPartialUrl: String =
     s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
 
-  lazy val reportAProblemNonJSUrl: String        =
+  lazy val reportAProblemNonJSUrl: String =
     s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
   lazy val signOutAndContinueUrl: String         = s"$signOutBaseUrl$continueCallback"
