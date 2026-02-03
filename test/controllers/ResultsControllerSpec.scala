@@ -37,30 +37,39 @@ import scala.concurrent.Future
 class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
 
   override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
-  val currentTaxYear: Int = TaxYearResolver.currentTaxYear
+  val currentTaxYear: Int                                       = TaxYearResolver.currentTaxYear
 
   override val SCOTTISH = "Scotland"
-  val NON_SCOTTISH = "England, Northern Ireland or Wales"
+  val NON_SCOTTISH      = "England, Northern Ireland or Wales"
 
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
-  private val enrolments = Enrolments(Set(enrolment))
-  val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
-  val name: MemberName = MemberName("Jim", "McGill")
-  val nino: MemberNino = MemberNino(RandomNino.generate)
-  val dob: RasDate = RasDate(Some("1"), Some("1"), Some("1999"))
-  val memberDob: MemberDateOfBirth = MemberDateOfBirth(dob)
+
+  private val enrolment =
+    new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+
+  private val enrolments                           = Enrolments(Set(enrolment))
+  val successfulRetrieval: Future[Enrolments]      = Future.successful(enrolments)
+  val name: MemberName                             = MemberName("Jim", "McGill")
+  val nino: MemberNino                             = MemberNino(RandomNino.generate)
+  val dob: RasDate                                 = RasDate(Some("1"), Some("1"), Some("1999"))
+  val memberDob: MemberDateOfBirth                 = MemberDateOfBirth(dob)
   val residencyStatusResult: ResidencyStatusResult = ResidencyStatusResult("", None, "", "", "", "", "")
-  val postData: JsObject = Json.obj("firstName" -> "Jim", "lastName" -> "McGill", "nino" -> nino, "dateOfBirth" -> dob)
-  val rasSession: RasSession = RasSession(name, nino, memberDob, Some(residencyStatusResult), None)
+  val postData: JsObject                           = Json.obj("firstName" -> "Jim", "lastName" -> "McGill", "nino" -> nino, "dateOfBirth" -> dob)
+  val rasSession: RasSession                       = RasSession(name, nino, memberDob, Some(residencyStatusResult), None)
 
-
-  val TestResultsController: ResultsController = new ResultsController(mockAuthConnector, mockRasSessionCacheService, mockMCC, mockAppConfig, matchFoundView, matchNotFoundView) {
+  val TestResultsController: ResultsController = new ResultsController(
+    mockAuthConnector,
+    mockRasSessionCacheService,
+    mockMCC,
+    mockAppConfig,
+    matchFoundView,
+    matchNotFoundView
+  ) {
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 
   "Results Controller" must {
-    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(),any())).thenReturn(successfulRetrieval)
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any())).thenReturn(successfulRetrieval)
 
     "return 200 when match found" in {
       val result = TestResultsController.matchFound(fakeRequest)
@@ -75,64 +84,82 @@ class ResultsControllerSpec extends AnyWordSpec with RasTestHelper {
     "return HTML when match found" in {
       val result = TestResultsController.matchFound(fakeRequest)
       contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      charset(result)     shouldBe Some("utf-8")
     }
 
     "return HTML when match not found" in {
-      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
+      when(mockRasSessionCacheService.fetchRasSession()(any()))
+        .thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
       val result = TestResultsController.noMatchFound(fakeRequest)
       contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+      charset(result)     shouldBe Some("utf-8")
     }
 
     "redirect to global error page when no session data is returned on match found" in {
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("global-error")
     }
 
     "redirect to homepage when session data is returned with no result for match found" in {
-      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
+      when(mockRasSessionCacheService.fetchRasSession()(any()))
+        .thenReturn(Future.successful(Some(rasSession.copy(residencyStatusResult = None))))
       val result = TestResultsController.matchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
       redirectLocation(result) shouldBe "/relief-at-source"
     }
 
     "redirect to global error page when no session data is returned on match not found" in {
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("global-error")
     }
 
     "redirect to homepage when session data is returned with no result for match not found" in {
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.noMatchFound.apply(fakeRequest.withJsonBody(Json.toJson(postData)))
-      status(result) shouldBe 303
+      status(result)         shouldBe 303
       redirectLocation(result) should include("/relief-at-source")
     }
 
     "return to member dob page when back link is clicked" in {
-      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(
-        Some(RasSession(name, nino, memberDob,
-          Some(ResidencyStatusResult(
-              NON_SCOTTISH, Some(NON_SCOTTISH),
-              currentTaxYear.toString, (currentTaxYear + 1).toString,
-              name.firstName + " " + name.lastName,
-              memberDob.dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK)),
-              "")),None))
-      ))
+      when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(
+        Future.successful(
+          Some(
+            RasSession(
+              name,
+              nino,
+              memberDob,
+              Some(
+                ResidencyStatusResult(
+                  NON_SCOTTISH,
+                  Some(NON_SCOTTISH),
+                  currentTaxYear.toString,
+                  (currentTaxYear + 1).toString,
+                  name.firstName + " " + name.lastName,
+                  memberDob.dateOfBirth.asLocalDate
+                    .format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK)),
+                  ""
+                )
+              ),
+              None
+            )
+          )
+        )
+      )
       val result = TestResultsController.back.apply(FakeRequest())
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/member-date-of-birth")
     }
 
     "redirect to global error when no session and back link is clicked" in {
       when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(None))
       val result = TestResultsController.back.apply(FakeRequest())
-      status(result) shouldBe SEE_OTHER
+      status(result)         shouldBe SEE_OTHER
       redirectLocation(result) should include("/global-error")
     }
   }
+
 }

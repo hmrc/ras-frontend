@@ -23,27 +23,30 @@ import utils.RasTestHelper
 
 class FileUploadSuccessfulViewSpec extends AnyWordSpec with RasTestHelper {
 
-	"file upload success page" must {
-		"display file upload successful page" when {
-			"file has been uploaded successfully" in {
-				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
-			}
-		}
+  "file upload success page" must {
+    "display file upload successful page" when {
+      "file has been uploaded successfully" in {
+        val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
+        doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
+      }
+    }
 
-		"successful upload page" must {
-			"contain the correct content" in {
-				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementById("page-header").text shouldBe Messages("upload.success.header")
-				doc(result).getElementById("first-description").text shouldBe Messages("upload.success.first-description")
-				doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
-				doc(result).getElementById("continue").text shouldBe Messages("continue")
-			}
+    "successful upload page" must {
+      "contain the correct content" in {
+        val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
+        doc(result).getElementById("page-header").text        shouldBe Messages("upload.success.header")
+        doc(result).getElementById("first-description").text  shouldBe Messages("upload.success.first-description")
+        doc(result).getElementById("second-description").text shouldBe Messages("upload.success.second-description")
+        doc(result).getElementById("continue").text           shouldBe Messages("continue")
+      }
 
-			"contains the correct ga events" in {
-				val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:Your file has been uploaded:Continue"
-			}
-		}
-	}
+      "contains the correct ga events" in {
+        val result = fileUploadSuccessfulView()(fakeRequest, testMessages, mockAppConfig)
+        doc(result)
+          .getElementById("continue")
+          .attr("data-journey-click") shouldBe "button - click:Your file has been uploaded:Continue"
+      }
+    }
+  }
+
 }

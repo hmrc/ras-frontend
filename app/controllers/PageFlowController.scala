@@ -24,33 +24,32 @@ trait PageFlowController extends RasController {
   val FILE_UPLOAD = "UpscanController"
   val MEMBER_NAME = "MemberNameController"
   val MEMBER_NINO = "MemberNinoController"
-  val MEMBER_DOB = "MemberDOBController"
-  val RESULTS = "ResultsController"
+  val MEMBER_DOB  = "MemberDOBController"
+  val RESULTS     = "ResultsController"
 
-  def previousPage(from: String, edit: Boolean = false): Result = {
+  def previousPage(from: String, edit: Boolean = false): Result =
     from match {
       case FILE_UPLOAD => Redirect(routes.ChooseAnOptionController.get)
       case MEMBER_NAME =>
-				if (edit) {
-					Redirect(routes.ResultsController.noMatchFound)
-				} else {
-					Redirect(routes.ChooseAnOptionController.get)
-				}
-			case MEMBER_NINO =>
-				if (edit) {
-					Redirect(routes.ResultsController.noMatchFound)
-				} else {
-					Redirect(routes.MemberNameController.get())
-				}
-			case MEMBER_DOB =>
-				if (edit) {
-					Redirect(routes.ResultsController.noMatchFound)
-				} else {
-					Redirect(routes.MemberNinoController.get())
-				}
-			case RESULTS => Redirect(routes.MemberDOBController.get())
-      case _ => Redirect(routes.ErrorController.renderGlobalErrorPage)
+        if (edit) {
+          Redirect(routes.ResultsController.noMatchFound)
+        } else {
+          Redirect(routes.ChooseAnOptionController.get)
+        }
+      case MEMBER_NINO =>
+        if (edit) {
+          Redirect(routes.ResultsController.noMatchFound)
+        } else {
+          Redirect(routes.MemberNameController.get())
+        }
+      case MEMBER_DOB  =>
+        if (edit) {
+          Redirect(routes.ResultsController.noMatchFound)
+        } else {
+          Redirect(routes.MemberNinoController.get())
+        }
+      case RESULTS     => Redirect(routes.MemberDOBController.get())
+      case _           => Redirect(routes.ErrorController.renderGlobalErrorPage)
     }
-  }
-}
 
+}

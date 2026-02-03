@@ -7,7 +7,7 @@ ThisBuild / majorVersion := 0
 
 lazy val microservice = Project("ras-frontend", file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
-  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
+  .disablePlugins(JUnitXmlReportPlugin) // Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     scalacOptions ++= Seq(
       "-Wconf:cat=unused-imports&src=html/.*:s",
@@ -19,7 +19,8 @@ lazy val microservice = Project("ras-frontend", file("."))
       "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
     ),
     PlayKeys.playDefaultPort := 9673,
-    libraryDependencies ++= AppDependencies(),
+    libraryDependencies ++= AppDependencies()
   )
   .settings(CodeCoverageSettings())
 
+addCommandAlias("scalafmtAll", "all scalafmtSbt scalafmt Test/scalafmt")

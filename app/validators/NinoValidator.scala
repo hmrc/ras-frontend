@@ -19,27 +19,28 @@ package validators
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 trait NinoValidator {
-  val validNinoRegex = "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]?$"
+  val validNinoRegex        = "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]?$"
   val specialCharacterRegex = "^[a-zA-Z0-9 ]*$"
 
   def isValid(nino: String): Boolean = nino.replaceAll("\\s", "").toUpperCase.matches(validNinoRegex)
 
-  def containsNoSpecialCharacters(nino: String): Boolean = nino.replaceAll("\\s", "").toUpperCase.matches(specialCharacterRegex)
+  def containsNoSpecialCharacters(nino: String): Boolean =
+    nino.replaceAll("\\s", "").toUpperCase.matches(specialCharacterRegex)
 
-  def ninoConstraint(name: String): Constraint[String] = Constraint("nino")({
-    text =>
-      val ninoText = text.replaceAll("\\s", "")
-      if (ninoText.isEmpty)
-        Invalid(Seq(ValidationError("error.withName.mandatory", "National Insurance number")))
-      else if (!NinoValidator.containsNoSpecialCharacters(ninoText.toUpperCase()))
-        Invalid(Seq(ValidationError("error.nino.special.character")))
-      else if (ninoText.length < 8 || ninoText.length > 9)
-        Invalid(Seq(ValidationError("error.nino.length")))
-      else if (!NinoValidator.isValid(ninoText.toUpperCase()))
-        Invalid(Seq(ValidationError("error.nino.invalid")))
-      else
-        Valid
-  })
+  def ninoConstraint(name: String): Constraint[String] = Constraint("nino") { text =>
+    val ninoText = text.replaceAll("\\s", "")
+    if (ninoText.isEmpty)
+      Invalid(Seq(ValidationError("error.withName.mandatory", "National Insurance number")))
+    else if (!NinoValidator.containsNoSpecialCharacters(ninoText.toUpperCase()))
+      Invalid(Seq(ValidationError("error.nino.special.character")))
+    else if (ninoText.length < 8 || ninoText.length > 9)
+      Invalid(Seq(ValidationError("error.nino.length")))
+    else if (!NinoValidator.isValid(ninoText.toUpperCase()))
+      Invalid(Seq(ValidationError("error.nino.invalid")))
+    else
+      Valid
+  }
+
 }
 
 object NinoValidator extends NinoValidator

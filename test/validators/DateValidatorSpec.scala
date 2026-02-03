@@ -24,9 +24,9 @@ import validators.DateValidator.rasDateConstraint
 
 class DateValidatorSpec extends AnyWordSpec with Matchers {
 
-  "date validator" should{
+  "date validator" should {
     "return false when day is non digit" in {
-      DateValidator.checkDayRange(RasDate(Some("a"),Some("1"),Some("1999"))) shouldBe false
+      DateValidator.checkDayRange(RasDate(Some("a"), Some("1"), Some("1999"))) shouldBe false
     }
 
     "return false when month is non digit" in {
@@ -38,7 +38,7 @@ class DateValidatorSpec extends AnyWordSpec with Matchers {
     }
 
     "return false when year is a non digit" in {
-      DateValidator.checkDayRange(RasDate(Some("1"),Some("1"),Some("C"))) shouldBe false
+      DateValidator.checkDayRange(RasDate(Some("1"), Some("1"), Some("C"))) shouldBe false
     }
 
     "return false when year is less than 1900" in {
@@ -57,9 +57,10 @@ class DateValidatorSpec extends AnyWordSpec with Matchers {
       val invalidYearMemberDOB = MemberDateOfBirth(RasDate(Some("1"), Some("12"), Some("non-integer")))
 
       val constraint = rasDateConstraint("dateOfBirth")
-      val result = constraint.apply(invalidYearMemberDOB)
+      val result     = constraint.apply(invalidYearMemberDOB)
 
       result shouldBe an[Invalid]
     }
   }
+
 }

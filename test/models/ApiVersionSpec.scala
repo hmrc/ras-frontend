@@ -42,4 +42,5 @@ class ApiVersionSpec extends AnyWordSpec with Matchers {
       ApiV2_0 shouldBe an[ApiVersion]
     }
   }
+
 }

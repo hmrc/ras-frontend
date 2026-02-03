@@ -31,74 +31,75 @@ class QuestionnaireSpec extends AnyWordSpec with Matchers {
         referer = Some("https://www.gov.uk")
       )
 
-      questionnaire.easyToUse shouldBe 3
+      questionnaire.easyToUse         shouldBe 3
       questionnaire.satisfactionLevel shouldBe 4
       questionnaire.whyGiveThisRating shouldBe Some("Great service")
-      questionnaire.referer shouldBe Some("https://www.gov.uk")
+      questionnaire.referer           shouldBe Some("https://www.gov.uk")
     }
 
     "bind valid form data" in {
       val formData = Map(
-        "easyToUse" -> "2",
+        "easyToUse"         -> "2",
         "satisfactionLevel" -> "3",
         "whyGiveThisRating" -> "Good experience",
-        "referer" -> "https://example.com"
+        "referer"           -> "https://example.com"
       )
 
       val boundForm = Questionnaire.form.bind(formData)
 
       boundForm.hasErrors shouldBe false
-      boundForm.value shouldBe Some(Questionnaire(2, 3, Some("Good experience"), Some("https://example.com")))
+      boundForm.value     shouldBe Some(Questionnaire(2, 3, Some("Good experience"), Some("https://example.com")))
     }
 
     "bind form data with optional fields empty" in {
       val formData = Map(
-        "easyToUse" -> "1",
+        "easyToUse"         -> "1",
         "satisfactionLevel" -> "2"
       )
 
       val boundForm = Questionnaire.form.bind(formData)
 
       boundForm.hasErrors shouldBe false
-      boundForm.value shouldBe Some(Questionnaire(1, 2, None, None))
+      boundForm.value     shouldBe Some(Questionnaire(1, 2, None, None))
     }
 
     "reject easyToUse value above max" in {
       val formData = Map(
-        "easyToUse" -> "5",
+        "easyToUse"         -> "5",
         "satisfactionLevel" -> "2"
       )
 
       val boundForm = Questionnaire.form.bind(formData)
 
-      boundForm.hasErrors shouldBe true
+      boundForm.hasErrors       shouldBe true
       boundForm.errors.head.key shouldBe "easyToUse"
     }
 
     "reject satisfactionLevel value above max" in {
       val formData = Map(
-        "easyToUse" -> "2",
+        "easyToUse"         -> "2",
         "satisfactionLevel" -> "5"
       )
 
       val boundForm = Questionnaire.form.bind(formData)
 
-      boundForm.hasErrors shouldBe true
+      boundForm.hasErrors       shouldBe true
       boundForm.errors.head.key shouldBe "satisfactionLevel"
     }
 
     "reject whyGiveThisRating exceeding max length" in {
       val longString = "a" * (Questionnaire.maxStringLength + 1)
-      val formData = Map(
-        "easyToUse" -> "2",
+      val formData   = Map(
+        "easyToUse"         -> "2",
         "satisfactionLevel" -> "3",
         "whyGiveThisRating" -> longString
       )
 
       val boundForm = Questionnaire.form.bind(formData)
 
-      boundForm.hasErrors shouldBe true
+      boundForm.hasErrors       shouldBe true
       boundForm.errors.head.key shouldBe "whyGiveThisRating"
     }
   }
+
 }

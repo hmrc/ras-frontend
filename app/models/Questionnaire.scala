@@ -20,20 +20,24 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, number, optional, text}
 
 case class Questionnaire(
-                          easyToUse: Int,
-                          satisfactionLevel: Int,
-                          whyGiveThisRating: Option[String],
-                          referer: Option[String]
-                        )
+  easyToUse: Int,
+  satisfactionLevel: Int,
+  whyGiveThisRating: Option[String],
+  referer: Option[String]
+)
 
 object Questionnaire {
-  val maxStringLength = 1200
-  val maxOptionSize = 4
+  val maxStringLength      = 1200
+  val maxOptionSize        = 4
   val maxBooleanOptionSize = 2
-  val form = Form(mapping(
-    "easyToUse" -> number(0, maxOptionSize),
-    "satisfactionLevel" -> number(0, maxOptionSize),
-    "whyGiveThisRating" -> optional(text(maxLength = maxStringLength)),
-    "referer" -> optional(text))(Questionnaire.apply)(Questionnaire.unapply)
+
+  val form = Form(
+    mapping(
+      "easyToUse"         -> number(0, maxOptionSize),
+      "satisfactionLevel" -> number(0, maxOptionSize),
+      "whyGiveThisRating" -> optional(text(maxLength = maxStringLength)),
+      "referer"           -> optional(text)
+    )(Questionnaire.apply)(Questionnaire.unapply)
   )
+
 }

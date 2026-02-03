@@ -19,11 +19,12 @@ package models.upscan
 import play.api.libs.json.{Json, OFormat}
 
 case class UpscanInitiateRequest(
-                                  callbackUrl: String,
-                                  successRedirect: Option[String] = None,
-                                  errorRedirect: Option[String] = None,
-                                  minimumFileSize: Option[Int] = None,
-                                  maximumFileSize: Option[Int] = Some(2097152))
+  callbackUrl: String,
+  successRedirect: Option[String] = None,
+  errorRedirect: Option[String] = None,
+  minimumFileSize: Option[Int] = None,
+  maximumFileSize: Option[Int] = Some(2097152)
+)
 
 object UpscanInitiateRequest {
   implicit val format: OFormat[UpscanInitiateRequest] = Json.format[UpscanInitiateRequest]

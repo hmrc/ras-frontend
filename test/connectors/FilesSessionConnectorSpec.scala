@@ -29,12 +29,15 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
 
   val connector: FilesSessionConnector = new FilesSessionConnector(httpClient, mockAppConfig)
 
-  val callbackData: CallbackData = CallbackData("reference-1234", None, "READY", None, None)
+  val callbackData: CallbackData       = CallbackData("reference-1234", None, "READY", None, None)
   val resultsFile: ResultsFileMetaData = ResultsFileMetaData("file-id-1", Some("fileName.csv"), Some(1234L), 123, 1234L)
-  val fileSession: Option[FileSession] = Some(FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(1765890906194L), None))
 
-  val fileSessionJson: String = """{"userFile":{"reference":"reference-1234","fileStatus":"READY"},"resultsFile":{"id":"file-id-1","filename":"fileName.csv","uploadDate":1234,"chunkSize":123,"length":1234},"userId":"A123456","uploadTimeStamp":1765890906194}""".stripMargin
+  val fileSession: Option[FileSession] = Some(
+    FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(1765890906194L), None)
+  )
 
+  val fileSessionJson: String =
+    """{"userFile":{"reference":"reference-1234","fileStatus":"READY"},"resultsFile":{"id":"file-id-1","filename":"fileName.csv","uploadDate":1234,"chunkSize":123,"length":1234},"userId":"A123456","uploadTimeStamp":1765890906194}""".stripMargin
 
   "fetchFileSession" should {
 
@@ -53,7 +56,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
     }
 
     "return Ok for invalid json response in file fetch call" in {
-      val invalidJson : String = """{"test":"value"}""".stripMargin
+      val invalidJson: String         = """{"test":"value"}""".stripMargin
       setupMockGet(OK, invalidJson, "/get-file-session/A123456")
       val result: Option[FileSession] = await(connector.fetchFileSession("A123456"))
       result shouldBe None
@@ -62,7 +65,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
   }
 
   "createFileSession" should {
-    val fileSession : CreateFileSessionRequest = CreateFileSessionRequest("A123456", "reference-1234")
+    val fileSession: CreateFileSessionRequest = CreateFileSessionRequest("A123456", "reference-1234")
 
     "return the response as true once the file session is successful" in {
       setupMockPost(CREATED, fileSession.toString, "/create-file-session")
@@ -78,7 +81,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
       wireMockServer.verify(postRequestedFor(urlEqualTo("/create-file-session")))
     }
 
-    }
+  }
 
   "deleteFileSession" should {
 

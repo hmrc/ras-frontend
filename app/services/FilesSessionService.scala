@@ -30,29 +30,33 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
-                                    appConfig: ApplicationConfig) extends Logging {
+class FilesSessionService @Inject() (fileSessionConnector: FilesSessionConnector, appConfig: ApplicationConfig)
+    extends Logging {
 
-  lazy val hoursToWaitForReUpload: Int = appConfig.hoursToWaitForReUpload
-  private val STATUS_READY: String = "READY"
+  lazy val hoursToWaitForReUpload: Int    = appConfig.hoursToWaitForReUpload
+  private val STATUS_READY: String        = "READY"
   private val defaultDownloadName: String = "Residency-status"
 
-  def createFileSession(userId: String, reference: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    fileSessionConnector.createFileSession(CreateFileSessionRequest(userId, reference)).recover {
-      case ex: Throwable =>
-        logger.error(s"[FilesSessionService][createFileSession] Unable to create FileSession to cache => " +
-          s"$userId, reference: $reference, Exception is ${ex.getMessage}")
-        false
+  def createFileSession(userId: String, reference: String)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Boolean] =
+    fileSessionConnector.createFileSession(CreateFileSessionRequest(userId, reference)).recover { case ex: Throwable =>
+      logger.error(
+        s"[FilesSessionService][createFileSession] Unable to create FileSession to cache => " +
+          s"$userId, reference: $reference, Exception is ${ex.getMessage}"
+      )
+      false
     }
-  }
 
-  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] = {
-    fileSessionConnector.fetchFileSession(userId).recover {
-      case ex: Throwable => logger.error(s"[FilesSessionService][fetchFileSession] Unable to fetch FileSession from cache => " +
-        s"$userId , Exception is ${ex.getMessage}")
-        None
+  def fetchFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileSession]] =
+    fileSessionConnector.fetchFileSession(userId).recover { case ex: Throwable =>
+      logger.error(
+        s"[FilesSessionService][fetchFileSession] Unable to fetch FileSession from cache => " +
+          s"$userId , Exception is ${ex.getMessage}"
+      )
+      None
     }
-  }
 
   private def hasBeen24HoursSinceTheUpload(fileUploadTime: Long): Boolean = {
     val uploadDateTime = Instant.ofEpochMilli(fileUploadTime)
@@ -62,34 +66,34 @@ class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
     futureDateTime.isBefore(currentInstant)
   }
 
-  def failedProcessingUploadedFile(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  def failedProcessingUploadedFile(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     fetchFileSession(userId).map {
       case Some(fileSession) =>
         fileSession.uploadTimeStamp match {
           case Some(timestamp) =>
-            errorInFileUpload(fileSession) || (hasBeen24HoursSinceTheUpload(timestamp) && fileSession.resultsFile.isEmpty)
-          case _ =>
+            errorInFileUpload(fileSession) || (hasBeen24HoursSinceTheUpload(
+              timestamp
+            ) && fileSession.resultsFile.isEmpty)
+          case _               =>
             logger.error("[FilesSessionService][failedProcessingUploadedFile] No upload timestamp found")
             false
         }
-      case _ =>
+      case _                 =>
         logger.error("[FilesSessionService][failedProcessingUploadedFile] No file session found")
         false
     }
-  }
 
-  def errorInFileUpload(fileSession: FileSession)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
+  def errorInFileUpload(fileSession: FileSession)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean =
     fileSession.userFile match {
       case Some(userFile) =>
         userFile.fileStatus match {
           case STATUS_READY => false
-          case _ =>
+          case _            =>
             removeFileSessionFromCache(fileSession.userId)
             true
         }
-      case _ => false
+      case _              => false
     }
-  }
 
   def getDownloadFileName(fileSession: FileSession): String = {
     val name = fileSession.fileMetadata.flatMap(_.name).getOrElse(defaultDownloadName)
@@ -100,46 +104,52 @@ class FilesSessionService @Inject()(fileSessionConnector: FilesSessionConnector,
     }
   }
 
-  def isFileInProgress(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    fetchFileSession(userId).map {
-      case Some(fileSession) =>
-        fileSession.resultsFile.isDefined || fileSession.uploadTimeStamp.exists(!hasBeen24HoursSinceTheUpload(_))
-      case None =>
-        logger.warn(s"[FilesSessionService][isFileInProgress] FileSession not defined for $userId")
+  def isFileInProgress(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    fetchFileSession(userId)
+      .map {
+        case Some(fileSession) =>
+          fileSession.resultsFile.isDefined || fileSession.uploadTimeStamp.exists(!hasBeen24HoursSinceTheUpload(_))
+        case None              =>
+          logger.warn(s"[FilesSessionService][isFileInProgress] FileSession not defined for $userId")
+          false
+      }
+      .recover { case ex: Throwable =>
+        logger.error(
+          s"[FilesSessionService][isFileInProgress] Unable to fetch FileSession from cache to check " +
+            s"isFileInProgress => $userId , Exception is ${ex.getMessage}"
+        )
         false
-    }.recover {
-      case ex: Throwable =>
-        logger.error(s"[FilesSessionService][isFileInProgress] Unable to fetch FileSession from cache to check " +
-          s"isFileInProgress => $userId , Exception is ${ex.getMessage}")
-        false
-    }
-  }
+      }
 
-  def determineFileStatus(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileUploadStatus.Value] = {
+  def determineFileStatus(
+    userId: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileUploadStatus.Value] =
     fetchFileSession(userId).flatMap {
       case Some(fileSession) =>
         fileSession.resultsFile match {
           case Some(_) => Future.successful(Ready)
-          case _ => isFileInProgress(userId).flatMap {
-            case true =>
-              failedProcessingUploadedFile(userId).flatMap {
-                case true => Future.successful(UploadError)
-                case _ => Future.successful(InProgress)
-              }
-            case _ => Future.successful(TimeExpiryError)
-          }
+          case _       =>
+            isFileInProgress(userId).flatMap {
+              case true =>
+                failedProcessingUploadedFile(userId).flatMap {
+                  case true => Future.successful(UploadError)
+                  case _    => Future.successful(InProgress)
+                }
+              case _    => Future.successful(TimeExpiryError)
+            }
         }
-      case _ => Future.successful(NoFileSession)
+      case _                 => Future.successful(NoFileSession)
     }
-  }
 
-  def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    fileSessionConnector.deleteFileSession(userId)
-      .recover {
-      case ex: Throwable =>
-        logger.error(s"[FilesSessionService][removeFileSessionFromCache] Unable to remove FileSession from cache  => " +
-        s"$userId , Exception is ${ex.getMessage}")
+  def removeFileSessionFromCache(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    fileSessionConnector
+      .deleteFileSession(userId)
+      .recover { case ex: Throwable =>
+        logger.error(
+          s"[FilesSessionService][removeFileSessionFromCache] Unable to remove FileSession from cache  => " +
+            s"$userId , Exception is ${ex.getMessage}"
+        )
         false
-    }
-  }
+      }
+
 }

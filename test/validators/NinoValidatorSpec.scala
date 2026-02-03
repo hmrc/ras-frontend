@@ -34,17 +34,17 @@ class NinoValidatorSpec extends AnyWordSpec with Matchers {
       validateNino("    ") should equal(false)
     }
     "fail with total garbage" in {
-      validateNino("XXX") should equal(false)
+      validateNino("XXX")             should equal(false)
       validateNino("werionownadefwe") should equal(false)
-      validateNino("@£%!)(*&^") should equal(false)
-      validateNino("123456") should equal(false)
+      validateNino("@£%!)(*&^")       should equal(false)
+      validateNino("123456")          should equal(false)
     }
     "fail with only one starting letter" in {
-      validateNino("A123456C") should equal(false)
+      validateNino("A123456C")  should equal(false)
       validateNino("A1234567C") should equal(false)
     }
     "fail with three starting letters" in {
-      validateNino("ABC12345C") should equal(false)
+      validateNino("ABC12345C")  should equal(false)
       validateNino("ABC123456C") should equal(false)
     }
     "fail with less than 6 middle digits" in {
@@ -56,9 +56,8 @@ class NinoValidatorSpec extends AnyWordSpec with Matchers {
 
     "fail if we start with invalid characters" in {
       val invalidPrefixes = List("BG", "GB", "NK", "KN", "TN", "NT", "ZZ")
-      for (v <- invalidPrefixes) {
+      for (v <- invalidPrefixes)
         validateNino(v + "123456C") should equal(false)
-      }
     }
 
     "pass if we have spaces" in {

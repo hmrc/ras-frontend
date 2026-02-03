@@ -28,9 +28,9 @@ import utils.RasTestHelper
 
 trait AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfter {
 
-	class TestService extends AuditService {
-		override val connector: DefaultAuditConnector = mockAuditConnector
-	}
+  class TestService extends AuditService {
+    override val connector: DefaultAuditConnector = mockAuditConnector
+  }
 
   before {
     reset(mockAuditConnector)
@@ -39,7 +39,7 @@ trait AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfte
   "AuditService" must {
 
     val fakeAuditType = "fake-audit-type"
-    val fakeEndpoint = "/fake-endpoint"
+    val fakeEndpoint  = "/fake-endpoint"
 
     val auditDataMap: Map[String, String] = Map("testKey" -> "testValue")
 
@@ -53,7 +53,7 @@ trait AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfte
       val event: DataEvent = captor.getValue
 
       event.auditSource shouldBe "ras-api"
-      event.auditType shouldBe "fake-audit-type"
+      event.auditType   shouldBe "fake-audit-type"
     }
 
     "build an audit event with the correct tags" in new TestService {
@@ -65,7 +65,7 @@ trait AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfte
 
       val event: DataEvent = captor.getValue
 
-      event.tags should contain ("transactionName" -> "fake-audit-type")
+      event.tags should contain("transactionName" -> "fake-audit-type")
       event.tags should contain("path" -> "/fake-endpoint")
       event.tags should contain key "clientIP"
     }
@@ -79,7 +79,7 @@ trait AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfte
 
       val event: DataEvent = captor.getValue
 
-      event.detail should contain ("testKey" -> "testValue")
+      event.detail should contain("testKey" -> "testValue")
 
       event.detail should contain key "Authorization"
     }
@@ -90,4 +90,5 @@ trait AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfte
       verify(mockAuditConnector).sendEvent(any())(any(), any())
     }
   }
+
 }

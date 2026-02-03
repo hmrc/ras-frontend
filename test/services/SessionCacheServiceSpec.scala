@@ -31,26 +31,36 @@ import scala.concurrent.Future
 
 class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with OptionValues {
 
-  val sessionId: String = UUID.randomUUID.toString
-  val name: MemberName = MemberName("John", "Johnson")
-  val nino: MemberNino = MemberNino(RandomNino.generate)
-  val memberDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("12"),Some("12"), Some("2012")))
-  val memberDetails: MemberDetails = MemberDetails(name,RandomNino.generate,RasDate(Some("1"),Some("1"),Some("1999")))
-  val uploadResponse: UploadResponse = UploadResponse("111",Some("error error"))
-  val residencyStatusResult: ResidencyStatusResult = ResidencyStatusResult("uk",Some("uk"),"2000","2001","John Johnson","1-1-1999", nino.nino)
+  val sessionId: String            = UUID.randomUUID.toString
+  val name: MemberName             = MemberName("John", "Johnson")
+  val nino: MemberNino             = MemberNino(RandomNino.generate)
+  val memberDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("12"), Some("12"), Some("2012")))
+
+  val memberDetails: MemberDetails =
+    MemberDetails(name, RandomNino.generate, RasDate(Some("1"), Some("1"), Some("1999")))
+
+  val uploadResponse: UploadResponse = UploadResponse("111", Some("error error"))
+
+  val residencyStatusResult: ResidencyStatusResult =
+    ResidencyStatusResult("uk", Some("uk"), "2000", "2001", "John Johnson", "1-1-1999", nino.nino)
+
   val reference: File = File("someReference")
-  val rasSession: RasSession = RasSession(name, nino, memberDob, Some(residencyStatusResult), Some(uploadResponse), Some(reference))
+
+  val rasSession: RasSession =
+    RasSession(name, nino, memberDob, Some(residencyStatusResult), Some(uploadResponse), Some(reference))
+
   val emptyRasSession: RasSession = RasSession.cleanSession
 
-  val sessionRepository = new RasSessionCacheRepository(mongoComponent, applicationConfig)
-  val sessionPair: (String, String) = SessionKeys.sessionId -> sessionId
+  val sessionRepository                                     = new RasSessionCacheRepository(mongoComponent, applicationConfig)
+  val sessionPair: (String, String)                         = SessionKeys.sessionId -> sessionId
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(sessionPair)
 
   val sessionCacheService: SessionCacheService = new SessionCacheService(sessionRepository)
 
   class Setup(initializeCache: Boolean = true) {
+
     await {
-      if(initializeCache) {
+      if (initializeCache) {
         for {
           _ <- sessionCacheService.cacheName(name)
           _ <- sessionCacheService.cacheDob(memberDob)
@@ -63,6 +73,7 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
         sessionRepository.cacheRepo.deleteEntity(request)
       }
     }
+
   }
 
   "cacheName" must {
@@ -72,7 +83,7 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
     }
 
     "replace existing name in session" in new Setup(true) {
-      val newName: MemberName = MemberName("John", "Doe")
+      val newName: MemberName                = MemberName("John", "Doe")
       val result: Future[Option[RasSession]] = sessionCacheService.cacheName(newName)
       await(result).value shouldBe rasSession.copy(name = newName)
     }
@@ -85,7 +96,7 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
     }
 
     "replace existing dob in session" in new Setup(true) {
-      val newDob: MemberDateOfBirth = MemberDateOfBirth(RasDate(Some("1"),Some("1"), Some("2000")))
+      val newDob: MemberDateOfBirth          = MemberDateOfBirth(RasDate(Some("1"), Some("1"), Some("2000")))
       val result: Future[Option[RasSession]] = sessionCacheService.cacheDob(newDob)
       await(result).value shouldBe rasSession.copy(dateOfBirth = newDob)
     }
@@ -98,7 +109,7 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
     }
 
     "replace existing nino in session" in new Setup(true) {
-      val newNino: MemberNino = MemberNino(RandomNino.generate)
+      val newNino: MemberNino                = MemberNino(RandomNino.generate)
       val result: Future[Option[RasSession]] = sessionCacheService.cacheNino(newNino)
       await(result).value shouldBe rasSession.copy(nino = newNino)
     }
@@ -111,7 +122,7 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
     }
 
     "replace existing upload response in session" in new Setup(true) {
-      val newUploadResponse: UploadResponse = uploadResponse.copy(code = "000", reason = Some("reason"))
+      val newUploadResponse: UploadResponse  = uploadResponse.copy(code = "000", reason = Some("reason"))
       val result: Future[Option[RasSession]] = sessionCacheService.cacheUploadResponse(newUploadResponse)
       await(result).value shouldBe rasSession.copy(uploadResponse = Some(newUploadResponse))
     }
@@ -124,7 +135,7 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
     }
 
     "replace existing file reference in session" in new Setup(true) {
-      val newReference: File = reference.copy(UUID.randomUUID().toString)
+      val newReference: File                 = reference.copy(UUID.randomUUID().toString)
       val result: Future[Option[RasSession]] = sessionCacheService.cacheFile(newReference)
       await(result).value shouldBe rasSession.copy(file = Some(newReference))
     }
@@ -138,19 +149,19 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
 
     "replace existing residency status result in session" in new Setup(true) {
       val newResidencyStatusResult: ResidencyStatusResult = residencyStatusResult.copy(currentTaxYear = "2023")
-      val result: Future[Option[RasSession]] = sessionCacheService.cacheResidencyStatusResult(newResidencyStatusResult)
+      val result: Future[Option[RasSession]]              = sessionCacheService.cacheResidencyStatusResult(newResidencyStatusResult)
       await(result).value shouldBe rasSession.copy(residencyStatusResult = Some(newResidencyStatusResult))
     }
   }
 
   "reset" must {
     "clear data" in new Setup() {
-      await(sessionCacheService.resetCacheName()).value.name shouldBe RasSession.cleanMemberName
-      await(sessionCacheService.resetCacheNino()).value.nino shouldBe RasSession.cleanMemberNino
+      await(sessionCacheService.resetCacheName()).value.name       shouldBe RasSession.cleanMemberName
+      await(sessionCacheService.resetCacheNino()).value.nino       shouldBe RasSession.cleanMemberNino
       await(sessionCacheService.resetCacheDob()).value.dateOfBirth shouldBe RasSession.cleanMemberDateOfBirth
 
-      await(sessionCacheService.resetCacheUploadResponse()).value.uploadResponse shouldBe None
-      await(sessionCacheService.resetCacheFile()).value.file shouldBe None
+      await(sessionCacheService.resetCacheUploadResponse()).value.uploadResponse               shouldBe None
+      await(sessionCacheService.resetCacheFile()).value.file                                   shouldBe None
       await(sessionCacheService.resetCacheResidencyStatusResult()).value.residencyStatusResult shouldBe None
 
       await(sessionCacheService.resetRasSession()).value shouldBe RasSession.cleanSession
@@ -168,4 +179,5 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
       await(result) shouldBe None
     }
   }
+
 }

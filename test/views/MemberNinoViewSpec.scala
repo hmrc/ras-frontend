@@ -26,42 +26,56 @@ import utils.RasTestHelper
 
 class MemberNinoViewSpec extends AnyWordSpec with RasTestHelper {
 
-	val memberNinoForm:Form[MemberNino] = MemberNinoForm(Some("John Doe")).bind(Map("nino" -> "AA123456A"))
+  val memberNinoForm: Form[MemberNino] = MemberNinoForm(Some("John Doe")).bind(Map("nino" -> "AA123456A"))
 
-	"member nino page" must {
-		"contain correct page elements and content" when {
-			"rendered" in {
-				val result = memberNinoView(memberNinoForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
-				doc(result).title shouldBe Messages("member.nino.page.title")
-				doc(result).getElementsByClass("govuk-fieldset__legend--xl").text shouldBe Messages("member.nino.page.header", "Jackie Chan")
-				doc(result).getElementsByClass("govuk-hint").text shouldBe Messages("nino.hint")
-				assert(doc(result).getElementById("nino").attr("input") != null)
-				doc(result).getElementById("continue").text shouldBe Messages("continue")
-			}
+  "member nino page" must {
+    "contain correct page elements and content" when {
+      "rendered" in {
+        val result =
+          memberNinoView(memberNinoForm, "Jackie Chan", edit = false)(fakeRequest, testMessages, mockAppConfig)
+        doc(result).title                                                 shouldBe Messages("member.nino.page.title")
+        doc(result).getElementsByClass("govuk-fieldset__legend--xl").text shouldBe Messages(
+          "member.nino.page.header",
+          "Jackie Chan"
+        )
+        doc(result).getElementsByClass("govuk-hint").text                 shouldBe Messages("nino.hint")
+        assert(doc(result).getElementById("nino").attr("input") != null)
+        doc(result).getElementById("continue").text                       shouldBe Messages("continue")
+      }
 
-			"rendered but no cached data exists" in {
-				val result = memberNinoView(memberNinoForm, "member", edit = false)(fakeRequest, testMessages, mockAppConfig)
-				doc(result).title shouldBe Messages("member.nino.page.title")
-				doc(result).getElementsByClass("govuk-fieldset__legend--xl").text shouldBe Messages("member.nino.page.header", Messages("member"))
-			}
+      "rendered but no cached data exists" in {
+        val result = memberNinoView(memberNinoForm, "member", edit = false)(fakeRequest, testMessages, mockAppConfig)
+        doc(result).title                                                 shouldBe Messages("member.nino.page.title")
+        doc(result).getElementsByClass("govuk-fieldset__legend--xl").text shouldBe Messages(
+          "member.nino.page.header",
+          Messages("member")
+        )
+      }
 
-			"contain the correct ga data when edit mode is false" in {
-				val result = memberNinoView(memberNinoForm, "John Doe", edit = false)(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue"
-				doc(result).getElementsByClass("govuk-back-link").attr("data-journey-click") shouldBe "navigation - link:What is their NINO?:Back"
-			}
+      "contain the correct ga data when edit mode is false" in {
+        val result = memberNinoView(memberNinoForm, "John Doe", edit = false)(fakeRequest, testMessages, mockAppConfig)
+        doc(result)
+          .getElementById("continue")
+          .attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue"
+        doc(result)
+          .getElementsByClass("govuk-back-link")
+          .attr("data-journey-click") shouldBe "navigation - link:What is their NINO?:Back"
+      }
 
-			"contain the correct ga data when edit mode is true" in {
-				val result = memberNinoView(memberNinoForm, "John Doe", edit = true)(fakeRequest, testMessages, mockAppConfig)
-				doc(result).getElementById("continue").attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue and submit"
-			}
+      "contain the correct ga data when edit mode is true" in {
+        val result = memberNinoView(memberNinoForm, "John Doe", edit = true)(fakeRequest, testMessages, mockAppConfig)
+        doc(result)
+          .getElementById("continue")
+          .attr("data-journey-click") shouldBe "button - click:What is their NINO?:Continue and submit"
+      }
 
-			"present empty form when no cached data exists" in {
-				val emptyForm:Form[MemberNino] = MemberNinoForm(Some("John Doe")).bind(Map("nino" -> ""))
+      "present empty form when no cached data exists" in {
+        val emptyForm: Form[MemberNino] = MemberNinoForm(Some("John Doe")).bind(Map("nino" -> ""))
 
-				val result = memberNinoView(emptyForm, "John Doe", edit = false)(fakeRequest, testMessages, mockAppConfig)
-				assert(doc(result).getElementById("nino").attr("value").equals(""))
-			}
-		}
-	}
+        val result = memberNinoView(emptyForm, "John Doe", edit = false)(fakeRequest, testMessages, mockAppConfig)
+        assert(doc(result).getElementById("nino").attr("value").equals(""))
+      }
+    }
+  }
+
 }

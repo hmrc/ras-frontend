@@ -25,30 +25,31 @@ import utils.RasTestHelper
 
 class SorryYouNeedToStartAgainViewSpec extends AnyWordSpec with RasTestHelper {
 
-	"sorry you need to start again page" must {
+  "sorry you need to start again page" must {
 
-		"contain correct title and header" in {
-			val result = startAtStartView()(fakeRequest, testMessages, mockAppConfig)
-			val doc = Jsoup.parse(contentAsString(result))
+    "contain correct title and header" in {
+      val result = startAtStartView()(fakeRequest, testMessages, mockAppConfig)
+      val doc    = Jsoup.parse(contentAsString(result))
 
-			doc.title shouldBe Messages("sorry.you.need.to.start.again.title")
-			doc.getElementById("header").text shouldBe Messages("you.need.to.start.again")
-		}
+      doc.title                         shouldBe Messages("sorry.you.need.to.start.again.title")
+      doc.getElementById("header").text shouldBe Messages("you.need.to.start.again")
+    }
 
-		"contain correct body text and list items" in {
-			val result = startAtStartView()(fakeRequest, testMessages, mockAppConfig)
-			val doc = Jsoup.parse(contentAsString(result))
+    "contain correct body text and list items" in {
+      val result = startAtStartView()(fakeRequest, testMessages, mockAppConfig)
+      val doc    = Jsoup.parse(contentAsString(result))
 
-			doc.getElementsByClass("govuk-body").first().text shouldBe Messages("you.can.either")
+      doc.getElementsByClass("govuk-body").first().text shouldBe Messages("you.can.either")
 
-			val listItems = doc.getElementsByClass("govuk-list--bullet").first().getElementsByTag("li")
-			listItems.size() shouldBe 2
+      val listItems = doc.getElementsByClass("govuk-list--bullet").first().getElementsByTag("li")
+      listItems.size() shouldBe 2
 
-			listItems.get(0).text should include(Messages("start.again.first.link"))
-			listItems.get(0).text should include(Messages("start.again.first.list"))
+      listItems.get(0).text should include(Messages("start.again.first.link"))
+      listItems.get(0).text should include(Messages("start.again.first.list"))
 
-			listItems.get(1).text should include(Messages("start.again.second.link"))
-			listItems.get(1).text should include(Messages("start.again.second.list"))
-		}
-	}
+      listItems.get(1).text should include(Messages("start.again.second.link"))
+      listItems.get(1).text should include(Messages("start.again.second.list"))
+    }
+  }
+
 }

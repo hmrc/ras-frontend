@@ -28,100 +28,108 @@ import java.util.Locale
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class ResultsController @Inject()(val authConnector: AuthConnector,
-                                  val sessionService: SessionCacheService,
-                                  val mcc: MessagesControllerComponents,
-                                  implicit val appConfig: ApplicationConfig,
-                                  matchFoundView: views.html.match_found,
-                                  matchNotFoundView: views.html.match_not_found
-                                 ) extends FrontendController(mcc) with PageFlowController with Logging {
+class ResultsController @Inject() (
+  val authConnector: AuthConnector,
+  val sessionService: SessionCacheService,
+  val mcc: MessagesControllerComponents,
+  implicit val appConfig: ApplicationConfig,
+  matchFoundView: views.html.match_found,
+  matchNotFoundView: views.html.match_not_found
+) extends FrontendController(mcc) with PageFlowController with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def matchFound: Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(session) =>
-              session.residencyStatusResult match {
-                case Some(residencyStatusResult) =>
-                  val name = s"${session.name.firstName.capitalize} ${session.name.lastName.capitalize}"
-                  val dateOfBirth = session.dateOfBirth.dateOfBirth.toString
-                  val nino = session.nino.nino
-                  val currentTaxYear = TaxYearResolver.currentTaxYear
-                  val nextTaxYear = TaxYearResolver.nextTaxYear
-                  val currentYearResidencyStatus = residencyStatusResult.currentYearResidencyStatus
-                  val nextYearResidencyStatus = residencyStatusResult.nextYearResidencyStatus
+  def matchFound: Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)  =>
+        sessionService.fetchRasSession() map {
+          case Some(session) =>
+            session.residencyStatusResult match {
+              case Some(residencyStatusResult) =>
+                val name                       = s"${session.name.firstName.capitalize} ${session.name.lastName.capitalize}"
+                val dateOfBirth                = session.dateOfBirth.dateOfBirth.toString
+                val nino                       = session.nino.nino
+                val currentTaxYear             = TaxYearResolver.currentTaxYear
+                val nextTaxYear                = TaxYearResolver.nextTaxYear
+                val currentYearResidencyStatus = residencyStatusResult.currentYearResidencyStatus
+                val nextYearResidencyStatus    = residencyStatusResult.nextYearResidencyStatus
 
-                  sessionService.resetRasSession()
+                sessionService.resetRasSession()
 
-                  logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
-                  Ok(matchFoundView(
-                    name, dateOfBirth, nino,
+                logger.info("[ResultsController][matchFound] Successfully retrieved ras session")
+                Ok(
+                  matchFoundView(
+                    name,
+                    dateOfBirth,
+                    nino,
                     currentYearResidencyStatus,
                     nextYearResidencyStatus,
-                    currentTaxYear, nextTaxYear))
+                    currentTaxYear,
+                    nextTaxYear
+                  )
+                )
 
-                case _ =>
-                  logger.info("[ResultsController][matchFound] Session does not contain residency status result - wrong result")
+              case _ =>
+                logger.info(
+                  "[ResultsController][matchFound] Session does not contain residency status result - wrong result"
+                )
+                Redirect(routes.ChooseAnOptionController.get)
+            }
+          case _             =>
+            logger.error("[ResultsController][matchFound] failed to retrieve ras session")
+            Redirect(routes.ErrorController.renderGlobalErrorPage)
+        }
+      case Left(res) =>
+        logger.warn("[ResultsController][matchFound] user Not authorised")
+        res
+    }
+  }
+
+  def noMatchFound: Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)  =>
+        sessionService.fetchRasSession() map {
+          case Some(session) =>
+            if (session.name.hasAValue && session.nino.hasAValue && session.dateOfBirth.hasAValue) {
+              session.residencyStatusResult match {
+                case None =>
+
+                  val name        = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+                  val nino        = session.nino.nino
+                  val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate
+                    .format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK))
+                  logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
+                  Ok(matchNotFoundView(name, dateOfBirth, nino))
+
+                case Some(_) =>
+                  logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
                   Redirect(routes.ChooseAnOptionController.get)
               }
-            case _ =>
-              logger.error("[ResultsController][matchFound] failed to retrieve ras session")
-              Redirect(routes.ErrorController.renderGlobalErrorPage)
-          }
-        case Left(res) =>
-          logger.warn("[ResultsController][matchFound] user Not authorised")
-          res
-      }
+            } else {
+              logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
+              Redirect(routes.ChooseAnOptionController.get)
+            }
+          case _             =>
+            logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
+            Redirect(routes.ErrorController.renderGlobalErrorPage)
+        }
+      case Left(res) =>
+        logger.warn("[ResultsController][matchFound] user Not authorised")
+        res
+    }
   }
 
-  def noMatchFound: Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(session) =>
-              if (session.name.hasAValue && session.nino.hasAValue && session.dateOfBirth.hasAValue) {
-                session.residencyStatusResult match {
-                  case None =>
-
-                    val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-                    val nino = session.nino.nino
-                    val dateOfBirth = session.dateOfBirth.dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK))
-                    logger.info("[ResultsController][noMatchFound] Successfully retrieved ras session")
-                    Ok(matchNotFoundView(name, dateOfBirth, nino))
-
-                  case Some(_) =>
-                    logger.info("[ResultsController][noMatchFound] Session contains residency result - wrong result")
-                    Redirect(routes.ChooseAnOptionController.get)
-                }
-              } else {
-                logger.info("[ResultsController][noMatchFound] Session does not contain residency status result")
-                Redirect(routes.ChooseAnOptionController.get)
-              }
-            case _ =>
-              logger.error("[ResultsController][noMatchFound] failed to retrieve ras session")
-              Redirect(routes.ErrorController.renderGlobalErrorPage)
-          }
-        case Left(res) =>
-          logger.warn("[ResultsController][matchFound] user Not authorised")
-          res
-      }
+  def back: Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)  =>
+        sessionService.fetchRasSession() map {
+          case Some(_) => previousPage("ResultsController")
+          case _       => Redirect(routes.ErrorController.renderGlobalErrorPage)
+        }
+      case Left(res) =>
+        logger.warn("[ResultsController][back] user Not authorised")
+        res
+    }
   }
 
-  def back: Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(_) => previousPage("ResultsController")
-            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage)
-          }
-        case Left(res) =>
-          logger.warn("[ResultsController][back] user Not authorised")
-          res
-      }
-  }
 }

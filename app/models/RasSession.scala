@@ -18,67 +18,70 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class RasSession(name:MemberName,
-                      nino:MemberNino,
-                      dateOfBirth:MemberDateOfBirth,
-                      residencyStatusResult: Option[ResidencyStatusResult] = None,
-                      uploadResponse: Option[UploadResponse] = None,
-                      file: Option[File] = None,
-                      aFileIsInProcess: Option[Boolean] = None) {
+case class RasSession(
+  name: MemberName,
+  nino: MemberNino,
+  dateOfBirth: MemberDateOfBirth,
+  residencyStatusResult: Option[ResidencyStatusResult] = None,
+  uploadResponse: Option[UploadResponse] = None,
+  file: Option[File] = None,
+  aFileIsInProcess: Option[Boolean] = None
+) {
 
   def selectKeysToCache[T](session: RasSession, key: CacheKey[T], value: Option[T]): RasSession = key match {
-    case CacheKey.Name => handleNameCacheKey(session, value)
-    case CacheKey.Nino => handleNinoCacheKey(session, value)
-    case CacheKey.Dob => handleDobCacheKey(session, value)
-    case CacheKey.StatusResult => handleStatusResultCacheKey(session, value)
+    case CacheKey.Name           => handleNameCacheKey(session, value)
+    case CacheKey.Nino           => handleNinoCacheKey(session, value)
+    case CacheKey.Dob            => handleDobCacheKey(session, value)
+    case CacheKey.StatusResult   => handleStatusResultCacheKey(session, value)
     case CacheKey.UploadResponse => handleUploadResponseCacheKey(session, value)
-    case CacheKey.File => handleFileCacheKey(session, value)
-    case CacheKey.All => RasSession.cleanSession
-    case _ => throw new IllegalArgumentException("Mismatched key and value types")
+    case CacheKey.File           => handleFileCacheKey(session, value)
+    case CacheKey.All            => RasSession.cleanSession
+    case _                       => throw new IllegalArgumentException("Mismatched key and value types")
   }
 
   private def handleNameCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
     case Some(v: MemberName) => session.copy(name = v)
-    case None => session.copy(name = RasSession.cleanMemberName)
-    case _ => session
+    case None                => session.copy(name = RasSession.cleanMemberName)
+    case _                   => session
   }
 
   private def handleNinoCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
     case Some(v: MemberNino) => session.copy(nino = v)
-    case None => session.copy(nino = RasSession.cleanMemberNino)
-    case _ => session
+    case None                => session.copy(nino = RasSession.cleanMemberNino)
+    case _                   => session
   }
 
   private def handleDobCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
     case Some(v: MemberDateOfBirth) => session.copy(dateOfBirth = v)
-    case None => session.copy(dateOfBirth = RasSession.cleanMemberDateOfBirth)
-    case _ => session
+    case None                       => session.copy(dateOfBirth = RasSession.cleanMemberDateOfBirth)
+    case _                          => session
   }
 
   private def handleStatusResultCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
     case Some(v: ResidencyStatusResult) => session.copy(residencyStatusResult = Some(v))
-    case None => session.copy(residencyStatusResult = None)
-    case _ => session
+    case None                           => session.copy(residencyStatusResult = None)
+    case _                              => session
   }
 
   private def handleUploadResponseCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
     case Some(v: UploadResponse) => session.copy(uploadResponse = Some(v))
-    case None => session.copy(uploadResponse = None)
-    case _ => session
+    case None                    => session.copy(uploadResponse = None)
+    case _                       => session
   }
 
   private def handleFileCacheKey(session: RasSession, value: Option[_]): RasSession = value match {
     case Some(v: File) => session.copy(file = Some(v))
-    case None => session.copy(file = None)
-    case _ => session
+    case None          => session.copy(file = None)
+    case _             => session
   }
+
 }
 
-object RasSession{
+object RasSession {
   implicit val format: OFormat[RasSession] = Json.format[RasSession]
 
-  val cleanMemberName: MemberName = MemberName("", "")
-  val cleanMemberNino: MemberNino = MemberNino("")
+  val cleanMemberName: MemberName               = MemberName("", "")
+  val cleanMemberNino: MemberNino               = MemberNino("")
   val cleanMemberDateOfBirth: MemberDateOfBirth = MemberDateOfBirth(RasDate(None, None, None))
-  val cleanSession: RasSession = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth)
+  val cleanSession: RasSession                  = RasSession(cleanMemberName, cleanMemberNino, cleanMemberDateOfBirth)
 }

@@ -30,12 +30,21 @@ import scala.concurrent.Future
 
 class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMethodTester {
 
-  val callbackData: CallbackData = CallbackData("reference-1234", None, "READY", None, None)
+  val callbackData: CallbackData       = CallbackData("reference-1234", None, "READY", None, None)
   val resultsFile: ResultsFileMetaData = ResultsFileMetaData("file-id-1", Some("fileName.csv"), Some(1234L), 123, 1234L)
-  val fileMetaData: FileMetadata = FileMetadata("file-id-1", Some("fileName.csv"), None)
-  val newFileSession: FileSession = FileSession(None, None, "A123456", Some(Instant.now().toEpochMilli), None)
-  val fileSession: FileSession = FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
-  val failedFileSession: FileSession = FileSession(Some(callbackData.copy(fileStatus = "ERROR")), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
+  val fileMetaData: FileMetadata       = FileMetadata("file-id-1", Some("fileName.csv"), None)
+  val newFileSession: FileSession      = FileSession(None, None, "A123456", Some(Instant.now().toEpochMilli), None)
+
+  val fileSession: FileSession =
+    FileSession(Some(callbackData), Some(resultsFile), "A123456", Some(Instant.now().toEpochMilli), None)
+
+  val failedFileSession: FileSession = FileSession(
+    Some(callbackData.copy(fileStatus = "ERROR")),
+    Some(resultsFile),
+    "A123456",
+    Some(Instant.now().toEpochMilli),
+    None
+  )
 
   val filesSessionService: FilesSessionService = new FilesSessionService(mockFilesSessionConnector, mockAppConfig)
 
@@ -66,7 +75,7 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
 
       val result: FileSession = filesSessionService.fetchFileSession("A123456").futureValue.value
 
-     result.copy(uploadTimeStamp = None) shouldBe newFileSession.copy(uploadTimeStamp = None)
+      result.copy(uploadTimeStamp = None) shouldBe newFileSession.copy(uploadTimeStamp = None)
     }
 
     "return None if file session was not found" in {
@@ -130,7 +139,7 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
 
       val result: Boolean = filesSessionService.failedProcessingUploadedFile("A123456").futureValue
 
-        result shouldBe true
+      result shouldBe true
     }
 
     "return false if processing of uploaded file was successful" in {
@@ -143,7 +152,13 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
     }
 
     "return true when the file session exists but results file is empty" in {
-      val fileSessionWithoutResultsFile: FileSession = FileSession(Some(callbackData), None, "A123456", Some(Instant.now().minus(2, ChronoUnit.DAYS).toEpochMilli), None)
+      val fileSessionWithoutResultsFile: FileSession = FileSession(
+        Some(callbackData),
+        None,
+        "A123456",
+        Some(Instant.now().minus(2, ChronoUnit.DAYS).toEpochMilli),
+        None
+      )
 
       when(mockFilesSessionConnector.fetchFileSession(any())(any(), any()))
         .thenReturn(Future.successful(Some(fileSessionWithoutResultsFile)))
@@ -154,7 +169,8 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
     }
 
     "return false when no upload timestamp is found" in {
-      val fileSessionWithoutTimestamp: FileSession = FileSession(Some(callbackData), Some(resultsFile), "A123456", None, None)
+      val fileSessionWithoutTimestamp: FileSession =
+        FileSession(Some(callbackData), Some(resultsFile), "A123456", None, None)
 
       when(mockFilesSessionConnector.fetchFileSession(any())(any(), any()))
         .thenReturn(Future.successful(Some(fileSessionWithoutTimestamp)))
@@ -278,7 +294,16 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
 
     "return TimeExpiryError if no entry in db for userId " in {
       when(mockFilesSessionConnector.fetchFileSession(any())(any(), any()))
-        .thenReturn(Future.successful(Some(failedFileSession.copy(resultsFile = None, uploadTimeStamp = Some(Instant.now().minus(2, ChronoUnit.DAYS).toEpochMilli)))))
+        .thenReturn(
+          Future.successful(
+            Some(
+              failedFileSession.copy(
+                resultsFile = None,
+                uploadTimeStamp = Some(Instant.now().minus(2, ChronoUnit.DAYS).toEpochMilli)
+              )
+            )
+          )
+        )
       when(mockFilesSessionConnector.deleteFileSession(any())(any(), any()))
         .thenReturn(Future.successful(true))
 
@@ -287,4 +312,5 @@ class FilesSessionServiceSpec extends PlaySpec with RasTestHelper with PrivateMe
       result shouldBe FileUploadStatus.TimeExpiryError
     }
   }
+
 }

@@ -26,18 +26,19 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionController @Inject()(val authConnector: DefaultAuthConnector,
-                                  val sessionService: SessionCacheService,
-                                  val mcc: MessagesControllerComponents,
-                                  val appConfig: ApplicationConfig
-                                 ) extends FrontendController(mcc) with RasController with Logging {
+class SessionController @Inject() (
+  val authConnector: DefaultAuthConnector,
+  val sessionService: SessionCacheService,
+  val mcc: MessagesControllerComponents,
+  val appConfig: ApplicationConfig
+) extends FrontendController(mcc) with RasController with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
   val CHOOSE_AN_OPTION = "choose-an-option"
-  val MEMBER_NAME = "member-name"
-  val MEMBER_NINO = "member-nino"
-  val MEMBER_DOB = "member-dob"
+  val MEMBER_NAME      = "member-name"
+  val MEMBER_NINO      = "member-nino"
+  val MEMBER_DOB       = "member-dob"
 
   def redirect(target: String, cleanSession: Boolean, edit: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
@@ -46,30 +47,30 @@ class SessionController @Inject()(val authConnector: DefaultAuthConnector,
           sessionService.resetRasSession() map {
             case Some(_) =>
               redirectToTarget(target, edit)
-            case _ =>
+            case _       =>
               logger.error("[SessionController][redirect] No session found")
               Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
-        case Right(_) => Future.successful(redirectToTarget(target, edit))
-        case Left(resp) =>
+        case Right(_)                 => Future.successful(redirectToTarget(target, edit))
+        case Left(resp)               =>
           logger.warn("[SessionController][redirect] User is unauthenticated")
           resp
       }
   }
 
-  private def redirectToTarget(target: String, edit: Boolean): Result = {
+  private def redirectToTarget(target: String, edit: Boolean): Result =
     target match {
       case CHOOSE_AN_OPTION => Redirect(routes.ChooseAnOptionController.get)
-      case MEMBER_NAME => Redirect(routes.MemberNameController.get(edit))
-      case MEMBER_NINO => Redirect(routes.MemberNinoController.get(edit))
-      case MEMBER_DOB => Redirect(routes.MemberDOBController.get(edit))
-      case _ =>
+      case MEMBER_NAME      => Redirect(routes.MemberNameController.get(edit))
+      case MEMBER_NINO      => Redirect(routes.MemberNinoController.get(edit))
+      case MEMBER_DOB       => Redirect(routes.MemberDOBController.get(edit))
+      case _                =>
         logger.error(s"[SessionController][redirect] Invalid redirect target $target")
         Redirect(routes.ErrorController.renderGlobalErrorPage)
     }
-  }
 
   def keepAlive(): Action[AnyContent] = Action.async {
     Future.successful(Ok("OK"))
   }
+
 }

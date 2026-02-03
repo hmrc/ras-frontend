@@ -32,70 +32,75 @@ import validators.DateValidator
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MemberDOBController @Inject()(val authConnector: DefaultAuthConnector,
-                                    val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
-                                    val connector: DefaultAuditConnector,
-                                    val sessionService: SessionCacheService,
-                                    val mcc: MessagesControllerComponents,
-                                    implicit val appConfig: ApplicationConfig,
-                                    memberDobView: views.html.member_dob
-																	 ) extends FrontendController(mcc) with RasResidencyCheckerController with PageFlowController with Logging with DateValidator with WithUnsafeDefaultFormBinding {
+class MemberDOBController @Inject() (
+  val authConnector: DefaultAuthConnector,
+  val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
+  val connector: DefaultAuditConnector,
+  val sessionService: SessionCacheService,
+  val mcc: MessagesControllerComponents,
+  implicit val appConfig: ApplicationConfig,
+  memberDobView: views.html.member_dob
+) extends FrontendController(mcc)
+    with RasResidencyCheckerController
+    with PageFlowController
+    with Logging
+    with DateValidator
+    with WithUnsafeDefaultFormBinding {
 
-	implicit val ec: ExecutionContext = mcc.executionContext
-	lazy val apiVersion: ApiVersion = appConfig.rasApiVersion
+  implicit val ec: ExecutionContext = mcc.executionContext
+  lazy val apiVersion: ApiVersion   = appConfig.rasApiVersion
 
-	def get(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(session) =>
-              val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-              Ok(memberDobView(form(Some(name)).fill(session.dateOfBirth), name, edit))
-            case _ => Ok(memberDobView(form(), "member", edit))
-          }
-        case Left(resp) =>
-          logger.warn("[DobController][get] user Not authorised")
-          resp
-      }
+  def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)   =>
+        sessionService.fetchRasSession() map {
+          case Some(session) =>
+            val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+            Ok(memberDobView(form(Some(name)).fill(session.dateOfBirth), name, edit))
+          case _             => Ok(memberDobView(form(), "member", edit))
+        }
+      case Left(resp) =>
+        logger.warn("[DobController][get] user Not authorised")
+        resp
+    }
   }
 
-  def post(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(userId) =>
-          getFullName() flatMap { name =>
-            form(Some(name)).bindFromRequest().fold(
+  def post(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(userId) =>
+        getFullName() flatMap { name =>
+          form(Some(name))
+            .bindFromRequest()
+            .fold(
               formWithErrors => {
                 logger.warn("[DobController][post] Invalid form field passed")
                 val updatedFormWithErrors = updatedErrors(formWithErrors)
                 Future.successful(BadRequest(memberDobView(updatedFormWithErrors, name, edit)))
               },
-              dateOfBirth => {
+              dateOfBirth =>
                 sessionService.cacheDob(dateOfBirth) flatMap {
                   case Some(session) => submitResidencyStatus(session, userId)
-                  case _ => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+                  case _             => Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
                 }
-              }
             )
-          }
-        case Left(res) =>
-          logger.warn("[DobController][back] user Not authorised")
-          res
-      }
+        }
+      case Left(res)     =>
+        logger.warn("[DobController][back] user Not authorised")
+        res
+    }
   }
 
-  def back(edit: Boolean = false): Action[AnyContent] = Action.async {
-    implicit request =>
-      isAuthorised().flatMap {
-        case Right(_) =>
-          sessionService.fetchRasSession() map {
-            case Some(_) => previousPage("MemberDOBController", edit)
-            case _ => Redirect(routes.ErrorController.renderGlobalErrorPage)
-          }
-        case Left(res) =>
-          logger.warn("[DobController][back] user Not authorised")
-          res
-      }
+  def back(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    isAuthorised().flatMap {
+      case Right(_)  =>
+        sessionService.fetchRasSession() map {
+          case Some(_) => previousPage("MemberDOBController", edit)
+          case _       => Redirect(routes.ErrorController.renderGlobalErrorPage)
+        }
+      case Left(res) =>
+        logger.warn("[DobController][back] user Not authorised")
+        res
+    }
   }
+
 }

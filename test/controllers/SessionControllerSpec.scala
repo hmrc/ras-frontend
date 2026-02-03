@@ -34,16 +34,20 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  val nino: MemberNino = MemberNino(RandomNino.generate)
-  val dob: RasDate = RasDate(Some("1"), Some("1"), Some("1999"))
+  val nino: MemberNino             = MemberNino(RandomNino.generate)
+  val dob: RasDate                 = RasDate(Some("1"), Some("1"), Some("1999"))
   val memberDob: MemberDateOfBirth = MemberDateOfBirth(dob)
-  val rasSession: RasSession = RasSession(MemberName("Jim", "McGill"),nino, memberDob,None,None)
-  private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
-  private val enrolment = new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
-  private val enrolments = Enrolments(Set(enrolment))
+  val rasSession: RasSession       = RasSession(MemberName("Jim", "McGill"), nino, memberDob, None, None)
+  private val enrolmentIdentifier  = EnrolmentIdentifier("PSAID", "Z123456")
+
+  private val enrolment =
+    new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")
+
+  private val enrolments                      = Enrolments(Set(enrolment))
   val successfulRetrieval: Future[Enrolments] = Future.successful(enrolments)
 
-  val TestSessionController = new SessionController(mockAuthConnector, mockRasSessionCacheService, mockMCC, mockAppConfig)
+  val TestSessionController =
+    new SessionController(mockAuthConnector, mockRasSessionCacheService, mockMCC, mockAppConfig)
 
   "SessionController" must {
 
@@ -59,19 +63,22 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "redirect is called with member-name in edit mode" in {
         when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = await(TestSessionController.redirect("member-name", cleanSession = false, edit = true)(FakeRequest()))
+        val result =
+          await(TestSessionController.redirect("member-name", cleanSession = false, edit = true)(FakeRequest()))
         redirectLocation(result) should include("member-name")
       }
 
       "redirect is called with member-nino in edit mode" in {
         when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = await(TestSessionController.redirect("member-nino", cleanSession = false, edit = true)(FakeRequest()))
+        val result =
+          await(TestSessionController.redirect("member-nino", cleanSession = false, edit = true)(FakeRequest()))
         redirectLocation(result) should include("member-national-insurance-number")
       }
 
       "redirect is called with member-dob in edit mode" in {
         when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = await(TestSessionController.redirect("member-dob", cleanSession = false, edit = true)(FakeRequest()))
+        val result =
+          await(TestSessionController.redirect("member-dob", cleanSession = false, edit = true)(FakeRequest()))
         redirectLocation(result) should include("member-date-of-birth")
       }
 
@@ -83,7 +90,8 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
       "redirect is called with choose-an-option in a clean session" in {
         when(mockRasSessionCacheService.resetRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
-        val result = await(TestSessionController.redirect("choose-an-option", cleanSession = true, edit = true)(FakeRequest()))
+        val result =
+          await(TestSessionController.redirect("choose-an-option", cleanSession = true, edit = true)(FakeRequest()))
         redirectLocation(result) should include("relief-at-source")
       }
 
@@ -169,4 +177,5 @@ class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
       }
     }
   }
+
 }

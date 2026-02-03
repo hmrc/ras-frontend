@@ -22,11 +22,12 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 class Bindings extends Module {
-  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
+
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] =
     bindDeps()
-  }
 
   private def bindDeps(): Seq[Binding[_]] = Seq(
-		bind[AuthConnector].to(classOf[DefaultAuthConnector]),
-	)
+    bind[AuthConnector].to(classOf[DefaultAuthConnector])
+  )
+
 }

@@ -30,16 +30,16 @@ class UploadStatusSpec extends AnyWordSpec with Matchers {
     "convert from string to object" in {
       Json.fromJson[UploadStatus](JsString("NotStarted")) shouldBe JsSuccess(NotStarted)
       Json.fromJson[UploadStatus](JsString("InProgress")) shouldBe JsSuccess(InProgress)
-      Json.fromJson[UploadStatus](JsString("Failed")) shouldBe JsSuccess(Failed)
+      Json.fromJson[UploadStatus](JsString("Failed"))     shouldBe JsSuccess(Failed)
     }
 
     "convert UploadedSuccessfully from full object" in {
       val json = Json.obj(
-        "_type" -> "UploadedSuccessfully",
-        "name" -> "test",
-        "mimeType" -> "csv",
+        "_type"       -> "UploadedSuccessfully",
+        "name"        -> "test",
+        "mimeType"    -> "csv",
         "downloadUrl" -> "file.csv",
-        "size" -> 10
+        "size"        -> 10
       )
 
       Json.fromJson[UploadedSuccessfully](json) shouldBe JsSuccess(expectedJson)
@@ -50,9 +50,8 @@ class UploadStatusSpec extends AnyWordSpec with Matchers {
       Json.fromJson[UploadStatus](json) shouldBe JsError("Missing _type field")
     }
 
-
     "value is an unexpected string" in {
-      val json = JsString("unexpected")
+      val json   = JsString("unexpected")
       val result = Json.fromJson[UploadStatus](json)
       result shouldBe JsError("Unexpected value of _type: unexpected")
     }
@@ -64,19 +63,19 @@ class UploadStatusSpec extends AnyWordSpec with Matchers {
     "serialize simple statuses to string" in {
       Json.toJson(NotStarted: UploadStatus) shouldBe JsString("NotStarted")
       Json.toJson(InProgress: UploadStatus) shouldBe JsString("InProgress")
-      Json.toJson(Failed: UploadStatus) shouldBe JsString("Failed")
+      Json.toJson(Failed: UploadStatus)     shouldBe JsString("Failed")
     }
 
     "serialize UploadedSuccessfully to JSON with _type" in {
 
-
       val json = Json.toJson(expectedJson: UploadStatus)
-      (json \ "_type").as[String] shouldBe "UploadedSuccessfully"
-      (json \ "name").as[String] shouldBe "test"
-      (json \ "mimeType").as[String] shouldBe "csv"
+      (json \ "_type").as[String]       shouldBe "UploadedSuccessfully"
+      (json \ "name").as[String]        shouldBe "test"
+      (json \ "mimeType").as[String]    shouldBe "csv"
       (json \ "downloadUrl").as[String] shouldBe "file.csv"
-      (json \ "size").as[Int] shouldBe 10
+      (json \ "size").as[Int]           shouldBe 10
     }
 
   }
+
 }

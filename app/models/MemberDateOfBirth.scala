@@ -23,6 +23,7 @@ case class MemberDateOfBirth(dateOfBirth: RasDate) extends UserInput {
   def hasAValue: Boolean = dateOfBirth.day.isDefined && dateOfBirth.month.isDefined && dateOfBirth.year.isDefined
 
 }
-  object MemberDateOfBirth {
-    implicit val formats: OFormat[MemberDateOfBirth] = Json.format[MemberDateOfBirth]
+
+object MemberDateOfBirth {
+  implicit val formats: OFormat[MemberDateOfBirth] = Json.format[MemberDateOfBirth]
 }

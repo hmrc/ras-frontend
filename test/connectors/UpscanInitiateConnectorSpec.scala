@@ -28,9 +28,9 @@ import utils.RasTestHelper
 class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTestHelper {
   val httpClient: HttpClientV2 = fakeApplication.injector.instanceOf[HttpClientV2]
 
-
   val connector: UpscanInitiateConnector = new UpscanInitiateConnector(httpClient, mockAppConfig)
-  val upscanInitiateResponseJson : String =
+
+  val upscanInitiateResponseJson: String =
     """
       |{
       |  "reference": "reference-1234",
@@ -47,10 +47,11 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
 
     "returns valid successful response" in {
       setupMockPost(OK, upscanInitiateResponseJson, "/upscan/v2/initiate")
-      val result: UpscanInitiateResponse = await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
+      val result: UpscanInitiateResponse =
+        await(connector.initiateUpscan("A123456", Some("successRedirectUrl"), Some("errorRedirectUrl")))
 
       result.fileReference.reference shouldBe "reference-1234"
-      result.postTarget shouldBe "downloadUrl"
+      result.postTarget              shouldBe "downloadUrl"
     }
 
     "throw an exception" when {
@@ -58,7 +59,7 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
       "upscan returns a 4xx response" in {
         setupMockPost(BAD_REQUEST, "{}", "/upscan/v2/initiate")
         val exception = intercept[UpstreamErrorResponse] {
-          await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
+          await(connector.initiateUpscan("A123456", Some("successRedirectUrl"), Some("errorRedirectUrl")))
         }
         exception.statusCode shouldBe 400
       }
@@ -66,7 +67,7 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
       "upscan returns 5xx response" in {
         setupMockPost(SERVICE_UNAVAILABLE, "{}", "/upscan/v2/initiate")
         val exception = intercept[UpstreamErrorResponse] {
-          await(connector.initiateUpscan("A123456", Some("successRedirectUrl"),  Some("errorRedirectUrl")))
+          await(connector.initiateUpscan("A123456", Some("successRedirectUrl"), Some("errorRedirectUrl")))
         }
         exception.statusCode shouldBe 503
       }

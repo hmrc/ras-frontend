@@ -27,7 +27,10 @@ import scala.concurrent.{ExecutionContext, Future}
 trait AuditService {
   val connector: DefaultAuditConnector
 
-  def audit(auditType: String, path: String, auditData: Map[String, String])(implicit hc:HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
+  def audit(auditType: String, path: String, auditData: Map[String, String])(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[AuditResult] = {
     val event = DataEvent(
       auditSource = "ras-frontend",
       auditType = auditType,

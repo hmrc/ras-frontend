@@ -28,13 +28,14 @@ class MemberNameSpec extends AnyWordSpec {
     }
 
     "return false if firstName & lastName are empty" in {
-      val name = MemberName ("", "")
+      val name = MemberName("", "")
       assert(!name.hasAValue)
     }
 
     "return true if firstName & lastName contain values" in {
-      val name = MemberName ("Jim", "Jimson")
+      val name = MemberName("Jim", "Jimson")
       assert(name.hasAValue)
     }
   }
+
 }

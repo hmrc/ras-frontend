@@ -22,8 +22,8 @@ import play.api.data.Forms._
 
 object MemberNameForm {
 
-  val MAX_LENGTH = 35
-  val NAME_REGEX = "^[a-zA-Z &`\\-\\'^]{1,35}$"
+  val MAX_LENGTH                   = 35
+  val NAME_REGEX                   = "^[a-zA-Z &`\\-\\'^]{1,35}$"
   val trimmedText: Mapping[String] = text.transform[String](_.trim, identity)
 
   val form = Form(
@@ -32,10 +32,11 @@ object MemberNameForm {
         .verifying("error.mandatory.firstName", _.nonEmpty)
         .verifying("error.length.firstName", _.length <= MAX_LENGTH)
         .verifying("error.firstName.invalid", x => x.isEmpty || x.matches(NAME_REGEX)),
-      "lastName" -> trimmedText
+      "lastName"  -> trimmedText
         .verifying("error.mandatory.lastName", _.nonEmpty)
         .verifying("error.length.lastName", _.length <= MAX_LENGTH)
         .verifying("error.lastName.invalid", x => x.isEmpty || x.matches(NAME_REGEX))
     )(MemberName.apply)(MemberName.unapply)
   )
+
 }

@@ -29,9 +29,10 @@ class SignedOutViewSpec extends AnyWordSpec with RasTestHelper {
 
     "contain correct title and sign in button should have correct href" in {
       val result = signedOutView()(fakeRequest, testMessages, mockAppConfig)
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title shouldBe Messages("sign.out.page.title")
+      val doc    = Jsoup.parse(contentAsString(result))
+      doc.title                                  shouldBe Messages("sign.out.page.title")
       doc.getElementById("sign in").attr("href") shouldBe mockAppConfig.signOutAndContinueUrl
     }
   }
+
 }

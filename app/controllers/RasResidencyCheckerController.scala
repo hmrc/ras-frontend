@@ -34,13 +34,17 @@ trait RasResidencyCheckerController extends RasController with AuditService with
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
   val apiVersion: ApiVersion
-	val sessionService: SessionCacheService
+  val sessionService: SessionCacheService
 
-	val SCOTTISH = "scotResident"
-	val WELSH = "welshResident"
-	val OTHER_UK = "otherUKResident"
+  val SCOTTISH = "scotResident"
+  val WELSH    = "welshResident"
+  val OTHER_UK = "otherUKResident"
 
-  def submitResidencyStatus(session: RasSession, userId: String)(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+  def submitResidencyStatus(session: RasSession, userId: String)(implicit
+    request: Request[AnyContent],
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Result] = {
 
     val timer = Metrics.responseTimer.time()
 
@@ -48,51 +52,67 @@ trait RasResidencyCheckerController extends RasController with AuditService with
 
       val memberDetails = MemberDetails(session.name, session.nino.nino, session.dateOfBirth.dateOfBirth)
 
-      residencyStatusAPIConnector.getResidencyStatus(memberDetails).flatMap { rasResponse =>
-        val formattedName = session.name.firstName + " " + session.name.lastName
-        val formattedDob = session.dateOfBirth.dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK))
-        val cyResidencyStatus = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
-        val nyResidencyStatus: Option[String] =
-          rasResponse.nextYearForecastResidencyStatus.map(extractResidencyStatus)
-        if (cyResidencyStatus.isEmpty) {
-          logger.error("[RasResidencyCheckerController][post] An unknown residency status was returned")
-          Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
-        }
-        else {
-          logger.info("[RasResidencyCheckerController][post] Match found")
+      residencyStatusAPIConnector
+        .getResidencyStatus(memberDetails)
+        .flatMap { rasResponse =>
+          val formattedName                     = session.name.firstName + " " + session.name.lastName
+          val formattedDob                      = session.dateOfBirth.dateOfBirth.asLocalDate.format(
+            DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.UK)
+          )
+          val cyResidencyStatus                 = extractResidencyStatus(rasResponse.currentYearResidencyStatus)
+          val nyResidencyStatus: Option[String] =
+            rasResponse.nextYearForecastResidencyStatus.map(extractResidencyStatus)
+          if (cyResidencyStatus.isEmpty) {
+            logger.error("[RasResidencyCheckerController][post] An unknown residency status was returned")
+            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+          } else {
+            logger.info("[RasResidencyCheckerController][post] Match found")
 
-          timer.stop()
+            timer.stop()
 
-          val residencyStatusResult =
-            ResidencyStatusResult(
-              cyResidencyStatus, nyResidencyStatus,
-              TaxYearResolver.currentTaxYear.toString,
-              TaxYearResolver.nextTaxYear.toString,
-              formattedName, formattedDob, memberDetails.nino)
-          auditResponse(failureReason = None, nino = Some(memberDetails.nino),
-            residencyStatus = Some(rasResponse),
-            userId = userId)
+            val residencyStatusResult =
+              ResidencyStatusResult(
+                cyResidencyStatus,
+                nyResidencyStatus,
+                TaxYearResolver.currentTaxYear.toString,
+                TaxYearResolver.nextTaxYear.toString,
+                formattedName,
+                formattedDob,
+                memberDetails.nino
+              )
+            auditResponse(
+              failureReason = None,
+              nino = Some(memberDetails.nino),
+              residencyStatus = Some(rasResponse),
+              userId = userId
+            )
 
-          for {
-            _ <- sessionService.cacheResidencyStatusResult(residencyStatusResult)
+            for {
+              _ <- sessionService.cacheResidencyStatusResult(residencyStatusResult)
+            } yield Redirect(routes.ResultsController.matchFound)
           }
-            yield {
-              Redirect(routes.ResultsController.matchFound)
-            }
         }
-      }.recover {
-        case UpstreamErrorResponse.WithStatusCode(FORBIDDEN) =>
-          auditResponse(failureReason = Some("MATCHING_FAILED"), nino = Some(memberDetails.nino),
-            residencyStatus = None, userId = userId)
-          logger.info("[RasResidencyCheckerController][getResult] No match found from customer matching")
-          timer.stop()
-          Redirect(routes.ResultsController.noMatchFound)
-        case e: Throwable =>
-          auditResponse(failureReason = Some("INTERNAL_SERVER_ERROR"), nino = Some(memberDetails.nino),
-            residencyStatus = None, userId = userId)
-          logger.error(s"[RasResidencyCheckerController][getResult] Customer Matching failed: ${e.getMessage}")
-          Redirect(routes.ErrorController.renderGlobalErrorPage)
-      }
+        .recover {
+          case UpstreamErrorResponse.WithStatusCode(FORBIDDEN) =>
+            auditResponse(
+              failureReason = Some("MATCHING_FAILED"),
+              nino = Some(memberDetails.nino),
+              residencyStatus = None,
+              userId = userId
+            )
+            logger.info("[RasResidencyCheckerController][getResult] No match found from customer matching")
+            timer.stop()
+            Redirect(routes.ResultsController.noMatchFound)
+          case e: Throwable                                    =>
+            auditResponse(
+              failureReason = Some("INTERNAL_SERVER_ERROR"),
+              nino = Some(memberDetails.nino),
+              residencyStatus = None,
+              userId = userId
+            )
+            logger.error(s"[RasResidencyCheckerController][getResult] Customer Matching failed: ${e.getMessage}")
+            Redirect(routes.ErrorController.renderGlobalErrorPage)
+        }
     } else {
       sessionService.resetRasSession().map { _ =>
         Redirect(routes.ErrorController.startAtStart)
@@ -100,15 +120,14 @@ trait RasResidencyCheckerController extends RasController with AuditService with
     }
   }
 
-  private[controllers] def extractResidencyStatus(residencyStatus: String): String = {
+  private[controllers] def extractResidencyStatus(residencyStatus: String): String =
     (residencyStatus, apiVersion) match {
-      case (SCOTTISH, _) => "Scotland"
-      case (WELSH, ApiV2_0) => "Wales"
+      case (SCOTTISH, _)       => "Scotland"
+      case (WELSH, ApiV2_0)    => "Wales"
       case (OTHER_UK, ApiV1_0) => "England, Northern Ireland or Wales"
       case (OTHER_UK, ApiV2_0) => "England, Northern Ireland or Wales"
-      case _ => ""
+      case _                   => ""
     }
-  }
 
   /**
     * Audits the response, if failure reason is None then residencyStatus is Some (sucess) and vice versa (failure).
@@ -120,31 +139,40 @@ trait RasResidencyCheckerController extends RasController with AuditService with
     * @param request         Object containing request made by the user
     * @param hc              Headers
     */
-  private def auditResponse(failureReason: Option[String], nino: Option[String],
-                            residencyStatus: Option[ResidencyStatus], userId: String)
-                           (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  private def auditResponse(
+    failureReason: Option[String],
+    nino: Option[String],
+    residencyStatus: Option[ResidencyStatus],
+    userId: String
+  )(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
 
-    val ninoMap: Map[String, String] = nino.map(nino => Map("nino" -> nino)).getOrElse(Map())
-    val nextYearStatusMap: Map[String, String] = if (residencyStatus.nonEmpty) residencyStatus.get.nextYearForecastResidencyStatus
-      .map(nextYear => Map("NextCYStatus" -> nextYear)).getOrElse(Map())
-    else Map()
-    val auditDataMap: Map[String, String] = failureReason.map(reason => Map("successfulLookup" -> "false",
-      "reason" -> reason)).
-      getOrElse(Map(
-        "successfulLookup" -> "true",
-        "CYStatus" -> residencyStatus.get.currentYearResidencyStatus
-      ) ++ nextYearStatusMap)
+    val ninoMap: Map[String, String]           = nino.map(nino => Map("nino" -> nino)).getOrElse(Map())
+    val nextYearStatusMap: Map[String, String] =
+      if (residencyStatus.nonEmpty)
+        residencyStatus.get.nextYearForecastResidencyStatus
+          .map(nextYear => Map("NextCYStatus" -> nextYear))
+          .getOrElse(Map())
+      else Map()
+    val auditDataMap: Map[String, String]      = failureReason
+      .map(reason => Map("successfulLookup" -> "false", "reason" -> reason))
+      .getOrElse(
+        Map(
+          "successfulLookup" -> "true",
+          "CYStatus"         -> residencyStatus.get.currentYearResidencyStatus
+        ) ++ nextYearStatusMap
+      )
 
-    audit(auditType = "ReliefAtSourceResidency",
+    audit(
+      auditType = "ReliefAtSourceResidency",
       path = request.path,
       auditData = auditDataMap ++ Map("userIdentifier" -> userId, "requestSource" -> "FE_SINGLE") ++ ninoMap
     )
   }
 
-	def getFullName()(implicit ec: ExecutionContext, request: Request[_]): Future[String] = {
-		sessionService.fetchRasSession() map {
-			case Some(session) => session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-			case _ => "member"
-		}
-	}
+  def getFullName()(implicit ec: ExecutionContext, request: Request[_]): Future[String] =
+    sessionService.fetchRasSession() map {
+      case Some(session) => session.name.firstName.capitalize + " " + session.name.lastName.capitalize
+      case _             => "member"
+    }
+
 }

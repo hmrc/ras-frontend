@@ -23,8 +23,8 @@ class MemberDobSpec extends AnyWordSpec {
   "hasValue" must {
 
     "return false if dateOfBirth is empty" in {
-        val dob = MemberDateOfBirth(RasDate(None, None, None))
-        assert(!dob.hasAValue)
+      val dob = MemberDateOfBirth(RasDate(None, None, None))
+      assert(!dob.hasAValue)
     }
 
     "return true if dateOfBirth contains values" in {
@@ -32,4 +32,5 @@ class MemberDobSpec extends AnyWordSpec {
       assert(dob.hasAValue)
     }
   }
+
 }

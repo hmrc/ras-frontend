@@ -23,17 +23,17 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import utils.RasTestHelper
 
-
 class GlobalErrorViewSpec extends AnyWordSpec with RasTestHelper {
 
-	"global error page" must {
+  "global error page" must {
 
-		"contain correct title and header" in {
-			val result = globalErrorView()(fakeRequest, testMessages, mockAppConfig)
-			val doc = Jsoup.parse(contentAsString(result))
-			doc.title shouldBe Messages("global.error.page.title")
-			doc.getElementsByClass("govuk-heading-xl").text shouldBe Messages("global.error.header")
-			doc.getElementsByClass("govuk-body").text shouldBe Messages("you.can.either")
-		}
-	}
+    "contain correct title and header" in {
+      val result = globalErrorView()(fakeRequest, testMessages, mockAppConfig)
+      val doc    = Jsoup.parse(contentAsString(result))
+      doc.title                                       shouldBe Messages("global.error.page.title")
+      doc.getElementsByClass("govuk-heading-xl").text shouldBe Messages("global.error.header")
+      doc.getElementsByClass("govuk-body").text       shouldBe Messages("you.can.either")
+    }
+  }
+
 }

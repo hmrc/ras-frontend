@@ -28,15 +28,15 @@ import java.io.InputStream
 import scala.io.Source
 
 class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with RasTestHelper {
-  val httpClient: HttpClientV2 = fakeApplication.injector.instanceOf[HttpClientV2]
+  val httpClient: HttpClientV2               = fakeApplication.injector.instanceOf[HttpClientV2]
   val connector: ResidencyStatusAPIConnector = new ResidencyStatusAPIConnector(httpClient, mockAppConfig)
 
   val memberName: MemberName = MemberName("John", "Smith")
-  val rasDate: RasDate = RasDate(Some("1"), Some("2"), Some("1990"))
-  val memberDetails = MemberDetails(memberName, "AB123456C", rasDate)
-  val fileName = "testFile.csv"
+  val rasDate: RasDate       = RasDate(Some("1"), Some("2"), Some("1990"))
+  val memberDetails          = MemberDetails(memberName, "AB123456C", rasDate)
+  val fileName               = "testFile.csv"
 
-  val residencyStatusJson : String =
+  val residencyStatusJson: String =
     """
       |{
       |  "currentYearResidencyStatus": "scotResident",
@@ -84,19 +84,19 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
     val record = "John,Smith,AB123456C,1990-02-21"
     "return the success response when API returns 200" in {
       setupMockGet(OK, record, s"/ras-api/file/getFile/$fileName")
-      val result: Option[InputStream] = await(connector.getFile(fileName,"A123456"))
+      val result: Option[InputStream] = await(connector.getFile(fileName, "A123456"))
       result.isDefined shouldBe true
 
       val value = result.get
 
       val content = Source.fromInputStream(value).mkString
       value.close()
-      content should include ("John")
+      content should include("John")
     }
 
     "return empty InputStream when response body is empty" in {
       setupMockGet(OK, "", s"/ras-api/file/getFile/$fileName")
-      val result: Option[InputStream] = await(connector.getFile(fileName,"A123456"))
+      val result: Option[InputStream] = await(connector.getFile(fileName, "A123456"))
       result.isDefined shouldBe true
 
       val content = Source.fromInputStream(result.get).mkString
@@ -105,14 +105,14 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
 
     "return InputStream even when response status is 500" in {
       setupMockGet(INTERNAL_SERVER_ERROR, "Internal server error", s"/ras-api/file/getFile/$fileName")
-      val result: Option[InputStream] = await(connector.getFile(fileName,"A123456"))
+      val result: Option[InputStream] = await(connector.getFile(fileName, "A123456"))
       result.isDefined shouldBe true
 
       val content = Source.fromInputStream(result.get).mkString
       content shouldBe "Internal server error"
     }
 
-}
+  }
 
   "deleteFile" should {
 
@@ -124,7 +124,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
 
     "return the response as Bad Request if API returns 400" in {
       setupMockDelete(BAD_REQUEST, "", s"/ras-api/file/remove/$fileName/A123456")
-      val result: HttpResponse = await(connector.deleteFile(fileName,"A123456"))
+      val result: HttpResponse = await(connector.deleteFile(fileName, "A123456"))
       result.status shouldBe BAD_REQUEST
     }
   }

@@ -25,12 +25,12 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RasSessionCacheRepository @Inject()(mongoComponent: MongoComponent,
-                                          applicationConfig: ApplicationConfig)
-                                         (implicit ec: ExecutionContext) extends SessionCacheRepository(
-  mongoComponent = mongoComponent,
-  collectionName = "sessions",
-  ttl = applicationConfig.userSessionsTTL,
-  timestampSupport = new CurrentTimestampSupport,
-  sessionIdKey = SessionKeys.sessionId
-)
+class RasSessionCacheRepository @Inject() (mongoComponent: MongoComponent, applicationConfig: ApplicationConfig)(
+  implicit ec: ExecutionContext
+) extends SessionCacheRepository(
+      mongoComponent = mongoComponent,
+      collectionName = "sessions",
+      ttl = applicationConfig.userSessionsTTL,
+      timestampSupport = new CurrentTimestampSupport,
+      sessionIdKey = SessionKeys.sessionId
+    )

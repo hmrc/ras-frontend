@@ -19,10 +19,10 @@ package models
 import play.api.libs.json.{Json, OFormat}
 
 case class ResidencyStatus(currentYearResidencyStatus: String, nextYearForecastResidencyStatus: Option[String]) {
-  val SCOTTISH = "scotResident"
+  val SCOTTISH     = "scotResident"
   val NON_SCOTTISH = "otherUKResident"
 }
 
-object ResidencyStatus{
+object ResidencyStatus {
   implicit val format: OFormat[ResidencyStatus] = Json.format[ResidencyStatus]
 }

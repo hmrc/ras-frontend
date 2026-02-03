@@ -22,18 +22,18 @@ import play.api.libs.json.{JsError, JsSuccess, Json}
 
 class CreateFileSessionRequestSpec extends AnyWordSpec with Matchers {
 
-  private val userId = "user123"
-  private val reference = "ref456"
-  private val alternateUserId = "user789"
+  private val userId             = "user123"
+  private val reference          = "ref456"
+  private val alternateUserId    = "user789"
   private val alternateReference = "ref012"
-  private val emptyString = ""
+  private val emptyString        = ""
 
   "CreateFileSessionRequest" should {
 
     "create a CreateFileSessionRequest instance" in {
       val request = CreateFileSessionRequest(userId, reference)
 
-      request.userId shouldBe userId
+      request.userId    shouldBe userId
       request.reference shouldBe reference
     }
 
@@ -42,13 +42,13 @@ class CreateFileSessionRequestSpec extends AnyWordSpec with Matchers {
 
       val json = Json.toJson(request)
 
-      (json \ "userId").as[String] shouldBe userId
+      (json \ "userId").as[String]    shouldBe userId
       (json \ "reference").as[String] shouldBe reference
     }
 
     "deserialize from valid JSON" in {
       val json = Json.obj(
-        "userId" -> alternateUserId,
+        "userId"    -> alternateUserId,
         "reference" -> alternateReference
       )
 
@@ -56,37 +56,37 @@ class CreateFileSessionRequestSpec extends AnyWordSpec with Matchers {
 
       result shouldBe a[JsSuccess[_]]
       val request = result.get
-      request.userId shouldBe alternateUserId
+      request.userId    shouldBe alternateUserId
       request.reference shouldBe alternateReference
     }
 
     "reject JSON with empty userId" in {
       val json = Json.obj(
-        "userId" -> emptyString,
+        "userId"    -> emptyString,
         "reference" -> reference
       )
 
       val result = Json.fromJson[CreateFileSessionRequest](json)
 
-      result shouldBe a[JsError]
+      result                                               shouldBe a[JsError]
       result.asInstanceOf[JsError].errors.head._1.toString() should include("userId")
     }
 
     "reject JSON with empty reference" in {
       val json = Json.obj(
-        "userId" -> userId,
+        "userId"    -> userId,
         "reference" -> emptyString
       )
 
       val result = Json.fromJson[CreateFileSessionRequest](json)
 
-      result shouldBe a[JsError]
+      result                                               shouldBe a[JsError]
       result.asInstanceOf[JsError].errors.head._1.toString() should include("reference")
     }
 
     "reject JSON with both fields empty" in {
       val json = Json.obj(
-        "userId" -> emptyString,
+        "userId"    -> emptyString,
         "reference" -> emptyString
       )
 
@@ -95,4 +95,5 @@ class CreateFileSessionRequestSpec extends AnyWordSpec with Matchers {
       result shouldBe a[JsError]
     }
   }
+
 }

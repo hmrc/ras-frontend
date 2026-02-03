@@ -28,18 +28,18 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
 
   object TestPageFlowController extends PageFlowController {
     override val authConnector: AuthConnector = mockAuthConnector
-		override val appConfig: ApplicationConfig = mockAppConfig
+    override val appConfig: ApplicationConfig = mockAppConfig
   }
 
-  val emptySession = RasSession(MemberName("",""),MemberNino(""),
-    MemberDateOfBirth(RasDate(None,None,None)),None,None)
+  val emptySession =
+    RasSession(MemberName("", ""), MemberNino(""), MemberDateOfBirth(RasDate(None, None, None)), None, None)
 
   "PageFlowController" must {
 
     "redirect to choose an option page" when {
       "on member name page and edit is false" in {
         val result = TestPageFlowController.previousPage("MemberNameController")
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/")
       }
     }
@@ -47,7 +47,7 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to match not found page" when {
       "on member name page and edit is true" in {
         val result = TestPageFlowController.previousPage("MemberNameController", edit = true)
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/no-residency-status-displayed")
       }
     }
@@ -55,7 +55,7 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to member name page" when {
       "on member nino page and edit is false" in {
         val result = TestPageFlowController.previousPage("MemberNinoController")
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/member-name")
       }
     }
@@ -63,7 +63,7 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to match not found page" when {
       "on member nino page and edit is true" in {
         val result = TestPageFlowController.previousPage("MemberNinoController", edit = true)
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/no-residency-status-displayed")
       }
     }
@@ -71,7 +71,7 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to member nino page" when {
       "on member dob page and edit is false" in {
         val result = TestPageFlowController.previousPage("MemberDOBController")
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/member-national-insurance-number")
       }
     }
@@ -79,7 +79,7 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to match not found page" when {
       "on member dob page and edit is true" in {
         val result = TestPageFlowController.previousPage("MemberDOBController", edit = true)
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/no-residency-status-displayed")
       }
     }
@@ -87,7 +87,7 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to member dob page" when {
       "on results page" in {
         val result = TestPageFlowController.previousPage("ResultsController")
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/member-date-of-birth")
       }
     }
@@ -95,7 +95,7 @@ class PageFlowControllerSpec extends AnyWordSpec with RasTestHelper {
     "redirect to global error page" when {
       "not found" in {
         val result = TestPageFlowController.previousPage("blahblah")
-        result.header.status shouldBe SEE_OTHER
+        result.header.status   shouldBe SEE_OTHER
         redirectLocation(result) should include("/global-error")
       }
     }

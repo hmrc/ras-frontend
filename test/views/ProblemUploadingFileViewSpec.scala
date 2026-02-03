@@ -23,27 +23,29 @@ import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import utils.RasTestHelper
 
-class ProblemUploadingFileViewSpec extends AnyWordSpec with RasTestHelper{
+class ProblemUploadingFileViewSpec extends AnyWordSpec with RasTestHelper {
 
-	"problem uploading file page" must {
+  "problem uploading file page" must {
 
-		"contain correct title and header when problem uploading file" in {
-			val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)
-			val doc = Jsoup.parse(contentAsString(result))
-			doc.title shouldBe Messages("problem.uploading.file.title")
-			doc.getElementsByClass("govuk-back-link").attr("href") should include("/upload-a-file")
-			doc.getElementById("header").text shouldBe Messages("problem.uploading.file.header")
-			doc.getElementById("try-again").text shouldBe Messages("upload.file.again").capitalize
-			doc.getElementById("check-file").text shouldBe Messages("check.file")
-			doc.getElementById("return-to-upload").text shouldBe Messages("return.to.upload")
-		}
+    "contain correct title and header when problem uploading file" in {
+      val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)
+      val doc    = Jsoup.parse(contentAsString(result))
+      doc.title                                            shouldBe Messages("problem.uploading.file.title")
+      doc.getElementsByClass("govuk-back-link").attr("href") should include("/upload-a-file")
+      doc.getElementById("header").text                    shouldBe Messages("problem.uploading.file.header")
+      doc.getElementById("try-again").text                 shouldBe Messages("upload.file.again").capitalize
+      doc.getElementById("check-file").text                shouldBe Messages("check.file")
+      doc.getElementById("return-to-upload").text          shouldBe Messages("return.to.upload")
+    }
 
-		"contain correct ga events when problem uploading file" in {
-			val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)
-			val doc = Jsoup.parse(contentAsString(result))
-			doc.getElementsByClass("govuk-back-link").attr("data-journey-click") shouldBe "navigation - link:There has been a problem uploading your file:Back"
-			doc.getElementById("return-to-upload-link").attr("data-journey-click") shouldBe "Return to upload a file"
-		}
-	}
+    "contain correct ga events when problem uploading file" in {
+      val result = problemUploadingFileView()(fakeRequest, testMessages, mockAppConfig)
+      val doc    = Jsoup.parse(contentAsString(result))
+      doc
+        .getElementsByClass("govuk-back-link")
+        .attr("data-journey-click")                                          shouldBe "navigation - link:There has been a problem uploading your file:Back"
+      doc.getElementById("return-to-upload-link").attr("data-journey-click") shouldBe "Return to upload a file"
+    }
+  }
 
 }

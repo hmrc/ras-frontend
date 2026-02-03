@@ -16,39 +16,39 @@
 
 package models
 
-
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-case class MemberDetails(name: MemberName,
-                         nino: String,
-                         dateOfBirth: RasDate) {
+case class MemberDetails(name: MemberName, nino: String, dateOfBirth: RasDate) {
 
-  def asCustomerDetailsPayload: JsValue = {
-    Json.parse(
-      s"""{
+  def asCustomerDetailsPayload: JsValue =
+    Json.parse(s"""{
           "nino":"${nino.toUpperCase}",
           "firstName":"${name.firstName.capitalize}",
           "lastName":"${name.lastName.capitalize}",
-          "dateOfBirth":"${dateOfBirth.asLocalDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale(Locale.UK))}"
+          "dateOfBirth":"${dateOfBirth.asLocalDate.format(
+        DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale(Locale.UK)
+      )}"
         }
       """)
-  }
+
 }
 
 object MemberDetails {
+
   implicit val memberDetailsReads: Reads[MemberDetails] = (
-      (JsPath \ "name").read[MemberName]and
+    (JsPath \ "name").read[MemberName] and
       (JsPath \ "nino").read[String] and
       (JsPath \ "dateOfBirth").read[RasDate]
-    )(MemberDetails.apply _)
+  )(MemberDetails.apply _)
 
   implicit val memberDetailsWrites: Writes[MemberDetails] = (
     (JsPath \ "name").write[MemberName] and
       (JsPath \ "nino").write[String].contramap[String](nino => nino.toUpperCase) and
       (JsPath \ "dateOfBirth").write[RasDate]
-    )(unlift(MemberDetails.unapply))
+  )(unlift(MemberDetails.unapply))
+
 }
