@@ -29,6 +29,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 import uk.gov.hmrc.http.HttpReads.Implicits.*
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 
 class UpscanInitiateConnector @Inject() (httpClient: HttpClientV2, appConfig: ApplicationConfig)(implicit
   ec: ExecutionContext

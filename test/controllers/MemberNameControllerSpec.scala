@@ -55,7 +55,7 @@ class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
     mockAppConfig,
     memberNameView
   ) {
-    override lazy val apiVersion: ApiVersion = ApiV1_0
+    override val apiVersion: ApiVersion = ApiV1_0
 
     when(mockRasSessionCacheService.cacheName(any())(any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))

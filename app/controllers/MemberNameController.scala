@@ -48,7 +48,8 @@ class MemberNameController @Inject() (
   implicit val ec: ExecutionContext = mcc.executionContext
   val apiVersion: ApiVersion        = appConfig.rasApiVersion
 
-  def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+  def get(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)   =>
         sessionService.fetchRasSession() map {
@@ -61,7 +62,8 @@ class MemberNameController @Inject() (
     }
   }
 
-  def post(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+  def post(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         form
@@ -88,7 +90,8 @@ class MemberNameController @Inject() (
     }
   }
 
-  def back(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+  def back(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)  => Future.successful(previousPage("MemberNameController", edit))
       case Left(res) =>

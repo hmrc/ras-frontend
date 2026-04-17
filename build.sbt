@@ -10,7 +10,7 @@ lazy val microservice = Project("ras-frontend", file("."))
   .disablePlugins(JUnitXmlReportPlugin) // Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     scalacOptions ++= Seq(
-      "-Wconf:cat=unused-imports&src=html/.*:s",
+      "-Wconf:msg=unused import&src=html/.*:s",
       "-Wconf:src=routes/.*:s",
       "-feature"
     ),

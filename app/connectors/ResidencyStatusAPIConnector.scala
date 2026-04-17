@@ -31,6 +31,8 @@ import java.io.InputStream
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.client.readStreamHttpResponse
 
 class ResidencyStatusAPIConnector @Inject() (http: HttpClientV2, appConfig: ApplicationConfig) extends Logging {
 

@@ -56,7 +56,7 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
     mockAppConfig,
     memberNinoView
   ) {
-    override lazy val apiVersion: ApiVersion = ApiV1_0
+    override val apiVersion: ApiVersion = ApiV1_0
 
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockRasSessionCacheService.cacheNino(any())(any())).thenReturn(Future.successful(Some(rasSession)))

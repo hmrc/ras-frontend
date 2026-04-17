@@ -18,10 +18,10 @@ package controllers
 
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import forms.{MemberNinoForm => form}
+import forms.MemberNinoForm as form
 import models.ApiVersion
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.SessionCacheService
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -48,7 +48,8 @@ class MemberNinoController @Inject() (
   implicit val ec: ExecutionContext = mcc.executionContext
   val apiVersion: ApiVersion        = appConfig.rasApiVersion
 
-  def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+  def get(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)   =>
         sessionService.fetchRasSession() map {
@@ -64,7 +65,8 @@ class MemberNinoController @Inject() (
     }
   }
 
-  def post(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+  def post(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         getFullName() flatMap { name =>
@@ -93,7 +95,8 @@ class MemberNinoController @Inject() (
     }
   }
 
-  def back(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+  def back(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)  =>
         sessionService.fetchRasSession() map {

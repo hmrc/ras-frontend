@@ -18,7 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -33,7 +33,8 @@ class LogoutController @Inject() (
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def logout: Action[AnyContent] = Action.async { implicit request =>
+  def logout: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)   =>
         Future.successful(

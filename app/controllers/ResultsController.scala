@@ -18,7 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.{SessionCacheService, TaxYearResolver}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,7 +39,8 @@ class ResultsController @Inject() (
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def matchFound: Action[AnyContent] = Action.async { implicit request =>
+  def matchFound: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)  =>
         sessionService.fetchRasSession() map {
@@ -85,7 +86,8 @@ class ResultsController @Inject() (
     }
   }
 
-  def noMatchFound: Action[AnyContent] = Action.async { implicit request =>
+  def noMatchFound: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)  =>
         sessionService.fetchRasSession() map {
@@ -119,7 +121,8 @@ class ResultsController @Inject() (
     }
   }
 
-  def back: Action[AnyContent] = Action.async { implicit request =>
+  def back: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)  =>
         sessionService.fetchRasSession() map {

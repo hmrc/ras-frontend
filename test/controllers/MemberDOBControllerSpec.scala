@@ -69,7 +69,7 @@ class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with Before
     mockAppConfig,
     memberDobView
   ) {
-    override lazy val apiVersion: ApiVersion = ApiV1_0
+    override val apiVersion: ApiVersion = ApiV1_0
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 

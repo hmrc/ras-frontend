@@ -55,7 +55,8 @@ class ChooseAnOptionController @Inject() (
   implicit val ec: ExecutionContext = mcc.executionContext
   private val _contentType          = "application/csv"
 
-  def get: Action[AnyContent] = Action.async { implicit request =>
+  def get: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap { fileSession =>
@@ -112,7 +113,8 @@ class ChooseAnOptionController @Inject() (
     s"$todayOrYesterday at ${uploadDate.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()}"
   }
 
-  def renderUploadResultsPage: Action[AnyContent] = Action.async { implicit request =>
+  def renderUploadResultsPage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).map {
@@ -160,7 +162,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def renderNoResultAvailablePage: Action[AnyContent] = Action.async { implicit request =>
+  def renderNoResultAvailablePage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {
@@ -187,7 +190,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def renderNoResultsAvailableYetPage: Action[AnyContent] = Action.async { implicit request =>
+  def renderNoResultsAvailableYetPage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {
@@ -214,7 +218,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def renderFileReadyPage: Action[AnyContent] = Action.async { implicit request =>
+  def renderFileReadyPage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {
@@ -236,7 +241,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def getResultsFile(fileName: String): Action[AnyContent] = Action.async { implicit request =>
+  def getResultsFile(fileName: String): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {
