@@ -60,7 +60,7 @@ trait DateValidator {
     formWithErrors.copy(errors = formErrors)
   }
 
-  def rasDateConstraint(): Constraint[MemberDateOfBirth] = Constraint("dateOfBirth") { memDob =>
+  def rasDateConstraint(name: String): Constraint[MemberDateOfBirth] = Constraint("dateOfBirth") { memDob =>
     val date = memDob.dateOfBirth
 
     val leapYear: Boolean =

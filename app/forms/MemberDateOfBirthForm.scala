@@ -39,7 +39,7 @@ object MemberDateOfBirthForm extends DateValidator {
           .verifying(nonNumberErrorKey, mandatoryCheckNonNumber)
       )(RasDate.apply)((rasData: RasDate) => Some(Tuple.fromProductTyped(rasData)))
     )(MemberDateOfBirth.apply)((memberDateOfBirth: MemberDateOfBirth) => Some(memberDateOfBirth.dateOfBirth))
-      .verifying(rasDateConstraint())
+      .verifying(rasDateConstraint(name.getOrElse("member")))
   )
 
   val mandatoryCheck: Option[String] => Boolean          = input => input.getOrElse("").trim != ""

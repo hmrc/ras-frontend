@@ -27,7 +27,7 @@ import utils.RasTestHelper
 
 class MemberDOBViewSpec extends AnyWordSpec with RasTestHelper {
 
-  val memberDOBForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm().bind(
+  val memberDOBForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm(Some("Jackie Chan")).bind(
     Map("dateOfBirth.day" -> "1", "dateOfBirth.month" -> "1", "dateOfBirth.year" -> "2000")
   )
 
@@ -76,7 +76,7 @@ class MemberDOBViewSpec extends AnyWordSpec with RasTestHelper {
 
     "present empty form" when {
       "no details returned from session cache" in {
-        val emptyForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm().bind(
+        val emptyForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm(Some("Jackie Chan")).bind(
           Map("dateOfBirth.day" -> "", "dateOfBirth.month" -> "", "dateOfBirth.year" -> "")
         )
 

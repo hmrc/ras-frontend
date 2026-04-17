@@ -56,7 +56,7 @@ class DateValidatorSpec extends AnyWordSpec with Matchers {
     "handle NumberFormatException" in {
       val invalidYearMemberDOB = MemberDateOfBirth(RasDate(Some("1"), Some("12"), Some("non-integer")))
 
-      val constraint = rasDateConstraint()
+      val constraint = rasDateConstraint("dateOfBirth")
       val result     = constraint.apply(invalidYearMemberDOB)
 
       result shouldBe an[Invalid]

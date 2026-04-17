@@ -55,7 +55,7 @@ class MemberNinoController @Inject() (
         sessionService.fetchRasSession() map {
           case Some(session) =>
             val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-            Ok(memberNinoView(form().fill(session.nino), name, edit))
+            Ok(memberNinoView(form(Some(name)).fill(session.nino), name, edit))
           case _             =>
             Ok(memberNinoView(form(), "member", edit))
         }
