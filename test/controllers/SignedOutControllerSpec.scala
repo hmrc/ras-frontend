@@ -16,7 +16,7 @@
 
 package controllers
 
-import org.scalatest.OptionValues.convertOptionToValuable
+import org.scalatest.OptionValues.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.mvc.Result
@@ -55,7 +55,7 @@ class SignedOutControllerSpec extends AnyWordSpec with Matchers with RasTestHelp
 
       val request = FakeRequest(GET, routes.SignedOutController.signedOut.url)
 
-      val result = controller.signedOut().apply(request)
+      val result = controller.signedOut.apply(request)
 
       status(result) shouldBe OK
 

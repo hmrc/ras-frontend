@@ -16,7 +16,7 @@
 
 package utils
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, delete, get, post, urlPathEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.ApplicationConfig
 import connectors.{FilesSessionConnector, ResidencyStatusAPIConnector, UpscanInitiateConnector}
@@ -28,9 +28,9 @@ import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.{Messages, MessagesApi, MessagesImpl}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.api.{Application, i18n}
 import play.twirl.api.Html
 import repository.RasSessionCacheRepository
@@ -41,7 +41,7 @@ import uk.gov.hmrc.http.test.WireMockSupport
 import uk.gov.hmrc.mongo.test.MongoSupport
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import views.html._
+import views.html.*
 
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{Await, ExecutionContext, Future}

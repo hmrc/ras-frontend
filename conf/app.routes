@@ -42,7 +42,7 @@ GET         /not-authorised                                                     
 GET         /service-start-at-start                                             controllers.ErrorController.startAtStart
 
 GET         /check-another-member/:target                                       controllers.SessionController.redirect(target:String, cleanSession:Boolean, edit:Boolean ?= false)
-GET         /keep-alive                                                         controllers.SessionController.keepAlive
+GET         /keep-alive                                                         controllers.SessionController.keepAlive()
 
 GET         /logout                                                             controllers.LogoutController.logout
 

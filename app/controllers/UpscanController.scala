@@ -22,7 +22,7 @@ import models.upscan.UpscanInitiateResponse
 import models.{File, RasSession, UploadResponse}
 import play.api.Logging
 import play.api.i18n.Messages.implicitMessagesProviderToMessages
-import play.api.mvc._
+import play.api.mvc.*
 import services.{FilesSessionService, SessionCacheService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -55,14 +55,9 @@ class UpscanController @Inject() (
         val sessionFetchResult                                    = sessionService.fetchRasSession()
         sessionFetchResult
           .flatMap {
-            case Some(session) =>
-              session match {
-                case rasSession: RasSession =>
-                  processRasSession(rasSession, userId, fileUploadUrl)
-                case _                      =>
-                  redirectWithNoRasSession(userId)
-              }
-            case None          =>
+            case Some(rasSession: RasSession) =>
+              processRasSession(rasSession, userId, fileUploadUrl)
+            case None                         =>
               redirectWithNoRasSession(userId)
           }
           .recover { case e: Throwable =>

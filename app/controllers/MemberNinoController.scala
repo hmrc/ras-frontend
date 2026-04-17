@@ -46,7 +46,7 @@ class MemberNinoController @Inject() (
     with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  lazy val apiVersion: ApiVersion   = appConfig.rasApiVersion
+  val apiVersion: ApiVersion        = appConfig.rasApiVersion
 
   def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
     isAuthorised().flatMap {
@@ -54,7 +54,7 @@ class MemberNinoController @Inject() (
         sessionService.fetchRasSession() map {
           case Some(session) =>
             val name = session.name.firstName.capitalize + " " + session.name.lastName.capitalize
-            Ok(memberNinoView(form(Some(name)).fill(session.nino), name, edit))
+            Ok(memberNinoView(form().fill(session.nino), name, edit))
           case _             =>
             Ok(memberNinoView(form(), "member", edit))
         }

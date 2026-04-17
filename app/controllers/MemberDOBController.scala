@@ -48,7 +48,8 @@ class MemberDOBController @Inject() (
     with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  lazy val apiVersion: ApiVersion   = appConfig.rasApiVersion
+
+  val apiVersion: ApiVersion = appConfig.rasApiVersion
 
   def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
     isAuthorised().flatMap {

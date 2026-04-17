@@ -17,8 +17,8 @@
 package views
 
 import models.upscan.{UpscanFileReference, UpscanInitiateResponse}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import org.scalatest.matchers.should.Matchers.{be, convertToAnyShouldWrapper}
+import org.scalatest.matchers.must.Matchers.mustNot
+import org.scalatest.matchers.should.Matchers.{be, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
 import utils.RasTestHelper

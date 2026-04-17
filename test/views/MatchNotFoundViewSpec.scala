@@ -18,10 +18,10 @@ package views
 
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers._
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.must.Matchers.*
+import org.scalatest.matchers.should.Matchers.*
 import play.api.i18n.Messages
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers.*
 import views.helpers.ViewSpecHelper
 
 import java.time.format.DateTimeFormatter

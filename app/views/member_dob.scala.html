@@ -15,7 +15,7 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 
@@ -75,7 +75,7 @@
                     isPageHeading = true
                 ))
             ))
-        ).withFormField(memberDobForm("dateOfBirth")))
+        ).withDayMonthYearFormField(memberDobForm("dateOfBirth")))
 
         <div class="govuk-form-submit">
         @govukButton(Button(

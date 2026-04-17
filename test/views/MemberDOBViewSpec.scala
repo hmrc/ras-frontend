@@ -19,7 +19,7 @@ package views
 import org.apache.pekko.util.Helpers.Requiring
 import forms.MemberDateOfBirthForm
 import models.MemberDateOfBirth
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -27,7 +27,7 @@ import utils.RasTestHelper
 
 class MemberDOBViewSpec extends AnyWordSpec with RasTestHelper {
 
-  val memberDOBForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm(Some("Jackie Chan")).bind(
+  val memberDOBForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm().bind(
     Map("dateOfBirth.day" -> "1", "dateOfBirth.month" -> "1", "dateOfBirth.year" -> "2000")
   )
 
@@ -76,7 +76,7 @@ class MemberDOBViewSpec extends AnyWordSpec with RasTestHelper {
 
     "present empty form" when {
       "no details returned from session cache" in {
-        val emptyForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm(Some("Jackie Chan")).bind(
+        val emptyForm: Form[MemberDateOfBirth] = MemberDateOfBirthForm().bind(
           Map("dateOfBirth.day" -> "", "dateOfBirth.month" -> "", "dateOfBirth.year" -> "")
         )
 

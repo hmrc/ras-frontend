@@ -19,7 +19,7 @@ package views
 import org.apache.pekko.util.Helpers.Requiring
 import forms.MemberNameForm
 import models.MemberName
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.Form
 import play.api.i18n.Messages

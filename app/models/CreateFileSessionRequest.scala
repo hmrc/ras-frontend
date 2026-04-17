@@ -16,8 +16,8 @@
 
 package models
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+import play.api.libs.json.*
+import play.api.libs.functional.syntax.*
 
 case class CreateFileSessionRequest(userId: String, reference: String)
 

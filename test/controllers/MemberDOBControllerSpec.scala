@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalacheck.Gen
 import org.scalatest.BeforeAndAfter
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.OK
 import play.api.libs.json.Json

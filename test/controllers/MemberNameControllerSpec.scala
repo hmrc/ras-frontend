@@ -16,15 +16,15 @@
 
 package controllers
 
-import models._
+import models.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.RasTestHelper
 

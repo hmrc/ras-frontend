@@ -24,7 +24,7 @@ import play.api.Logging
 import play.api.libs.json.JsSuccess
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 
 import java.io.InputStream
@@ -70,7 +70,7 @@ class ResidencyStatusAPIConnector @Inject() (http: HttpClientV2, appConfig: Appl
           .foldLeft(_)((request: WSRequest, headers: (String, String)) => request.addHttpHeaders(headers))
       )
       .stream[HttpResponse]
-      .map { res: HttpResponse =>
+      .map { (res: HttpResponse) =>
         Some(res.bodyAsSource.runWith(StreamConverters.asInputStream()))
       }
   }

@@ -18,10 +18,11 @@ package controllers
 
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import forms.MemberNameForm._
-import models.ApiVersion
+import forms.MemberNameForm.*
+import models.{ApiVersion, MemberName}
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.data.Form
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.SessionCacheService
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -44,9 +45,8 @@ class MemberNameController @Inject() (
     with PageFlowController
     with Logging
     with WithUnsafeDefaultFormBinding {
-
   implicit val ec: ExecutionContext = mcc.executionContext
-  lazy val apiVersion: ApiVersion   = appConfig.rasApiVersion
+  val apiVersion: ApiVersion        = appConfig.rasApiVersion
 
   def get(edit: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
     isAuthorised().flatMap {
@@ -68,7 +68,8 @@ class MemberNameController @Inject() (
           .bindFromRequest()
           .fold(
             formWithErrors => {
-              logger.warn("[NameController][post] Invalid form field passed")
+              println(formWithErrors.errors)
+              logger.warn(s"[NameController][post] Invalid form field passed, ${formWithErrors.data}")
               Future.successful(BadRequest(memberNameView(formWithErrors, edit)))
             },
             memberName =>

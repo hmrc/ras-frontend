@@ -17,7 +17,7 @@
 package views
 
 import models.FileUploadStatus._
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
 import utils.RasTestHelper

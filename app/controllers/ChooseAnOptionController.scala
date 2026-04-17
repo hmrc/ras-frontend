@@ -20,13 +20,13 @@ import org.apache.pekko.stream.scaladsl.{Source, StreamConverters}
 import org.apache.pekko.util.ByteString
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import models.FileUploadStatus._
+import models.FileUploadStatus.*
 import models.{FileSession, FileUploadStatus}
 
 import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
 import play.api.Logging
 import play.api.http.HttpEntity
-import play.api.mvc._
+import play.api.mvc.*
 import services.{FilesSessionService, TaxYearResolver}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector

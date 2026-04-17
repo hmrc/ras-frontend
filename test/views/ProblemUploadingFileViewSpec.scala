@@ -17,10 +17,10 @@
 package views
 
 import org.jsoup.Jsoup
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers.*
 import utils.RasTestHelper
 
 class ProblemUploadingFileViewSpec extends AnyWordSpec with RasTestHelper {

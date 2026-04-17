@@ -18,7 +18,7 @@ package views
 
 import forms.MemberNinoForm
 import models.MemberNino
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -26,7 +26,7 @@ import utils.RasTestHelper
 
 class MemberNinoViewSpec extends AnyWordSpec with RasTestHelper {
 
-  val memberNinoForm: Form[MemberNino] = MemberNinoForm(Some("John Doe")).bind(Map("nino" -> "AA123456A"))
+  val memberNinoForm: Form[MemberNino] = MemberNinoForm().bind(Map("nino" -> "AA123456A"))
 
   "member nino page" must {
     "contain correct page elements and content" when {
@@ -70,7 +70,7 @@ class MemberNinoViewSpec extends AnyWordSpec with RasTestHelper {
       }
 
       "present empty form when no cached data exists" in {
-        val emptyForm: Form[MemberNino] = MemberNinoForm(Some("John Doe")).bind(Map("nino" -> ""))
+        val emptyForm: Form[MemberNino] = MemberNinoForm().bind(Map("nino" -> ""))
 
         val result = memberNinoView(emptyForm, "John Doe", edit = false)(fakeRequest, testMessages, mockAppConfig)
         assert(doc(result).getElementById("nino").attr("value").equals(""))

@@ -16,7 +16,6 @@
 
 package connectors
 
-import models._
 import models.upscan.UpscanInitiateResponse
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

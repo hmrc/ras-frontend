@@ -18,11 +18,11 @@ package controllers
 
 import connectors.ResidencyStatusAPIConnector
 import metrics.Metrics
-import models._
+import models.*
 import play.api.Logging
 import play.api.http.Status.FORBIDDEN
 import play.api.mvc.Results.Redirect
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{AnyContent, MessagesRequest, Request, Result}
 import services.{AuditService, SessionCacheService, TaxYearResolver}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
