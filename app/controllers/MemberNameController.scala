@@ -68,8 +68,7 @@ class MemberNameController @Inject() (
           .bindFromRequest()
           .fold(
             formWithErrors => {
-              println(formWithErrors.errors)
-              logger.warn(s"[NameController][post] Invalid form field passed, ${formWithErrors.data}")
+              logger.warn("[NameController][post] Invalid form field passed")
               Future.successful(BadRequest(memberNameView(formWithErrors, edit)))
             },
             memberName =>
