@@ -45,8 +45,8 @@ class MemberNinoController @Inject() (
     with Logging
     with WithUnsafeDefaultFormBinding {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
-  val apiVersion: ApiVersion        = appConfig.rasApiVersion
+  given ec: ExecutionContext = mcc.executionContext
+  val apiVersion: ApiVersion = appConfig.rasApiVersion
 
   def get(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

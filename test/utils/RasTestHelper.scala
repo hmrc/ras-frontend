@@ -85,10 +85,10 @@ trait RasTestHelper extends MongoSupport with MockitoSugar with WireMockSupport 
     ExecutionContext.global
   )
 
-  implicit lazy val testMessages: MessagesImpl = MessagesImpl(i18n.Lang("en"), mockMCC.messagesApi)
-  implicit val actorSystem: ActorSystem        = ActorSystem()
-  implicit val hc: HeaderCarrier               = HeaderCarrier()
-  implicit val ec: ExecutionContext            = mockMCC.executionContext
+  given testMessages: MessagesImpl = MessagesImpl(i18n.Lang("en"), mockMCC.messagesApi)
+  given actorSystem: ActorSystem   = ActorSystem()
+  given hc: HeaderCarrier          = HeaderCarrier()
+  given ec: ExecutionContext       = ExecutionContext.global
 
   val SCOTTISH = "scotResident"
   val WELSH    = "welshResident"

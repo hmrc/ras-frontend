@@ -21,5 +21,5 @@ import play.api.libs.json.Reads
 case class Reference(value: String) extends AnyVal
 
 object Reference {
-  implicit val referenceReader: Reads[Reference] = Reads.StringReads.map(Reference(_))
+  given referenceReader: Reads[Reference] = Reads.StringReads.map(Reference(_))
 }

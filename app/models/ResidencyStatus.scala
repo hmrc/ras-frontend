@@ -24,5 +24,5 @@ case class ResidencyStatus(currentYearResidencyStatus: String, nextYearForecastR
 }
 
 object ResidencyStatus {
-  implicit val format: OFormat[ResidencyStatus] = Json.format[ResidencyStatus]
+  given format: OFormat[ResidencyStatus] = Json.format[ResidencyStatus]
 }

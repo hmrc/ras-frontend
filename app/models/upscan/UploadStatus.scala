@@ -30,12 +30,12 @@ case class UploadedSuccessfully(name: String, mimeType: String, downloadUrl: Str
     extends UploadStatus
 
 object UploadedSuccessfully {
-  implicit val uploadedSuccessfullyFormat: OFormat[UploadedSuccessfully] = Json.format[UploadedSuccessfully]
+  given uploadedSuccessfullyFormat: OFormat[UploadedSuccessfully] = Json.format[UploadedSuccessfully]
 }
 
 object UploadStatus {
 
-  implicit val readsUploadStatus: Reads[UploadStatus] = new Reads[UploadStatus] {
+  given readsUploadStatus: Reads[UploadStatus] = new Reads[UploadStatus] {
     override def reads(json: JsValue): JsResult[UploadStatus] =
       json match {
         case JsString(value: String) =>
@@ -51,7 +51,7 @@ object UploadStatus {
       }
   }
 
-  implicit val writesUploadStatus: Writes[UploadStatus] = {
+  given writesUploadStatus: Writes[UploadStatus] = {
     case NotStarted              => JsString("NotStarted")
     case InProgress              => JsString("InProgress")
     case Failed                  => JsString("Failed")

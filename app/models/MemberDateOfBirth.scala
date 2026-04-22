@@ -25,5 +25,5 @@ case class MemberDateOfBirth(dateOfBirth: RasDate) extends UserInput {
 }
 
 object MemberDateOfBirth {
-  implicit val formats: OFormat[MemberDateOfBirth] = Json.format[MemberDateOfBirth]
+  given formats: OFormat[MemberDateOfBirth] = Json.format[MemberDateOfBirth]
 }

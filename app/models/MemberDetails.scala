@@ -39,13 +39,13 @@ case class MemberDetails(name: MemberName, nino: String, dateOfBirth: RasDate) {
 
 object MemberDetails {
 
-  implicit val memberDetailsReads: Reads[MemberDetails] = (
+  given memberDetailsReads: Reads[MemberDetails] = (
     (JsPath \ "name").read[MemberName] and
       (JsPath \ "nino").read[String] and
       (JsPath \ "dateOfBirth").read[RasDate]
   )(MemberDetails.apply _)
 
-  implicit val memberDetailsWrites: Writes[MemberDetails] = (
+  given memberDetailsWrites: Writes[MemberDetails] = (
     (JsPath \ "name").write[MemberName] and
       (JsPath \ "nino").write[String].contramap[String](nino => nino.toUpperCase) and
       (JsPath \ "dateOfBirth").write[RasDate]

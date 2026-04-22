@@ -32,8 +32,8 @@ import scala.concurrent.Future
 
 class MemberNameControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-  private val enrolmentIdentifier           = EnrolmentIdentifier("PSAID", "Z123456")
+  given headerCarrier: HeaderCarrier = HeaderCarrier()
+  private val enrolmentIdentifier    = EnrolmentIdentifier("PSAID", "Z123456")
 
   private val enrolment =
     new Enrolment(key = "HMRC-PSA-ORG", identifiers = List(enrolmentIdentifier), state = "Activated")

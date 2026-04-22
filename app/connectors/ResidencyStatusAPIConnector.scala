@@ -23,7 +23,6 @@ import models.{ApiVersion, MemberDetails, ResidencyStatus}
 import play.api.Logging
 import play.api.libs.json.JsSuccess
 import play.api.libs.ws.WSRequest
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -61,7 +60,7 @@ class ResidencyStatusAPIConnector @Inject() (http: HttpClientV2, appConfig: Appl
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[InputStream]] = {
-    implicit val system: ActorSystem           = ActorSystem()
+    given system: ActorSystem                  = ActorSystem()
     val requiredHeaders: Seq[(String, String)] = hc.headers(HeaderNames.explicitlyIncludedHeaders)
     val fullUrl                                = s"$serviceUrl/ras-api/file/getFile/$fileName"
     logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")

@@ -37,7 +37,7 @@ class ResultsController @Inject() (
   matchNotFoundView: views.html.match_not_found
 ) extends FrontendController(mcc) with PageFlowController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def matchFound: Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

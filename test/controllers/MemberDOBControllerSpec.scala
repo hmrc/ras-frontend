@@ -37,7 +37,7 @@ import scala.util.Random
 
 class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfter {
 
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+  given headerCarrier: HeaderCarrier = HeaderCarrier()
 
   def randomPsaId: Gen[PsaId] =
     for {

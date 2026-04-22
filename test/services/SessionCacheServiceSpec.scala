@@ -51,9 +51,9 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
 
   val emptyRasSession: RasSession = RasSession.cleanSession
 
-  val sessionRepository                                     = new RasSessionCacheRepository(mongoComponent, applicationConfig)
-  val sessionPair: (String, String)                         = SessionKeys.sessionId -> sessionId
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(sessionPair)
+  val sessionRepository                              = new RasSessionCacheRepository(mongoComponent, applicationConfig)
+  val sessionPair: (String, String)                  = SessionKeys.sessionId -> sessionId
+  given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(sessionPair)
 
   val sessionCacheService: SessionCacheService = new SessionCacheService(sessionRepository)
 

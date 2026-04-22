@@ -36,8 +36,8 @@ import scala.concurrent.Future
 
 class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-  val currentTaxYear: Int                   = TaxYearResolver.currentTaxYear
+  given headerCarrier: HeaderCarrier = HeaderCarrier()
+  val currentTaxYear: Int            = TaxYearResolver.currentTaxYear
 
   private val enrolmentIdentifier = EnrolmentIdentifier("PSAID", "Z123456")
 

@@ -43,7 +43,7 @@ class UpscanController @Inject() (
   cannotUploadAnotherView: views.html.cannot_upload_another_file
 ) extends FrontendController(mcc) with RasController with PageFlowController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def get: Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

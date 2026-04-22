@@ -21,5 +21,5 @@ import play.api.libs.json.{Json, OFormat}
 case class File(id: String)
 
 object File {
-  implicit val formats: OFormat[File] = Json.format[File]
+  given formats: OFormat[File] = Json.format[File]
 }

@@ -47,7 +47,7 @@ class MemberDOBController @Inject() (
     with DateValidator
     with WithUnsafeDefaultFormBinding {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   val apiVersion: ApiVersion = appConfig.rasApiVersion
 

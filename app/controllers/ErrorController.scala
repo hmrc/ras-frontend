@@ -38,7 +38,7 @@ class ErrorController @Inject() (
 )(implicit val appConfig: ApplicationConfig)
     extends FrontendController(mcc) with RasController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def renderGlobalErrorPage: Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

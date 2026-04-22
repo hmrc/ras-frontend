@@ -52,8 +52,8 @@ class ChooseAnOptionController @Inject() (
   noResultsAvailableView: views.html.no_results_available
 ) extends FrontendController(mcc) with PageFlowController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
-  private val _contentType          = "application/csv"
+  given ec: ExecutionContext = mcc.executionContext
+  private val _contentType   = "application/csv"
 
   def get: Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

@@ -19,9 +19,8 @@ package controllers
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import forms.MemberNameForm.*
-import models.{ApiVersion, MemberName}
+import models.ApiVersion
 import play.api.Logging
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.SessionCacheService
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
@@ -45,8 +44,8 @@ class MemberNameController @Inject() (
     with PageFlowController
     with Logging
     with WithUnsafeDefaultFormBinding {
-  implicit val ec: ExecutionContext = mcc.executionContext
-  val apiVersion: ApiVersion        = appConfig.rasApiVersion
+  given ec: ExecutionContext = mcc.executionContext
+  val apiVersion: ApiVersion = appConfig.rasApiVersion
 
   def get(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

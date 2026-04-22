@@ -29,5 +29,5 @@ case class ResidencyStatusResult(
 )
 
 object ResidencyStatusResult {
-  implicit val format: OFormat[ResidencyStatusResult] = Json.format[ResidencyStatusResult]
+  given format: OFormat[ResidencyStatusResult] = Json.format[ResidencyStatusResult]
 }

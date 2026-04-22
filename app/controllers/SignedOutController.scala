@@ -32,7 +32,7 @@ class SignedOutController @Inject() (
   signedOutView: views.html.signed_out
 ) extends FrontendController(mcc) with RasController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def signedOut: Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

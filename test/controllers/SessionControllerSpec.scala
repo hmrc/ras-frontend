@@ -32,7 +32,7 @@ import scala.concurrent.Future
 
 class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+  given headerCarrier: HeaderCarrier = HeaderCarrier()
 
   val nino: MemberNino             = MemberNino(RandomNino.generate)
   val dob: RasDate                 = RasDate(Some("1"), Some("1"), Some("1999"))
