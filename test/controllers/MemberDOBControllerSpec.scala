@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalacheck.Gen
 import org.scalatest.BeforeAndAfter
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.OK
 import play.api.libs.json.Json
@@ -37,7 +37,7 @@ import scala.util.Random
 
 class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfter {
 
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+  given headerCarrier: HeaderCarrier = HeaderCarrier()
 
   def randomPsaId: Gen[PsaId] =
     for {
@@ -69,7 +69,7 @@ class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with Before
     mockAppConfig,
     memberDobView
   ) {
-    override lazy val apiVersion: ApiVersion = ApiV1_0
+    override val apiVersion: ApiVersion = ApiV1_0
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
   }
 

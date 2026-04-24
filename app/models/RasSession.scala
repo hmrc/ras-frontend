@@ -78,7 +78,7 @@ case class RasSession(
 }
 
 object RasSession {
-  implicit val format: OFormat[RasSession] = Json.format[RasSession]
+  given format: OFormat[RasSession] = Json.format[RasSession]
 
   val cleanMemberName: MemberName               = MemberName("", "")
   val cleanMemberNino: MemberNino               = MemberNino("")

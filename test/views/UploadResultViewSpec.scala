@@ -17,7 +17,7 @@
 package views
 
 import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset}
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.*
 import play.api.i18n.Messages
 import views.helpers.ViewSpecHelper
 

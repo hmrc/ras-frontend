@@ -20,7 +20,7 @@ import com.google.inject.Singleton
 import config.ApplicationConfig
 import models.{CreateFileSessionRequest, FileSession}
 import play.api.Logging
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
@@ -28,6 +28,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 
 @Singleton
 class FilesSessionConnector @Inject() (http: HttpClientV2, appConfig: ApplicationConfig) extends Logging {

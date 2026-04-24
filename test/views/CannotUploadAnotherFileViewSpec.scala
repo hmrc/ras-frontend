@@ -16,7 +16,7 @@
 
 package views
 
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.Messages
 import utils.RasTestHelper

@@ -19,7 +19,7 @@ package controllers
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.OK
 import play.api.test.FakeRequest
@@ -32,7 +32,7 @@ import scala.concurrent.Future
 
 class SessionControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+  given headerCarrier: HeaderCarrier = HeaderCarrier()
 
   val nino: MemberNino             = MemberNino(RandomNino.generate)
   val dob: RasDate                 = RasDate(Some("1"), Some("1"), Some("1999"))

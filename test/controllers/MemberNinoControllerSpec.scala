@@ -19,7 +19,7 @@ package controllers
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, verify, when}
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal, include}
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.OK
 import play.api.libs.json.{JsObject, Json}
@@ -56,7 +56,7 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
     mockAppConfig,
     memberNinoView
   ) {
-    override lazy val apiVersion: ApiVersion = ApiV1_0
+    override val apiVersion: ApiVersion = ApiV1_0
 
     when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
     when(mockRasSessionCacheService.cacheNino(any())(any())).thenReturn(Future.successful(Some(rasSession)))

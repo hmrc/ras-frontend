@@ -18,7 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.SessionCacheService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -38,9 +38,10 @@ class ErrorController @Inject() (
 )(implicit val appConfig: ApplicationConfig)
     extends FrontendController(mcc) with RasController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
-  def renderGlobalErrorPage: Action[AnyContent] = Action.async { implicit request =>
+  def renderGlobalErrorPage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)   =>
         logger.info("[ErrorController][renderGlobalErrorPage] rendering global error page")
@@ -51,7 +52,8 @@ class ErrorController @Inject() (
     }
   }
 
-  def renderProblemUploadingFilePage: Action[AnyContent] = Action.async { implicit request =>
+  def renderProblemUploadingFilePage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)   =>
         logger.info("[ErrorController][renderProblemUploadingFilePage] rendering problem uploading file page")
@@ -62,7 +64,8 @@ class ErrorController @Inject() (
     }
   }
 
-  def fileNotAvailable: Action[AnyContent] = Action.async { implicit request =>
+  def fileNotAvailable: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)   =>
         logger.info("[ErrorController][fileNotAvailable] rendering file not available page")
@@ -73,11 +76,13 @@ class ErrorController @Inject() (
     }
   }
 
-  def notAuthorised: Action[AnyContent] = Action.async { implicit request =>
+  def notAuthorised: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     Future.successful(Unauthorized(unauthorisedView()))
   }
 
-  def startAtStart: Action[AnyContent] = Action.async { implicit request =>
+  def startAtStart: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     Future.successful(BadRequest(startAtStartView()))
   }
 

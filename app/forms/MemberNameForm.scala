@@ -18,7 +18,7 @@ package forms
 
 import models.MemberName
 import play.api.data.{Form, Mapping}
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object MemberNameForm {
 
@@ -26,7 +26,7 @@ object MemberNameForm {
   val NAME_REGEX                   = "^[a-zA-Z &`\\-\\'^]{1,35}$"
   val trimmedText: Mapping[String] = text.transform[String](_.trim, identity)
 
-  val form = Form(
+  val form: Form[MemberName] = Form(
     mapping(
       "firstName" -> trimmedText
         .verifying("error.mandatory.firstName", _.nonEmpty)
@@ -36,7 +36,9 @@ object MemberNameForm {
         .verifying("error.mandatory.lastName", _.nonEmpty)
         .verifying("error.length.lastName", _.length <= MAX_LENGTH)
         .verifying("error.lastName.invalid", x => x.isEmpty || x.matches(NAME_REGEX))
-    )(MemberName.apply)(MemberName.unapply)
+    )((firstName, lastName) => MemberName(firstName, lastName))((memberName: MemberName) =>
+      Some((memberName.firstName, memberName.lastName))
+    )
   )
 
 }

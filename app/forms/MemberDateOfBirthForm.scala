@@ -18,7 +18,7 @@ package forms
 
 import models.{MemberDateOfBirth, RasDate}
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import validators.DateValidator
 
 object MemberDateOfBirthForm extends DateValidator {
@@ -37,8 +37,8 @@ object MemberDateOfBirthForm extends DateValidator {
         "year"  -> optional(text)
           .verifying("error.year.missing", mandatoryCheck)
           .verifying(nonNumberErrorKey, mandatoryCheckNonNumber)
-      )(RasDate.apply)(RasDate.unapply)
-    )(MemberDateOfBirth.apply)(MemberDateOfBirth.unapply)
+      )(RasDate.apply)((rasData: RasDate) => Some(Tuple.fromProductTyped(rasData)))
+    )(MemberDateOfBirth.apply)((memberDateOfBirth: MemberDateOfBirth) => Some(memberDateOfBirth.dateOfBirth))
       .verifying(rasDateConstraint(name.getOrElse("member")))
   )
 

@@ -20,13 +20,13 @@ import org.apache.pekko.stream.scaladsl.{Source, StreamConverters}
 import org.apache.pekko.util.ByteString
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import models.FileUploadStatus._
+import models.FileUploadStatus.*
 import models.{FileSession, FileUploadStatus}
 
 import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
 import play.api.Logging
 import play.api.http.HttpEntity
-import play.api.mvc._
+import play.api.mvc.*
 import services.{FilesSessionService, TaxYearResolver}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -52,10 +52,11 @@ class ChooseAnOptionController @Inject() (
   noResultsAvailableView: views.html.no_results_available
 ) extends FrontendController(mcc) with PageFlowController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
-  private val _contentType          = "application/csv"
+  given ec: ExecutionContext = mcc.executionContext
+  private val _contentType   = "application/csv"
 
-  def get: Action[AnyContent] = Action.async { implicit request =>
+  def get: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap { fileSession =>
@@ -112,7 +113,8 @@ class ChooseAnOptionController @Inject() (
     s"$todayOrYesterday at ${uploadDate.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()}"
   }
 
-  def renderUploadResultsPage: Action[AnyContent] = Action.async { implicit request =>
+  def renderUploadResultsPage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).map {
@@ -160,7 +162,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def renderNoResultAvailablePage: Action[AnyContent] = Action.async { implicit request =>
+  def renderNoResultAvailablePage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {
@@ -187,7 +190,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def renderNoResultsAvailableYetPage: Action[AnyContent] = Action.async { implicit request =>
+  def renderNoResultsAvailableYetPage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {
@@ -214,7 +218,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def renderFileReadyPage: Action[AnyContent] = Action.async { implicit request =>
+  def renderFileReadyPage: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {
@@ -236,7 +241,8 @@ class ChooseAnOptionController @Inject() (
     }
   }
 
-  def getResultsFile(fileName: String): Action[AnyContent] = Action.async { implicit request =>
+  def getResultsFile(fileName: String): Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         filesSessionService.fetchFileSession(userId).flatMap {

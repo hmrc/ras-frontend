@@ -33,7 +33,7 @@ class SessionController @Inject() (
   val appConfig: ApplicationConfig
 ) extends FrontendController(mcc) with RasController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   val CHOOSE_AN_OPTION = "choose-an-option"
   val MEMBER_NAME      = "member-name"

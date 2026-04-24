@@ -19,8 +19,7 @@
 @this(
         govuk_wrapper: views.html.govuk_wrapper,
         govukBackLink: GovukBackLink,
-        hmrcPageHeading: HmrcPageHeading,
-        govukButton: GovukButton
+        hmrcPageHeading: HmrcPageHeading
 )
 @(fileId: String, expiryDate: String, isBeforeApr6: Boolean, currentTaxYear: Int, filename: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 

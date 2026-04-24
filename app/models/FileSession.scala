@@ -25,12 +25,12 @@ case class UploadDetails(uploadTimestamp: Instant, checksum: String, fileMimeTyp
 case class FailureDetails(failureReason: String, message: String)
 
 object FailureDetails {
-  implicit val formats: OFormat[FailureDetails] = Json.format[FailureDetails]
+  given formats: OFormat[FailureDetails] = Json.format[FailureDetails]
 }
 
 object UploadDetails {
-  val empty: UploadDetails                     = UploadDetails(Instant.now(), "", "", "", 0)
-  implicit val formats: OFormat[UploadDetails] = Json.format[UploadDetails]
+  val empty: UploadDetails              = UploadDetails(Instant.now(), "", "", "", 0)
+  given formats: OFormat[UploadDetails] = Json.format[UploadDetails]
 }
 
 case class CallbackData(
@@ -42,7 +42,7 @@ case class CallbackData(
 )
 
 object CallbackData {
-  implicit val formats: OFormat[CallbackData] = Json.format[CallbackData]
+  given formats: OFormat[CallbackData] = Json.format[CallbackData]
 }
 
 case class ResultsFileMetaData(
@@ -54,13 +54,13 @@ case class ResultsFileMetaData(
 )
 
 object ResultsFileMetaData {
-  implicit val formats: OFormat[ResultsFileMetaData] = Json.format[ResultsFileMetaData]
+  given formats: OFormat[ResultsFileMetaData] = Json.format[ResultsFileMetaData]
 }
 
 case class FileMetadata(id: String, name: Option[String], created: Option[String])
 
 object FileMetadata {
-  implicit val format: OFormat[FileMetadata] = Json.format[FileMetadata]
+  given format: OFormat[FileMetadata] = Json.format[FileMetadata]
 }
 
 case class FileSession(
@@ -72,5 +72,5 @@ case class FileSession(
 )
 
 object FileSession {
-  implicit val format: OFormat[FileSession] = Json.format[FileSession]
+  given format: OFormat[FileSession] = Json.format[FileSession]
 }

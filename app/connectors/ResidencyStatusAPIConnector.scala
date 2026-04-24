@@ -23,14 +23,15 @@ import models.{ApiVersion, MemberDetails, ResidencyStatus}
 import play.api.Logging
 import play.api.libs.json.JsSuccess
 import play.api.libs.ws.WSRequest
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 
 import java.io.InputStream
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.client.readStreamHttpResponse
 
 class ResidencyStatusAPIConnector @Inject() (http: HttpClientV2, appConfig: ApplicationConfig) extends Logging {
 
@@ -59,7 +60,7 @@ class ResidencyStatusAPIConnector @Inject() (http: HttpClientV2, appConfig: Appl
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[InputStream]] = {
-    implicit val system: ActorSystem           = ActorSystem()
+    given system: ActorSystem                  = ActorSystem()
     val requiredHeaders: Seq[(String, String)] = hc.headers(HeaderNames.explicitlyIncludedHeaders)
     val fullUrl                                = s"$serviceUrl/ras-api/file/getFile/$fileName"
     logger.info(s"[ResidencyStatusAPIConnector][getFile] Get results file with URI for $fileName by userId ($userId)")
@@ -70,7 +71,7 @@ class ResidencyStatusAPIConnector @Inject() (http: HttpClientV2, appConfig: Appl
           .foldLeft(_)((request: WSRequest, headers: (String, String)) => request.addHttpHeaders(headers))
       )
       .stream[HttpResponse]
-      .map { res: HttpResponse =>
+      .map { (res: HttpResponse) =>
         Some(res.bodyAsSource.runWith(StreamConverters.asInputStream()))
       }
   }

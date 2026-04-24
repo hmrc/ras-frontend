@@ -16,7 +16,7 @@
 
 package services
 
-import models._
+import models.*
 import play.api.mvc.Request
 import repository.RasSessionCacheRepository
 import uk.gov.hmrc.mongo.cache.DataKey

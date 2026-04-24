@@ -18,7 +18,7 @@ package controllers
 
 import connectors.ResidencyStatusAPIConnector
 import metrics.Metrics
-import models._
+import models.*
 import play.api.Logging
 import play.api.http.Status.FORBIDDEN
 import play.api.mvc.Results.Redirect

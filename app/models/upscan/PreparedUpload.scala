@@ -22,7 +22,7 @@ case class PreparedUpload(reference: Reference, uploadRequest: UploadForm)
 
 object PreparedUpload {
 
-  implicit val uploadFormFormat: Reads[UploadForm] = Json.reads[UploadForm]
+  given uploadFormFormat: Reads[UploadForm] = Json.reads[UploadForm]
 
-  implicit val format: Reads[PreparedUpload] = Json.reads[PreparedUpload]
+  given format: Reads[PreparedUpload] = Json.reads[PreparedUpload]
 }

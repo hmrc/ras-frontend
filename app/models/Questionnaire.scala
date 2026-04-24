@@ -37,7 +37,7 @@ object Questionnaire {
       "satisfactionLevel" -> number(0, maxOptionSize),
       "whyGiveThisRating" -> optional(text(maxLength = maxStringLength)),
       "referer"           -> optional(text)
-    )(Questionnaire.apply)(Questionnaire.unapply)
+    )(Questionnaire.apply)((questionnaire: Questionnaire) => Some(Tuple.fromProductTyped(questionnaire)))
   )
 
 }

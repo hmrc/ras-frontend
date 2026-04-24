@@ -2,15 +2,15 @@ import sbt.*
 import sbt.Keys.*
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 
-ThisBuild / scalaVersion := "2.13.18"
-ThisBuild / majorVersion := 0
+ThisBuild / scalaVersion := "3.3.7"
+ThisBuild / majorVersion := 1
 
 lazy val microservice = Project("ras-frontend", file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) // Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
     scalacOptions ++= Seq(
-      "-Wconf:cat=unused-imports&src=html/.*:s",
+      "-Wconf:msg=unused import&src=html/.*:s",
       "-Wconf:src=routes/.*:s",
       "-feature"
     ),

@@ -18,7 +18,7 @@ package services
 
 import models._
 import org.scalatest.OptionValues
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -51,9 +51,9 @@ class SessionCacheServiceSpec extends AnyWordSpec with RasTestHelper with Option
 
   val emptyRasSession: RasSession = RasSession.cleanSession
 
-  val sessionRepository                                     = new RasSessionCacheRepository(mongoComponent, applicationConfig)
-  val sessionPair: (String, String)                         = SessionKeys.sessionId -> sessionId
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(sessionPair)
+  val sessionRepository                              = new RasSessionCacheRepository(mongoComponent, applicationConfig)
+  val sessionPair: (String, String)                  = SessionKeys.sessionId -> sessionId
+  given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(sessionPair)
 
   val sessionCacheService: SessionCacheService = new SessionCacheService(sessionRepository)
 

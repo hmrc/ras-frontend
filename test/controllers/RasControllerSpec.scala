@@ -19,7 +19,7 @@ package controllers
 import config.ApplicationConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty

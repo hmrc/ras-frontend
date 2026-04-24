@@ -25,5 +25,5 @@ case class MemberName(firstName: String, lastName: String) extends UserInput {
 }
 
 object MemberName {
-  implicit val format: OFormat[MemberName] = Json.format[MemberName]
+  given format: OFormat[MemberName] = Json.format[MemberName]
 }

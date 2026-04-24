@@ -25,5 +25,5 @@ case class MemberNino(nino: String) extends UserInput {
 }
 
 object MemberNino {
-  implicit val formats: OFormat[MemberNino] = Json.format[MemberNino]
+  given formats: OFormat[MemberNino] = Json.format[MemberNino]
 }

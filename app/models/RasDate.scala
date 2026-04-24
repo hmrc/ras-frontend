@@ -30,5 +30,5 @@ case class RasDate(day: Option[String], month: Option[String], year: Option[Stri
 }
 
 object RasDate {
-  implicit val format: OFormat[RasDate] = Json.format[RasDate]
+  given format: OFormat[RasDate] = Json.format[RasDate]
 }

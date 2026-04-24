@@ -16,7 +16,7 @@
 
 package config
 
-import org.scalatest.matchers.must.Matchers._
+import org.scalatest.matchers.must.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.i18n.{Messages, MessagesApi}
 import utils.RasTestHelper

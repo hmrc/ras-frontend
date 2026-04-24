@@ -22,7 +22,7 @@ import models.upscan.UpscanInitiateResponse
 import models.{File, RasSession, UploadResponse}
 import play.api.Logging
 import play.api.i18n.Messages.implicitMessagesProviderToMessages
-import play.api.mvc._
+import play.api.mvc.*
 import services.{FilesSessionService, SessionCacheService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -43,9 +43,10 @@ class UpscanController @Inject() (
   cannotUploadAnotherView: views.html.cannot_upload_another_file
 ) extends FrontendController(mcc) with RasController with PageFlowController with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
-  def get: Action[AnyContent] = Action.async { implicit request =>
+  def get: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Left(resp)    =>
         logger.warn("[UpscanController][get] user not authorised")
@@ -55,14 +56,9 @@ class UpscanController @Inject() (
         val sessionFetchResult                                    = sessionService.fetchRasSession()
         sessionFetchResult
           .flatMap {
-            case Some(session) =>
-              session match {
-                case rasSession: RasSession =>
-                  processRasSession(rasSession, userId, fileUploadUrl)
-                case _                      =>
-                  redirectWithNoRasSession(userId)
-              }
-            case None          =>
+            case Some(rasSession: RasSession) =>
+              processRasSession(rasSession, userId, fileUploadUrl)
+            case None                         =>
               redirectWithNoRasSession(userId)
           }
           .recover { case e: Throwable =>
@@ -148,14 +144,16 @@ class UpscanController @Inject() (
     }
   }
 
-  def back: Action[AnyContent] = Action.async { implicit request =>
+  def back: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)  => Future.successful(previousPage("UpscanController"))
       case Left(res) => res
     }
   }
 
-  def uploadSuccess: Action[AnyContent] = Action.async { implicit request =>
+  def uploadSuccess: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(userId) =>
         sessionService.fetchRasSession().flatMap {
@@ -189,7 +187,8 @@ class UpscanController @Inject() (
     }
   }
 
-  def uploadError: Action[AnyContent] = Action.async { implicit request =>
+  def uploadError: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
     isAuthorised().flatMap {
       case Right(_)   =>
         val errorCode: String             = request.getQueryString("errorCode").getOrElse("")
@@ -208,27 +207,26 @@ class UpscanController @Inject() (
     }
   }
 
-  def uploadInProgress: Action[AnyContent] = Action.async { implicit request =>
-    isAuthorised().flatMap { result =>
-      result match {
-        case Right(userId) =>
-          filesSessionService.fetchFileSession(userId).flatMap {
-            case Some(fileSession) =>
-              if (fileSession.resultsFile.isDefined) {
-                logger.info("[UpscanController][uploadInProgress] redirecting to file ready page")
-                Future.successful(Redirect(routes.ChooseAnOptionController.renderFileReadyPage))
-              } else {
-                logger.info("[UpscanController][uploadInProgress] calling cannot upload another file")
-                Future.successful(Ok(cannotUploadAnotherView()))
-              }
-            case None              =>
-              logger.info("[UpscanController][uploadInProgress] redirecting to global error")
-              Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
-          }
-        case Left(resp)    =>
-          logger.warn("[UpscanController][uploadError] user not authorised")
-          resp
-      }
+  def uploadInProgress: Action[AnyContent] = Action.async { request =>
+    given MessagesRequest[AnyContent] = request
+    isAuthorised().flatMap {
+      case Right(userId) =>
+        filesSessionService.fetchFileSession(userId).flatMap {
+          case Some(fileSession) =>
+            if (fileSession.resultsFile.isDefined) {
+              logger.info("[UpscanController][uploadInProgress] redirecting to file ready page")
+              Future.successful(Redirect(routes.ChooseAnOptionController.renderFileReadyPage))
+            } else {
+              logger.info("[UpscanController][uploadInProgress] calling cannot upload another file")
+              Future.successful(Ok(cannotUploadAnotherView()))
+            }
+          case None              =>
+            logger.info("[UpscanController][uploadInProgress] redirecting to global error")
+            Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
+        }
+      case Left(resp)    =>
+        logger.warn("[UpscanController][uploadError] user not authorised")
+        resp
     }
   }
 

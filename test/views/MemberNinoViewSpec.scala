@@ -18,7 +18,7 @@ package views
 
 import forms.MemberNinoForm
 import models.MemberNino
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.Form
 import play.api.i18n.Messages
