@@ -101,20 +101,6 @@ class ApplicationConfigSpec extends AnyWordSpec with Matchers with RasTestHelper
       config.userSessionsTTL shouldBe Duration(1, HOURS)
     }
 
-    "resolve rasApiVersion to ApiV2_0 when configured as '2.0'" in {
-      configWith("2.0").rasApiVersion shouldBe ApiV2_0
-    }
-
-    "resolve rasApiVersion to ApiV1_0 when configured as '1.0'" in {
-      configWith("1.0").rasApiVersion shouldBe ApiV1_0
-    }
-
-    "throw when rasApiVersion is configured to an invalid value" in {
-      val invalid = configWith("invalid")
-      val ex      = intercept[Exception](invalid.rasApiVersion)
-      ex.getMessage should include("ras-api-version")
-    }
-
     "fall back to the default 'true' for enableRefresh when sessionTimeout.enableRefresh is missing" in {
       val stripped = Configuration(
         baseConfig.underlying.withoutPath("microservice.services.sessionTimeout.enableRefresh")

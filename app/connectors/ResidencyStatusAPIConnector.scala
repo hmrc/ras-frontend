@@ -35,17 +35,16 @@ import uk.gov.hmrc.http.client.readStreamHttpResponse
 
 class ResidencyStatusAPIConnector @Inject() (http: HttpClientV2, appConfig: ApplicationConfig) extends Logging {
 
-  lazy val serviceUrl: String                 = appConfig.rasApiBaseUrl
-  lazy val residencyStatusUrl: String         = appConfig.rasApiResidencyStatusEndpoint
-  lazy val fileDeletionUrl: String            = appConfig.fileDeletionUrl
-  lazy val residencyStatusVersion: ApiVersion = appConfig.rasApiVersion
+  lazy val serviceUrl: String         = appConfig.rasApiBaseUrl
+  lazy val residencyStatusUrl: String = appConfig.rasApiResidencyStatusEndpoint
+  lazy val fileDeletionUrl: String    = appConfig.fileDeletionUrl
 
   def getResidencyStatus(
     memberDetails: MemberDetails
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ResidencyStatus] = {
     val fullUrl       = s"$serviceUrl/$residencyStatusUrl"
     val headerCarrier = hc.withExtraHeaders(
-      "Accept"       -> s"application/vnd.hmrc.$residencyStatusVersion+json",
+      "Accept"       -> s"application/vnd.hmrc.2.0+json",
       "Content-Type" -> "application/json"
     )
     logger.info(s"[ResidencyStatusAPIConnector][getResidencyStatus] Calling Residency Status api")

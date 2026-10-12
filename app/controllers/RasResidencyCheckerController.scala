@@ -33,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 trait RasResidencyCheckerController extends RasController with AuditService with Logging {
 
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector
-  val apiVersion: ApiVersion
   val sessionService: SessionCacheService
 
   val SCOTTISH = "scotResident"
@@ -121,12 +120,11 @@ trait RasResidencyCheckerController extends RasController with AuditService with
   }
 
   private[controllers] def extractResidencyStatus(residencyStatus: String): String =
-    (residencyStatus, apiVersion) match {
-      case (SCOTTISH, _)       => "Scotland"
-      case (WELSH, ApiV2_0)    => "Wales"
-      case (OTHER_UK, ApiV1_0) => "England, Northern Ireland or Wales"
-      case (OTHER_UK, ApiV2_0) => "England, Northern Ireland or Wales"
-      case _                   => ""
+    residencyStatus match {
+      case SCOTTISH => "Scotland"
+      case WELSH    => "Wales"
+      case OTHER_UK => "England, Northern Ireland or Wales"
+      case _        => ""
     }
 
   /**

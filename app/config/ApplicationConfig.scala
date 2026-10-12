@@ -52,12 +52,6 @@ class ApplicationConfig @Inject() (config: ServicesConfig) {
   lazy val fileDeletionUrl: String               = config.getConfString("file-deletion-url", "/ras-api/file/remove/")
   lazy val rasApiResidencyStatusEndpoint: String = loadConfig("residency-status-url")
 
-  lazy val rasApiVersion: ApiVersion = loadConfig("ras-api-version") match {
-    case "1.0" => ApiV1_0
-    case "2.0" => ApiV2_0
-    case _     => throw new Exception(s"Invalid value for configuration key: ras-api-version")
-  }
-
   lazy val timeOutSeconds: Int          = config.getConfInt("sessionTimeout.timeoutSeconds", 780)
   lazy val timeOutCountDownSeconds: Int = config.getConfInt("sessionTimeout.time-out-countdown-seconds", 120)
   lazy val refreshInterval: Int         = timeOutSeconds + 10
