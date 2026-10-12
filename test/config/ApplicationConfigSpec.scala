@@ -29,11 +29,6 @@ class ApplicationConfigSpec extends AnyWordSpec with Matchers with RasTestHelper
 
   private val baseConfig: Configuration = fakeApplication.injector.instanceOf[Configuration]
 
-  private def configWith(rasApiVersion: String): ApplicationConfig = {
-    val overridden = Configuration("ras-api-version" -> rasApiVersion).withFallback(baseConfig)
-    new ApplicationConfig(new ServicesConfig(overridden))
-  }
-
   private val config: ApplicationConfig = applicationConfig
 
   "ApplicationConfig" should {
