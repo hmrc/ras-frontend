@@ -20,7 +20,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class ApiVersionSpec extends AnyWordSpec with Matchers {
-  
+
   "ApiV2_0" should {
 
     "return correct string representation" in {
