@@ -16,7 +16,6 @@
 
 package config
 
-import models.{ApiV1_0, ApiV2_0}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.Configuration

@@ -20,18 +20,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class ApiVersionSpec extends AnyWordSpec with Matchers {
-
-  "ApiV1_0" should {
-
-    "return correct string representation" in {
-      ApiV1_0.toString shouldBe "1.0"
-    }
-
-    "be an instance of ApiVersion" in {
-      ApiV1_0 shouldBe an[ApiVersion]
-    }
-  }
-
+  
   "ApiV2_0" should {
 
     "return correct string representation" in {

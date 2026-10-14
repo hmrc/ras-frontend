@@ -18,9 +18,6 @@ package models
 
 sealed trait ApiVersion
 
-case object ApiV1_0 extends ApiVersion {
-  override def toString: String = "1.0"
-}
 
 case object ApiV2_0 extends ApiVersion {
   override def toString: String = "2.0"

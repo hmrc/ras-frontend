@@ -16,7 +16,6 @@
 
 package config
 
-import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
