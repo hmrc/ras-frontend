@@ -16,7 +16,6 @@
 
 package config
 
-import models.{ApiV1_0, ApiV2_0}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.Configuration
@@ -28,11 +27,6 @@ import scala.concurrent.duration.{Duration, HOURS}
 class ApplicationConfigSpec extends AnyWordSpec with Matchers with RasTestHelper {
 
   private val baseConfig: Configuration = fakeApplication.injector.instanceOf[Configuration]
-
-  private def configWith(rasApiVersion: String): ApplicationConfig = {
-    val overridden = Configuration("ras-api-version" -> rasApiVersion).withFallback(baseConfig)
-    new ApplicationConfig(new ServicesConfig(overridden))
-  }
 
   private val config: ApplicationConfig = applicationConfig
 
@@ -99,20 +93,6 @@ class ApplicationConfigSpec extends AnyWordSpec with Matchers with RasTestHelper
 
     "expose user-sessions TTL" in {
       config.userSessionsTTL shouldBe Duration(1, HOURS)
-    }
-
-    "resolve rasApiVersion to ApiV2_0 when configured as '2.0'" in {
-      configWith("2.0").rasApiVersion shouldBe ApiV2_0
-    }
-
-    "resolve rasApiVersion to ApiV1_0 when configured as '1.0'" in {
-      configWith("1.0").rasApiVersion shouldBe ApiV1_0
-    }
-
-    "throw when rasApiVersion is configured to an invalid value" in {
-      val invalid = configWith("invalid")
-      val ex      = intercept[Exception](invalid.rasApiVersion)
-      ex.getMessage should include("ras-api-version")
     }
 
     "fall back to the default 'true' for enableRefresh when sessionTimeout.enableRefresh is missing" in {

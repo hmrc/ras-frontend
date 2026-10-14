@@ -34,30 +34,20 @@ import scala.concurrent.Future
 
 class RasResidencyCheckerControllerSpec extends AnyWordSpec with RasTestHelper {
 
-  def configureRasResidencyCheckerController(version: ApiVersion): RasResidencyCheckerController =
+  def configureRasResidencyCheckerController(): RasResidencyCheckerController =
     new RasResidencyCheckerController {
       override val authConnector: AuthConnector                             = mockAuthConnector
       override val connector: DefaultAuditConnector                         = mockAuditConnector
       override val sessionService: SessionCacheService                      = mockRasSessionCacheService
       override val residencyStatusAPIConnector: ResidencyStatusAPIConnector = mockResidencyStatusAPIConnector
-      override val apiVersion: ApiVersion                                   = version
       override val appConfig: ApplicationConfig                             = mockAppConfig
     }
 
   "RasResidencyCheckerController extractResidencyStatus" when {
-    "version 1.0 of the API is used" must {
-      "extract the result into the correct messages" in {
-        val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV1_0)
 
-        testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe "Scotland"
-        testRasResidencyCheckerController.extractResidencyStatus(WELSH)    shouldBe ""
-        testRasResidencyCheckerController.extractResidencyStatus(OTHER_UK) shouldBe "England, Northern Ireland or Wales"
-        testRasResidencyCheckerController.extractResidencyStatus("")       shouldBe ""
-      }
-    }
     "version 2.0 of the API is used" must {
       "extract the result into the correct messages" in {
-        val testRasResidencyCheckerController = configureRasResidencyCheckerController(ApiV2_0)
+        val testRasResidencyCheckerController = configureRasResidencyCheckerController()
 
         testRasResidencyCheckerController.extractResidencyStatus(SCOTTISH) shouldBe "Scotland"
         testRasResidencyCheckerController.extractResidencyStatus(WELSH)    shouldBe "Wales"
@@ -69,7 +59,7 @@ class RasResidencyCheckerControllerSpec extends AnyWordSpec with RasTestHelper {
 
   "RasResidencyCheckerController submitResidencyStatus" must {
     "redirect to startAtStart when the session has no name, nino or dob" in {
-      val controller = configureRasResidencyCheckerController(ApiV2_0)
+      val controller = configureRasResidencyCheckerController()
 
       when(mockRasSessionCacheService.resetRasSession()(any()))
         .thenReturn(Future.successful(Some(RasSession.cleanSession)))

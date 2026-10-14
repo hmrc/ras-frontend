@@ -19,7 +19,6 @@ package controllers
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import forms.MemberDateOfBirthForm as form
-import models.ApiVersion
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import services.SessionCacheService
@@ -49,8 +48,6 @@ class MemberDOBController @Inject() (
 
   given ApplicationConfig    = appConfig
   given ec: ExecutionContext = mcc.executionContext
-
-  val apiVersion: ApiVersion = appConfig.rasApiVersion
 
   def get(edit: Boolean = false): Action[AnyContent] = Action.async { request =>
     given MessagesRequest[AnyContent] = request

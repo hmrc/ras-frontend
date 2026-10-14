@@ -40,13 +40,12 @@ class UpscanInitiateConnector @Inject() (httpClient: HttpClientV2, appConfig: Ap
   private val upscanInitiateUrl: URL                = url"${appConfig.initiateUrl}"
   private lazy val rasFileUploadCallbackUrl: String = appConfig.upscanCallbackEndpoint
   lazy val rasApiBaseUrl: String                    = appConfig.rasApiBaseUrl
-  lazy val apiVersion: ApiVersion                   = appConfig.rasApiVersion
 
   def initiateUpscan(userId: String, redirectOnSuccess: Option[String], redirectOnError: Option[String])(implicit
     hc: HeaderCarrier
   ): Future[UpscanInitiateResponse] = {
     val request: UpscanInitiateRequest = UpscanInitiateRequest(
-      callbackUrl = s"$rasApiBaseUrl$rasFileUploadCallbackUrl/$userId?version=$apiVersion",
+      callbackUrl = s"$rasApiBaseUrl$rasFileUploadCallbackUrl/$userId",
       successRedirect = redirectOnSuccess,
       errorRedirect = redirectOnError,
       maximumFileSize = Some(appConfig.maxFileSize)

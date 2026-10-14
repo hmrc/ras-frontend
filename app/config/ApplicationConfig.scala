@@ -16,7 +16,6 @@
 
 package config
 
-import models.{ApiV1_0, ApiV2_0, ApiVersion}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
@@ -51,12 +50,6 @@ class ApplicationConfig @Inject() (config: ServicesConfig) {
   lazy val loginCallback: String                 = config.getConfString("gg-urls.login-callback.url", "/relief-at-source/")
   lazy val fileDeletionUrl: String               = config.getConfString("file-deletion-url", "/ras-api/file/remove/")
   lazy val rasApiResidencyStatusEndpoint: String = loadConfig("residency-status-url")
-
-  lazy val rasApiVersion: ApiVersion = loadConfig("ras-api-version") match {
-    case "1.0" => ApiV1_0
-    case "2.0" => ApiV2_0
-    case _     => throw new Exception(s"Invalid value for configuration key: ras-api-version")
-  }
 
   lazy val timeOutSeconds: Int          = config.getConfInt("sessionTimeout.timeoutSeconds", 780)
   lazy val timeOutCountDownSeconds: Int = config.getConfInt("sessionTimeout.time-out-countdown-seconds", 120)
