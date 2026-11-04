@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class MemberDOBController @Inject() (
   val authConnector: DefaultAuthConnector,
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
-  val connector: DefaultAuditConnector,
+  val auditConnector: DefaultAuditConnector,
   val sessionService: SessionCacheService,
   val mcc: MessagesControllerComponents,
   val appConfig: ApplicationConfig,
