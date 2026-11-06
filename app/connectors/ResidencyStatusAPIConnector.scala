@@ -26,8 +26,9 @@ import play.api.libs.json.{JsError, JsSuccess}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.http.*
-import uk.gov.hmrc.http.client.{HttpClientV2, readStreamHttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.LogHelper.{failureText, successText}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import java.io.InputStream
 import javax.inject.{Inject, Singleton}
@@ -71,6 +72,8 @@ class ResidencyStatusAPIConnector @Inject() (
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[InputStream]] = {
+
+    import uk.gov.hmrc.http.client.readStreamHttpResponse
 
     val tag = "[ResidencyStatusAPIConnector][getFile]"
 
