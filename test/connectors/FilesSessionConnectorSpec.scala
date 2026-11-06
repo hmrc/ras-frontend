@@ -19,11 +19,14 @@ package connectors
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.spi.ILoggingEvent
 import com.github.tomakehurst.wiremock.client.WireMock.*
+import config.ApplicationConfig
 import models.{CallbackData, CreateFileSessionRequest, FileSession, ResultsFileMetaData}
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.Logger
 import play.api.http.Status.*
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
 import utils.RasTestHelper
@@ -100,8 +103,8 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
       }
     }
 
-    "return None and log at warn when the API returns any other non-OK status" in {
-      setupMockGet(BAD_REQUEST, "{}", s"/get-file-session/$userId")
+    "return None and log UNEXPECTED_STATUS at error when the API returns any other non-OK status" in {
+      setupMockGet(INTERNAL_SERVER_ERROR, "", s"/get-file-session/$userId")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val result: Option[FileSession] = await(connector.fetchFileSession(userId))
@@ -110,8 +113,8 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
         wireMockServer.verify(getRequestedFor(urlEqualTo(s"/get-file-session/$userId")))
 
         logLines(logs) shouldBe List(
-          Level.WARN -> (s"$fetchTag Received non-OK status code from API " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=400")
+          Level.ERROR -> (s"$fetchTag Received non-OK status code from API " +
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=500")
         )
       }
     }
@@ -164,8 +167,8 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
       }
     }
 
-    "return false and log at error when the API returns 400" in {
-      setupMockPost(BAD_REQUEST, "{}", "/create-file-session")
+    "return false and log UNEXPECTED_STATUS at error when the API returns 500" in {
+      setupMockPost(INTERNAL_SERVER_ERROR, "", "/create-file-session")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val result: Boolean = await(connector.createFileSession(request))
@@ -175,20 +178,20 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
 
         logLines(logs) shouldBe List(
           Level.ERROR -> (s"$createTag File session was not created reference=$reference " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=400")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=500")
         )
       }
     }
 
-    "return false and log the actual status when the API returns 500" in {
-      setupMockPost(INTERNAL_SERVER_ERROR, "", "/create-file-session")
+    "treat any other non-201 status the same way, e.g. 400" in {
+      setupMockPost(BAD_REQUEST, "{}", "/create-file-session")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         await(connector.createFileSession(request)) shouldBe false
 
         logLines(logs) shouldBe List(
           Level.ERROR -> (s"$createTag File session was not created reference=$reference " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=500")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=400")
         )
       }
     }
@@ -211,8 +214,8 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
       }
     }
 
-    "return false and log at warn when the deletion fails" in {
-      setupMockDelete(BAD_REQUEST, "{}", s"/delete-file-session/$userId")
+    "return false and log UNEXPECTED_STATUS at warn when the deletion fails" in {
+      setupMockDelete(INTERNAL_SERVER_ERROR, "", s"/delete-file-session/$userId")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val result: Boolean = await(connector.deleteFileSession(userId))
@@ -222,9 +225,111 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
 
         logLines(logs) shouldBe List(
           Level.WARN -> (s"$deleteTag File session was not deleted " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=400")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=500")
         )
       }
+    }
+  }
+
+  "networkFailure" when {
+
+    // nothing listens on port 1 - the connection is refused
+    def unreachableConnector: FilesSessionConnector = {
+      val unreachableConfig = mock[ApplicationConfig]
+      when(unreachableConfig.rasApiBaseUrl).thenReturn("http://localhost:1")
+      new FilesSessionConnector(httpClient, unreachableConfig)
+    }
+
+    def withShortTimeoutConnector(test: FilesSessionConnector => Unit): Unit = {
+      val shortTimeoutApp = GuiceApplicationBuilder()
+        .configure("metrics.enabled" -> "false", "play.ws.timeout.request" -> "200 millis")
+        .build()
+
+      try test(new FilesSessionConnector(shortTimeoutApp.injector.instanceOf[HttpClientV2], mockAppConfig))
+      finally shortTimeoutApp.stop()
+    }
+
+    val slowResponse = aResponse().withStatus(OK).withFixedDelay(2000)
+
+    "called from createFileSession" should {
+
+      "return false and log TIMEOUT at error when the API doesn't respond in time" in
+        withShortTimeoutConnector { timeoutConnector =>
+          wireMockServer.stubFor(post(urlPathEqualTo("/create-file-session")).willReturn(slowResponse))
+
+          withCaptureOfLoggingFrom(connectorLogger) { logs =>
+            await(timeoutConnector.createFileSession(CreateFileSessionRequest(userId, reference))) shouldBe false
+
+            logLines(logs) shouldBe List(
+              Level.ERROR -> (s"$createTag Request timed out " +
+                s"outcome=FAILURE reason=TIMEOUT userId=$userId cause=GatewayTimeoutException")
+            )
+          }
+        }
+
+      "return false and log CONNECTION_FAILURE at error when the API can't be reached" in
+        withCaptureOfLoggingFrom(connectorLogger) { logs =>
+          await(unreachableConnector.createFileSession(CreateFileSessionRequest(userId, reference))) shouldBe false
+
+          logLines(logs) shouldBe List(
+            Level.ERROR -> (s"$createTag Could not connect " +
+              s"outcome=FAILURE reason=CONNECTION_FAILURE userId=$userId cause=BadGatewayException")
+          )
+        }
+    }
+
+    "called from fetchFileSession" should {
+
+      "return None and log TIMEOUT at error when the API doesn't respond in time" in
+        withShortTimeoutConnector { timeoutConnector =>
+          wireMockServer.stubFor(get(urlPathEqualTo(s"/get-file-session/$userId")).willReturn(slowResponse))
+
+          withCaptureOfLoggingFrom(connectorLogger) { logs =>
+            await(timeoutConnector.fetchFileSession(userId)) shouldBe None
+
+            logLines(logs) shouldBe List(
+              Level.ERROR -> (s"$fetchTag Request timed out " +
+                s"outcome=FAILURE reason=TIMEOUT userId=$userId cause=GatewayTimeoutException")
+            )
+          }
+        }
+
+      "return None and log CONNECTION_FAILURE at error when the API can't be reached" in
+        withCaptureOfLoggingFrom(connectorLogger) { logs =>
+          await(unreachableConnector.fetchFileSession(userId)) shouldBe None
+
+          logLines(logs) shouldBe List(
+            Level.ERROR -> (s"$fetchTag Could not connect " +
+              s"outcome=FAILURE reason=CONNECTION_FAILURE userId=$userId cause=BadGatewayException")
+          )
+        }
+    }
+
+    "called from deleteFileSession" should {
+
+      "return false and log TIMEOUT at warn when the API doesn't respond in time" in
+        withShortTimeoutConnector { timeoutConnector =>
+          wireMockServer.stubFor(delete(urlPathEqualTo(s"/delete-file-session/$userId")).willReturn(slowResponse))
+
+          withCaptureOfLoggingFrom(connectorLogger) { logs =>
+            await(timeoutConnector.deleteFileSession(userId)) shouldBe false
+
+            logLines(logs) shouldBe List(
+              Level.WARN -> (s"$deleteTag Request timed out " +
+                s"outcome=FAILURE reason=TIMEOUT userId=$userId cause=GatewayTimeoutException")
+            )
+          }
+        }
+
+      "return false and log CONNECTION_FAILURE at warn when the API can't be reached" in
+        withCaptureOfLoggingFrom(connectorLogger) { logs =>
+          await(unreachableConnector.deleteFileSession(userId)) shouldBe false
+
+          logLines(logs) shouldBe List(
+            Level.WARN -> (s"$deleteTag Could not connect " +
+              s"outcome=FAILURE reason=CONNECTION_FAILURE userId=$userId cause=BadGatewayException")
+          )
+        }
     }
   }
 

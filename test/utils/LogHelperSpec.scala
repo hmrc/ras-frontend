@@ -27,19 +27,19 @@ class LogHelperSpec extends AnyWordSpec with Matchers {
   private val userId = "A123456"
   private val cause  = new GatewayTimeoutException("GET of 'http://localhost/residency-status' timed out")
 
-  private val noRequestId: HeaderCarrier   = HeaderCarrier()
-  private val withRequestId: HeaderCarrier = HeaderCarrier(requestId = Some(RequestId("govuk-tax-test")))
+  private val noRequestId: HeaderCarrier            = HeaderCarrier()
+  implicit private val withRequestId: HeaderCarrier = HeaderCarrier(requestId = Some(RequestId("govuk-tax-test")))
 
   "successText" should {
 
     "contain the tag, outcome and userId, followed by the details" in {
       LogHelper.successText(tag, userId, "status=200 fileName=results.csv") shouldBe
-        s"$tag outcome=SUCCESS userId=$userId status=200 fileName=results.csv"
+        s"$tag outcome=SUCCESS userId=$userId status=200 fileName=results.csv requestId=govuk-tax-test"
     }
 
     "not leave a trailing space when there are no details" in {
       LogHelper.successText(tag, userId) shouldBe
-        s"$tag outcome=SUCCESS userId=$userId"
+        s"$tag outcome=SUCCESS userId=$userId requestId=govuk-tax-test"
     }
   }
 

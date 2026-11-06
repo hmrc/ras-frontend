@@ -95,7 +95,7 @@ class UpscanInitiateConnector @Inject() (httpClient: HttpClientV2, appConfig: Ap
         }
 
       case status =>
-        val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, status = Some(status))
+        val failure = ConnectorFailure(UNEXPECTED_STATUS, status = Some(status))
         logger.error(failureText(tag, userId, failure, "Unexpected status code received from upscan-initiate"))
         throw failure
     }

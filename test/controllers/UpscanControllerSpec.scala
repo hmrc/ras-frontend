@@ -173,12 +173,12 @@ class UpscanControllerSpec extends AnyWordSpec with RasTestHelper with LogCaptur
         }
       }
 
-      "upscan initiate fails with an ConnectorFailure, without logging it again" in {
+      "upscan initiate fails with a ConnectorFailure, without logging it again" in {
         val rasSession = RasSession(memberName, memberNino, memberDob, None, None, None)
         when(mockRasSessionCacheService.fetchRasSession()(any())).thenReturn(Future.successful(Some(rasSession)))
         when(mockFilesSessionService.isFileInProgress(any())(any(), any())).thenReturn(Future.successful(false))
         when(mockUpscanInitiateConnector.initiateUpscan(any(), any(), any())(any()))
-          .thenReturn(Future.failed(ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(503))))
+          .thenReturn(Future.failed(ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(503))))
 
         withCaptureOfLoggingFrom(controllerLogger) { logs =>
           val result = TestUpscanController.get.apply(fakeRequest)

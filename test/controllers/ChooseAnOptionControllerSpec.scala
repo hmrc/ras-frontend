@@ -20,8 +20,9 @@ import ch.qos.logback.classic.Level
 import models.*
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, reset, verify, when}
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.Logger
@@ -109,6 +110,8 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper with L
     super.beforeEach()
     reset(mockAuditConnector)
     when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+    // keeps the stubs set up in the controller block, but forgets earlier calls (e.g. to deleteFile)
+    clearInvocations(mockResidencyStatusAPIConnector)
   }
 
   private def auditedDetail(): Map[String, String] = {
@@ -190,7 +193,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper with L
       redirectLocation(result) should include("/global-error")
     }
 
-    "download a file containing the results, and audit a successful download" in {
+    "download a file containing the results, audit a successful download once the stream completes, and delete the file" in {
       val mockUploadTimeStamp     = LocalDate.ofEpochDay(2018 - 12 - 31).toEpochDay
       val mockResultsFileMetadata = ResultsFileMetaData("", Some("testFile.csv"), Some(mockUploadTimeStamp), 1, 1L)
       val fileSession             =
@@ -204,10 +207,15 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper with L
 
       contentAsString(result) shouldBe row1
 
-      auditedDetail() shouldBe commonAuditFields ++ Map(
-        "successfulDownload" -> "true",
-        "httpStatus"         -> "200"
-      )
+      // the audit and the delete happen in watchTermination, once the stream has finished
+      eventually {
+        verify(mockResidencyStatusAPIConnector).deleteFile(any(), any())(any(), any())
+
+        auditedDetail() shouldBe commonAuditFields ++ Map(
+          "successfulDownload" -> "true",
+          "httpStatus"         -> "200"
+        )
+      }
     }
 
     "not be able to download a file containing the results when file name is incorrect" in {
@@ -421,7 +429,7 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper with L
       when(mockFilesSessionService.fetchFileSession(any())(any(), any()))
         .thenReturn(Future.successful(Some(sessionWithResults)))
       when(mockResidencyStatusAPIConnector.getFile(any(), any())(any(), any()))
-        .thenReturn(Future.failed(ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(404))))
+        .thenReturn(Future.failed(ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(404))))
 
       withCaptureOfLoggingFrom(controllerLogger) { logs =>
         val result = TestChooseAnOptionController
@@ -437,12 +445,12 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper with L
 
       auditedDetail() shouldBe commonAuditFields ++ Map(
         "successfulDownload" -> "false",
-        "reason"             -> "INTERNAL_SERVER_ERROR",
+        "reason"             -> "UNEXPECTED_STATUS",
         "httpStatus"         -> "404"
       )
     }
 
-    "Failure when the streamed download terminates with an exception" in {
+    "audit DOWNLOAD_INCOMPLETE, and not delete the file, when the stream fails part way through" in {
       val resultsFileMetadata = ResultsFileMetaData("", Some("testFile.csv"), Some(mockUploadTimeStamp), 1, 1L)
       val sessionWithResults  =
         FileSession(Some(CallbackData("", None, "", None, None)), Some(resultsFileMetadata), "1234", None, None)
@@ -462,6 +470,16 @@ class ChooseAnOptionControllerSpec extends AnyWordSpec with RasTestHelper with L
       // consume the response body so the stream is materialized and watchTermination's Failure branch executes
       scala.util.Try(contentAsString(result))
       status(result) shouldBe OK
+
+      eventually {
+        auditedDetail() shouldBe commonAuditFields ++ Map(
+          "successfulDownload" -> "false",
+          "reason"             -> "DOWNLOAD_INCOMPLETE",
+          "httpStatus"         -> "200"
+        )
+      }
+
+      verify(mockResidencyStatusAPIConnector, never).deleteFile(any(), any())(any(), any())
     }
   }
 

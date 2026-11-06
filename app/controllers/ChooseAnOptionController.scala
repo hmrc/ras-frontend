@@ -16,15 +16,12 @@
 
 package controllers
 
-import org.apache.pekko.stream.scaladsl.{Source, StreamConverters}
-import org.apache.pekko.util.ByteString
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
-import models.FailureReason.{INTERNAL_SERVER_ERROR => ISE}
 import models.FileUploadStatus.*
-import models.{ConnectorFailure, FileSession, FileUploadStatus}
-
-import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
+import models.{ConnectorFailure, FailureReason, FileSession, FileUploadStatus}
+import org.apache.pekko.stream.scaladsl.{Source, StreamConverters}
+import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.http.HttpEntity
 import play.api.mvc.*
@@ -36,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.Locale
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -281,14 +279,23 @@ class ChooseAnOptionController @Inject() (
           .watchTermination()((_, futDone) =>
             futDone.onComplete {
               case Success(_) =>
-                logger.info(s"[ChooseAnOptionController][getFile] File with name $fileName has started to delete")
+                auditDownload(ResultsDownloadAuditData.success(userId, fileName))
+                logger.info(
+                  s"[ChooseAnOptionController][getFile] Download complete, deleting results file userId=$userId fileName=$fileName"
+                )
                 resultsFileConnector.deleteFile(fileName, userId)
+
               case Failure(f) =>
-                logger.warn(s"[ChooseAnOptionController][getFile] File with name $fileName was not deleted - $f")
+                auditDownload(
+                  ResultsDownloadAuditData
+                    .failure(userId, fileName, ConnectorFailure(FailureReason.DOWNLOAD_INCOMPLETE, Some(OK)))
+                )
+                logger.warn(
+                  s"[ChooseAnOptionController][getFile] Download did not complete, file not deleted " +
+                    s"exception=${f.getClass.getSimpleName} userId=$userId fileName=$fileName"
+                )
             }
           )
-
-        auditDownload(ResultsDownloadAuditData.success(userId, fileName))
 
         Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
           .withHeaders(
@@ -301,7 +308,9 @@ class ChooseAnOptionController @Inject() (
           auditDownload(ResultsDownloadAuditData.failure(userId, fileName, failure))
           Redirect(routes.ErrorController.renderGlobalErrorPage)
         case e: Throwable              =>
-          auditDownload(ResultsDownloadAuditData.failure(userId, fileName, ConnectorFailure(ISE)))
+          auditDownload(
+            ResultsDownloadAuditData.failure(userId, fileName, ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR))
+          )
           logger.error(
             s"[ChooseAnOptionController][getFile] Unexpected exception=${e.getClass.getSimpleName} userId=$userId fileName=$fileName",
             e

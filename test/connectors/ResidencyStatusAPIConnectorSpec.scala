@@ -65,7 +65,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
   private val getFileTag    = "[ResidencyStatusAPIConnector][getFile]"
   private val deleteFileTag = "[ResidencyStatusAPIConnector][deleteFile]"
 
-  private val callingLine = Level.INFO -> s"$lookupTag Calling Residency Status api"
+  private val callingLine = Level.INFO -> s"$lookupTag Calling Residency Status api userId=$userId"
 
   private def logLines(logs: List[ILoggingEvent]): List[(Level, String)] =
     logs.map(event => event.getLevel -> event.getFormattedMessage)
@@ -146,7 +146,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
       }
     }
 
-    "fail with INTERNAL_SERVER_ERROR and log the actual status at error when the API returns 500" in {
+    "fail with INTERNAL_SERVER_ERROR and log at error when the API returns 500" in {
       setupMockPost(INTERNAL_SERVER_ERROR, "{}", "/residency-status")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
@@ -156,24 +156,24 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
 
         logLines(logs) shouldBe List(
           callingLine,
-          Level.ERROR -> (s"$lookupTag Unexpected status code received from RAS-API " +
+          Level.ERROR -> (s"$lookupTag RAS-API could not provide a residency status " +
             s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=500")
         )
       }
     }
 
-    "keep the actual status for other unexpected statuses, e.g. 401" in {
+    "fail with UNEXPECTED_STATUS, keeping the actual status, for any other status, e.g. 401" in {
       setupMockPost(UNAUTHORIZED, "{}", "/residency-status")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val failure = intercept[ConnectorFailure](await(connector.getResidencyStatus(memberDetails, userId)))
 
-        failure shouldBe ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(UNAUTHORIZED))
+        failure shouldBe ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(UNAUTHORIZED))
 
         logLines(logs) shouldBe List(
           callingLine,
           Level.ERROR -> (s"$lookupTag Unexpected status code received from RAS-API " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=401")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=401")
         )
       }
     }
@@ -267,7 +267,7 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
 
   "getFile" should {
     val record        = "John,Smith,AB123456C,1990-02-21"
-    val getFileCalled = Level.INFO -> s"$getFileTag Get results file with URI for $fileName by userId ($userId)"
+    val getFileCalled = Level.INFO -> s"$getFileTag Calling RAS-API for results file userId=$userId fileName=$fileName"
 
     "return the file and log success at info when the API returns 200" in {
       setupMockGet(OK, record, s"/ras-api/file/getFile/$fileName")
@@ -295,28 +295,36 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
       Source.fromInputStream(result.get).mkString shouldBe empty
     }
 
-    "fail, rather than returning the error body as the file, and log at error when the API returns 500" in {
+    "fail with UNEXPECTED_STATUS, rather than returning the error body as the file, and log at error when the API returns 500" in {
       setupMockGet(INTERNAL_SERVER_ERROR, "Internal server error", s"/ras-api/file/getFile/$fileName")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val failure = intercept[ConnectorFailure](await(connector.getFile(fileName, userId)))
 
-        failure shouldBe ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(INTERNAL_SERVER_ERROR))
+        failure shouldBe ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(INTERNAL_SERVER_ERROR))
 
         logLines(logs) shouldBe List(
           getFileCalled,
           Level.ERROR -> (s"$getFileTag Results file could not be retrieved fileName=$fileName " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=500")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=500")
         )
       }
     }
 
-    "fail with the actual status when the API returns 404" in {
+    "fail with UNEXPECTED_STATUS and the actual status, and log at error, when the API returns 404" in {
       setupMockGet(NOT_FOUND, "", s"/ras-api/file/getFile/$fileName")
 
-      val failure = intercept[ConnectorFailure](await(connector.getFile(fileName, userId)))
+      withCaptureOfLoggingFrom(connectorLogger) { logs =>
+        val failure = intercept[ConnectorFailure](await(connector.getFile(fileName, userId)))
 
-      failure shouldBe ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(NOT_FOUND))
+        failure shouldBe ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(NOT_FOUND))
+
+        logLines(logs) shouldBe List(
+          getFileCalled,
+          Level.ERROR -> (s"$getFileTag Results file could not be retrieved fileName=$fileName " +
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=404")
+        )
+      }
     }
   }
 
@@ -336,17 +344,17 @@ class ResidencyStatusAPIConnectorSpec extends AnyWordSpec with Matchers with Ras
       }
     }
 
-    "still return the response, but log at warn, when the API returns 400" in {
-      setupMockDelete(BAD_REQUEST, "", s"/ras-api/file/remove/$fileName/$userId")
+    "still return the response, but log UNEXPECTED_STATUS at warn, when the API returns 500" in {
+      setupMockDelete(INTERNAL_SERVER_ERROR, "", s"/ras-api/file/remove/$fileName/$userId")
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val result: HttpResponse = await(connector.deleteFile(fileName, userId))
 
-        result.status shouldBe BAD_REQUEST
+        result.status shouldBe INTERNAL_SERVER_ERROR
 
         logLines(logs) shouldBe List(
           Level.WARN -> (s"$deleteFileTag Results file was not deleted fileName=$fileName " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=400")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=500")
         )
       }
     }

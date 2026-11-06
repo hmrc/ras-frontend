@@ -21,18 +21,20 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 object LogHelper {
 
-  def successText(tag: String, userId: String, details: String = ""): String =
-    s"$tag outcome=SUCCESS userId=$userId $details".trimWhitespace
+  private def requestId(hc: HeaderCarrier): String = hc.requestId.map(id => s"requestId=${id.value}").getOrElse("")
+
+  def successText(tag: String, userId: String, details: String = "")(implicit hc: HeaderCarrier): String =
+    s"$tag outcome=SUCCESS userId=$userId $details ${requestId(hc)}".trimWhitespace
 
   def failureText(tag: String, userId: String, failure: ConnectorFailure, message: String = "")(implicit
     hc: HeaderCarrier
   ): String = {
-    val requestId   = hc.requestId.map(id => s"requestId=${id.value}").getOrElse("")
+
     val status      = failure.status.map(s => s"status=$s").getOrElse("")
     val parseErrors = failure.parseErrors.map(e => s"parseErrors=$e").getOrElse("")
     val cause       = failure.cause.map(c => s"cause=${c.getClass.getSimpleName}").getOrElse("")
 
-    (s"$tag $message outcome=FAILURE reason=${failure.reason} userId=$userId $requestId $status " +
+    (s"$tag $message outcome=FAILURE reason=${failure.reason} userId=$userId ${requestId(hc)} $status " +
       s"$parseErrors $cause").trimWhitespace
   }
 

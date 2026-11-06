@@ -226,6 +226,24 @@ class RasResidencyCheckerControllerSpec
           logs shouldBe empty
         }
 
+      "redirect to the global error page and audit UNEXPECTED_STATUS, with the actual status, without logging again" in
+        withCaptureOfLoggingFrom(controllerLogger) { logs =>
+          connectorReturns(Future.failed(ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(401))))
+
+          val result = controller.submitResidencyStatus(fullSession, userId)
+
+          status(result)         shouldBe SEE_OTHER
+          redirectLocation(result) should include("global-error")
+
+          auditedDetail() shouldBe commonAuditFields ++ Map(
+            "successfulLookup" -> "false",
+            "reason"           -> "UNEXPECTED_STATUS",
+            "httpStatus"       -> "401"
+          )
+
+          logs shouldBe empty
+        }
+
       "redirect to the global error page and audit TIMEOUT without an httpStatus or logging again" in
         withCaptureOfLoggingFrom(controllerLogger) { logs =>
           connectorReturns(Future.failed(ConnectorFailure(FailureReason.TIMEOUT)))
@@ -281,6 +299,31 @@ class RasResidencyCheckerControllerSpec
           )
 
           verify(mockRasSessionCacheService, never).cacheResidencyStatusResult(any())(any())
+        }
+    }
+
+    "the lookup succeeds but the result can't be cached for the results page" must {
+      "redirect to the global error page, audit a single failure with the 200 status and log the exception type" in
+        withCaptureOfLoggingFrom(controllerLogger) { logs =>
+          connectorReturns(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
+          when(mockRasSessionCacheService.cacheResidencyStatusResult(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("mongo down")))
+
+          val result = controller.submitResidencyStatus(fullSession, userId)
+
+          status(result)         shouldBe SEE_OTHER
+          redirectLocation(result) should include("global-error")
+
+          auditedDetail() shouldBe commonAuditFields ++ Map(
+            "successfulLookup" -> "false",
+            "reason"           -> "INTERNAL_SERVER_ERROR",
+            "httpStatus"       -> "200"
+          )
+
+          logLines(logs) shouldBe List(
+            Level.INFO  -> s"$tag Match found userId=$userId",
+            Level.ERROR -> s"$tag Residency status could not be cached exception=RuntimeException userId=$userId"
+          )
         }
     }
 

@@ -57,7 +57,7 @@ class ResidencyStatusAPIConnector @Inject() (
       "Content-Type" -> "application/json"
     )
 
-    logger.info(s"$getResidencyStatusTag Calling Residency Status api")
+    logger.info(s"$getResidencyStatusTag Calling Residency Status api userId=$userId")
 
     http
       .post(url"$fullUrl")(headerCarrier)
@@ -77,7 +77,7 @@ class ResidencyStatusAPIConnector @Inject() (
     val requiredHeaders: Seq[(String, String)] = hc.headers(HeaderNames.explicitlyIncludedHeaders)
     val fullUrl                                = s"$serviceUrl/ras-api/file/getFile/$fileName"
 
-    logger.info(s"$tag Get results file with URI for $fileName by userId ($userId)")
+    logger.info(s"$tag Calling RAS-API for results file userId=$userId fileName=$fileName")
 
     http
       .get(url"$fullUrl")
@@ -97,7 +97,7 @@ class ResidencyStatusAPIConnector @Inject() (
             // consume the body, as with a streamed response it can keep the underlying connection open until it times out
             response.bodyAsSource.runWith(Sink.ignore)(using mat)
 
-            val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, Some(status))
+            val failure = ConnectorFailure(UNEXPECTED_STATUS, Some(status))
             logger.error(failureText(tag, userId, failure, s"Results file could not be retrieved fileName=$fileName"))
             throw failure
         }
@@ -120,7 +120,7 @@ class ResidencyStatusAPIConnector @Inject() (
         if (response.status >= 200 && response.status < 300) {
           logger.info(successText(tag, userId, s"status=${response.status} fileName=$fileName"))
         } else {
-          val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, Some(response.status))
+          val failure = ConnectorFailure(UNEXPECTED_STATUS, Some(response.status))
           logger.warn(failureText(tag, userId, failure, s"Results file was not deleted fileName=$fileName"))
         }
         response
@@ -164,13 +164,18 @@ class ResidencyStatusAPIConnector @Inject() (
         logger.warn(failureText(tag, userId, failure))
         throw failure
 
+      case 500 =>
+        val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, status)
+        logger.error(failureText(tag, userId, failure, "RAS-API could not provide a residency status"))
+        throw failure
+
       case 503 =>
         val failure = ConnectorFailure(SERVICE_UNAVAILABLE, status)
         logger.warn(failureText(tag, userId, failure))
         throw failure
 
       case _ =>
-        val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, status)
+        val failure = ConnectorFailure(UNEXPECTED_STATUS, status)
         logger.error(failureText(tag, userId, failure, "Unexpected status code received from RAS-API"))
         throw failure
     }

@@ -82,34 +82,34 @@ class UpscanInitiateConnectorSpec extends AnyWordSpec with Matchers with RasTest
       }
     }
 
-    "fail with INTERNAL_SERVER_ERROR and log the actual status at error when upscan returns 400" in {
+    "fail with UNEXPECTED_STATUS and log the actual status at error when upscan returns 400" in {
       setupMockPost(BAD_REQUEST, "{}", initiateUrl)
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val failure = intercept[ConnectorFailure](initiate())
 
-        failure shouldBe ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(BAD_REQUEST))
+        failure shouldBe ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(BAD_REQUEST))
 
         logLines(logs) shouldBe List(
           callingLine,
           Level.ERROR -> (s"$tag Unexpected status code received from upscan-initiate " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=400")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=400")
         )
       }
     }
 
-    "fail with INTERNAL_SERVER_ERROR and log the actual status at error when upscan returns 503" in {
+    "fail with UNEXPECTED_STATUS and log the actual status at error when upscan returns 503" in {
       setupMockPost(SERVICE_UNAVAILABLE, "{}", initiateUrl)
 
       withCaptureOfLoggingFrom(connectorLogger) { logs =>
         val failure = intercept[ConnectorFailure](initiate())
 
-        failure shouldBe ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(SERVICE_UNAVAILABLE))
+        failure shouldBe ConnectorFailure(FailureReason.UNEXPECTED_STATUS, Some(SERVICE_UNAVAILABLE))
 
         logLines(logs) shouldBe List(
           callingLine,
           Level.ERROR -> (s"$tag Unexpected status code received from upscan-initiate " +
-            s"outcome=FAILURE reason=INTERNAL_SERVER_ERROR userId=$userId status=503")
+            s"outcome=FAILURE reason=UNEXPECTED_STATUS userId=$userId status=503")
         )
       }
     }

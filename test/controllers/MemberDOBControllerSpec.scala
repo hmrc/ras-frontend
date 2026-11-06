@@ -238,7 +238,7 @@ class MemberDOBControllerSpec extends AnyWordSpec with RasTestHelper with Before
     }
 
     "redirect to global error page" when {
-      "the API call fails with an ConnectorFailure" in {
+      "the API call fails with a ConnectorFailure" in {
         when(mockResidencyStatusAPIConnector.getResidencyStatus(any(), any())(any(), any()))
           .thenReturn(Future.failed(ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, Some(500))))
 

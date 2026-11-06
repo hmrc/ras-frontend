@@ -18,8 +18,7 @@ package connectors
 
 import com.google.inject.Singleton
 import config.ApplicationConfig
-import models.ConnectorFailure.formatJsErrors
-import models.FailureReason.{INTERNAL_SERVER_ERROR, INVALID_RESPONSE}
+import models.FailureReason.{CONNECTION_FAILURE, TIMEOUT, UNEXPECTED_STATUS}
 import models.{ConnectorFailure, CreateFileSessionRequest, FileSession}
 import play.api.Logging
 import play.api.http.Status.*
@@ -27,7 +26,7 @@ import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{BadGatewayException, GatewayTimeoutException, HeaderCarrier, HttpResponse, StringContextOps}
 import utils.LogHelper.{failureText, successText}
 
 import javax.inject.Inject
@@ -55,12 +54,13 @@ class FilesSessionConnector @Inject() (http: HttpClientV2, appConfig: Applicatio
           true
 
         case response =>
-          val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, status = Some(response.status))
+          val failure = ConnectorFailure(UNEXPECTED_STATUS, status = Some(response.status))
           logger.error(
             failureText(tag, request.userId, failure, s"File session was not created reference=${request.reference}")
           )
           false
       }
+      .recover(networkFailure(tag, request.userId, returnValue = false, log = logger.error(_)))
   }
 
   def fetchFileSession(
@@ -80,17 +80,12 @@ class FilesSessionConnector @Inject() (http: HttpClientV2, appConfig: Applicatio
                 Some(fileSession)
 
               case Success(JsError(errors)) =>
-                val failure = ConnectorFailure(
-                  INVALID_RESPONSE,
-                  status = Some(response.status),
-                  parseErrors = Some(formatJsErrors(errors))
-                )
-
+                val failure = ConnectorFailure.invalidResponse(response.status, errors)
                 logger.error(failureText(tag, userId, failure, "File session json did not match expected format"))
                 None
 
               case Failure(exception) =>
-                val failure = ConnectorFailure.parseError(OK, exception)
+                val failure = ConnectorFailure.parseError(response.status, exception)
                 logger.error(failureText(tag, userId, failure, "File session response was not valid json"))
                 None
             }
@@ -100,11 +95,12 @@ class FilesSessionConnector @Inject() (http: HttpClientV2, appConfig: Applicatio
             None
 
           case status =>
-            val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, status = Some(status))
-            logger.warn(failureText(tag, userId, failure, "Received non-OK status code from API"))
+            val failure = ConnectorFailure(UNEXPECTED_STATUS, status = Some(status))
+            logger.error(failureText(tag, userId, failure, "Received non-OK status code from API"))
             None
         }
       }
+      .recover(networkFailure(tag, userId, returnValue = None, log = logger.error(_)))
   }
 
   def deleteFileSession(userId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
@@ -120,10 +116,23 @@ class FilesSessionConnector @Inject() (http: HttpClientV2, appConfig: Applicatio
           true
 
         case response =>
-          val failure = ConnectorFailure(INTERNAL_SERVER_ERROR, status = Some(response.status))
+          val failure = ConnectorFailure(UNEXPECTED_STATUS, status = Some(response.status))
           logger.warn(failureText(tag, userId, failure, "File session was not deleted"))
           false
       }
+      .recover(networkFailure(tag, userId, returnValue = false, log = logger.warn(_)))
+  }
+
+  private def networkFailure[A](tag: String, userId: String, returnValue: A, log: String => Unit)(implicit
+    hc: HeaderCarrier
+  ): PartialFunction[Throwable, A] = {
+    case e: GatewayTimeoutException =>
+      log(failureText(tag, userId, ConnectorFailure(TIMEOUT, cause = Some(e)), "Request timed out"))
+      returnValue
+
+    case e: BadGatewayException =>
+      log(failureText(tag, userId, ConnectorFailure(CONNECTION_FAILURE, cause = Some(e)), "Could not connect"))
+      returnValue
   }
 
 }

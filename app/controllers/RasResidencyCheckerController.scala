@@ -53,6 +53,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
 
       residencyStatusAPIConnector
         .getResidencyStatus(memberDetails, userId)
+        .andThen(_ => timer.stop())
         .flatMap(rasResponse => handleResidencyStatus(session, memberDetails, rasResponse, userId))
         .recover {
           case failure: ConnectorFailure if failure.reason == MATCHING_FAILED =>
@@ -68,7 +69,6 @@ trait RasResidencyCheckerController extends RasController with AuditService with
             logger.error(s"$tag Unexpected exception=${e.getClass.getSimpleName} userId=$userId", e)
             Redirect(routes.ErrorController.renderGlobalErrorPage)
         }
-        .andThen(_ => timer.stop())
 
     } else {
       val missingFields = Seq(
@@ -121,11 +121,22 @@ trait RasResidencyCheckerController extends RasController with AuditService with
         memberDetails.nino
       )
 
-      auditLookup(ResidencyAuditData.success(userId, memberDetails.nino, rasResponse))
-
       sessionService
         .cacheResidencyStatusResult(residencyStatusResult)
-        .map(_ => Redirect(routes.ResultsController.matchFound))
+        .map { _ =>
+          auditLookup(ResidencyAuditData.success(userId, memberDetails.nino, rasResponse))
+          Redirect(routes.ResultsController.matchFound)
+        }
+        .recover { case e =>
+          // the API returned a status and audited it, but the frontend couldn't store it for the results page
+          auditLookup(
+            ResidencyAuditData.failure(userId, memberDetails.nino, ConnectorFailure(INTERNAL_SERVER_ERROR, Some(200)))
+          )
+          logger.error(
+            s"$tag Residency status could not be cached exception=${e.getClass.getSimpleName} userId=$userId"
+          )
+          Redirect(routes.ErrorController.renderGlobalErrorPage)
+        }
     }
   }
 

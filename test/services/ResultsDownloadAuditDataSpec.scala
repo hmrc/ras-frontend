@@ -40,14 +40,14 @@ class ResultsDownloadAuditDataSpec extends AnyWordSpec with Matchers {
   "failure" should {
 
     "contain the reason and status when the failure has a status" in {
-      val failure = ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR, status = Some(404))
+      val failure = ConnectorFailure(FailureReason.UNEXPECTED_STATUS, status = Some(404))
 
       ResultsDownloadAuditData.failure(userId, fileName, failure) shouldBe Map(
         "userIdentifier"     -> userId,
         "requestSource"      -> "FE_BULK",
         "fileName"           -> fileName,
         "successfulDownload" -> "false",
-        "reason"             -> "INTERNAL_SERVER_ERROR",
+        "reason"             -> "UNEXPECTED_STATUS",
         "httpStatus"         -> "404"
       )
     }
