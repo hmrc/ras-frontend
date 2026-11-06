@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.audit.model.DataEvent
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AuditService {
-  val connector: DefaultAuditConnector
+  val auditConnector: DefaultAuditConnector
 
   def audit(auditType: String, path: String, auditData: Map[String, String])(implicit
     hc: HeaderCarrier,
@@ -38,7 +38,7 @@ trait AuditService {
       detail = hc.toAuditDetails() ++ auditData
     )
 
-    connector.sendEvent(event)
+    auditConnector.sendEvent(event)
   }
 
 }

@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class AuditServiceSpec extends AnyWordSpec with RasTestHelper with BeforeAndAfter {
 
   class TestService extends AuditService {
-    override val connector: DefaultAuditConnector = mockAuditConnector
+    override val auditConnector: DefaultAuditConnector = mockAuditConnector
   }
 
   before {
