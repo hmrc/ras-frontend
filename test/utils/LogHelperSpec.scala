@@ -30,6 +30,16 @@ class LogHelperSpec extends AnyWordSpec with Matchers {
   private val noRequestId: HeaderCarrier            = HeaderCarrier()
   implicit private val withRequestId: HeaderCarrier = HeaderCarrier(requestId = Some(RequestId("govuk-tax-test")))
 
+  "requestId" should {
+    "be requestId=<value> when the HeaderCarrier has one" in {
+      LogHelper.formatRequestId(withRequestId) shouldBe "requestId=govuk-tax-test"
+    }
+
+    "be empty when the HeaderCarrier has none" in {
+      LogHelper.formatRequestId(noRequestId) shouldBe ""
+    }
+  }
+
   "successText" should {
 
     "contain the tag, outcome and userId, followed by the details" in {

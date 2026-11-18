@@ -27,7 +27,7 @@ import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{BadGatewayException, GatewayTimeoutException, HeaderCarrier, HttpResponse, StringContextOps}
-import utils.LogHelper.{failureText, successText}
+import utils.LogHelper.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -91,10 +91,11 @@ class FilesSessionConnector @Inject() (http: HttpClientV2, appConfig: Applicatio
             }
 
           case NOT_FOUND =>
-            logger.info(s"$tag No file session found userId=$userId status=$NOT_FOUND")
+            logger.info(
+              s"$tag No file session found, outcome=NOT_FOUND userId=$userId ${formatRequestId(hc)} status=$NOT_FOUND".trimWhitespace
+            )
             None
-
-          case status =>
+          case status    =>
             val failure = ConnectorFailure(UNEXPECTED_STATUS, status = Some(status))
             logger.error(failureText(tag, userId, failure, "Received non-OK status code from API"))
             None

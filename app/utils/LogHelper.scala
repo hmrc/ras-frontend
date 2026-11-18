@@ -21,10 +21,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 object LogHelper {
 
-  private def requestId(hc: HeaderCarrier): String = hc.requestId.map(id => s"requestId=${id.value}").getOrElse("")
+  def formatRequestId(hc: HeaderCarrier): String = hc.requestId.map(id => s"requestId=${id.value}").getOrElse("")
 
   def successText(tag: String, userId: String, details: String = "")(implicit hc: HeaderCarrier): String =
-    s"$tag outcome=SUCCESS userId=$userId $details ${requestId(hc)}".trimWhitespace
+    s"$tag outcome=SUCCESS userId=$userId $details ${formatRequestId(hc)}".trimWhitespace
 
   def failureText(tag: String, userId: String, failure: ConnectorFailure, message: String = "")(implicit
     hc: HeaderCarrier
@@ -34,12 +34,12 @@ object LogHelper {
     val parseErrors = failure.parseErrors.map(e => s"parseErrors=$e").getOrElse("")
     val cause       = failure.cause.map(c => s"cause=${c.getClass.getSimpleName}").getOrElse("")
 
-    (s"$tag $message outcome=FAILURE reason=${failure.reason} userId=$userId ${requestId(hc)} $status " +
+    (s"$tag $message outcome=FAILURE reason=${failure.reason} userId=$userId ${formatRequestId(hc)} $status " +
       s"$parseErrors $cause").trimWhitespace
   }
 
   extension (s: String) {
-    private def trimWhitespace: String = s.replaceAll("\\s+", " ").trim
+    def trimWhitespace: String = s.replaceAll("\\s+", " ").trim
   }
 
 }

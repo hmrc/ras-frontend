@@ -98,7 +98,7 @@ class FilesSessionConnectorSpec extends AnyWordSpec with Matchers with RasTestHe
         result shouldBe None
 
         logLines(logs) shouldBe List(
-          Level.INFO -> s"$fetchTag No file session found userId=$userId status=404"
+          Level.INFO -> s"$fetchTag No file session found, outcome=NOT_FOUND userId=$userId status=404"
         )
       }
     }
