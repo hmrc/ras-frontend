@@ -131,7 +131,7 @@ trait RasResidencyCheckerController extends RasController with AuditService with
           // the API returned a status, but the session cache write failed
           auditLookup(
             ResidencyAuditData
-              .failure(userId, memberDetails.nino, ConnectorFailure(SESSION_CACHE_FAILURE, Some(200))) // changed
+              .failure(userId, memberDetails.nino, ConnectorFailure(SESSION_CACHE_FAILURE, Some(200)))
           )
 
           logger.error(
