@@ -316,7 +316,7 @@ class RasResidencyCheckerControllerSpec
 
           auditedDetail() shouldBe commonAuditFields ++ Map(
             "successfulLookup" -> "false",
-            "reason"           -> "INTERNAL_SERVER_ERROR",
+            "reason"           -> "SESSION_CACHE_FAILURE",
             "httpStatus"       -> "200"
           )
 

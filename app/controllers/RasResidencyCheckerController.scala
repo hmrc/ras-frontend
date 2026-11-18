@@ -19,7 +19,7 @@ package controllers
 import connectors.ResidencyStatusAPIConnector
 import metrics.Metrics
 import models.*
-import models.FailureReason.{INTERNAL_SERVER_ERROR, MATCHING_FAILED, UNKNOWN_RESIDENCY_STATUS}
+import models.FailureReason.{INTERNAL_SERVER_ERROR, MATCHING_FAILED, SESSION_CACHE_FAILURE, UNKNOWN_RESIDENCY_STATUS}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Request, Result}
@@ -127,14 +127,18 @@ trait RasResidencyCheckerController extends RasController with AuditService with
           auditLookup(ResidencyAuditData.success(userId, memberDetails.nino, rasResponse))
           Redirect(routes.ResultsController.matchFound)
         }
-        .recover { case e =>
-          // the API returned a status and audited it, but the frontend couldn't store it for the results page
+        .recover { case e: Throwable =>
+          // the API returned a status, but the session cache write failed
           auditLookup(
-            ResidencyAuditData.failure(userId, memberDetails.nino, ConnectorFailure(INTERNAL_SERVER_ERROR, Some(200)))
+            ResidencyAuditData
+              .failure(userId, memberDetails.nino, ConnectorFailure(SESSION_CACHE_FAILURE, Some(200))) // changed
           )
+
           logger.error(
-            s"$tag Residency status could not be cached exception=${e.getClass.getSimpleName} userId=$userId"
+            s"$tag Residency status could not be cached exception=${e.getClass.getSimpleName} userId=$userId",
+            e
           )
+
           Redirect(routes.ErrorController.renderGlobalErrorPage)
         }
     }
