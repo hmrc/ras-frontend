@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MemberNameController @Inject() (
   val authConnector: DefaultAuthConnector,
-  val connector: DefaultAuditConnector,
+  val auditConnector: DefaultAuditConnector,
   val residencyStatusAPIConnector: ResidencyStatusAPIConnector,
   val sessionService: SessionCacheService,
   val mcc: MessagesControllerComponents,

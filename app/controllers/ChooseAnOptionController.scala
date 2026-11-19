@@ -16,24 +16,24 @@
 
 package controllers
 
-import org.apache.pekko.stream.scaladsl.{Source, StreamConverters}
-import org.apache.pekko.util.ByteString
 import config.ApplicationConfig
 import connectors.ResidencyStatusAPIConnector
 import models.FileUploadStatus.*
-import models.{FileSession, FileUploadStatus}
-
-import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
+import models.{ConnectorFailure, FailureReason, FileSession, FileUploadStatus}
+import org.apache.pekko.stream.scaladsl.{Source, StreamConverters}
+import org.apache.pekko.util.ByteString
 import play.api.Logging
 import play.api.http.HttpEntity
 import play.api.mvc.*
-import services.{FilesSessionService, TaxYearResolver}
+import services.{AuditService, FilesSessionService, ResultsDownloadAuditData, TaxYearResolver}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.DefaultAuditConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.{Instant, LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.Locale
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,6 +42,7 @@ import scala.util.{Failure, Success}
 class ChooseAnOptionController @Inject() (
   resultsFileConnector: ResidencyStatusAPIConnector,
   val authConnector: DefaultAuthConnector,
+  val auditConnector: DefaultAuditConnector,
   val filesSessionService: FilesSessionService,
   val mcc: MessagesControllerComponents,
   val appConfig: ApplicationConfig,
@@ -50,7 +51,7 @@ class ChooseAnOptionController @Inject() (
   uploadResultView: views.html.upload_result,
   resultsNotAvailableYetView: views.html.results_not_available_yet,
   noResultsAvailableView: views.html.no_results_available
-) extends FrontendController(mcc) with PageFlowController with Logging {
+) extends FrontendController(mcc) with PageFlowController with AuditService with Logging {
 
   given ApplicationConfig    = appConfig
   given ec: ExecutionContext = mcc.executionContext
@@ -93,24 +94,19 @@ class ChooseAnOptionController @Inject() (
     }
 
   def formattedExpiryDate(timestamp: Long): String = {
-
-    val expiryDate = Instant.ofEpochMilli(timestamp).plus(3, ChronoUnit.DAYS)
-
+    val expiryDate    = Instant.ofEpochMilli(timestamp).plus(3, ChronoUnit.DAYS)
     val timeFormatter = DateTimeFormatter.ofPattern("H:mma")
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy")
-
     s"${expiryDate.atZone(ZoneId.of("Europe/London")).format(timeFormatter).toLowerCase()} on ${expiryDate.atZone(ZoneId.of("Europe/London")).format(dateFormatter)}"
   }
 
   private def formattedUploadDate(timestamp: Long): String = {
-    val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
-
+    val uploadDate       = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))
     val todayOrYesterday = if (uploadDate.toLocalDate.isEqual(ZonedDateTime.now.toLocalDate)) {
       "today"
     } else {
       "yesterday"
     }
-
     s"$todayOrYesterday at ${uploadDate.format(DateTimeFormatter.ofPattern("h:mma").withLocale(Locale.UK)).toLowerCase()}"
   }
 
@@ -226,8 +222,7 @@ class ChooseAnOptionController @Inject() (
         filesSessionService.fetchFileSession(userId).flatMap {
           case Some(fileSession) =>
             fileSession.resultsFile match {
-              case Some(_) =>
-                Future.successful(Ok(fileReadyView()))
+              case Some(_) => Future.successful(Ok(fileReadyView()))
               case _       =>
                 logger.error("[ChooseAnOptionController][renderFileReadyPage] session has no result file")
                 Future.successful(Redirect(routes.UpscanController.uploadInProgress))
@@ -273,37 +268,58 @@ class ChooseAnOptionController @Inject() (
   }
 
   private def getFile(fileName: String, userId: String, downloadFileName: String)(implicit
+    request: Request[?],
     hc: HeaderCarrier
-  ): Future[play.api.mvc.Result] =
+  ): Future[Result] =
     resultsFileConnector
       .getFile(fileName, userId)
       .map { response =>
-        val dataContent: Source[ByteString, _] = StreamConverters
+        val dataContent: Source[ByteString, ?] = StreamConverters
           .fromInputStream(() => response.get)
           .watchTermination()((_, futDone) =>
             futDone.onComplete {
               case Success(_) =>
-                logger.info(s"[ChooseAnOptionController][getFile] File with name $fileName has started to delete")
+                auditDownload(ResultsDownloadAuditData.success(userId, fileName))
+                logger.info(
+                  s"[ChooseAnOptionController][getFile] Download complete, deleting results file userId=$userId fileName=$fileName"
+                )
                 resultsFileConnector.deleteFile(fileName, userId)
+
               case Failure(f) =>
-                logger.warn(s"[ChooseAnOptionController][getFile] File with name $fileName was not deleted - $f")
+                auditDownload(
+                  ResultsDownloadAuditData
+                    .failure(userId, fileName, ConnectorFailure(FailureReason.DOWNLOAD_INCOMPLETE, Some(OK)))
+                )
+                logger.warn(
+                  s"[ChooseAnOptionController][getFile] Download did not complete, file not deleted " +
+                    s"exception=${f.getClass.getSimpleName} userId=$userId fileName=$fileName"
+                )
             }
           )
 
         Ok.sendEntity(HttpEntity.Streamed(dataContent, None, Some(_contentType)))
           .withHeaders(
             CONTENT_DISPOSITION -> s"""attachment; filename="$downloadFileName-results.csv"""",
-            // CONTENT_LENGTH -> s"${fileData.get.length}",
             CONTENT_TYPE        -> _contentType
           )
+      }
+      .recover {
+        case failure: ConnectorFailure =>
+          auditDownload(ResultsDownloadAuditData.failure(userId, fileName, failure))
+          Redirect(routes.ErrorController.renderGlobalErrorPage)
+        case e: Throwable              =>
+          auditDownload(
+            ResultsDownloadAuditData.failure(userId, fileName, ConnectorFailure(FailureReason.INTERNAL_SERVER_ERROR))
+          )
+          logger.error(
+            s"[ChooseAnOptionController][getFile] Unexpected exception=${e.getClass.getSimpleName} userId=$userId fileName=$fileName",
+            e
+          )
+          Redirect(routes.ErrorController.renderGlobalErrorPage)
+      }
 
-      }
-      .recover { case ex: Throwable =>
-        logger.error(
-          "[ChooseAnOptionController][getFile] Request failed with Exception " + ex.getMessage + " for file -> " + fileName
-        )
-        Redirect(routes.ErrorController.renderGlobalErrorPage)
-      }
+  private def auditDownload(auditData: Map[String, String])(implicit request: Request[?], hc: HeaderCarrier): Unit =
+    audit(auditType = "ReliefAtSourceResultsDownload", path = request.path, auditData = auditData)
 
   private def isBeforeApr6(timestamp: Long): Boolean = {
     val uploadDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Europe/London"))

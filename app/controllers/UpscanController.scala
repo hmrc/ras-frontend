@@ -19,7 +19,7 @@ package controllers
 import config.ApplicationConfig
 import connectors.UpscanInitiateConnector
 import models.upscan.UpscanInitiateResponse
-import models.{File, RasSession, UploadResponse}
+import models.{ConnectorFailure, File, RasSession, UploadResponse}
 import play.api.Logging
 import play.api.i18n.Messages.implicitMessagesProviderToMessages
 import play.api.mvc.*
@@ -62,14 +62,22 @@ class UpscanController @Inject() (
             case None                         =>
               redirectWithNoRasSession(userId)
           }
-          .recover { case e: Throwable =>
-            logger.error(s"[UpscanController][get] failed to fetch ras session for userId ($userId) - $e")
-            Redirect(routes.ErrorController.renderGlobalErrorPage)
+          .recover {
+            case _: ConnectorFailure =>
+              Redirect(routes.ErrorController.renderGlobalErrorPage)
+            case e: Throwable        =>
+              logger.error(
+                s"[UpscanController][get] Unexpected exception=${e.getClass.getSimpleName} userId=$userId",
+                e
+              )
+              Redirect(routes.ErrorController.renderGlobalErrorPage)
           }
     }
   }
 
-  def redirectWithNoRasSession(userId: String)(implicit request: MessagesRequest[AnyContent]): Future[Result] = {
+  private def redirectWithNoRasSession(
+    userId: String
+  )(implicit request: MessagesRequest[AnyContent]): Future[Result] = {
     val fileUploadUrlFuture = createFileUploadUrl(userId)
     fileUploadUrlFuture.flatMap {
       case Some(url) =>
@@ -81,7 +89,7 @@ class UpscanController @Inject() (
     }
   }
 
-  def processRasSession(
+  private def processRasSession(
     session: RasSession,
     userId: String,
     fileUploadUrl: Future[Option[UpscanInitiateResponse]]
@@ -99,7 +107,7 @@ class UpscanController @Inject() (
       }
     }
 
-  def processFileUploadUrl(url: Option[UpscanInitiateResponse], session: RasSession, userId: String)(implicit
+  private def processFileUploadUrl(url: Option[UpscanInitiateResponse], session: RasSession, userId: String)(implicit
     request: MessagesRequest[AnyContent]
   ): Future[Result] =
     url match {
@@ -111,7 +119,9 @@ class UpscanController @Inject() (
               case Some(_) =>
                 Future.successful(Redirect(routes.ErrorController.renderProblemUploadingFilePage))
               case _       =>
-                logger.error(s"[UpscanController][get] failed to obtain a session for userId ($userId)")
+                logger.error(
+                  s"[UpscanController][get] failed to obtain a session for userId ($userId)"
+                )
                 Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
             }
           case _                     =>
@@ -120,8 +130,7 @@ class UpscanController @Inject() (
         }
       case None        =>
         logger.error(
-          s"[UpscanController][get] failed to obtain a form url using existing file reference " +
-            s"for userId ($userId)"
+          s"[UpscanController][get] failed to obtain a form url using existing file reference for userId ($userId)"
         )
         Future.successful(Redirect(routes.ErrorController.renderGlobalErrorPage))
     }

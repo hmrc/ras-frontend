@@ -25,7 +25,6 @@ import play.api.http.Status.OK
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.*
-import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.{RandomNino, RasTestHelper}
 
 import scala.concurrent.Future
@@ -112,7 +111,7 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "redirect to match found page when edit mode is true and matching successful" in {
-      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any()))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any(), any())(any(), any()))
         .thenReturn(Future.successful(ResidencyStatus(SCOTTISH, Some(OTHER_UK))))
       when(mockRasSessionCacheService.cacheResidencyStatusResult(any())(any()))
         .thenReturn(Future.successful(Some(rasSession)))
@@ -127,8 +126,8 @@ class MemberNinoControllerSpec extends AnyWordSpec with RasTestHelper {
     }
 
     "redirect to no match found page when edit mode is true and matching failed" in {
-      when(mockResidencyStatusAPIConnector.getResidencyStatus(any())(any(), any()))
-        .thenReturn(Future.failed(UpstreamErrorResponse("Member not found", 403, 403)))
+      when(mockResidencyStatusAPIConnector.getResidencyStatus(any(), any())(any(), any()))
+        .thenReturn(Future.failed(ConnectorFailure(FailureReason.MATCHING_FAILED, Some(403))))
 
       val result =
         TestMemberNinoController.post(true).apply(fakeRequest.withMethod("POST").withFormUrlEncodedBody(postData*))
